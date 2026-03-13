@@ -10,7 +10,14 @@
 import { durations } from '@cgraph/animation-constants';
 import { useState, useRef, useCallback } from 'react';
 import { Alert } from 'react-native';
-import { useSharedValue, withTiming, withSpring, withSequence, Easing, type SharedValue } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  withTiming,
+  withSpring,
+  withSequence,
+  Easing,
+  type SharedValue,
+} from 'react-native-reanimated';
 import * as Crypto from 'expo-crypto';
 import * as Haptics from 'expo-haptics';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -84,7 +91,7 @@ export interface UseMessageSendingReturn {
  */
 export function useMessageSending({
   conversationId,
-  userId,
+  _userId,
   isE2EEInitialized,
   otherParticipantId,
   encryptMessage,
@@ -252,7 +259,7 @@ export function useMessageSending({
         const formData = new FormData();
         const fileName = `voice_${Date.now()}.m4a`;
 
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         formData.append('file', {
           uri: voiceData.uri,
           type: 'audio/m4a',
@@ -340,7 +347,8 @@ export function useMessageSending({
         const fileMimeType = mimeType || getMimeType(fileName, 'application/octet-stream');
 
         const formData = new FormData();
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         formData.append('file', {
           uri,
           type: fileMimeType,
@@ -372,7 +380,7 @@ export function useMessageSending({
         onMessageSent(normalized);
         onScrollToBottom();
       } catch (error: unknown) {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const err = error as {
           response?: { data?: { error?: { message?: string } } };
           message?: string;
@@ -417,7 +425,7 @@ export function useMessageSending({
           const mimeType =
             attachment.mimeType || (attachment.type === 'video' ? 'video/mp4' : 'image/jpeg');
 
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           formData.append('file', {
             uri: attachment.uri,
             type: mimeType,

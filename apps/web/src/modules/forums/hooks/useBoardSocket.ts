@@ -85,21 +85,25 @@ export function useBoardSocket(
       channel = socket.channel(`board:${boardId}`, {});
 
       channel.on('new_thread', (payload?: unknown) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const data = payload as { thread: BoardThreadPayload } | undefined;
         if (data?.thread) optionsRef.current.onNewThread?.(data.thread);
       });
 
       channel.on('thread_updated', (payload?: unknown) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const data = payload as { thread: BoardThreadPayload } | undefined;
         if (data?.thread) optionsRef.current.onThreadUpdated?.(data.thread);
       });
 
       channel.on('thread_deleted', (payload?: unknown) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const data = payload as { thread_id: string } | undefined;
         if (data) optionsRef.current.onThreadDeleted?.(data);
       });
 
       channel.on('presence_state', (payload?: unknown) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const state = payload as Record<string, unknown> | undefined;
         if (state) setViewers(Object.keys(state).length);
       });

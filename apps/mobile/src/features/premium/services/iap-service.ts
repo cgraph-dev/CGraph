@@ -85,9 +85,7 @@ class IAPService {
     try {
       await initConnection();
 
-      this.purchaseListener = purchaseUpdatedListener(
-        this.handlePurchase.bind(this),
-      );
+      this.purchaseListener = purchaseUpdatedListener(this.handlePurchase.bind(this));
 
       this.errorListener = purchaseErrorListener((error: PurchaseError) => {
         console.warn('[IAPService] Purchase error:', error.code, error.message);
@@ -108,6 +106,7 @@ class IAPService {
     try {
       this.products = await getSubscriptions({ skus: SUBSCRIPTION_SKUS });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return this.products.map((p: any) => ({
         productId: p.productId,
         title: p.title,
@@ -128,7 +127,7 @@ class IAPService {
    */
   async purchaseSubscription(
     productId: string,
-    callbacks?: { onSuccess?: PurchaseCallback; onError?: ErrorCallback },
+    callbacks?: { onSuccess?: PurchaseCallback; onError?: ErrorCallback }
   ): Promise<void> {
     if (!this.initialized) {
       await this.initialize();
@@ -163,10 +162,7 @@ class IAPService {
   /**
    * Register callbacks for purchase events.
    */
-  setCallbacks(callbacks: {
-    onSuccess?: PurchaseCallback;
-    onError?: ErrorCallback;
-  }): void {
+  setCallbacks(callbacks: { onSuccess?: PurchaseCallback; onError?: ErrorCallback }): void {
     this.onPurchaseSuccess = callbacks.onSuccess ?? null;
     this.onPurchaseError = callbacks.onError ?? null;
   }
@@ -217,9 +213,7 @@ class IAPService {
   /**
    * Send a purchase receipt to the backend for validation.
    */
-  private async validateReceipt(
-    purchase: Purchase,
-  ): Promise<IAPValidationResult> {
+  private async validateReceipt(purchase: Purchase): Promise<IAPValidationResult> {
     const platform = Platform.OS === 'ios' ? 'apple' : 'google';
 
     const response = await api.post('/api/v1/iap/validate', {
@@ -227,6 +221,7 @@ class IAPService {
       transaction_id: purchase.transactionId,
       receipt_data: purchase.transactionId, // receipt validated via transaction ID
       product_id: purchase.productId,
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       purchase_token: (purchase as unknown as Record<string, unknown>).purchaseToken, // Google-specific
     });
 

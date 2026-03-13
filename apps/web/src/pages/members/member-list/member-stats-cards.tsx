@@ -32,8 +32,8 @@ export function MemberStatsCards({ totalMembers, members }: MemberStatsCardsProp
   return (
     <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
       <div className="bg-card border-border rounded-lg border p-4 text-center">
-        <UserGroupIcon className="text-primary mx-auto mb-2 h-6 w-6" />
-        <div className="text-foreground text-2xl font-bold">
+        <UserGroupIcon className="mx-auto mb-2 h-6 w-6 text-primary" />
+        <div className="text-2xl font-bold text-foreground">
           {(totalMembers ?? 0).toLocaleString()}
         </div>
         <div className="text-muted-foreground text-sm">Total Members</div>
@@ -42,17 +42,17 @@ export function MemberStatsCards({ totalMembers, members }: MemberStatsCardsProp
         <div className="mx-auto mb-2 flex h-6 w-6 items-center justify-center">
           <span className="h-3 w-3 animate-pulse rounded-full bg-green-500" />
         </div>
-        <div className="text-foreground text-2xl font-bold">{onlineCount}</div>
+        <div className="text-2xl font-bold text-foreground">{onlineCount}</div>
         <div className="text-muted-foreground text-sm">Currently Online</div>
       </div>
       <div className="bg-card border-border rounded-lg border p-4 text-center">
-        <CalendarDaysIcon className="text-primary mx-auto mb-2 h-6 w-6" />
-        <div className="text-foreground text-2xl font-bold">{newestMemberDate}</div>
+        <CalendarDaysIcon className="mx-auto mb-2 h-6 w-6 text-primary" />
+        <div className="text-2xl font-bold text-foreground">{newestMemberDate}</div>
         <div className="text-muted-foreground text-sm">Newest Member</div>
       </div>
       <div className="bg-card border-border rounded-lg border p-4 text-center">
-        <ChatBubbleLeftIcon className="text-primary mx-auto mb-2 h-6 w-6" />
-        <div className="text-foreground text-2xl font-bold">{totalPosts.toLocaleString()}</div>
+        <ChatBubbleLeftIcon className="mx-auto mb-2 h-6 w-6 text-primary" />
+        <div className="text-2xl font-bold text-foreground">{totalPosts.toLocaleString()}</div>
         <div className="text-muted-foreground text-sm">Total Posts</div>
       </div>
     </div>

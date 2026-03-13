@@ -37,11 +37,12 @@ export const useAvatarStyle = create<AvatarStyleStore>()(
           return false;
         }
       },
-  reset: () => set({
-    style: defaultAvatarStyle,
-    ownedStyles: [...DEFAULT_OWNED_STYLES],
-  }),
-}),
+      reset: () =>
+        set({
+          style: defaultAvatarStyle,
+          ownedStyles: [...DEFAULT_OWNED_STYLES],
+        }),
+    }),
     {
       name: 'cgraph-avatar-style-v2',
       storage: createJSONStorage(() => safeLocalStorage),

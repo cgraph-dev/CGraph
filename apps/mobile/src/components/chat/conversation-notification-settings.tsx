@@ -8,14 +8,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Modal, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
@@ -70,6 +63,8 @@ const MUTE_DURATIONS = [
   { label: 'Forever', seconds: null },
 ] as const;
 
+/** Description. */
+/** Conversation Notification Settings component. */
 export function ConversationNotificationSettings({
   conversationId,
   targetType = 'conversation',
@@ -90,7 +85,10 @@ export function ConversationNotificationSettings({
         const res = await apiClient.get<{ data: { preference: NotificationPreference } }>(
           `/api/v1/notification-preferences/${targetType}/${conversationId}`
         );
-        const pref = res.data?.data?.preference ?? (res.data as unknown as { preference: NotificationPreference })?.preference;
+        const pref =
+          res.data?.data?.preference ??
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          (res.data as unknown as { preference: NotificationPreference })?.preference;
         if (pref) {
           setCurrentMode(pref.mode || 'all');
           setMutedUntil(pref.mutedUntil ?? pref.muted_until ?? null);
@@ -113,10 +111,10 @@ export function ConversationNotificationSettings({
             `/api/v1/notification-preferences/${targetType}/${conversationId}`
           );
         } else {
-          await apiClient.put(
-            `/api/v1/notification-preferences/${targetType}/${conversationId}`,
-            { mode, muted_until: muteUntil ?? null }
-          );
+          await apiClient.put(`/api/v1/notification-preferences/${targetType}/${conversationId}`, {
+            mode,
+            muted_until: muteUntil ?? null,
+          });
         }
         setCurrentMode(mode);
         setMutedUntil(muteUntil ?? null);
@@ -144,21 +142,14 @@ export function ConversationNotificationSettings({
 
   const handleMuteDuration = useCallback(
     (seconds: number | null) => {
-      const muteUntil = seconds
-        ? new Date(Date.now() + seconds * 1000).toISOString()
-        : null;
+      const muteUntil = seconds ? new Date(Date.now() + seconds * 1000).toISOString() : null;
       updatePreference('none', muteUntil);
     },
     [updatePreference]
   );
 
   return (
-    <Modal
-      visible={isOpen}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={isOpen} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable
         style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}
         onPress={onClose}
@@ -175,11 +166,20 @@ export function ConversationNotificationSettings({
         >
           {/* Handle bar */}
           <View style={{ alignItems: 'center', marginBottom: 16 }}>
-            <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border }} />
+            <View
+              style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border }}
+            />
           </View>
 
           {/* Header */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 16,
+            }}
+          >
             <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text }}>
               Notifications
             </Text>
@@ -190,21 +190,21 @@ export function ConversationNotificationSettings({
 
           {/* Muted status */}
           {mutedUntil && currentMode === 'none' && (
-            <View style={{
-              backgroundColor: 'rgba(245,158,11,0.1)',
-              borderRadius: 8,
-              padding: 10,
-              marginBottom: 12,
-            }}>
+            <View
+              style={{
+                backgroundColor: 'rgba(245,158,11,0.1)',
+                borderRadius: 8,
+                padding: 10,
+                marginBottom: 12,
+              }}
+            >
               <Text style={{ fontSize: 13, color: '#f59e0b' }}>
                 Muted until {new Date(mutedUntil).toLocaleString()}
               </Text>
             </View>
           )}
 
-          {loading && (
-            <ActivityIndicator style={{ marginVertical: 12 }} color={colors.primary} />
-          )}
+          {loading && <ActivityIndicator style={{ marginVertical: 12 }} color={colors.primary} />}
 
           {/* Duration picker */}
           {showDurations ? (
@@ -260,20 +260,20 @@ export function ConversationNotificationSettings({
                       style={{ marginRight: 12 }}
                     />
                     <View style={{ flex: 1 }}>
-                      <Text style={{
-                        fontSize: 15,
-                        fontWeight: '600',
-                        color: isSelected ? colors.primary : colors.text,
-                      }}>
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          fontWeight: '600',
+                          color: isSelected ? colors.primary : colors.text,
+                        }}
+                      >
                         {option.label}
                       </Text>
                       <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>
                         {option.description}
                       </Text>
                     </View>
-                    {isSelected && (
-                      <Ionicons name="checkmark" size={20} color={colors.primary} />
-                    )}
+                    {isSelected && <Ionicons name="checkmark" size={20} color={colors.primary} />}
                   </TouchableOpacity>
                 );
               })}

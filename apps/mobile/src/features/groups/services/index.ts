@@ -10,7 +10,8 @@ export const groupsApi = {
   createGroup: () => `${API_URL}/api/v1/groups`,
   updateGroup: (id: string) => `${API_URL}/api/v1/groups/${id}`,
   getChannels: (groupId: string) => `${API_URL}/api/v1/groups/${groupId}/channels`,
-  getChannel: (groupId: string, channelId: string) => `${API_URL}/api/v1/groups/${groupId}/channels/${channelId}`,
+  getChannel: (groupId: string, channelId: string) =>
+    `${API_URL}/api/v1/groups/${groupId}/channels/${channelId}`,
   getMembers: (groupId: string) => `${API_URL}/api/v1/groups/${groupId}/members`,
   getRoles: (groupId: string) => `${API_URL}/api/v1/groups/${groupId}/roles`,
   createInvite: (groupId: string) => `${API_URL}/api/v1/groups/${groupId}/invites`,

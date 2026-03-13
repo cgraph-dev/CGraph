@@ -112,7 +112,7 @@ export function LinkedDevicesPanel({ className = '' }: LinkedDevicesPanelProps) 
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-textPrimary">Linked Devices</h3>
+        <h3 className="text-textPrimary text-lg font-semibold">Linked Devices</h3>
         <button
           onClick={fetchDevices}
           disabled={loading}
@@ -135,7 +135,7 @@ export function LinkedDevicesPanel({ className = '' }: LinkedDevicesPanelProps) 
       )}
 
       {!loading && !error && devices.length === 0 && (
-        <p className="py-4 text-center text-sm text-textMuted">No linked devices found</p>
+        <p className="text-textMuted py-4 text-center text-sm">No linked devices found</p>
       )}
 
       {!loading && !error && devices.length > 0 && (
@@ -143,17 +143,17 @@ export function LinkedDevicesPanel({ className = '' }: LinkedDevicesPanelProps) 
           {devices.map((device) => (
             <div
               key={device.deviceId}
-              className="flex items-center justify-between rounded-lg border border-surfaceBorder bg-surface/50 px-4 py-3"
+              className="border-surfaceBorder bg-surface/50 flex items-center justify-between rounded-lg border px-4 py-3"
             >
               <div className="flex items-center gap-3">
                 {device.platform === 'ios' || device.platform === 'android' ? (
-                  <DevicePhoneMobileIcon className="h-5 w-5 text-textMuted" />
+                  <DevicePhoneMobileIcon className="text-textMuted h-5 w-5" />
                 ) : (
-                  <ComputerDesktopIcon className="h-5 w-5 text-textMuted" />
+                  <ComputerDesktopIcon className="text-textMuted h-5 w-5" />
                 )}
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-textPrimary">
+                    <span className="text-textPrimary text-sm font-medium">
                       {device.deviceId.slice(0, 8)}…
                     </span>
                     {device.isCurrent && (
@@ -162,7 +162,7 @@ export function LinkedDevicesPanel({ className = '' }: LinkedDevicesPanelProps) 
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-textMuted">
+                  <div className="text-textMuted flex items-center gap-2 text-xs">
                     <span className="capitalize">{device.platform || 'Unknown'}</span>
                     <span>•</span>
                     {device.isTrusted ? (
@@ -184,7 +184,7 @@ export function LinkedDevicesPanel({ className = '' }: LinkedDevicesPanelProps) 
                 <button
                   onClick={() => handleRemoveDevice(device.deviceId)}
                   disabled={removingId === device.deviceId}
-                  className="rounded-lg p-2 text-textMuted hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                  className="text-textMuted rounded-lg p-2 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
                   title="Remove device"
                 >
                   {removingId === device.deviceId ? (
@@ -325,25 +325,25 @@ export function DeviceVerificationDialog({
             New Device Detected
           </DialogTitle>
           <DialogDescription>
-            A new device is requesting to join your account. Verify it to enable
-            end-to-end encrypted messaging on that device.
+            A new device is requesting to join your account. Verify it to enable end-to-end
+            encrypted messaging on that device.
           </DialogDescription>
         </DialogHeader>
 
         {/* Device info card */}
-        <div className="rounded-lg border border-surfaceBorder bg-surface/50 p-4">
+        <div className="border-surfaceBorder bg-surface/50 rounded-lg border p-4">
           <div className="flex items-center gap-3">
             {platformIcon}
             <div>
-              <p className="font-medium text-textPrimary">
+              <p className="text-textPrimary font-medium">
                 {newDevice.device_name || `Device ${newDevice.device_id.slice(0, 8)}…`}
               </p>
-              <p className="text-xs text-textMuted">
+              <p className="text-textMuted text-xs">
                 <span className="capitalize">{newDevice.platform}</span>
                 {' • '}
                 {new Date(newDevice.timestamp).toLocaleString()}
               </p>
-              <p className="mt-1 font-mono text-xs text-textMuted">
+              <p className="text-textMuted mt-1 font-mono text-xs">
                 ID: {newDevice.device_id.slice(0, 16)}…
               </p>
             </div>
@@ -352,23 +352,23 @@ export function DeviceVerificationDialog({
 
         {/* Step-specific content */}
         {state.step === 'prompt' && (
-          <p className="text-sm text-textMuted">
-            If you did not log in on a new device, reject this request and consider
-            changing your password.
+          <p className="text-textMuted text-sm">
+            If you did not log in on a new device, reject this request and consider changing your
+            password.
           </p>
         )}
 
         {state.step === 'verifying' && (
           <div className="flex items-center gap-3 py-2">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
-            <span className="text-sm text-textMuted">Cross-signing device…</span>
+            <span className="text-textMuted text-sm">Cross-signing device…</span>
           </div>
         )}
 
         {state.step === 'syncing' && (
           <div className="flex items-center gap-3 py-2">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-400 border-t-transparent" />
-            <span className="text-sm text-textMuted">Syncing encryption keys…</span>
+            <span className="text-textMuted text-sm">Syncing encryption keys…</span>
           </div>
         )}
 
@@ -398,7 +398,7 @@ export function DeviceVerificationDialog({
           <DialogFooter>
             <button
               onClick={handleReject}
-              className="rounded-lg border border-surfaceBorder px-4 py-2 text-sm font-medium text-textPrimary hover:bg-surfaceHover"
+              className="border-surfaceBorder text-textPrimary hover:bg-surfaceHover rounded-lg border px-4 py-2 text-sm font-medium"
             >
               Reject
             </button>

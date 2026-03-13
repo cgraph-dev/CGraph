@@ -58,7 +58,7 @@ export function useChatCustomization() {
   const [enableBubbleTail, setEnableBubbleTail] = useState(store.bubbleShowTail ?? true);
   const [enableHoverEffects, setEnableHoverEffects] = useState(store.bubbleHoverEffect ?? true);
   const [selectedEntranceAnimation, setSelectedEntranceAnimation] = useState<EntranceAnimation>(
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     (store.bubbleEntranceAnimation as EntranceAnimation | undefined) ?? 'fade' // safe downcast – structural boundary
   );
 
@@ -159,10 +159,7 @@ export function useChatCustomization() {
   // Filter items by search
   const filteredItems: (BubbleStyle | MessageEffect)[] = useMemo(() => {
     const query = searchQuery.toLowerCase();
-    const source =
-      activeCategory === 'bubbles'
-        ? BUBBLE_STYLES
-        : MESSAGE_EFFECTS;
+    const source = activeCategory === 'bubbles' ? BUBBLE_STYLES : MESSAGE_EFFECTS;
 
     return source.filter(
       (item) =>

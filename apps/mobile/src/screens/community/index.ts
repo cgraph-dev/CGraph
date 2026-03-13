@@ -1,6 +1,6 @@
 /**
  * Community Screens Index
- * 
+ *
  * Export all community-related screens for easy importing
  */
 

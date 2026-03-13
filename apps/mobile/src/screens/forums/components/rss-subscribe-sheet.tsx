@@ -11,15 +11,7 @@
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-  Pressable,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as WebBrowser from 'expo-web-browser';
@@ -40,6 +32,8 @@ type FeedFormat = 'rss' | 'atom';
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
+/** Description. */
+/** Rss Subscribe Sheet component. */
 export function RssSubscribeSheet({
   visible,
   onClose,
@@ -92,7 +86,10 @@ export function RssSubscribeSheet({
               <Text style={styles.title}>Subscribe via RSS</Text>
               <Text style={styles.subtitle}>{boardName}</Text>
             </View>
-            <TouchableOpacity onPress={onClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <TouchableOpacity
+              onPress={onClose}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <Ionicons name="close" size={22} color="#9ca3af" />
             </TouchableOpacity>
           </View>
@@ -108,6 +105,7 @@ export function RssSubscribeSheet({
           <View style={styles.formatRow}>
             <Text style={styles.formatLabel}>Format:</Text>
             <View style={styles.formatButtons}>
+              {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
               {(['rss', 'atom'] as FeedFormat[]).map((f) => (
                 <TouchableOpacity
                   key={f}

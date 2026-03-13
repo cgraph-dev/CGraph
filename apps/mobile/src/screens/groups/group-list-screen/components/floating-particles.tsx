@@ -73,6 +73,7 @@ function Particle({ data, index }: { data: ParticleData; index: number }) {
         false
       )
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -101,6 +102,7 @@ function Particle({ data, index }: { data: ParticleData; index: number }) {
 }
 
 /**
+ * Floating Particles component.
  *
  */
 export function FloatingParticles({ isActive }: FloatingParticlesProps) {

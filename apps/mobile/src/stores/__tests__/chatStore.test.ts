@@ -52,7 +52,9 @@ beforeEach(() => {
 
 // ── Helper factories ─────────────────────────────────────────────────
 
-function makeMessage(overrides: Partial<Message> & { id: string; conversationId: string }): Message {
+function makeMessage(
+  overrides: Partial<Message> & { id: string; conversationId: string }
+): Message {
   return {
     senderId: 'user-1',
     content: 'hi',
@@ -188,7 +190,9 @@ describe('fetchMessages', () => {
 describe('sendMessage', () => {
   it('sends message and adds to store', async () => {
     mockApi.post.mockResolvedValue({
-      data: { message: { id: 'new-msg', content: 'hello', conversation_id: 'conv-1', sender_id: 'u1' } },
+      data: {
+        message: { id: 'new-msg', content: 'hello', conversation_id: 'conv-1', sender_id: 'u1' },
+      },
     });
 
     await useChatStore.getState().sendMessage('conv-1', 'hello');
@@ -421,7 +425,9 @@ describe('addReactionToMessage', () => {
     const msg = makeMessage({
       id: 'msg-1',
       conversationId: 'conv-1',
-      reactions: [{ id: 'r1', emoji: '🎉', userId: 'user-2', user: { id: 'user-2', username: 'bob' } }],
+      reactions: [
+        { id: 'r1', emoji: '🎉', userId: 'user-2', user: { id: 'user-2', username: 'bob' } },
+      ],
     });
     useChatStore.setState({ messages: { 'conv-1': [msg] } });
 
@@ -501,8 +507,32 @@ describe('getRecipientId', () => {
       id: 'conv-1',
       type: 'direct',
       participants: [
-        { id: 'p1', userId: 'user-1', user: { id: 'user-1', username: 'a', displayName: null, avatarUrl: null, status: 'online' }, nickname: null, joinedAt: '' },
-        { id: 'p2', userId: 'user-2', user: { id: 'user-2', username: 'b', displayName: null, avatarUrl: null, status: 'online' }, nickname: null, joinedAt: '' },
+        {
+          id: 'p1',
+          userId: 'user-1',
+          user: {
+            id: 'user-1',
+            username: 'a',
+            displayName: null,
+            avatarUrl: null,
+            status: 'online',
+          },
+          nickname: null,
+          joinedAt: '',
+        },
+        {
+          id: 'p2',
+          userId: 'user-2',
+          user: {
+            id: 'user-2',
+            username: 'b',
+            displayName: null,
+            avatarUrl: null,
+            status: 'online',
+          },
+          nickname: null,
+          joinedAt: '',
+        },
       ],
     });
     useChatStore.setState({ conversations: [conv] });

@@ -96,7 +96,8 @@ export function useCollaborativeEditor(
         // Create Yjs provider
         const provider = new PhoenixProvider({
           doc,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           channel: channel as unknown as PhoenixProviderOptions['channel'], // safe downcast – structural boundary
           user: { id: user.id, name: user.name, color: userColor },
         });

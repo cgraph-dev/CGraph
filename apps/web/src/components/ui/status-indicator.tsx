@@ -39,18 +39,12 @@ export function StatusIndicator({
 }: StatusIndicatorProps) {
   return (
     <span className={cn('relative inline-flex', className)}>
-      <span
-        className={cn(
-          'rounded-full',
-          sizeStyles[size],
-          statusStyles[status],
-        )}
-      />
+      <span className={cn('rounded-full', sizeStyles[size], statusStyles[status])} />
       {pulse && status === 'online' && (
         <span
           className={cn(
-            'absolute inset-0 rounded-full bg-green-500 animate-ping opacity-40',
-            sizeStyles[size],
+            'absolute inset-0 animate-ping rounded-full bg-green-500 opacity-40',
+            sizeStyles[size]
           )}
         />
       )}

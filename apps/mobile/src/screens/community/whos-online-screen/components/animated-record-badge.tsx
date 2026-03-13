@@ -91,17 +91,10 @@ export function AnimatedRecordBadge({ record, recordDate, scrollY }: AnimatedRec
   };
 
   return (
-    <Animated.View
-      style={[
-        styles.recordContainerEnhanced,
-        containerStyle,
-      ]}
-    >
+    <Animated.View style={[styles.recordContainerEnhanced, containerStyle]}>
       <BlurView intensity={40} tint="dark" style={styles.recordBlur}>
         {/* Shimmer effect */}
-        <Animated.View
-          style={[styles.shimmerEffect, shimmerStyle]}
-        >
+        <Animated.View style={[styles.shimmerEffect, shimmerStyle]}>
           <LinearGradient
             colors={['transparent', 'rgba(245, 158, 11, 0.2)', 'transparent']}
             start={{ x: 0, y: 0 }}

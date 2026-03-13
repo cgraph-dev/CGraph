@@ -26,6 +26,7 @@ type Props = {
 };
 
 /**
+ * Group Settings Screen component.
  *
  */
 export default function GroupSettingsScreen({ navigation, route }: Props) {
@@ -39,7 +40,8 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     // Fetch current group data for overview editing
-    api.get(`/api/v1/groups/${groupId}`)
+    api
+      .get(`/api/v1/groups/${groupId}`)
       .then((res) => {
         const data = res.data?.data || res.data;
         setGroupName(data?.name || '');
@@ -66,7 +68,7 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
       setIsSaving(false);
     }
   };
-  
+
   const settingsItems = [
     {
       title: 'Overview',
@@ -99,29 +101,25 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
       onPress: () => navigation.navigate('GroupModeration', { groupId }),
     },
   ];
-  
+
   const handleLeaveGroup = () => {
-    Alert.alert(
-      'Leave Group',
-      'Are you sure you want to leave this group?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Leave',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.delete(`/api/v1/groups/${groupId}/members/@me`);
-              navigation.goBack();
-            } catch {
-              Alert.alert('Error', 'Failed to leave group');
-            }
-          },
+    Alert.alert('Leave Group', 'Are you sure you want to leave this group?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Leave',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await api.delete(`/api/v1/groups/${groupId}/members/@me`);
+            navigation.goBack();
+          } catch {
+            Alert.alert('Error', 'Failed to leave group');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
-  
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Overview Edit Panel */}
@@ -130,15 +128,24 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
           <View style={[styles.overviewCard, { backgroundColor: colors.surface }]}>
             <Text style={[styles.overviewLabel, { color: colors.textSecondary }]}>Group Name</Text>
             <TextInput
-              style={[styles.overviewInput, { backgroundColor: colors.background, color: colors.text }]}
+              style={[
+                styles.overviewInput,
+                { backgroundColor: colors.background, color: colors.text },
+              ]}
               value={groupName}
               onChangeText={setGroupName}
               placeholder="Group name"
               placeholderTextColor={colors.textTertiary}
             />
-            <Text style={[styles.overviewLabel, { color: colors.textSecondary, marginTop: 12 }]}>Description</Text>
+            <Text style={[styles.overviewLabel, { color: colors.textSecondary, marginTop: 12 }]}>
+              Description
+            </Text>
             <TextInput
-              style={[styles.overviewInput, styles.overviewTextArea, { backgroundColor: colors.background, color: colors.text }]}
+              style={[
+                styles.overviewInput,
+                styles.overviewTextArea,
+                { backgroundColor: colors.background, color: colors.text },
+              ]}
               value={groupDescription}
               onChangeText={setGroupDescription}
               placeholder="Group description"
@@ -193,23 +200,19 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
             onPress={item.onPress}
           >
             <Ionicons name={item.icon} size={22} color={colors.textSecondary} />
-            <Text style={[styles.settingsItemText, { color: colors.text }]}>
-              {item.title}
-            </Text>
+            <Text style={[styles.settingsItemText, { color: colors.text }]}>{item.title}</Text>
             <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
         ))}
       </View>
-      
+
       <View style={styles.section}>
         <TouchableOpacity
           style={[styles.dangerButton, { backgroundColor: colors.surface }]}
           onPress={handleLeaveGroup}
         >
           <Ionicons name="exit-outline" size={22} color={colors.error} />
-          <Text style={[styles.dangerButtonText, { color: colors.error }]}>
-            Leave Group
-          </Text>
+          <Text style={[styles.dangerButtonText, { color: colors.error }]}>Leave Group</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

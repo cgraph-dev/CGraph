@@ -6,17 +6,17 @@ import { useEffect, useRef, RefObject } from 'react';
 
 /**
  * Hook that detects clicks outside of a referenced element.
- * 
+ *
  * Useful for closing dropdowns, modals, and popovers when clicking outside.
- * 
+ *
  * @param callback - function to call when clicking outside
  * @param enabled - whether the listener is active (default: true)
  * @returns ref to attach to the target element
- * 
+ *
  * @example
  * const ref = useClickOutside(() => setIsOpen(false));
  * return <div ref={ref}>Dropdown content</div>;
- * 
+ *
  * @example
  * const ref = useClickOutside(handleClose, isOpen);
  */
@@ -36,9 +36,9 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
     if (!enabled) return;
 
     const handleClick = (event: MouseEvent | TouchEvent) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const target = event.target as Node; // type assertion: EventTarget to Node for contains check
-      
+
       if (ref.current && !ref.current.contains(target)) {
         callbackRef.current();
       }
@@ -67,11 +67,11 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
 
 /**
  * Hook variant that accepts an existing ref.
- * 
+ *
  * @param ref - existing ref to the target element
  * @param callback - function to call when clicking outside
  * @param enabled - whether the listener is active
- * 
+ *
  * @example
  * const myRef = useRef<HTMLDivElement>(null);
  * useClickOutsideRef(myRef, () => setIsOpen(false), isOpen);
@@ -91,9 +91,9 @@ export function useClickOutsideRef<T extends HTMLElement>(
     if (!enabled) return;
 
     const handleClick = (event: MouseEvent | TouchEvent) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const target = event.target as Node; // type assertion: EventTarget to Node for contains check
-      
+
       if (ref.current && !ref.current.contains(target)) {
         callbackRef.current();
       }

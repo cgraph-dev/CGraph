@@ -32,6 +32,7 @@ export interface HolographicEffectProps {
 // ============================================================================
 
 /**
+ * Holographic Effect component.
  *
  */
 export function HolographicEffect({ config, style }: HolographicEffectProps) {
@@ -44,6 +45,7 @@ export function HolographicEffect({ config, style }: HolographicEffectProps) {
       -1,
       false
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mergedConfig.speed]);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -54,7 +56,7 @@ export function HolographicEffect({ config, style }: HolographicEffectProps) {
     <View style={[sharedStyles.effectContainer, style]} pointerEvents="none">
       <Animated.View style={[sharedStyles.holographicWrapper, animatedStyle]}>
         <LinearGradient
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           colors={mergedConfig.colors as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}

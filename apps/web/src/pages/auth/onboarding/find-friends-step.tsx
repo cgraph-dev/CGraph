@@ -40,11 +40,16 @@ export function FindFriendsStep() {
         setSendingId(null);
       }
     },
-    [sentRequests, sendingId],
+    [sentRequests, sendingId]
   );
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
       <motion.p variants={itemVariants} className="text-center text-foreground-secondary">
         Search for people you know
       </motion.p>
@@ -98,7 +103,11 @@ export function FindFriendsStep() {
               {/* Avatar */}
               <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-primary-600 to-purple-600">
                 {user.avatar_url ? (
-                  <img src={user.avatar_url} alt={user.display_name ?? user.username} className="h-full w-full object-cover" />
+                  <img
+                    src={user.avatar_url}
+                    alt={user.display_name ?? user.username}
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
                   <span className="flex h-full w-full items-center justify-center text-sm font-bold text-white">
                     {(user.display_name ?? user.username).charAt(0).toUpperCase()}
@@ -108,7 +117,9 @@ export function FindFriendsStep() {
 
               {/* Name / username */}
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-foreground">{user.display_name ?? user.username}</p>
+                <p className="truncate font-medium text-foreground">
+                  {user.display_name ?? user.username}
+                </p>
                 <p className="truncate text-xs text-foreground-muted">@{user.username}</p>
               </div>
 

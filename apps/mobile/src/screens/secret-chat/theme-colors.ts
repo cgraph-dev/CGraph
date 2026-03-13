@@ -39,18 +39,78 @@ export interface SecretThemeMeta {
 // ---------------------------------------------------------------------------
 
 export const SECRET_THEMES: ReadonlyArray<SecretThemeMeta> = [
-  { id: 'void', name: 'Void', description: 'Pure darkness — minimal, distraction-free', previewColor: '#0a0a0a' },
-  { id: 'redacted', name: 'Redacted', description: 'Classified documents aesthetic', previewColor: '#1a1a1a' },
-  { id: 'midnight', name: 'Midnight', description: 'Deep navy with subtle starfield undertones', previewColor: '#0d1b2a' },
-  { id: 'signal', name: 'Signal', description: 'Inspired by Signal — clean blue-on-dark', previewColor: '#2c6bed' },
-  { id: 'ghost', name: 'Ghost', description: 'Ethereal translucency with faded whisper tones', previewColor: '#3d3d5c' },
-  { id: 'cipher', name: 'Cipher', description: 'Matrix-green terminal aesthetic', previewColor: '#0d2818' },
-  { id: 'onyx', name: 'Onyx', description: 'Polished black with silver-gray accents', previewColor: '#121212' },
-  { id: 'eclipse', name: 'Eclipse', description: 'Dark purple corona with amber highlights', previewColor: '#1a0a2e' },
-  { id: 'static', name: 'Static', description: 'TV-static noise grain with monochrome palette', previewColor: '#2a2a2a' },
-  { id: 'shadow', name: 'Shadow', description: 'Deep charcoal with subtle edge glow', previewColor: '#1c1c1c' },
-  { id: 'obsidian', name: 'Obsidian', description: 'Volcanic glass — dark with iridescent shimmers', previewColor: '#0e0e14' },
-  { id: 'abyss', name: 'Abyss', description: 'Deep ocean black with bioluminescent blue accents', previewColor: '#020818' },
+  {
+    id: 'void',
+    name: 'Void',
+    description: 'Pure darkness — minimal, distraction-free',
+    previewColor: '#0a0a0a',
+  },
+  {
+    id: 'redacted',
+    name: 'Redacted',
+    description: 'Classified documents aesthetic',
+    previewColor: '#1a1a1a',
+  },
+  {
+    id: 'midnight',
+    name: 'Midnight',
+    description: 'Deep navy with subtle starfield undertones',
+    previewColor: '#0d1b2a',
+  },
+  {
+    id: 'signal',
+    name: 'Signal',
+    description: 'Inspired by Signal — clean blue-on-dark',
+    previewColor: '#2c6bed',
+  },
+  {
+    id: 'ghost',
+    name: 'Ghost',
+    description: 'Ethereal translucency with faded whisper tones',
+    previewColor: '#3d3d5c',
+  },
+  {
+    id: 'cipher',
+    name: 'Cipher',
+    description: 'Matrix-green terminal aesthetic',
+    previewColor: '#0d2818',
+  },
+  {
+    id: 'onyx',
+    name: 'Onyx',
+    description: 'Polished black with silver-gray accents',
+    previewColor: '#121212',
+  },
+  {
+    id: 'eclipse',
+    name: 'Eclipse',
+    description: 'Dark purple corona with amber highlights',
+    previewColor: '#1a0a2e',
+  },
+  {
+    id: 'static',
+    name: 'Static',
+    description: 'TV-static noise grain with monochrome palette',
+    previewColor: '#2a2a2a',
+  },
+  {
+    id: 'shadow',
+    name: 'Shadow',
+    description: 'Deep charcoal with subtle edge glow',
+    previewColor: '#1c1c1c',
+  },
+  {
+    id: 'obsidian',
+    name: 'Obsidian',
+    description: 'Volcanic glass — dark with iridescent shimmers',
+    previewColor: '#0e0e14',
+  },
+  {
+    id: 'abyss',
+    name: 'Abyss',
+    description: 'Deep ocean black with bioluminescent blue accents',
+    previewColor: '#020818',
+  },
 ] as const;
 
 // ---------------------------------------------------------------------------

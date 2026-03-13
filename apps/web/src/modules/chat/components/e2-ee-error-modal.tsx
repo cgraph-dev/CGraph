@@ -160,7 +160,7 @@ export function E2EEErrorModal({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleCancel}
-                  className="w-full rounded-xl border border-white/[0.08] bg-white/[0.04]/50 px-6 py-3 font-semibold text-gray-300 transition-all hover:border-gray-500 hover:bg-white/[0.04]"
+                  className="bg-white/[0.04]/50 w-full rounded-xl border border-white/[0.08] px-6 py-3 font-semibold text-gray-300 transition-all hover:border-gray-500 hover:bg-white/[0.04]"
                 >
                   Cancel
                 </motion.button>

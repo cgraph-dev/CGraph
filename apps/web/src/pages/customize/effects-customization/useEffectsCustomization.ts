@@ -14,11 +14,7 @@ import { useCustomizationStore } from '@/modules/settings/store/customization';
 import toast from 'react-hot-toast';
 
 import type { EffectCategory, ParticleEffect, BackgroundEffect, AnimationSet } from './types';
-import {
-  PARTICLE_EFFECTS,
-  BACKGROUND_EFFECTS,
-  ANIMATION_SETS,
-} from './constants';
+import { PARTICLE_EFFECTS, BACKGROUND_EFFECTS, ANIMATION_SETS } from './constants';
 
 export interface CategoryTab {
   id: EffectCategory;
@@ -133,7 +129,8 @@ export function useEffectsCustomization() {
       const animation = ANIMATION_SETS.find((a) => a.id === id);
       const speedValue = animation?.speed || 'normal';
       updateEffects('animationSpeed', speedValue);
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       setAnimationSpeed(speedValue as 'slow' | 'normal' | 'fast');
       setPreviewingLockedItem(isUnlocked ? null : id);
     }

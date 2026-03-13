@@ -220,6 +220,7 @@ export function useModerationLog(filters?: {
   // Fetch log on mount or filter change
   useEffect(() => {
     fetchModerationLog(filters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     fetchModerationLog,
     filters?.moderatorId,

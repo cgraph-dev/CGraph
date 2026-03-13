@@ -31,7 +31,7 @@ export function Divider({
           gradient
             ? 'bg-gradient-to-b from-transparent via-white/[0.08] to-transparent'
             : 'bg-white/[0.06]',
-          className,
+          className
         )}
       />
     );
@@ -43,9 +43,7 @@ export function Divider({
         <div
           className={cn(
             'h-px flex-1',
-            gradient
-              ? 'bg-gradient-to-r from-transparent to-white/[0.08]'
-              : 'bg-white/[0.06]',
+            gradient ? 'bg-gradient-to-r from-transparent to-white/[0.08]' : 'bg-white/[0.06]'
           )}
         />
         <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-white/30">
@@ -54,9 +52,7 @@ export function Divider({
         <div
           className={cn(
             'h-px flex-1',
-            gradient
-              ? 'bg-gradient-to-r from-white/[0.08] to-transparent'
-              : 'bg-white/[0.06]',
+            gradient ? 'bg-gradient-to-r from-white/[0.08] to-transparent' : 'bg-white/[0.06]'
           )}
         />
       </div>
@@ -70,7 +66,7 @@ export function Divider({
         gradient
           ? 'bg-gradient-to-r from-transparent via-white/[0.08] to-transparent'
           : 'bg-white/[0.06]',
-        className,
+        className
       )}
     />
   );

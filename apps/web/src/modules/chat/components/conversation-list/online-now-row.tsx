@@ -21,11 +21,7 @@ interface OnlineNowRowProps {
 /**
  * Horizontal scrollable row of online friends with green status dots.
  */
-export function OnlineNowRow({
-  users,
-  onUserPress,
-  className,
-}: OnlineNowRowProps) {
+export function OnlineNowRow({ users, onUserPress, className }: OnlineNowRowProps) {
   if (users.length === 0) return null;
 
   return (
@@ -39,7 +35,7 @@ export function OnlineNowRow({
         </span>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto scrollbar-none">
+      <div className="scrollbar-none flex gap-3 overflow-x-auto">
         {users.map((user, i) => (
           <motion.button
             key={user.id}
@@ -50,12 +46,7 @@ export function OnlineNowRow({
             onClick={() => onUserPress?.(user.id)}
             className="flex flex-shrink-0 flex-col items-center gap-0.5"
           >
-            <Avatar
-              size="sm"
-              name={user.name}
-              src={user.avatarUrl}
-              status="online"
-            />
+            <Avatar size="sm" name={user.name} src={user.avatarUrl} status="online" />
             <span className="max-w-[40px] truncate text-[9px] text-white/30">
               {user.name.split(' ')[0]}
             </span>

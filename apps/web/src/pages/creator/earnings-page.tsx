@@ -47,7 +47,9 @@ const STATUS_COLORS: Record<string, string> = {
 
 const MINIMUM_PAYOUT_CENTS = 1000; // $10
 
-export const EarningsPage: React.FC = () => {
+/** Description. */
+/** Earnings Page component. */
+export function EarningsPage(): React.ReactElement {
   const {
     balance,
     payouts: rawPayouts,
@@ -57,6 +59,7 @@ export const EarningsPage: React.FC = () => {
     fetchPayouts,
     requestPayout,
   } = useCreatorDashboard();
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const payouts = (rawPayouts ?? []) as unknown as Payout[];
 
   useEffect(() => {
@@ -77,14 +80,11 @@ export const EarningsPage: React.FC = () => {
     );
   }
 
-  const canPayout =
-    balance && balance.availableBalanceCents >= MINIMUM_PAYOUT_CENTS;
+  const canPayout = balance && balance.availableBalanceCents >= MINIMUM_PAYOUT_CENTS;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
-        Earnings
-      </h1>
+      <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">Earnings</h1>
 
       {/* Balance summary */}
       <div className="mb-8 grid gap-4 sm:grid-cols-3">
@@ -130,10 +130,18 @@ export const EarningsPage: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-white/[0.04]">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Amount</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">Completed</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    Amount
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    Completed
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-[rgb(30,32,40)]">
@@ -146,12 +154,16 @@ export const EarningsPage: React.FC = () => {
                       {formatCents(p.amountCents || p.amount_cents)}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3">
-                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? ''}`}>
+                      <span
+                        className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? ''}`}
+                      >
                         {p.status}
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {(p.completedAt || p.completed_at) ? formatDate((p.completedAt || p.completed_at)!) : '—'}
+                      {p.completedAt || p.completed_at
+                        ? formatDate((p.completedAt || p.completed_at)!)
+                        : '—'}
                     </td>
                   </tr>
                 ))}
@@ -162,7 +174,7 @@ export const EarningsPage: React.FC = () => {
       )}
     </div>
   );
-};
+}
 
 EarningsPage.displayName = 'EarningsPage';
 

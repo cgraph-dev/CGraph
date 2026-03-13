@@ -87,6 +87,7 @@ interface UsePremiumReturn extends PremiumState {
 }
 
 /**
+ * Hook for premium.
  *
  */
 export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {

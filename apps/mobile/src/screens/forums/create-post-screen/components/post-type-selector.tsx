@@ -5,7 +5,14 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import Animated, { useSharedValue, withTiming, withSpring, withSequence, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withSpring,
+  withSequence,
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -16,6 +23,7 @@ import { styles } from '../styles';
 import { POST_TYPES, SCREEN_WIDTH } from '../constants';
 
 /**
+ * Post Type Selector component.
  *
  */
 export function PostTypeSelector({ selectedType, onTypeChange }: PostTypeSelectorProps) {
@@ -31,16 +39,21 @@ export function PostTypeSelector({ selectedType, onTypeChange }: PostTypeSelecto
   const indicatorAnim = useSharedValue(0);
 
   const indicatorAnimStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(
-      indicatorAnim.value,
-      POST_TYPES.map((_, i) => i),
-      POST_TYPES.map((_, i) => i * ((SCREEN_WIDTH - 32 - 24) / POST_TYPES.length))
-    ) }],
+    transform: [
+      {
+        translateX: interpolate(
+          indicatorAnim.value,
+          POST_TYPES.map((_, i) => i),
+          POST_TYPES.map((_, i) => i * ((SCREEN_WIDTH - 32 - 24) / POST_TYPES.length))
+        ),
+      },
+    ],
   }));
 
   useEffect(() => {
     const selectedIndex = POST_TYPES.findIndex((t) => t.type === selectedType);
     indicatorAnim.value = withSpring(selectedIndex, { damping: 8, stiffness: 100 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedType]);
 
   const handlePress = (type: PostType, index: number) => {

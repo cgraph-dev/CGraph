@@ -55,10 +55,7 @@ export interface ForumHierarchyAdminState {
  * @param nodes - The nodes.
  * @param depth - The depth.
  */
-export function flattenTree(
-  nodes: ForumNode[],
-  depth = 0
-): { node: ForumNode; depth: number }[] {
+export function flattenTree(nodes: ForumNode[], depth = 0): { node: ForumNode; depth: number }[] {
   return nodes.flatMap((n) => [
     { node: n, depth },
     ...(n.children ? flattenTree(n.children, depth + 1) : []),

@@ -1,10 +1,10 @@
 /**
  * TypingIndicator Component
- * 
+ *
  * Animated dots indicating that the other user is typing.
  * Positioned above the input area in conversations.
  * Features 4 variants (dots, wave, pulse, bars), glow effect, and gradient colors matching web parity.
- * 
+ *
  * @module components/conversation/TypingIndicator
  * @since v0.7.29
  * @updated v0.8.2 - Added glow effect and gradient for web parity
@@ -13,13 +13,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import React, { memo, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  Animated,
-  StyleSheet,
-  Platform,
-} from 'react-native';
+import { View, Text, Animated, StyleSheet, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Gradient colors matching web (from-primary-400 to-purple-400)
@@ -64,21 +58,9 @@ const AnimatedDot = memo(function AnimatedDot({
 }) {
   if (useGradient) {
     return (
-      <Animated.View
-        style={[
-          styles.dotWrapper,
-          { transform: [{ translateY }] },
-        ]}
-      >
+      <Animated.View style={[styles.dotWrapper, { transform: [{ translateY }] }]}>
         {/* Glow layer */}
-        {enableGlow && (
-          <Animated.View
-            style={[
-              styles.dotGlow,
-              { opacity: glowOpacity },
-            ]}
-          />
-        )}
+        {enableGlow && <Animated.View style={[styles.dotGlow, { opacity: glowOpacity }]} />}
         {/* Gradient dot */}
         <LinearGradient
           colors={DOT_GRADIENT_COLORS}
@@ -92,10 +74,7 @@ const AnimatedDot = memo(function AnimatedDot({
 
   return (
     <Animated.View
-      style={[
-        styles.dot,
-        { backgroundColor: textColor, transform: [{ translateY }] },
-      ]}
+      style={[styles.dot, { backgroundColor: textColor, transform: [{ translateY }] }]}
     />
   );
 });
@@ -127,10 +106,7 @@ const WaveBar = memo(function WaveBar({
 
   return (
     <Animated.View
-      style={[
-        styles.waveBar,
-        { backgroundColor: textColor, transform: [{ scaleY }] },
-      ]}
+      style={[styles.waveBar, { backgroundColor: textColor, transform: [{ scaleY }] }]}
     />
   );
 });
@@ -151,12 +127,7 @@ const PulseCircle = memo(function PulseCircle({
 }) {
   if (useGradient) {
     return (
-      <Animated.View
-        style={[
-          styles.pulseCircleWrapper,
-          { transform: [{ scale }], opacity },
-        ]}
-      >
+      <Animated.View style={[styles.pulseCircleWrapper, { transform: [{ scale }], opacity }]}>
         <LinearGradient
           colors={DOT_GRADIENT_COLORS}
           start={{ x: 0, y: 0 }}
@@ -169,10 +140,7 @@ const PulseCircle = memo(function PulseCircle({
 
   return (
     <Animated.View
-      style={[
-        styles.pulseCircle,
-        { backgroundColor: textColor, transform: [{ scale }], opacity },
-      ]}
+      style={[styles.pulseCircle, { backgroundColor: textColor, transform: [{ scale }], opacity }]}
     />
   );
 });
@@ -202,19 +170,12 @@ const VerticalBar = memo(function VerticalBar({
     );
   }
 
-  return (
-    <Animated.View
-      style={[
-        styles.verticalBar,
-        { backgroundColor: textColor, height },
-      ]}
-    />
-  );
+  return <Animated.View style={[styles.verticalBar, { backgroundColor: textColor, height }]} />;
 });
 
 /**
  * Typing indicator with animated bouncing dots.
- * 
+ *
  * Features:
  * - Four variants: dots, wave, pulse, bars (matching web)
  * - Three dots with staggered bounce animation
@@ -222,7 +183,7 @@ const VerticalBar = memo(function VerticalBar({
  * - Shows username of who is typing
  * - Customizable colors for dark/light theme
  * - Optional glow effect and gradient colors (matching web)
- * 
+ *
  * @example
  * ```tsx
  * <TypingIndicator
@@ -246,7 +207,7 @@ export const TypingIndicator = memo(function TypingIndicator({
   variant = 'dots',
 }: TypingIndicatorProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  
+
   // Dots variant animations
   const dot1 = useRef(new Animated.Value(0)).current;
   const dot2 = useRef(new Animated.Value(0)).current;
@@ -254,17 +215,17 @@ export const TypingIndicator = memo(function TypingIndicator({
   const glow1 = useRef(new Animated.Value(0.3)).current;
   const glow2 = useRef(new Animated.Value(0.3)).current;
   const glow3 = useRef(new Animated.Value(0.3)).current;
-  
+
   // Wave variant animations
   const wave1 = useRef(new Animated.Value(0.3)).current;
   const wave2 = useRef(new Animated.Value(0.3)).current;
   const wave3 = useRef(new Animated.Value(0.3)).current;
   const wave4 = useRef(new Animated.Value(0.3)).current;
-  
+
   // Pulse variant animations
   const pulseScale = useRef(new Animated.Value(1)).current;
   const pulseOpacity = useRef(new Animated.Value(0.6)).current;
-  
+
   // Bars variant animations
   const bar1 = useRef(new Animated.Value(8)).current;
   const bar2 = useRef(new Animated.Value(8)).current;
@@ -284,11 +245,7 @@ export const TypingIndicator = memo(function TypingIndicator({
       switch (variant) {
         case 'dots': {
           // Start dot animation with glow
-          const bounceAnimation = (
-            dot: Animated.Value,
-            glow: Animated.Value,
-            delay: number
-          ) => {
+          const bounceAnimation = (dot: Animated.Value, glow: Animated.Value, delay: number) => {
             return Animated.loop(
               Animated.sequence([
                 Animated.delay(delay),
@@ -447,7 +404,27 @@ export const TypingIndicator = memo(function TypingIndicator({
         useNativeDriver: true,
       }).start();
     }
-  }, [isTyping, fadeAnim, variant, enableGlow, dot1, dot2, dot3, glow1, glow2, glow3, wave1, wave2, wave3, wave4, pulseScale, pulseOpacity, bar1, bar2, bar3]);
+  }, [
+    isTyping,
+    fadeAnim,
+    variant,
+    enableGlow,
+    dot1,
+    dot2,
+    dot3,
+    glow1,
+    glow2,
+    glow3,
+    wave1,
+    wave2,
+    wave3,
+    wave4,
+    pulseScale,
+    pulseOpacity,
+    bar1,
+    bar2,
+    bar3,
+  ]);
 
   if (!isTyping) return null;
 
@@ -518,15 +495,8 @@ export const TypingIndicator = memo(function TypingIndicator({
   };
 
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        { backgroundColor, opacity: fadeAnim },
-      ]}
-    >
-      <Text style={[styles.text, { color: textColor }]}>
-        {username} is typing
-      </Text>
+    <Animated.View style={[styles.container, { backgroundColor, opacity: fadeAnim }]}>
+      <Text style={[styles.text, { color: textColor }]}>{username} is typing</Text>
       {renderIndicator()}
     </Animated.View>
   );

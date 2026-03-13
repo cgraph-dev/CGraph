@@ -35,7 +35,7 @@ export const fontWeight = {
 
 /** Letter spacing values (em equivalent → px at base size) */
 export const letterSpacing = {
-  tight: -0.13,   // -0.01em * 13
+  tight: -0.13, // -0.01em * 13
   normal: 0,
-  wide: 0.26,     // 0.02em * 13
+  wide: 0.26, // 0.02em * 13
 } as const;

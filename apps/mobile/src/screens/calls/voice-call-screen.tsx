@@ -56,6 +56,7 @@ type ConnectionQuality = 'excellent' | 'good' | 'fair' | 'poor';
 const AUDIO_LEVELS_COUNT = 32;
 
 /**
+ * Voice Call Screen component.
  *
  */
 export default function VoiceCallScreen() {
@@ -125,6 +126,7 @@ export default function VoiceCallScreen() {
       if (callTimerRef.current) clearInterval(callTimerRef.current);
       if (audioSimulatorRef.current) clearInterval(audioSimulatorRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Pulse animation for connecting state
@@ -162,6 +164,7 @@ export default function VoiceCallScreen() {
         ring.stop();
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callState]);
 
   // Connected state animations
@@ -169,7 +172,7 @@ export default function VoiceCallScreen() {
     if (callState === 'connected') {
       // Start call timer
       callTimerRef.current = setInterval(() => {
-        setCallDuration(prev => prev + 1);
+        setCallDuration((prev) => prev + 1);
       }, 1000);
 
       // Avatar glow animation
@@ -193,6 +196,7 @@ export default function VoiceCallScreen() {
         const socket = socketManager.getSocket();
         if (socket && !isMuted) {
           const manager = getWebRTCManager(socket);
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const stats = (manager as unknown as Record<string, unknown>).getAudioLevels;
           if (typeof stats === 'function') {
             const levels = stats();
@@ -211,6 +215,7 @@ export default function VoiceCallScreen() {
         if (audioSimulatorRef.current) clearInterval(audioSimulatorRef.current);
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callState, isMuted]);
 
   const formatDuration = (seconds: number): string => {
@@ -271,16 +276,22 @@ export default function VoiceCallScreen() {
 
   const getConnectionQualityColor = () => {
     switch (connectionQuality) {
-      case 'excellent': return Colors.semantic.success;
-      case 'good': return Colors.primary[400];
-      case 'fair': return Colors.semantic.warning;
-      case 'poor': return Colors.semantic.error;
+      case 'excellent':
+        return Colors.semantic.success;
+      case 'good':
+        return Colors.primary[400];
+      case 'fair':
+        return Colors.semantic.warning;
+      case 'poor':
+        return Colors.semantic.error;
     }
   };
 
   const getConnectionQualityBars = () => {
     const barCount = { excellent: 4, good: 3, fair: 2, poor: 1 }[connectionQuality];
-    return Array(4).fill(0).map((_, i) => i < barCount);
+    return Array(4)
+      .fill(0)
+      .map((_, i) => i < barCount);
   };
 
   const ringScale = ringAnim.interpolate({
@@ -324,9 +335,7 @@ export default function VoiceCallScreen() {
                         styles.qualityBar,
                         {
                           height: 8 + i * 4,
-                          backgroundColor: active
-                            ? getConnectionQualityColor()
-                            : Colors.dark[600],
+                          backgroundColor: active ? getConnectionQualityColor() : Colors.dark[600],
                         },
                       ]}
                     />
@@ -368,8 +377,8 @@ export default function VoiceCallScreen() {
                   source={
                     recipientAvatar
                       ? { uri: recipientAvatar }
-                       
-                      : require('@/assets/default-avatar.png')
+                      : // eslint-disable-next-line @typescript-eslint/no-require-imports
+                        require('@/assets/default-avatar.png')
                   }
                   size={140}
                   borderAnimation={callState === 'connected' ? 'glow' : 'pulse'}
@@ -456,9 +465,7 @@ export default function VoiceCallScreen() {
                         size={28}
                         color={isMuted ? Colors.semantic.error : Colors.dark[50]}
                       />
-                      <Text style={styles.controlLabel}>
-                        {isMuted ? 'Unmute' : 'Mute'}
-                      </Text>
+                      <Text style={styles.controlLabel}>{isMuted ? 'Unmute' : 'Mute'}</Text>
                     </TouchableOpacity>
 
                     {/* Speaker Button */}
@@ -498,7 +505,12 @@ export default function VoiceCallScreen() {
                         colors={[Colors.red[500], Colors.red[600]]}
                         style={styles.endCallGradient}
                       >
-                        <Ionicons name="call" size={24} color="white" style={{ transform: [{ rotate: '135deg' }] }} />
+                        <Ionicons
+                          name="call"
+                          size={24}
+                          color="white"
+                          style={{ transform: [{ rotate: '135deg' }] }}
+                        />
                       </LinearGradient>
                       <Text style={[styles.controlLabel, { color: Colors.red[500] }]}>End</Text>
                     </TouchableOpacity>

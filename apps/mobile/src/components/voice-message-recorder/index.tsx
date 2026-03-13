@@ -28,10 +28,20 @@ export type { VoiceMessageRecorderProps, RecordingState } from './types';
 export function VoiceMessageRecorder(props: VoiceMessageRecorderProps) {
   const { colors } = useThemeStore();
   const {
-    state, duration, waveformData, error, isPlaying,
-    waveformBarHeights, pulseAnimatedStyle, previewStatus,
-    maxDuration, startRecording, stopRecording,
-    handleCancel, handlePlayPause, handleSend,
+    state,
+    duration,
+    waveformData,
+    error,
+    isPlaying,
+    waveformBarHeights,
+    pulseAnimatedStyle,
+    previewStatus,
+    maxDuration,
+    startRecording,
+    stopRecording,
+    handleCancel,
+    handlePlayPause,
+    handleSend,
   } = useVoiceRecorder(props);
 
   if (error) {

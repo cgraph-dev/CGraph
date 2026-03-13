@@ -27,6 +27,7 @@ export interface GrainEffectProps {
 // ============================================================================
 
 /**
+ * Grain Effect component.
  *
  */
 export function GrainEffect({ config, style }: GrainEffectProps) {
@@ -41,6 +42,7 @@ export function GrainEffect({ config, style }: GrainEffectProps) {
         false
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mergedConfig.animated, mergedConfig.speed]);
 
   const animatedStyle = useAnimatedStyle(() => ({

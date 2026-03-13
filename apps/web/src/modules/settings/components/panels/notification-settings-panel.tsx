@@ -46,6 +46,7 @@ export function NotificationSettingsPanel() {
         toast.error('Failed to save settings');
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateNotificationSettings]
   );
 
@@ -243,9 +244,7 @@ export function NotificationSettingsPanel() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium text-white">Do Not Disturb Schedule</h3>
-              <p className="text-sm text-gray-400">
-                Configure quiet hours and timezone settings
-              </p>
+              <p className="text-sm text-gray-400">Configure quiet hours and timezone settings</p>
             </div>
             <a
               href="/settings/dnd-schedule"

@@ -43,7 +43,8 @@ export function calculatePasswordStrength(password: string): PasswordStrength {
   };
 
   const score = Object.values(requirements).filter(Boolean).length;
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const scoreKey = Math.min(Math.max(score, 0), 5) as 0 | 1 | 2 | 3 | 4 | 5; // type assertion: numeric score clamped to valid range
   const scoreData = STRENGTH_LABELS[scoreKey];
 

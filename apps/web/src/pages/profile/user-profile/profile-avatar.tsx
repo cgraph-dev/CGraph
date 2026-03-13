@@ -34,11 +34,7 @@ export function ProfileAvatar({
   onAvatarClick,
 }: ProfileAvatarProps) {
   return (
-    <motion.div
-      className="group relative"
-      whileHover={{ scale: 1.05 }}
-      transition={springs.snappy}
-    >
+    <motion.div className="group relative" whileHover={{ scale: 1.05 }} transition={springs.snappy}>
       <AnimatedAvatar
         src={profile.avatarUrl || undefined}
         alt={profile.displayName || profile.username || 'User'}

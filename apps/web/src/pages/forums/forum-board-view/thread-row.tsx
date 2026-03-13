@@ -19,7 +19,7 @@ export function ThreadRow({ thread, forumSlug }: ThreadRowProps) {
   return (
     <Link
       to={`/forums/${forumSlug}/threads/${thread.id}`}
-      className="grid grid-cols-12 gap-4 border-b border-white/[0.08] px-4 py-4 transition-colors last:border-b-0 hover:bg-white/[0.10]/50"
+      className="hover:bg-white/[0.10]/50 grid grid-cols-12 gap-4 border-b border-white/[0.08] px-4 py-4 transition-colors last:border-b-0"
     >
       {/* Thread Info */}
       <div className="col-span-6 flex items-start gap-3">

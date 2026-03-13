@@ -32,6 +32,8 @@ interface HeatmapCellProps {
   onPress: () => void;
 }
 
+/** Description. */
+/** Heatmap Cell component. */
 export function HeatmapCell({
   cell,
   cellSize,
@@ -52,6 +54,7 @@ export function HeatmapCell({
       );
       scale.value = withDelay(animationDelay, withSpring(1, SPRING_PRESETS.bouncy));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animated, animationDelay]);
 
   const animatedStyle = useAnimatedStyle(() => ({

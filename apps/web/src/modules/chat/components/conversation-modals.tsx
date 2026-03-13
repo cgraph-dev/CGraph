@@ -270,7 +270,8 @@ export function ConversationModals({
               onlineStatus: isOtherUserOnline ? 'online' : 'offline',
               lastSeenAt: otherParticipant?.user?.lastSeenAt ?? undefined,
               bio: otherParticipant?.user?.bio ?? undefined,
-               
+
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               badges: (otherParticipant?.user?.badges ?? []) as unknown as Array<{
                 // type assertion: badge type mismatch between API and component
                 id: string;
@@ -282,7 +283,8 @@ export function ConversationModals({
             mutualFriends={mutualFriends}
             sharedForums={
               // type assertion: optional chaining fallback to empty array, shape matches component prop
-               
+
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               (otherParticipant?.user?.sharedForums ?? []) as {
                 id: string;
                 name: string;

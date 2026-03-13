@@ -20,20 +20,17 @@ vi.mock('../key-bundle', () => ({
 // Helpers — real crypto key generation
 // ---------------------------------------------------------------------------
 async function generateECDHKeyPair() {
-  const kp = await crypto.subtle.generateKey(
-    { name: 'ECDH', namedCurve: 'P-256' },
-    true,
-    ['deriveBits']
-  );
+  const kp = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, [
+    'deriveBits',
+  ]);
   return kp;
 }
 
 async function generateECDSAKeyPair() {
-  return crypto.subtle.generateKey(
-    { name: 'ECDSA', namedCurve: 'P-256' },
-    true,
-    ['sign', 'verify']
-  );
+  return crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, [
+    'sign',
+    'verify',
+  ]);
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {

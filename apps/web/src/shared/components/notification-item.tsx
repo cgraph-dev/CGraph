@@ -78,6 +78,8 @@ function relativeTime(timestamp: string): string {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Notification Item component. */
 export function NotificationItem({ notification, onClick, onDismiss }: NotificationItemProps) {
   const n = notification;
   const conf = typeConfig[n.type];
@@ -86,23 +88,19 @@ export function NotificationItem({ notification, onClick, onDismiss }: Notificat
     <button
       onClick={onClick}
       className={cn(
-        'w-full flex items-start gap-3 px-4 py-2.5 text-left transition-colors group relative',
+        'group relative flex w-full items-start gap-3 px-4 py-2.5 text-left transition-colors',
         'hover:bg-white/[0.04]',
-        !n.read && 'border-l-2 border-l-primary-500',
+        !n.read && 'border-l-2 border-l-primary-500'
       )}
     >
       {/* Actor avatar */}
       {n.actorAvatar ? (
         <div className="relative shrink-0">
-          <img
-            src={n.actorAvatar}
-            alt=""
-            className="h-9 w-9 rounded-full object-cover"
-          />
+          <img src={n.actorAvatar} alt="" className="h-9 w-9 rounded-full object-cover" />
           <div
             className={cn(
-              'absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-[#1e1f22] flex items-center justify-center',
-              conf.color,
+              'absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#1e1f22]',
+              conf.color
             )}
           >
             {conf.icon}
@@ -111,8 +109,8 @@ export function NotificationItem({ notification, onClick, onDismiss }: Notificat
       ) : (
         <div
           className={cn(
-            'h-9 w-9 rounded-full bg-white/[0.06] flex items-center justify-center shrink-0',
-            conf.color,
+            'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/[0.06]',
+            conf.color
           )}
         >
           {conf.icon}
@@ -121,15 +119,17 @@ export function NotificationItem({ notification, onClick, onDismiss }: Notificat
 
       {/* Content */}
       <div className="min-w-0 flex-1">
-        <p className="text-sm text-white/70 leading-snug">
-          <span className="font-semibold text-white/90">{n.actorName}</span>{' '}
-          {n.content}
+        <p className="text-sm leading-snug text-white/70">
+          <span className="font-semibold text-white/90">{n.actorName}</span> {n.content}
           {n.emoji && <span className="ml-1">{n.emoji}</span>}
           {n.channelName && (
-            <span className="text-white/30"> in <span className="text-white/40">#{n.channelName}</span></span>
+            <span className="text-white/30">
+              {' '}
+              in <span className="text-white/40">#{n.channelName}</span>
+            </span>
           )}
         </p>
-        <p className="text-[10px] text-white/20 mt-0.5">{relativeTime(n.timestamp)}</p>
+        <p className="mt-0.5 text-[10px] text-white/20">{relativeTime(n.timestamp)}</p>
       </div>
 
       {/* Dismiss */}
@@ -139,16 +139,14 @@ export function NotificationItem({ notification, onClick, onDismiss }: Notificat
             e.stopPropagation();
             onDismiss();
           }}
-          className="opacity-0 group-hover:opacity-100 p-1 rounded text-white/20 hover:text-white/40 transition-opacity shrink-0"
+          className="shrink-0 rounded p-1 text-white/20 opacity-0 transition-opacity hover:text-white/40 group-hover:opacity-100"
         >
           <XMarkIcon className="h-3.5 w-3.5" />
         </button>
       )}
 
       {/* Unread dot (for items without border) */}
-      {!n.read && (
-        <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-primary-500" />
-      )}
+      {!n.read && <div className="absolute right-3 top-3 h-2 w-2 rounded-full bg-primary-500" />}
     </button>
   );
 }

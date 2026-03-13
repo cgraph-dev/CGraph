@@ -90,7 +90,9 @@ export function CosmeticCard({ item, owned, equipped, onSelect }: CosmeticCardPr
         <span className="truncate text-sm font-medium text-white">{item.name}</span>
         <div className="flex items-center justify-between">
           <RarityBadge rarity={item.rarity} />
-          <span className="text-[10px] capitalize text-gray-500">{item.type.replace('_', ' ')}</span>
+          <span className="text-[10px] capitalize text-gray-500">
+            {item.type.replace('_', ' ')}
+          </span>
         </div>
       </div>
     </button>

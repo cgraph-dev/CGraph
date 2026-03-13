@@ -14,7 +14,7 @@ export function BoardRow({ board, forumSlug }: BoardRowProps) {
   return (
     <Link
       to={`/forums/${forumSlug}/boards/${board.slug}`}
-      className="grid grid-cols-12 gap-4 border-b border-white/[0.08] px-4 py-4 transition-colors last:border-b-0 hover:bg-white/[0.10]/50"
+      className="hover:bg-white/[0.10]/50 grid grid-cols-12 gap-4 border-b border-white/[0.08] px-4 py-4 transition-colors last:border-b-0"
     >
       {/* Board Info */}
       <div className="col-span-6 flex items-start gap-3">

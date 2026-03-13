@@ -37,6 +37,8 @@ interface ContentOptionsProps {
   onUpdateOption: <K extends keyof ExportOptions>(key: K, value: ExportOptions[K]) => void;
 }
 
+/** Description. */
+/** Content Options component. */
 export function ContentOptions({ options, onUpdateOption }: ContentOptionsProps) {
   return (
     <View style={styles.section}>
@@ -72,13 +74,22 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: '600', color: '#fff', marginBottom: 12 },
   optionsCard: { borderRadius: 12, overflow: 'hidden' },
   optionRow: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    padding: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.05)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   optionLabel: { fontSize: 15, color: '#fff' },
   checkbox: {
-    width: 24, height: 24, borderRadius: 6, borderWidth: 2,
-    borderColor: '#4b5563', alignItems: 'center', justifyContent: 'center',
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#4b5563',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   checkboxChecked: { backgroundColor: '#10b981', borderColor: '#10b981' },
 });

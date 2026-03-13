@@ -14,6 +14,8 @@ interface SelectSettingProps {
   onChange: (value: string) => void;
 }
 
+/** Description. */
+/** Select Setting component. */
 export function SelectSetting({ label, value, options, onChange }: SelectSettingProps) {
   return (
     <View style={styles.selectSetting}>

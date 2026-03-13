@@ -58,6 +58,7 @@ import {
 } from './components';
 
 /**
+ * Referral Screen component.
  *
  */
 export default function ReferralScreen() {

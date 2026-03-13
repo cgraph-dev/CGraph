@@ -78,12 +78,8 @@ export function ConfirmActionModal({
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md space-y-4 rounded-xl border border-white/[0.08] bg-[rgb(30,32,40)] p-6 shadow-2xl"
           >
-            <h3 className="text-lg font-semibold text-white">
-              {ACTION_TITLES[action]}
-            </h3>
-            <p className="text-sm text-gray-400">
-              {ACTION_DESCRIPTIONS[action]}
-            </p>
+            <h3 className="text-lg font-semibold text-white">{ACTION_TITLES[action]}</h3>
+            <p className="text-sm text-gray-400">{ACTION_DESCRIPTIONS[action]}</p>
 
             {action === 'ban' && (
               <select

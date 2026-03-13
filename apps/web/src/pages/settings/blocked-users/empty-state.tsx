@@ -23,9 +23,6 @@ export function EmptyState({ hasSearchQuery }: EmptyStateProps) {
   }
 
   return (
-    <AnimatedEmptyState
-      title="No blocked users"
-      description="You haven't blocked anyone yet"
-    />
+    <AnimatedEmptyState title="No blocked users" description="You haven't blocked anyone yet" />
   );
 }

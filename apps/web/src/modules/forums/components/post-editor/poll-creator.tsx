@@ -52,7 +52,7 @@ export function PollCreator({
           onChange={(e) => setPollQuestion(e.target.value)}
           placeholder="Ask a question..."
           className="mb-3 w-full rounded-lg bg-white/[0.06] p-3 outline-none focus:ring-2"
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           style={{ '--tw-ring-color': primaryColor } as React.CSSProperties} // safe downcast – CSS custom properties
         />
 
@@ -66,7 +66,7 @@ export function PollCreator({
                 onChange={(e) => updatePollOption(option.id, e.target.value)}
                 placeholder={`Option ${index + 1}`}
                 className="flex-1 rounded-lg bg-white/[0.06] p-2 outline-none focus:ring-2"
-                 
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 style={{ '--tw-ring-color': primaryColor } as React.CSSProperties} // safe downcast – CSS custom properties
               />
               {pollOptions.length > MIN_POLL_OPTIONS && (

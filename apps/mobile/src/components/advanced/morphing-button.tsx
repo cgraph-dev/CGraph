@@ -114,6 +114,7 @@ const STATE_COLORS = {
 // ============================================================================
 
 /**
+ * Morphing Button component.
  *
  */
 export function MorphingButton({
@@ -137,7 +138,7 @@ export function MorphingButton({
   onLongPress,
   disabled = false,
   hapticFeedback = true,
-  morphDuration = 300,
+  _morphDuration = 300,
   pressScale = 0.95,
   springPreset = 'snappy',
   autoResetAfterSuccess = true,
@@ -218,15 +219,18 @@ export function MorphingButton({
         }, resetDelay);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   // Press handlers
   const handlePressIn = useCallback(() => {
     scale.value = withSpring(pressScale, getSpringConfig(springConfig));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pressScale, springConfig]);
 
   const handlePressOut = useCallback(() => {
     scale.value = withSpring(1, getSpringConfig(springConfig));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [springConfig]);
 
   const handlePress = useCallback(() => {
@@ -314,7 +318,7 @@ export function MorphingButton({
   const content =
     variant === 'gradient' && gradientColors ? (
       <LinearGradient
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         colors={gradientColors as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -401,6 +405,7 @@ export interface LoadingButtonProps extends Omit<MorphingButtonProps, 'state'> {
 }
 
 /**
+ * Loading Button component.
  *
  */
 export function LoadingButton({ isLoading, ...props }: LoadingButtonProps) {
@@ -412,6 +417,7 @@ export interface SubmitButtonProps extends Omit<MorphingButtonProps, 'state'> {
 }
 
 /**
+ * Submit Button component.
  *
  */
 export function SubmitButton({ status, ...props }: SubmitButtonProps) {
@@ -423,6 +429,7 @@ export interface ActionButtonProps extends Omit<MorphingButtonProps, 'shape' | '
 }
 
 /**
+ * Action Button component.
  *
  */
 export function ActionButton({ icon, ...props }: ActionButtonProps) {
@@ -434,6 +441,7 @@ export function ActionButton({ icon, ...props }: ActionButtonProps) {
 // ============================================================================
 
 /**
+ * Primary Button component.
  *
  */
 export function PrimaryButton(props: MorphingButtonProps) {
@@ -441,6 +449,7 @@ export function PrimaryButton(props: MorphingButtonProps) {
 }
 
 /**
+ * Secondary Button component.
  *
  */
 export function SecondaryButton(props: MorphingButtonProps) {
@@ -448,6 +457,7 @@ export function SecondaryButton(props: MorphingButtonProps) {
 }
 
 /**
+ * Danger Button component.
  *
  */
 export function DangerButton(props: MorphingButtonProps) {
@@ -455,6 +465,7 @@ export function DangerButton(props: MorphingButtonProps) {
 }
 
 /**
+ * Ghost Button component.
  *
  */
 export function GhostButton(props: MorphingButtonProps) {
@@ -462,6 +473,7 @@ export function GhostButton(props: MorphingButtonProps) {
 }
 
 /**
+ * Gradient Button component.
  *
  */
 export function GradientButton(props: MorphingButtonProps) {

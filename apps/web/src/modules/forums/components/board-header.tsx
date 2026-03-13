@@ -61,6 +61,8 @@ function Stat({
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Description. */
+/** Board Header component. */
 export function BoardHeader({
   name,
   description,
@@ -91,12 +93,10 @@ export function BoardHeader({
       )}
 
       {/* Content */}
-      <div className={cn('bg-white/[0.03] p-4', bannerUrl && '-mt-8 relative')}>
+      <div className={cn('bg-white/[0.03] p-4', bannerUrl && 'relative -mt-8')}>
         {/* Name + description */}
         <h1 className="text-xl font-bold text-white">{name}</h1>
-        {description && (
-          <p className="mt-1 text-sm text-gray-400">{description}</p>
-        )}
+        {description && <p className="mt-1 text-sm text-gray-400">{description}</p>}
 
         {/* Stats row */}
         <div className="mt-3 flex flex-wrap items-center gap-4">
@@ -126,9 +126,7 @@ export function BoardHeader({
                 </div>
               ))}
               {moderators.length > 5 && (
-                <span className="ml-1.5 text-[10px] text-gray-500">
-                  +{moderators.length - 5}
-                </span>
+                <span className="ml-1.5 text-[10px] text-gray-500">+{moderators.length - 5}</span>
               )}
             </div>
           </div>

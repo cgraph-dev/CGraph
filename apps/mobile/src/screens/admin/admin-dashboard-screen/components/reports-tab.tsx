@@ -28,6 +28,7 @@ function getTypeIcon(type: string): keyof typeof Ionicons.glyphMap {
 }
 
 /**
+ * Reports Tab component.
  *
  */
 export function ReportsTab({ reports, onResolve, onDismiss }: ReportsTabProps) {

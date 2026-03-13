@@ -51,6 +51,7 @@ type ReportRouteParams = {
 };
 
 /**
+ * Report Screen component.
  *
  */
 export function ReportScreen() {
@@ -84,7 +85,7 @@ export function ReportScreen() {
       );
     },
     onError: (error: unknown) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
       const err = error as any;
       const message = err?.response?.data?.error || 'Failed to submit report. Please try again.';
       Alert.alert('Error', message);
@@ -140,7 +141,7 @@ export function ReportScreen() {
                 >
                   <View style={styles.categoryIcon}>
                     <Ionicons
-                       
+                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
                       name={category.icon as any}
                       size={20}
                       color={

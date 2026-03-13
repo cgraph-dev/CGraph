@@ -65,6 +65,7 @@ const sections: LegalSection[] = [
 ];
 
 /**
+ * Privacy Policy Screen component.
  *
  */
 export default function PrivacyPolicyScreen() {

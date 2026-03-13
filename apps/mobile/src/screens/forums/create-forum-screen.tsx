@@ -107,7 +107,8 @@ export default function CreateForumScreen({ navigation }: Props) {
       ]);
     } catch (err: unknown) {
       console.error('[CreateForumScreen] Error:', err);
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const error = err as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
       let message = 'Failed to create forum. Please try again.';
@@ -260,7 +261,9 @@ export default function CreateForumScreen({ navigation }: Props) {
               <View style={styles.settingInfo}>
                 <Ionicons name="person-circle-outline" size={24} color={colors.primary} />
                 <View style={styles.settingText}>
-                  <Text style={[styles.settingLabel, { color: colors.text }]}>Require Identity Card</Text>
+                  <Text style={[styles.settingLabel, { color: colors.text }]}>
+                    Require Identity Card
+                  </Text>
                   <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
                     Members must set up their identity card
                   </Text>
@@ -278,7 +281,9 @@ export default function CreateForumScreen({ navigation }: Props) {
               <View style={styles.settingInfo}>
                 <Ionicons name="eye-off-outline" size={24} color={colors.textTertiary} />
                 <View style={styles.settingText}>
-                  <Text style={[styles.settingLabel, { color: colors.text }]}>Allow Anonymous Posts</Text>
+                  <Text style={[styles.settingLabel, { color: colors.text }]}>
+                    Allow Anonymous Posts
+                  </Text>
                   <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
                     Members can post without showing identity
                   </Text>

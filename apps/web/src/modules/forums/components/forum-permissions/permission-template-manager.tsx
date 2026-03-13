@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * Permission Template Manager
  *
@@ -29,6 +30,8 @@ interface PermissionTemplateManagerProps {
   boardId?: string;
 }
 
+/** Description. */
+/** Permission Template Manager component. */
 export function PermissionTemplateManager({ forumId, boardId }: PermissionTemplateManagerProps) {
   const {
     templates,
@@ -54,7 +57,12 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
         alert('Select a board first to apply the template.');
         return;
       }
-      if (!window.confirm('Apply this template to the selected board? Current permissions will be overwritten.')) return;
+      if (
+        !window.confirm(
+          'Apply this template to the selected board? Current permissions will be overwritten.'
+        )
+      )
+        return;
       setApplyingId(templateId);
       try {
         await applyTemplate(boardId, templateId);
@@ -62,7 +70,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
         setApplyingId(null);
       }
     },
-    [boardId, applyTemplate],
+    [boardId, applyTemplate]
   );
 
   const handleDuplicate = useCallback(
@@ -71,7 +79,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
       if (!newName?.trim()) return;
       await duplicateTemplate(forumId, template.id, newName.trim());
     },
-    [forumId, duplicateTemplate],
+    [forumId, duplicateTemplate]
   );
 
   const handleDelete = useCallback(
@@ -80,7 +88,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
       if (!window.confirm(`Delete template "${template.name}"?`)) return;
       await deleteTemplate(forumId, template.id);
     },
-    [forumId, deleteTemplate],
+    [forumId, deleteTemplate]
   );
 
   return (
@@ -94,7 +102,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
         </div>
         <button
           onClick={() => setShowCreateForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700"
         >
           <PlusIcon className="h-4 w-4" />
           Create Template
@@ -104,52 +112,54 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
       {/* Template list */}
       {isLoadingTemplates && templates.length === 0 ? (
         <div className="flex items-center justify-center p-8">
-          <div className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {templates.map((tmpl) => (
             <motion.div
               key={tmpl.id}
               layout
-              className="bg-white/[0.04] rounded-lg border border-white/[0.08] p-4"
+              className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-4"
             >
-              <div className="flex items-start justify-between mb-2">
+              <div className="mb-2 flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-white">{tmpl.name}</span>
                     {tmpl.isSystem && (
-                      <span className="flex items-center gap-1 px-1.5 py-0.5 text-xs bg-blue-900 text-blue-300 rounded">
+                      <span className="flex items-center gap-1 rounded bg-blue-900 px-1.5 py-0.5 text-xs text-blue-300">
                         <LockClosedIcon className="h-3 w-3" /> System
                       </span>
                     )}
                   </div>
                   {tmpl.description && (
-                    <p className="text-sm text-gray-400 mt-1">{tmpl.description}</p>
+                    <p className="mt-1 text-sm text-gray-400">{tmpl.description}</p>
                   )}
                 </div>
               </div>
 
               {/* Permission summary */}
-              <div className="flex flex-wrap gap-1 mb-3">
-                {Object.entries(tmpl.permissions).slice(0, 6).map(([key, val]) => (
-                  <span
-                    key={key}
-                    className={`px-1.5 py-0.5 text-xs rounded ${
-                      val === 'allow'
-                        ? 'bg-green-900/50 text-green-400'
-                        : val === 'deny'
-                          ? 'bg-red-900/50 text-red-400'
-                          : 'bg-white/[0.06] text-gray-400'
-                    }`}
-                  >
-                    {key.replace(/^can_/, '')}
-                  </span>
-                ))}
+              <div className="mb-3 flex flex-wrap gap-1">
+                {Object.entries(tmpl.permissions)
+                  .slice(0, 6)
+                  .map(([key, val]) => (
+                    <span
+                      key={key}
+                      className={`rounded px-1.5 py-0.5 text-xs ${
+                        val === 'allow'
+                          ? 'bg-green-900/50 text-green-400'
+                          : val === 'deny'
+                            ? 'bg-red-900/50 text-red-400'
+                            : 'bg-white/[0.06] text-gray-400'
+                      }`}
+                    >
+                      {key.replace(/^can_/, '')}
+                    </span>
+                  ))}
                 {Object.keys(tmpl.permissions).length > 6 && (
                   <button
                     onClick={() => setPreviewTemplate(tmpl)}
-                    className="px-1.5 py-0.5 text-xs bg-white/[0.06] text-gray-300 rounded hover:bg-white/[0.10]"
+                    className="rounded bg-white/[0.06] px-1.5 py-0.5 text-xs text-gray-300 hover:bg-white/[0.10]"
                   >
                     +{Object.keys(tmpl.permissions).length - 6} more
                   </button>
@@ -162,7 +172,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
                   <button
                     onClick={() => handleApply(tmpl.id)}
                     disabled={applyingId === tmpl.id}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+                    className="flex items-center gap-1 rounded-lg bg-green-600 px-3 py-1.5 text-xs text-white transition-colors hover:bg-green-700 disabled:opacity-50"
                   >
                     <PlayIcon className="h-3 w-3" />
                     {applyingId === tmpl.id ? 'Applying...' : 'Apply to Board'}
@@ -170,7 +180,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
                 )}
                 <button
                   onClick={() => handleDuplicate(tmpl)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-300 hover:text-white border border-white/[0.08] rounded-lg transition-colors"
+                  className="flex items-center gap-1 rounded-lg border border-white/[0.08] px-3 py-1.5 text-xs text-gray-300 transition-colors hover:text-white"
                 >
                   <DocumentDuplicateIcon className="h-3 w-3" />
                   Duplicate
@@ -178,7 +188,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
                 {!tmpl.isSystem && (
                   <button
                     onClick={() => handleDelete(tmpl)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 hover:text-red-400 border border-white/[0.08] rounded-lg transition-colors"
+                    className="flex items-center gap-1 rounded-lg border border-white/[0.08] px-3 py-1.5 text-xs text-gray-400 transition-colors hover:text-red-400"
                   >
                     <TrashIcon className="h-3 w-3" />
                     Delete
@@ -191,8 +201,8 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
       )}
 
       {templates.length === 0 && !isLoadingTemplates && (
-        <div className="text-center py-8 text-gray-400">
-          <ClipboardDocumentListIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+        <div className="py-8 text-center text-gray-400">
+          <ClipboardDocumentListIcon className="mx-auto mb-4 h-12 w-12 opacity-50" />
           <p>No templates yet. Create one to quickly configure board permissions.</p>
         </div>
       )}
@@ -200,10 +210,7 @@ export function PermissionTemplateManager({ forumId, boardId }: PermissionTempla
       {/* Template Preview Modal */}
       <AnimatePresence>
         {previewTemplate && (
-          <TemplatePreview
-            template={previewTemplate}
-            onClose={() => setPreviewTemplate(null)}
-          />
+          <TemplatePreview template={previewTemplate} onClose={() => setPreviewTemplate(null)} />
         )}
       </AnimatePresence>
 
@@ -237,16 +244,16 @@ function TemplatePreview({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-white/[0.04] rounded-xl border border-white/[0.08] w-full max-w-md max-h-[70vh] overflow-y-auto p-6"
+        className="max-h-[70vh] w-full max-w-md overflow-y-auto rounded-xl border border-white/[0.08] bg-white/[0.04] p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-lg font-bold mb-4">{template.name}</h3>
+        <h3 className="mb-4 text-lg font-bold">{template.name}</h3>
         <div className="space-y-2">
           {Object.entries(template.permissions).map(([key, val]) => (
             <div key={key} className="flex items-center justify-between py-1">
@@ -254,7 +261,7 @@ function TemplatePreview({
                 {key.replace(/^can_/, '').replace(/_/g, ' ')}
               </span>
               <span
-                className={`px-2 py-0.5 text-xs rounded font-medium ${
+                className={`rounded px-2 py-0.5 text-xs font-medium ${
                   val === 'allow'
                     ? 'bg-green-900 text-green-400'
                     : val === 'deny'
@@ -269,7 +276,7 @@ function TemplatePreview({
         </div>
         <button
           onClick={onClose}
-          className="mt-4 w-full px-4 py-2 text-gray-400 hover:text-white border border-white/[0.08] rounded-lg transition-colors"
+          className="mt-4 w-full rounded-lg border border-white/[0.08] px-4 py-2 text-gray-400 transition-colors hover:text-white"
         >
           Close
         </button>
@@ -303,7 +310,11 @@ function CreateTemplateForm({
     if (!name.trim()) return;
     setSaving(true);
     try {
-      await onSave({ name: name.trim(), description: description.trim() || undefined, permissions });
+      await onSave({
+        name: name.trim(),
+        description: description.trim() || undefined,
+        permissions,
+      });
     } finally {
       setSaving(false);
     }
@@ -314,40 +325,40 @@ function CreateTemplateForm({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-white/[0.04] rounded-xl border border-white/[0.08] w-full max-w-lg max-h-[80vh] overflow-y-auto p-6"
+        className="max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-xl border border-white/[0.08] bg-white/[0.04] p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-lg font-bold mb-4">Create Permission Template</h3>
+        <h3 className="mb-4 text-lg font-bold">Create Permission Template</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Template Name</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">Template Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">Description</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
             />
           </div>
 
           {/* Permission toggles */}
           <div className="border-t border-white/[0.08] pt-4">
-            <h4 className="text-sm font-semibold text-gray-300 mb-3">Permissions</h4>
+            <h4 className="mb-3 text-sm font-semibold text-gray-300">Permissions</h4>
             <div className="space-y-2">
               {BOARD_PERMISSIONS.map((def) => (
                 <div key={def.key} className="flex items-center justify-between">
@@ -358,7 +369,7 @@ function CreateTemplateForm({
                         key={level}
                         type="button"
                         onClick={() => setPermissions((p) => ({ ...p, [def.key]: level }))}
-                        className={`px-2 py-1 text-xs rounded transition-colors ${
+                        className={`rounded px-2 py-1 text-xs transition-colors ${
                           permissions[def.key] === level
                             ? level === 'allow'
                               ? 'bg-green-600 text-white'
@@ -377,14 +388,18 @@ function CreateTemplateForm({
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-gray-400 hover:text-white transition-colors">
+          <div className="flex justify-end gap-3 border-t border-white/[0.08] pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-400 transition-colors hover:text-white"
+            >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving || !name.trim()}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
             >
               {saving ? 'Creating...' : 'Create Template'}
             </button>

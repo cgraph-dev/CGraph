@@ -31,6 +31,7 @@ interface PaidDmSettings {
 
 const FILE_TYPES = ['image', 'video', 'audio', 'document'] as const;
 
+/** Paid Dm Settings Screen component. */
 export default function PaidDmSettingsScreen(): React.ReactElement {
   const { colors } = useThemeStore();
   const [settings, setSettings] = useState<PaidDmSettings>({
@@ -157,9 +158,7 @@ export default function PaidDmSettingsScreen(): React.ReactElement {
                   },
                 ]}
               >
-                <Text
-                  style={[styles.chipText, { color: active ? '#fff' : colors.text }]}
-                >
+                <Text style={[styles.chipText, { color: active ? '#fff' : colors.text }]}>
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </Text>
               </Pressable>
@@ -189,9 +188,7 @@ export default function PaidDmSettingsScreen(): React.ReactElement {
         onPress={handleSave}
         disabled={isSaving}
       >
-        <Text style={styles.saveButtonText}>
-          {isSaving ? 'Saving…' : 'Save Settings'}
-        </Text>
+        <Text style={styles.saveButtonText}>{isSaving ? 'Saving…' : 'Save Settings'}</Text>
       </Pressable>
     </ScrollView>
   );

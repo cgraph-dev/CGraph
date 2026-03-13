@@ -121,7 +121,9 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
               {children}
             </th>
           ),
-          td: ({ children }) => <td className="border border-white/[0.08] px-4 py-2">{children}</td>,
+          td: ({ children }) => (
+            <td className="border border-white/[0.08] px-4 py-2">{children}</td>
+          ),
           // Task lists
           input: ({ checked, ...props }) => (
             <input

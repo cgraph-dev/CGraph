@@ -102,7 +102,7 @@ export default function CreateForum() {
         {step === 4 && (
           <ConfirmStep
             formData={formData}
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             subscriptionTier={(user as { subscription_tier?: string })?.subscription_tier || 'free'}
           />
         )}

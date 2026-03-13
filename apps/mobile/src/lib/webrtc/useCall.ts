@@ -301,7 +301,7 @@ export function useIncomingCallListener(
       });
 
     channel.on('incoming_call', (payload: unknown) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const { caller_id, caller_name, room_id } = payload as {
         caller_id: string;
         caller_name: string;

@@ -43,6 +43,8 @@ const quickReactions = ['👍', '❤️', '😂', '😮', '🎉', '🔥'];
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Call Controls component. */
 export function CallControls({
   isMuted = false,
   isCameraOff = false,
@@ -65,13 +67,13 @@ export function CallControls({
   };
 
   return (
-    <div className="relative px-4 py-4 flex items-center justify-center gap-2">
+    <div className="relative flex items-center justify-center gap-2 px-4 py-4">
       {/* Floating reaction */}
       <AnimatePresence>
         {floatingEmoji && (
           <motion.div
             key={floatingEmoji.id}
-            className="absolute bottom-full left-1/2 text-4xl pointer-events-none"
+            className="pointer-events-none absolute bottom-full left-1/2 text-4xl"
             initial={{ y: 0, opacity: 1, scale: 0.5 }}
             animate={{ y: -80, opacity: 0, scale: 1.2 }}
             exit={{ opacity: 0 }}
@@ -86,7 +88,7 @@ export function CallControls({
       <AnimatePresence>
         {showReactions && (
           <motion.div
-            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 flex gap-1 bg-[#1e1f22] rounded-xl px-2 py-1.5 shadow-xl border border-white/[0.06]"
+            className="absolute bottom-full left-1/2 mb-2 flex -translate-x-1/2 gap-1 rounded-xl border border-white/[0.06] bg-[#1e1f22] px-2 py-1.5 shadow-xl"
             initial={{ y: 8, opacity: 0, scale: 0.9 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 8, opacity: 0, scale: 0.9 }}
@@ -95,7 +97,7 @@ export function CallControls({
               <button
                 key={emoji}
                 onClick={() => sendReaction(emoji)}
-                className="text-xl hover:scale-125 transition-transform p-1"
+                className="p-1 text-xl transition-transform hover:scale-125"
               >
                 {emoji}
               </button>
@@ -113,7 +115,13 @@ export function CallControls({
         onClick={onToggleMic}
       />
       <ControlButton
-        icon={isCameraOff ? <VideoCameraSlashIcon className="h-5 w-5" /> : <VideoCameraIcon className="h-5 w-5" />}
+        icon={
+          isCameraOff ? (
+            <VideoCameraSlashIcon className="h-5 w-5" />
+          ) : (
+            <VideoCameraIcon className="h-5 w-5" />
+          )
+        }
         label="Camera"
         active={!isCameraOff}
         danger={isCameraOff}
@@ -150,7 +158,7 @@ export function CallControls({
       {/* End call — larger, red */}
       <button
         onClick={onEndCall}
-        className="ml-2 flex flex-col items-center gap-0.5 px-6 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white transition-colors"
+        className="ml-2 flex flex-col items-center gap-0.5 rounded-xl bg-red-600 px-6 py-2 text-white transition-colors hover:bg-red-500"
       >
         <PhoneXMarkIcon className="h-5 w-5" />
         <span className="text-[10px] font-medium">Leave</span>
@@ -180,12 +188,12 @@ function ControlButton({
     <button
       onClick={onClick}
       className={cn(
-        'flex flex-col items-center gap-0.5 p-3 rounded-xl transition-colors',
+        'flex flex-col items-center gap-0.5 rounded-xl p-3 transition-colors',
         danger
           ? 'bg-red-600/20 text-red-400 hover:bg-red-600/30'
           : highlight
             ? 'bg-primary-600/20 text-primary-400 hover:bg-primary-600/30'
-            : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.10] hover:text-white/80',
+            : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.10] hover:text-white/80'
       )}
     >
       {icon}

@@ -8,13 +8,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSecretChatStore, type SecretThemeId } from '@/stores/secretChatStore';
@@ -50,6 +44,7 @@ const GHOST_MODE_OPTIONS: Array<{ label: string; value: number | null }> = [
 // Component
 // ---------------------------------------------------------------------------
 
+/** Secret Chat Settings Screen component. */
 export default function SecretChatSettingsScreen({ navigation }: Props) {
   const activeTheme = useSecretChatStore((s) => s.activeTheme);
   const ghostModeTimer = useSecretChatStore((s) => s.ghostModeTimer);
@@ -106,7 +101,10 @@ export default function SecretChatSettingsScreen({ navigation }: Props) {
                   style={[
                     styles.optionPill,
                     { borderColor: themeColors.border },
-                    isActive && { backgroundColor: themeColors.accent, borderColor: themeColors.accent },
+                    isActive && {
+                      backgroundColor: themeColors.accent,
+                      borderColor: themeColors.accent,
+                    },
                   ]}
                   onPress={() => handleGhostModeSelect(option.value)}
                 >
@@ -171,8 +169,8 @@ export default function SecretChatSettingsScreen({ navigation }: Props) {
             <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Danger Zone</Text>
           </View>
           <Text style={[styles.sectionDescription, { color: themeColors.textSecondary }]}>
-            Permanently destroy all secret chat data, sessions, and encryption keys.
-            This action cannot be undone.
+            Permanently destroy all secret chat data, sessions, and encryption keys. This action
+            cannot be undone.
           </Text>
           <PanicWipeButton themeColors={themeColors} />
         </View>

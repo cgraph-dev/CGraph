@@ -54,25 +54,20 @@ interface ForumSidebarProps {
 
 function BoardItem({ board, isActive }: { board: Board; isActive: boolean }) {
   const content = (
-    <NavLink
-      to={`/forums/boards/${board.id}`}
-      className="block"
-    >
+    <NavLink to={`/forums/boards/${board.id}`} className="block">
       <motion.div
         whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.04)' }}
         className={cn(
           'flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors',
-          isActive && 'bg-white/[0.08] text-white',
+          isActive && 'bg-white/[0.08] text-white'
         )}
       >
-        <span className="text-sm text-gray-500">
-          {board.icon ?? '#'}
-        </span>
+        <span className="text-sm text-gray-500">{board.icon ?? '#'}</span>
         <span
           className={cn(
             'flex-1 truncate text-sm',
             isActive ? 'font-semibold text-white' : 'text-gray-400',
-            (board.unreadCount ?? 0) > 0 && !isActive && 'font-medium text-gray-200',
+            (board.unreadCount ?? 0) > 0 && !isActive && 'font-medium text-gray-200'
           )}
         >
           {board.name}
@@ -114,10 +109,7 @@ function CategorySection({
         onClick={() => setExpanded((p) => !p)}
         className="group flex w-full items-center py-1.5 text-left"
       >
-        <motion.div
-          animate={{ rotate: expanded ? 0 : -90 }}
-          transition={springs.snappy}
-        >
+        <motion.div animate={{ rotate: expanded ? 0 : -90 }} transition={springs.snappy}>
           <ChevronDownIcon className="mr-1 h-2.5 w-2.5 text-gray-600" />
         </motion.div>
         <span className="text-[11px] font-bold uppercase tracking-wider text-gray-600 group-hover:text-gray-400">
@@ -135,11 +127,7 @@ function CategorySection({
             className="overflow-hidden"
           >
             {category.boards.map((board) => (
-              <BoardItem
-                key={board.id}
-                board={board}
-                isActive={board.id === activeBoardId}
-              />
+              <BoardItem key={board.id} board={board} isActive={board.id === activeBoardId} />
             ))}
           </motion.div>
         )}
@@ -150,6 +138,8 @@ function CategorySection({
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Description. */
+/** Forum Sidebar component. */
 export function ForumSidebar({
   categories = [],
   activeBoardId,
@@ -162,9 +152,7 @@ export function ForumSidebar({
     ? categories
         .map((cat) => ({
           ...cat,
-          boards: cat.boards.filter((b) =>
-            b.name.toLowerCase().includes(search.toLowerCase()),
-          ),
+          boards: cat.boards.filter((b) => b.name.toLowerCase().includes(search.toLowerCase())),
         }))
         .filter((cat) => cat.boards.length > 0)
     : categories;
@@ -206,11 +194,7 @@ export function ForumSidebar({
         <div className="space-y-2 py-2">
           {filteredCategories.length > 0 ? (
             filteredCategories.map((cat) => (
-              <CategorySection
-                key={cat.id}
-                category={cat}
-                activeBoardId={activeBoardId}
-              />
+              <CategorySection key={cat.id} category={cat} activeBoardId={activeBoardId} />
             ))
           ) : (
             <div className="flex flex-col items-center py-8 text-center">

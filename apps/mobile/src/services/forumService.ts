@@ -32,20 +32,16 @@ interface SearchFilters {
 
 export const forumService = {
   // ─── Forums ──────────────────────────────────────────────────────────
-  listForums: (params?: PaginationParams) =>
-    api.get('/api/v1/forums', { params }),
+  listForums: (params?: PaginationParams) => api.get('/api/v1/forums', { params }),
 
-  getForum: (id: string) =>
-    api.get(`/api/v1/forums/${id}`),
+  getForum: (id: string) => api.get(`/api/v1/forums/${id}`),
 
-  createForum: (data: Record<string, unknown>) =>
-    api.post('/api/v1/forums', data),
+  createForum: (data: Record<string, unknown>) => api.post('/api/v1/forums', data),
 
   updateForum: (id: string, data: Record<string, unknown>) =>
     api.patch(`/api/v1/forums/${id}`, data),
 
-  deleteForum: (id: string) =>
-    api.delete(`/api/v1/forums/${id}`),
+  deleteForum: (id: string) => api.delete(`/api/v1/forums/${id}`),
 
   // ─── Boards ──────────────────────────────────────────────────────────
   listBoards: (forumId: string, params?: PaginationParams) =>
@@ -67,8 +63,7 @@ export const forumService = {
   listThreads: (forumId: string, params?: PaginationParams) =>
     api.get(`/api/v1/forums/${forumId}/posts`, { params }),
 
-  getPost: (postId: string) =>
-    api.get(`/api/v1/posts/${postId}`),
+  getPost: (postId: string) => api.get(`/api/v1/posts/${postId}`),
 
   createPost: (forumId: string, data: Record<string, unknown>) =>
     api.post(`/api/v1/forums/${forumId}/posts`, data),
@@ -76,8 +71,7 @@ export const forumService = {
   updatePost: (postId: string, data: Record<string, unknown>) =>
     api.patch(`/api/v1/posts/${postId}`, data),
 
-  deletePost: (postId: string) =>
-    api.delete(`/api/v1/posts/${postId}`),
+  deletePost: (postId: string) => api.delete(`/api/v1/posts/${postId}`),
 
   // ─── Comments ────────────────────────────────────────────────────────
   listComments: (postId: string, params?: PaginationParams) =>
@@ -89,12 +83,10 @@ export const forumService = {
   updateComment: (commentId: string, data: { content: string }) =>
     api.patch(`/api/v1/comments/${commentId}`, data),
 
-  deleteComment: (commentId: string) =>
-    api.delete(`/api/v1/comments/${commentId}`),
+  deleteComment: (commentId: string) => api.delete(`/api/v1/comments/${commentId}`),
 
   // ─── Votes ───────────────────────────────────────────────────────────
-  votePost: (postId: string, value: 1 | -1) =>
-    api.post(`/api/v1/posts/${postId}/vote`, { value }),
+  votePost: (postId: string, value: 1 | -1) => api.post(`/api/v1/posts/${postId}/vote`, { value }),
 
   voteComment: (commentId: string, value: 1 | -1) =>
     api.post(`/api/v1/comments/${commentId}/vote`, { value }),
@@ -103,8 +95,7 @@ export const forumService = {
   votePoll: (pollId: string, optionIds: string[]) =>
     api.post(`/api/v1/polls/${pollId}/vote`, { option_ids: optionIds }),
 
-  closePoll: (pollId: string) =>
-    api.post(`/api/v1/polls/${pollId}/close`),
+  closePoll: (pollId: string) => api.post(`/api/v1/polls/${pollId}/close`),
 
   // ─── Search ──────────────────────────────────────────────────────────
   searchForums: (query: string, filters?: SearchFilters) =>

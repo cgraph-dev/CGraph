@@ -65,9 +65,7 @@ export function MemberListItem({
         {/* Info */}
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-medium text-white">
-              {member.displayName || member.username}
-            </span>
+            <span className="font-medium text-white">{member.displayName || member.username}</span>
             <span
               className={`rounded-full px-2 py-0.5 text-xs font-medium ${ROLE_COLORS[member.role] ?? ROLE_COLORS.member}`}
             >

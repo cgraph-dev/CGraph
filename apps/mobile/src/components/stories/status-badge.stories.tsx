@@ -14,9 +14,7 @@ import StatusBadge from '../status-badge';
  * Wrapper providing layout for stories
  */
 function ThemeWrapper({ children }: { children: React.ReactNode }): React.ReactElement {
-  return (
-  <View style={{ flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>{children}</View>
-);
+  return <View style={{ flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>{children}</View>;
 }
 
 const meta: Meta<typeof StatusBadge> = {

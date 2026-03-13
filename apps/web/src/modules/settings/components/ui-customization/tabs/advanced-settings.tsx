@@ -23,7 +23,7 @@ export function AdvancedSettings({ preferences, updatePreference }: SettingsTabP
           <Select
             label="Spacing"
             value={preferences.spacing}
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             onChange={(value) => updatePreference('spacing', value as UIPreferences['spacing'])} // safe downcast – select event value
             options={[
               { value: 'compact', label: 'Compact' },
@@ -43,9 +43,10 @@ export function AdvancedSettings({ preferences, updatePreference }: SettingsTabP
           <Select
             label="Content Width"
             value={preferences.contentWidth}
-            onChange={(value) =>
-               
-              updatePreference('contentWidth', value as UIPreferences['contentWidth']) // safe downcast – select event value
+            onChange={
+              (value) =>
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                updatePreference('contentWidth', value as UIPreferences['contentWidth']) // safe downcast – select event value
             }
             options={[
               { value: 'narrow', label: 'Narrow (800px)' },

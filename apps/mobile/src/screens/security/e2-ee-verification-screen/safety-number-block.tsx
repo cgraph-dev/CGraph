@@ -10,6 +10,8 @@ interface SafetyNumberBlockProps {
   number: string;
 }
 
+/** Description. */
+/** Safety Number Block component. */
 export function SafetyNumberBlock({ number }: SafetyNumberBlockProps) {
   const blocks = number.match(/.{1,5}/g) || [];
   const rows = [];

@@ -44,6 +44,7 @@ function AnimatedContactItem({
 }
 
 /**
+ * Contact Picker component.
  *
  */
 export function ContactPicker({

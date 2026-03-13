@@ -8,11 +8,7 @@
  */
 
 import { Link } from 'react-router-dom';
-import {
-  ChatBubbleLeftIcon,
-  EyeIcon,
-  LockClosedIcon,
-} from '@heroicons/react/24/outline';
+import { ChatBubbleLeftIcon, EyeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { PulseReactions } from '@/modules/pulse/components/pulse-reactions';
 import type { FeedThread } from '@/modules/discovery/hooks/useFeed';
@@ -40,12 +36,14 @@ function formatCount(n: number): string {
   return String(n);
 }
 
+/** Description. */
+/** Feed Post Card component. */
 export function FeedPostCard({ thread, className }: FeedPostCardProps) {
   return (
     <Link
       to={`/forums/threads/${thread.id}`}
       className={cn(
-        'block rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-white/20 hover:bg-white/8',
+        'hover:bg-white/8 block rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-white/20',
         className
       )}
     >
@@ -67,15 +65,11 @@ export function FeedPostCard({ thread, className }: FeedPostCardProps) {
 
       {/* Title */}
       <div className="mb-1.5 flex items-start gap-2">
-        <h3 className="line-clamp-2 flex-1 text-sm font-semibold text-white/90">
-          {thread.title}
-        </h3>
+        <h3 className="line-clamp-2 flex-1 text-sm font-semibold text-white/90">{thread.title}</h3>
         {thread.is_content_gated && (
           <span className="flex shrink-0 items-center gap-1 rounded-md bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-400">
             <LockClosedIcon className="h-3 w-3" />
-            {thread.gate_price_nodes != null
-              ? `${thread.gate_price_nodes} Nodes`
-              : 'Gated'}
+            {thread.gate_price_nodes != null ? `${thread.gate_price_nodes} Nodes` : 'Gated'}
           </span>
         )}
       </div>
@@ -98,15 +92,15 @@ export function FeedPostCard({ thread, className }: FeedPostCardProps) {
           {formatCount(thread.view_count)}
         </span>
         {thread.score > 0 && (
-          <span className="font-medium text-indigo-400/60">
-            ↑ {formatCount(thread.score)}
-          </span>
+          <span className="font-medium text-indigo-400/60">↑ {formatCount(thread.score)}</span>
         )}
         {thread.author && thread.board && (
           <div
             className="ml-auto"
             onClick={(e) => e.preventDefault()}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') e.stopPropagation(); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+            }}
             role="group"
           >
             <PulseReactions

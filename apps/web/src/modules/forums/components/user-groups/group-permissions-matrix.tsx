@@ -10,12 +10,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'motion/react';
-import {
-  ShieldCheckIcon,
-  CheckIcon,
-  XMarkIcon,
-  ArrowPathIcon,
-} from '@heroicons/react/24/outline';
+import { ShieldCheckIcon, CheckIcon, XMarkIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useUserGroupsStore } from '../../store/forumStore.userGroups';
 
 // ── Permission definitions ───────────────────────────────────────────────
@@ -72,6 +67,8 @@ interface GroupPermissionsMatrixProps {
 
 type PermState = Record<string, Record<string, boolean>>;
 
+/** Description. */
+/** Group Permissions Matrix component. */
 export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps) {
   const { groups, fetchGroups, updateGroup, isLoadingGroups } = useUserGroupsStore();
   const [permState, setPermState] = useState<PermState>({});
@@ -98,7 +95,7 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
 
   const filteredPerms = useMemo(
     () => PERMISSION_DEFS.filter((p) => p.category === activeCategory),
-    [activeCategory],
+    [activeCategory]
   );
 
   const hasDiffs = useMemo(() => {
@@ -109,7 +106,7 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
     (groupId: string, permKey: string) => {
       return permState[groupId]?.[permKey] !== originalState[groupId]?.[permKey];
     },
-    [permState, originalState],
+    [permState, originalState]
   );
 
   const togglePerm = useCallback((groupId: string, permKey: string) => {
@@ -132,9 +129,7 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
         const origPerms = originalState[group.id];
         // Skip if no changes
         if (JSON.stringify(groupPerms) === JSON.stringify(origPerms)) continue;
-        promises.push(
-          updateGroup(forumId, group.id, { permissions: groupPerms }),
-        );
+        promises.push(updateGroup(forumId, group.id, { permissions: groupPerms }));
       }
       await Promise.all(promises);
       setOriginalState(JSON.parse(JSON.stringify(permState)));
@@ -146,7 +141,7 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
   if (isLoadingGroups && groups.length === 0) {
     return (
       <div className="flex items-center justify-center p-12">
-        <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
       </div>
     );
   }
@@ -162,11 +157,17 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
         <button
           onClick={handleSaveAll}
           disabled={!hasDiffs || saving}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+          className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700 disabled:opacity-50"
         >
-          {saving ? <ArrowPathIcon className="h-4 w-4 animate-spin" /> : <CheckIcon className="h-4 w-4" />}
+          {saving ? (
+            <ArrowPathIcon className="h-4 w-4 animate-spin" />
+          ) : (
+            <CheckIcon className="h-4 w-4" />
+          )}
           Save All
-          {hasDiffs && <span className="ml-1 px-1.5 py-0.5 text-xs bg-green-800 rounded">changes</span>}
+          {hasDiffs && (
+            <span className="ml-1 rounded bg-green-800 px-1.5 py-0.5 text-xs">changes</span>
+          )}
         </button>
       </div>
 
@@ -176,7 +177,7 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+            className={`rounded-t-lg px-4 py-2 text-sm font-medium transition-colors ${
               activeCategory === cat
                 ? 'bg-white/[0.06] text-white'
                 : 'text-gray-400 hover:text-white'
@@ -195,13 +196,13 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/[0.08]">
-              <th className="text-left py-3 px-4 font-medium text-gray-400 sticky left-0 bg-[rgb(30,32,40)] z-10 min-w-[180px]">
+              <th className="sticky left-0 z-10 min-w-[180px] bg-[rgb(30,32,40)] px-4 py-3 text-left font-medium text-gray-400">
                 Group
               </th>
               {filteredPerms.map((perm) => (
                 <th
                   key={perm.key}
-                  className="py-3 px-2 font-medium text-gray-400 text-center min-w-[80px]"
+                  className="min-w-[80px] px-2 py-3 text-center font-medium text-gray-400"
                   title={perm.key}
                 >
                   <span className="text-xs">{perm.label}</span>
@@ -216,29 +217,25 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
                 className="border-b border-gray-800 hover:bg-white/[0.04]"
                 layout
               >
-                <td className="py-3 px-4 sticky left-0 bg-[rgb(30,32,40)] z-10">
+                <td className="sticky left-0 z-10 bg-[rgb(30,32,40)] px-4 py-3">
                   <div className="flex items-center gap-2">
                     <div
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                      className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
                       style={{ backgroundColor: group.color || '#6b7280' }}
                     />
-                    <span className="font-medium text-white text-sm">{group.name}</span>
-                    {group.isStaff && (
-                      <ShieldCheckIcon className="h-3.5 w-3.5 text-yellow-500" />
-                    )}
+                    <span className="text-sm font-medium text-white">{group.name}</span>
+                    {group.isStaff && <ShieldCheckIcon className="h-3.5 w-3.5 text-yellow-500" />}
                   </div>
                 </td>
                 {filteredPerms.map((perm) => {
                   const checked = permState[group.id]?.[perm.key] ?? false;
                   const changed = isDiff(group.id, perm.key);
                   return (
-                    <td key={perm.key} className="py-3 px-2 text-center">
+                    <td key={perm.key} className="px-2 py-3 text-center">
                       <button
                         onClick={() => togglePerm(group.id, perm.key)}
-                        className={`w-7 h-7 rounded flex items-center justify-center transition-all ${
-                          changed
-                            ? 'ring-2 ring-yellow-500'
-                            : ''
+                        className={`flex h-7 w-7 items-center justify-center rounded transition-all ${
+                          changed ? 'ring-2 ring-yellow-500' : ''
                         } ${
                           checked
                             ? 'bg-green-600/30 text-green-400 hover:bg-green-600/40'
@@ -262,7 +259,7 @@ export function GroupPermissionsMatrix({ forumId }: GroupPermissionsMatrixProps)
       </div>
 
       {groups.length === 0 && (
-        <div className="text-center py-8 text-gray-400">
+        <div className="py-8 text-center text-gray-400">
           No groups available. Create groups first to manage permissions.
         </div>
       )}

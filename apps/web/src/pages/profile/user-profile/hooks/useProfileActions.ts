@@ -37,7 +37,18 @@ export function useProfileActions({
   setFriendshipStatus,
 }: UseProfileActionsParams) {
   const navigate = useNavigate();
-  const { sendRequest, acceptRequest, declineRequest, removeFriend, blockUser, sentRequests, pendingRequests, friends, fetchSentRequests, fetchPendingRequests } = useFriendStore();
+  const {
+    sendRequest,
+    acceptRequest,
+    declineRequest,
+    removeFriend,
+    blockUser,
+    sentRequests,
+    pendingRequests,
+    friends,
+    fetchSentRequests,
+    fetchPendingRequests,
+  } = useFriendStore();
 
   const [editMode, setEditMode] = useState(false);
   const [editedBio, setEditedBio] = useState('');

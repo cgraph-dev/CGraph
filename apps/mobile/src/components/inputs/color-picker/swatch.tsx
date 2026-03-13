@@ -4,11 +4,7 @@
  */
 import React, { useCallback } from 'react';
 import { Pressable } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { SPRING_PRESETS } from '../../../lib/animations/animation-library';
 import { styles } from './styles';
 
@@ -19,15 +15,19 @@ interface SwatchProps {
   onPress: () => void;
 }
 
+/** Description. */
+/** Swatch component. */
 export function Swatch({ color, size, selected, onPress }: SwatchProps) {
   const scale = useSharedValue(1);
 
   const handlePressIn = useCallback(() => {
     scale.value = withSpring(0.9, SPRING_PRESETS.snappy);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePressOut = useCallback(() => {
     scale.value = withSpring(1, SPRING_PRESETS.snappy);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({

@@ -13,6 +13,7 @@ interface MessagePreviewProps {
 }
 
 /**
+ * Message Preview component.
  *
  */
 export function MessagePreview({ style }: MessagePreviewProps) {

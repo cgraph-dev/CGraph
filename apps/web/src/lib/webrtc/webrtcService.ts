@@ -81,7 +81,8 @@ export class WebRTCManager {
               target_ids: [targetUserId],
               type: options.video ? 'video' : 'audio',
             })
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             .receive('ok', (resp) => resolve(resp as { room_id: string; ice_servers: unknown[] }))
             .receive('error', (reason) => reject(new Error(JSON.stringify(reason))));
         }

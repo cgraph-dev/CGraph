@@ -31,6 +31,7 @@ export interface CRTEffectProps {
 // ============================================================================
 
 /**
+ * C R T Effect component.
  *
  */
 export function CRTEffect({ config, style, children }: CRTEffectProps) {
@@ -50,6 +51,7 @@ export function CRTEffect({ config, style, children }: CRTEffectProps) {
         false
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mergedConfig.flicker, mergedConfig.flickerIntensity]);
 
   const flickerStyle = useAnimatedStyle(() => ({

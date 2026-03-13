@@ -41,11 +41,9 @@ export interface PeerSenderKey {
  * Uses ECDH P-256 for key exchange compatibility.
  */
 export async function generateSenderKey(): Promise<SenderKeyPair> {
-  const keyPair = await crypto.subtle.generateKey(
-    { name: 'ECDH', namedCurve: 'P-256' },
-    true,
-    ['deriveBits']
-  );
+  const keyPair = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, [
+    'deriveBits',
+  ]);
 
   const senderKeyId = generateKeyId();
 
@@ -76,22 +74,14 @@ export async function encryptGroupMessage(
 
   // Hash to derive AES key
   const hashBuffer = await crypto.subtle.digest('SHA-256', combined);
-  const aesKey = await crypto.subtle.importKey(
-    'raw',
-    hashBuffer,
-    { name: 'AES-GCM' },
-    false,
-    ['encrypt']
-  );
+  const aesKey = await crypto.subtle.importKey('raw', hashBuffer, { name: 'AES-GCM' }, false, [
+    'encrypt',
+  ]);
 
   // Encrypt with AES-256-GCM
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(content);
-  const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    aesKey,
-    encoded
-  );
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, encoded);
 
   return {
     ciphertext: arrayBufferToBase64(ciphertext),
@@ -114,13 +104,9 @@ export async function decryptGroupMessage(
   const combined = new Uint8Array([...new Uint8Array(rawKey), ...chainData]);
 
   const hashBuffer = await crypto.subtle.digest('SHA-256', combined);
-  const aesKey = await crypto.subtle.importKey(
-    'raw',
-    hashBuffer,
-    { name: 'AES-GCM' },
-    false,
-    ['decrypt']
-  );
+  const aesKey = await crypto.subtle.importKey('raw', hashBuffer, { name: 'AES-GCM' }, false, [
+    'decrypt',
+  ]);
 
   const iv = base64ToArrayBuffer(encrypted.iv);
   const ciphertext = base64ToArrayBuffer(encrypted.ciphertext);
@@ -150,11 +136,9 @@ export async function encryptSenderKeyForRecipient(
   const exportedKey = await crypto.subtle.exportKey('pkcs8', senderKey.privateKey);
 
   // Generate ephemeral key for ECDH
-  const ephemeral = await crypto.subtle.generateKey(
-    { name: 'ECDH', namedCurve: 'P-256' },
-    true,
-    ['deriveBits']
-  );
+  const ephemeral = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, [
+    'deriveBits',
+  ]);
 
   // Derive shared secret via ECDH
   const sharedBits = await crypto.subtle.deriveBits(
@@ -164,21 +148,13 @@ export async function encryptSenderKeyForRecipient(
   );
 
   // Use shared secret as AES key
-  const wrapKey = await crypto.subtle.importKey(
-    'raw',
-    sharedBits,
-    { name: 'AES-GCM' },
-    false,
-    ['encrypt']
-  );
+  const wrapKey = await crypto.subtle.importKey('raw', sharedBits, { name: 'AES-GCM' }, false, [
+    'encrypt',
+  ]);
 
   // Encrypt the sender key
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const encrypted = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    wrapKey,
-    exportedKey
-  );
+  const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, wrapKey, exportedKey);
 
   // Encode: ephemeral public key + iv + ciphertext
   const ephemeralPub = await crypto.subtle.exportKey('raw', ephemeral.publicKey);
@@ -222,29 +198,17 @@ export async function decryptReceivedSenderKey(
   );
 
   // Use shared secret as AES key
-  const unwrapKey = await crypto.subtle.importKey(
-    'raw',
-    sharedBits,
-    { name: 'AES-GCM' },
-    false,
-    ['decrypt']
-  );
+  const unwrapKey = await crypto.subtle.importKey('raw', sharedBits, { name: 'AES-GCM' }, false, [
+    'decrypt',
+  ]);
 
   // Decrypt the sender key
-  const decrypted = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv },
-    unwrapKey,
-    ciphertext
-  );
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, unwrapKey, ciphertext);
 
   // Import as ECDH private key
-  return crypto.subtle.importKey(
-    'pkcs8',
-    decrypted,
-    { name: 'ECDH', namedCurve: 'P-256' },
-    true,
-    ['deriveBits']
-  );
+  return crypto.subtle.importKey('pkcs8', decrypted, { name: 'ECDH', namedCurve: 'P-256' }, true, [
+    'deriveBits',
+  ]);
 }
 
 // =============================================================================
@@ -264,13 +228,7 @@ export async function exportPublicKey(key: CryptoKey): Promise<string> {
  */
 export async function importPublicKey(base64Key: string): Promise<CryptoKey> {
   const raw = base64ToArrayBuffer(base64Key);
-  return crypto.subtle.importKey(
-    'raw',
-    raw,
-    { name: 'ECDH', namedCurve: 'P-256' },
-    true,
-    []
-  );
+  return crypto.subtle.importKey('raw', raw, { name: 'ECDH', namedCurve: 'P-256' }, true, []);
 }
 
 // =============================================================================

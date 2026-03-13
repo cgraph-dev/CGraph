@@ -233,6 +233,7 @@ export class TimelineBuilder {
 // ============================================================================
 
 /**
+ * Run keyframe animation.
  *
  */
 export function runKeyframeAnimation(
@@ -260,12 +261,13 @@ export function runKeyframeAnimation(
   if (animations.length === 1 && animations[0]) {
     target.value = animations[0];
   } else if (animations.length > 1) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
     target.value = withSequence(...(animations as [any, any, ...any[]]));
   }
 }
 
 /**
+ * Run timeline.
  *
  */
 export async function runTimeline(timeline: Timeline): Promise<void> {
@@ -316,6 +318,7 @@ export async function runTimeline(timeline: Timeline): Promise<void> {
 // ============================================================================
 
 /**
+ * Creates staggered animation.
  *
  */
 export function createStaggeredAnimation(
@@ -383,13 +386,14 @@ export function createStaggeredAnimation(
     if (animations.length === 1 && animations[0]) {
       target.value = withDelay(delay, animations[0]);
     } else if (animations.length > 1) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
       target.value = withDelay(delay, withSequence(...(animations as [any, any, ...any[]])));
     }
   });
 }
 
 /**
+ * Creates wave animation.
  *
  */
 export function createWaveAnimation(
@@ -427,6 +431,7 @@ export function createWaveAnimation(
 }
 
 /**
+ * Creates pulse animation.
  *
  */
 export function createPulseAnimation(
@@ -451,6 +456,7 @@ export function createPulseAnimation(
 }
 
 /**
+ * Creates shake animation.
  *
  */
 export function createShakeAnimation(
@@ -476,11 +482,12 @@ export function createShakeAnimation(
 
   shakeAnimations.push(withTiming(0, { duration: shakeDuration }));
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
   target.value = withSequence(...(shakeAnimations as [any, any, ...any[]]));
 }
 
 /**
+ * Creates bounce animation.
  *
  */
 export function createBounceAnimation(
@@ -506,11 +513,12 @@ export function createBounceAnimation(
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
   target.value = withSequence(...(bounceAnimations as [any, any, ...any[]]));
 }
 
 /**
+ * Stop animation.
  *
  */
 export function stopAnimation(target: SharedValue<number>): void {
@@ -518,6 +526,7 @@ export function stopAnimation(target: SharedValue<number>): void {
 }
 
 /**
+ * Stop all animations.
  *
  */
 export function stopAllAnimations(targets: SharedValue<number>[]): void {

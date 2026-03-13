@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * ForumLeaderboardWidget - Forum-specific leaderboard showing top contributors
  *
@@ -40,7 +41,8 @@ export function ForumLeaderboardWidget({
       setIsLoading(true);
       try {
         // Use unified leaderboard endpoint
-        const period = timeRange === 'week' ? 'weekly' : timeRange === 'month' ? 'monthly' : 'all_time';
+        const period =
+          timeRange === 'week' ? 'weekly' : timeRange === 'month' ? 'monthly' : 'all_time';
         const response = await api.get(`/api/v1/forums/${forumId}/leaderboard`, {
           params: { period, limit },
         });
@@ -62,11 +64,13 @@ export function ForumLeaderboardWidget({
                 karma: userObj.karma,
               },
               forumKarma: c.forum_karma ?? c.score ?? 0,
-              rank_info: rankObj ? {
-                name: rankObj.name as string,
-                color: rankObj.color as string,
-                image_url: rankObj.image_url as string | null,
-              } : undefined,
+              rank_info: rankObj
+                ? {
+                    name: rankObj.name as string,
+                    color: rankObj.color as string,
+                    image_url: rankObj.image_url as string | null,
+                  }
+                : undefined,
             };
           })
         );
@@ -138,7 +142,6 @@ export function ForumLeaderboardWidget({
         {/* Time Range Toggle */}
         <div className="flex items-center gap-1">
           // type assertion: array literal matches TimeRange union type
-          { }
           {(['week', 'month', 'all'] as TimeRange[]).map(
             (
               range // safe downcast — literals match TimeRange

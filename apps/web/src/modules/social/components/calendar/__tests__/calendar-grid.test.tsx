@@ -53,18 +53,16 @@ describe('CalendarGrid', () => {
   });
 
   it('renders event pills when events exist', () => {
-    const getEventsForDate = vi
-      .fn()
-      .mockReturnValue([
-        {
-          id: 'e1',
-          title: 'Team meeting',
-          startDate: new Date(2024, 0, 1, 10, 0),
-          categoryId: 'work',
-          type: 'meeting',
-          allDay: false,
-        },
-      ]);
+    const getEventsForDate = vi.fn().mockReturnValue([
+      {
+        id: 'e1',
+        title: 'Team meeting',
+        startDate: new Date(2024, 0, 1, 10, 0),
+        categoryId: 'work',
+        type: 'meeting',
+        allDay: false,
+      },
+    ]);
     render(<CalendarGrid {...defaultProps} getEventsForDate={getEventsForDate} />);
     expect(screen.getAllByText(/Team meeting/).length).toBeGreaterThanOrEqual(1);
   });

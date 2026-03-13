@@ -19,6 +19,7 @@ interface AccessibilityTabProps {
 }
 
 /**
+ * Accessibility Tab component.
  *
  */
 export function AccessibilityTab({ theme, updateTheme }: AccessibilityTabProps) {

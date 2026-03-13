@@ -4,7 +4,16 @@
  */
 import { ReactNode } from 'react';
 
-export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'destructive' | 'secondary' | 'outline';
+export type BadgeVariant =
+  | 'default'
+  | 'primary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'destructive'
+  | 'secondary'
+  | 'outline';
 type BadgeSize = 'sm' | 'md' | 'lg';
 
 interface BadgeProps {
@@ -18,7 +27,7 @@ interface BadgeProps {
 
 /**
  * Badge - A small status indicator component.
- * 
+ *
  * Use for labels, tags, status indicators, counts.
  */
 export default function Badge({
@@ -63,9 +72,7 @@ export default function Badge({
     <span
       className={`inline-flex items-center gap-1.5 rounded-full font-medium ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
     >
-      {dot && (
-        <span className={`w-1.5 h-1.5 rounded-full ${dotColors[variant]}`} />
-      )}
+      {dot && <span className={`h-1.5 w-1.5 rounded-full ${dotColors[variant]}`} />}
       {icon}
       {children}
     </span>
@@ -80,7 +87,11 @@ export default function Badge({
  * New Badge component.
  */
 export function NewBadge({ className = '' }: { className?: string }) {
-  return <Badge variant="success" size="sm" className={className}>New</Badge>;
+  return (
+    <Badge variant="success" size="sm" className={className}>
+      New
+    </Badge>
+  );
 }
 
 /**
@@ -90,7 +101,11 @@ export function NewBadge({ className = '' }: { className?: string }) {
  * Hot Badge component.
  */
 export function HotBadge({ className = '' }: { className?: string }) {
-  return <Badge variant="danger" size="sm" className={className}>🔥 Hot</Badge>;
+  return (
+    <Badge variant="danger" size="sm" className={className}>
+      🔥 Hot
+    </Badge>
+  );
 }
 
 /**
@@ -100,7 +115,11 @@ export function HotBadge({ className = '' }: { className?: string }) {
  * Nsfw Badge component.
  */
 export function NsfwBadge({ className = '' }: { className?: string }) {
-  return <Badge variant="danger" size="sm" className={className}>NSFW</Badge>;
+  return (
+    <Badge variant="danger" size="sm" className={className}>
+      NSFW
+    </Badge>
+  );
 }
 
 /**
@@ -110,7 +129,11 @@ export function NsfwBadge({ className = '' }: { className?: string }) {
  * Pinned Badge component.
  */
 export function PinnedBadge({ className = '' }: { className?: string }) {
-  return <Badge variant="success" size="sm" className={className}>📌 Pinned</Badge>;
+  return (
+    <Badge variant="success" size="sm" className={className}>
+      📌 Pinned
+    </Badge>
+  );
 }
 
 /**
@@ -120,7 +143,11 @@ export function PinnedBadge({ className = '' }: { className?: string }) {
  * Private Badge component.
  */
 export function PrivateBadge({ className = '' }: { className?: string }) {
-  return <Badge variant="warning" size="sm" className={className}>🔒 Private</Badge>;
+  return (
+    <Badge variant="warning" size="sm" className={className}>
+      🔒 Private
+    </Badge>
+  );
 }
 
 /**
@@ -130,7 +157,11 @@ export function PrivateBadge({ className = '' }: { className?: string }) {
  * Public Badge component.
  */
 export function PublicBadge({ className = '' }: { className?: string }) {
-  return <Badge variant="info" size="sm" className={className}>🌐 Public</Badge>;
+  return (
+    <Badge variant="info" size="sm" className={className}>
+      🌐 Public
+    </Badge>
+  );
 }
 
 /**
@@ -140,7 +171,11 @@ export function PublicBadge({ className = '' }: { className?: string }) {
  * Owner Badge component.
  */
 export function OwnerBadge({ className = '' }: { className?: string }) {
-  return <Badge variant="primary" size="sm" className={className}>👑 Owner</Badge>;
+  return (
+    <Badge variant="primary" size="sm" className={className}>
+      👑 Owner
+    </Badge>
+  );
 }
 
 /**
@@ -150,7 +185,11 @@ export function OwnerBadge({ className = '' }: { className?: string }) {
  * Moderator Badge component.
  */
 export function ModeratorBadge({ className = '' }: { className?: string }) {
-  return <Badge variant="success" size="sm" className={className}>🛡️ Mod</Badge>;
+  return (
+    <Badge variant="success" size="sm" className={className}>
+      🛡️ Mod
+    </Badge>
+  );
 }
 
 /**
@@ -160,7 +199,11 @@ export function ModeratorBadge({ className = '' }: { className?: string }) {
  * Member Badge component.
  */
 export function MemberBadge({ className = '' }: { className?: string }) {
-  return <Badge variant="default" size="sm" className={className}>Member</Badge>;
+  return (
+    <Badge variant="default" size="sm" className={className}>
+      Member
+    </Badge>
+  );
 }
 
 /**
@@ -171,5 +214,9 @@ export function MemberBadge({ className = '' }: { className?: string }) {
  */
 export function CountBadge({ count, className = '' }: { count: number; className?: string }) {
   const displayCount = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count.toString();
-  return <Badge variant="default" size="sm" className={className}>{displayCount}</Badge>;
+  return (
+    <Badge variant="default" size="sm" className={className}>
+      {displayCount}
+    </Badge>
+  );
 }

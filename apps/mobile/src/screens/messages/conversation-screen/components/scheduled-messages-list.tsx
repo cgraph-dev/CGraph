@@ -74,6 +74,8 @@ function relativeTime(iso: string): string {
 // Component
 // ────────────────────────────────────────────────────────
 
+/** Description. */
+/** Scheduled Messages List component. */
 export function ScheduledMessagesList({
   visible,
   onClose,
@@ -91,10 +93,9 @@ export function ScheduledMessagesList({
     if (!conversationId) return;
     setIsLoading(true);
     try {
-      const res = await api.get(
-        `/api/v1/messages/scheduled?conversation_id=${conversationId}`,
-      );
-      const list: ScheduledMessage[] = res.data?.data?.messages ?? res.data?.messages ?? res.data ?? [];
+      const res = await api.get(`/api/v1/messages/scheduled?conversation_id=${conversationId}`);
+      const list: ScheduledMessage[] =
+        res.data?.data?.messages ?? res.data?.messages ?? res.data ?? [];
       setMessages(Array.isArray(list) ? list : []);
     } catch (err) {
       console.warn('[ScheduledMessagesList] fetch error', err);
@@ -110,30 +111,27 @@ export function ScheduledMessagesList({
   }, [visible, fetchMessages]);
 
   // ── Cancel a scheduled message ────────────────────────
-  const handleCancel = useCallback(
-    async (messageId: string) => {
-      Alert.alert('Cancel message', 'Are you sure you want to cancel this scheduled message?', [
-        { text: 'Keep', style: 'cancel' },
-        {
-          text: 'Cancel Message',
-          style: 'destructive',
-          onPress: async () => {
-            setCancelingId(messageId);
-            try {
-              await api.delete(`/api/v1/messages/scheduled/${messageId}`);
-              setMessages((prev) => prev.filter((m) => m.id !== messageId));
-            } catch (err) {
-              console.warn('[ScheduledMessagesList] cancel error', err);
-              Alert.alert('Error', 'Failed to cancel scheduled message');
-            } finally {
-              setCancelingId(null);
-            }
-          },
+  const handleCancel = useCallback(async (messageId: string) => {
+    Alert.alert('Cancel message', 'Are you sure you want to cancel this scheduled message?', [
+      { text: 'Keep', style: 'cancel' },
+      {
+        text: 'Cancel Message',
+        style: 'destructive',
+        onPress: async () => {
+          setCancelingId(messageId);
+          try {
+            await api.delete(`/api/v1/messages/scheduled/${messageId}`);
+            setMessages((prev) => prev.filter((m) => m.id !== messageId));
+          } catch (err) {
+            console.warn('[ScheduledMessagesList] cancel error', err);
+            Alert.alert('Error', 'Failed to cancel scheduled message');
+          } finally {
+            setCancelingId(null);
+          }
         },
-      ]);
-    },
-    [],
-  );
+      },
+    ]);
+  }, []);
 
   // ── Swipe-to-cancel right action ──────────────────────
   const renderRightActions = useCallback(
@@ -147,7 +145,7 @@ export function ScheduledMessagesList({
         <Text style={ds.swipeActionText}>Cancel</Text>
       </TouchableOpacity>
     ),
-    [handleCancel],
+    [handleCancel]
   );
 
   // ── Dynamic styles ────────────────────────────────────
@@ -210,9 +208,14 @@ export function ScheduledMessagesList({
         emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
         emptyIcon: { opacity: 0.5 },
         emptyTitle: { fontSize: 16, fontWeight: '600', color: colors.text },
-        emptySubtitle: { fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingHorizontal: 40 },
+        emptySubtitle: {
+          fontSize: 13,
+          color: colors.textSecondary,
+          textAlign: 'center',
+          paddingHorizontal: 40,
+        },
       }),
-    [colors],
+    [colors]
   );
 
   // ── Render each card ──────────────────────────────────
@@ -269,7 +272,7 @@ export function ScheduledMessagesList({
         </Swipeable>
       );
     },
-    [cancelingId, colors, dynamicStyles, handleCancel, onReschedule, renderRightActions],
+    [cancelingId, colors, dynamicStyles, handleCancel, onReschedule, renderRightActions]
   );
 
   return (

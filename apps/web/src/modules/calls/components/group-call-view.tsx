@@ -17,10 +17,7 @@ import {
   PhoneXMarkIcon,
   ComputerDesktopIcon,
 } from '@heroicons/react/24/solid';
-import {
-  MicrophoneIcon as MicOffIcon,
-  VideoCameraSlashIcon,
-} from '@heroicons/react/24/outline';
+import { MicrophoneIcon as MicOffIcon, VideoCameraSlashIcon } from '@heroicons/react/24/outline';
 import { ConnectionState } from 'livekit-client';
 import { LiveKitParticipantTile } from './livekit-participant-tile';
 import { EncryptionIndicator } from './encryption-indicator';
@@ -35,10 +32,7 @@ interface GroupCallViewProps extends UseLiveKitRoomOptions {
 /**
  * Full group call view with participant grid and control bar.
  */
-export function GroupCallView({
-  onCallEnd,
-  ...roomOptions
-}: GroupCallViewProps) {
+export function GroupCallView({ onCallEnd, ...roomOptions }: GroupCallViewProps) {
   const {
     connectionState,
     participants,
@@ -78,9 +72,7 @@ export function GroupCallView({
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-[rgb(30,32,40)]">
         <h2 className="text-xl font-semibold text-white">Group Call</h2>
-        <p className="text-sm text-white/60">
-          Ready to join {roomOptions.roomName}
-        </p>
+        <p className="text-sm text-white/60">Ready to join {roomOptions.roomName}</p>
         <button
           onClick={connect}
           className="rounded-xl bg-primary-500 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-600"
@@ -126,9 +118,7 @@ export function GroupCallView({
             <LiveKitParticipantTile
               participant={room.localParticipant}
               isLocal
-              isSpeaking={activeSpeakers.includes(
-                room.localParticipant.identity
-              )}
+              isSpeaking={activeSpeakers.includes(room.localParticipant.identity)}
             />
           </motion.div>
         )}
@@ -157,11 +147,7 @@ export function GroupCallView({
           }`}
           aria-label={isMuted ? 'Unmute' : 'Mute'}
         >
-          {isMuted ? (
-            <MicOffIcon className="h-5 w-5" />
-          ) : (
-            <MicrophoneIcon className="h-5 w-5" />
-          )}
+          {isMuted ? <MicOffIcon className="h-5 w-5" /> : <MicrophoneIcon className="h-5 w-5" />}
         </button>
 
         {/* Video toggle */}
@@ -189,9 +175,7 @@ export function GroupCallView({
               ? 'bg-primary-500/20 text-primary-400 hover:bg-primary-500/30'
               : 'bg-white/[0.06] text-white hover:bg-white/[0.10]'
           }`}
-          aria-label={
-            isScreenSharing ? 'Stop screen share' : 'Share screen'
-          }
+          aria-label={isScreenSharing ? 'Stop screen share' : 'Share screen'}
         >
           <ComputerDesktopIcon className="h-5 w-5" />
         </button>
@@ -208,10 +192,7 @@ export function GroupCallView({
 
       {/* Participant count + Encryption indicator */}
       <div className="absolute right-4 top-4 flex items-center gap-2">
-        <EncryptionIndicator
-          status={isE2EEEnabled ? 'enabled' : 'disabled'}
-          size="sm"
-        />
+        <EncryptionIndicator status={isE2EEEnabled ? 'enabled' : 'disabled'} size="sm" />
         <div className="rounded-lg bg-black/50 px-2.5 py-1 text-xs text-white/70">
           {totalCount} participant{totalCount !== 1 ? 's' : ''}
         </div>

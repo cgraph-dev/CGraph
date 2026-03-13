@@ -45,7 +45,24 @@ const EMOJI_CATEGORIES = [
   {
     name: 'Smileys',
     icon: '😊',
-    emojis: ['😊', '😂', '🥰', '😍', '🤗', '😎', '🤔', '😏', '😬', '😅', '🥺', '😭', '😡', '🤯', '😱', '🤩'],
+    emojis: [
+      '😊',
+      '😂',
+      '🥰',
+      '😍',
+      '🤗',
+      '😎',
+      '🤔',
+      '😏',
+      '😬',
+      '😅',
+      '🥺',
+      '😭',
+      '😡',
+      '🤯',
+      '😱',
+      '🤩',
+    ],
   },
   {
     name: 'Gestures',
@@ -55,7 +72,24 @@ const EMOJI_CATEGORIES = [
   {
     name: 'Hearts',
     icon: '❤️',
-    emojis: ['❤️', '💕', '💖', '💗', '💓', '💝', '💘', '💟', '💙', '💚', '💛', '🧡', '💜', '🖤', '🤍', '🤎'],
+    emojis: [
+      '❤️',
+      '💕',
+      '💖',
+      '💗',
+      '💓',
+      '💝',
+      '💘',
+      '💟',
+      '💙',
+      '💚',
+      '💛',
+      '🧡',
+      '💜',
+      '🖤',
+      '🤍',
+      '🤎',
+    ],
   },
   {
     name: 'Symbols',
@@ -65,10 +99,11 @@ const EMOJI_CATEGORIES = [
 ];
 
 /**
+ * Message Reactions component.
  *
  */
 export default function MessageReactions({
-  messageId,
+  _messageId,
   reactions,
   onAddReaction,
   onRemoveReaction,
@@ -175,10 +210,7 @@ export default function MessageReactions({
                 fallbackSrc={getWebPFallbackUrl(emojiToCodepoint(reaction.emoji))}
               />
               <Text
-                style={[
-                  styles.reactionCount,
-                  reaction.hasReacted && styles.reactionCountActive,
-                ]}
+                style={[styles.reactionCount, reaction.hasReacted && styles.reactionCountActive]}
               >
                 {reaction.count}
               </Text>
@@ -188,10 +220,7 @@ export default function MessageReactions({
 
         {/* More indicator */}
         {hasMore && (
-          <TouchableOpacity
-            onPress={() => onViewReactions?.('')}
-            style={styles.moreButton}
-          >
+          <TouchableOpacity onPress={() => onViewReactions?.('')} style={styles.moreButton}>
             <Text style={styles.moreText}>+{reactions.length - maxVisible}</Text>
           </TouchableOpacity>
         )}
@@ -228,10 +257,7 @@ export default function MessageReactions({
                 {/* Header */}
                 <View style={styles.pickerHeader}>
                   <Text style={styles.pickerTitle}>Add Reaction</Text>
-                  <TouchableOpacity
-                    onPress={() => setShowPicker(false)}
-                    style={styles.closeButton}
-                  >
+                  <TouchableOpacity onPress={() => setShowPicker(false)} style={styles.closeButton}>
                     <Text style={styles.closeButtonText}>✕</Text>
                   </TouchableOpacity>
                 </View>

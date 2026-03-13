@@ -1,9 +1,9 @@
 /**
  * LoadingScreen - Premium Mobile Version
- * 
+ *
  * A stunning animated loading screen with particle effects, gradient animations,
  * and smooth transitions that creates an immersive experience while loading.
- * 
+ *
  * Features:
  * - Animated gradient background with shimmer effect
  * - Pulsating logo with glow effects
@@ -11,21 +11,14 @@
  * - Progress indicator with gradient
  * - Smooth entrance/exit animations
  * - Random loading tips
- * 
+ *
  * @version 2.0.0
  * @since v0.8.1
  */
 
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Dimensions,
-  Easing,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated, Dimensions, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeStore } from '@/stores';
@@ -118,6 +111,7 @@ function FloatingParticle({ delay, startX, size, duration, color }: ParticleProp
     };
 
     startAnimation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -139,27 +133,28 @@ function FloatingParticle({ delay, startX, size, duration, color }: ParticleProp
 }
 
 /**
+ * Loading Screen component.
  *
  */
 export default function LoadingScreen() {
   const { colors, colorScheme } = useThemeStore();
   const isDark = colorScheme === 'dark';
-  
+
   const [tip] = useState(LOADING_TIPS[Math.floor(Math.random() * LOADING_TIPS.length)]);
-  
+
   // Logo animations
   const logoScale = useRef(new Animated.Value(0.8)).current;
   const logoOpacity = useRef(new Animated.Value(0)).current;
   const logoRotate = useRef(new Animated.Value(0)).current;
   const glowOpacity = useRef(new Animated.Value(0.3)).current;
-  
+
   // Progress animation
   const progressWidth = useRef(new Animated.Value(0)).current;
-  
+
   // Text animations
   const textOpacity = useRef(new Animated.Value(0)).current;
   const textTranslateY = useRef(new Animated.Value(20)).current;
-  
+
   // Shimmer effect
   const shimmerTranslate = useRef(new Animated.Value(-SCREEN_WIDTH)).current;
 
@@ -265,6 +260,7 @@ export default function LoadingScreen() {
         useNativeDriver: true,
       })
     ).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const rotation = logoRotate.interpolate({
@@ -447,9 +443,7 @@ export default function LoadingScreen() {
       </View>
 
       {/* Version */}
-      <Text style={[styles.version, { color: colors.textTertiary }]}>
-        v0.8.1 ✨
-      </Text>
+      <Text style={[styles.version, { color: colors.textTertiary }]}>v0.8.1 ✨</Text>
     </View>
   );
 }

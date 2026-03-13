@@ -32,6 +32,8 @@ const BAR_GAP = 4;
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Earnings Chart component. */
 export function EarningsChart({ data, period: initialPeriod = 'monthly' }: EarningsChartProps) {
   const [period, setPeriod] = useState<Period>(initialPeriod);
 
@@ -39,7 +41,7 @@ export function EarningsChart({ data, period: initialPeriod = 'monthly' }: Earni
 
   if (data.length === 0) {
     return (
-      <div className="flex h-52 items-center justify-center rounded-lg border border-border bg-card text-sm text-muted-foreground">
+      <div className="border-border bg-card text-muted-foreground flex h-52 items-center justify-center rounded-lg border text-sm">
         No earnings data available
       </div>
     );
@@ -51,7 +53,7 @@ export function EarningsChart({ data, period: initialPeriod = 'monthly' }: Earni
   return (
     <div className="space-y-3">
       {/* Period selector */}
-      <div className="flex gap-1 rounded-lg border border-border bg-muted p-1 w-fit">
+      <div className="border-border bg-muted flex w-fit gap-1 rounded-lg border p-1">
         {PERIODS.map((p) => (
           <button
             key={p}
@@ -59,7 +61,7 @@ export function EarningsChart({ data, period: initialPeriod = 'monthly' }: Earni
             onClick={() => setPeriod(p)}
             className={`rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors ${
               period === p
-                ? 'bg-primary text-primary-foreground'
+                ? 'text-primary-foreground bg-primary'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -69,7 +71,7 @@ export function EarningsChart({ data, period: initialPeriod = 'monthly' }: Earni
       </div>
 
       {/* Chart */}
-      <div className="overflow-x-auto rounded-lg border border-border bg-card p-4">
+      <div className="border-border bg-card overflow-x-auto rounded-lg border p-4">
         <svg
           width={Math.max(svgWidth, 100)}
           height={CHART_HEIGHT + 30}

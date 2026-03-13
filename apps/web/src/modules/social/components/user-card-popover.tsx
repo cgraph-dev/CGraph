@@ -51,9 +51,9 @@ export function UserCardPopover({
           align="start"
           className={cn(
             'z-[var(--z-popover,500)] w-[300px] overflow-hidden rounded-lg',
-            'bg-[rgb(18,18,24)] border border-white/[0.06] shadow-2xl',
+            'border border-white/[0.06] bg-[rgb(18,18,24)] shadow-2xl',
             'animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95',
-            className,
+            className
           )}
         >
           {/* Banner */}
@@ -83,18 +83,14 @@ export function UserCardPopover({
             {/* Custom status */}
             {user.customStatus && (
               <p className="mt-1 text-xs text-white/50">
-                {user.customStatus.emoji && (
-                  <span className="mr-1">{user.customStatus.emoji}</span>
-                )}
+                {user.customStatus.emoji && <span className="mr-1">{user.customStatus.emoji}</span>}
                 {user.customStatus.text}
               </p>
             )}
 
             {/* Bio */}
             {user.bio && (
-              <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-white/50">
-                {user.bio}
-              </p>
+              <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-white/50">{user.bio}</p>
             )}
 
             {/* Roles */}
@@ -133,7 +129,7 @@ export function UserCardPopover({
                 className={cn(
                   'flex-1 rounded-md py-1.5 text-xs font-medium',
                   'bg-[#5865F2] text-white hover:bg-[#4752C4]',
-                  'transition-colors',
+                  'transition-colors'
                 )}
               >
                 Message
@@ -144,7 +140,7 @@ export function UserCardPopover({
                 className={cn(
                   'flex-1 rounded-md py-1.5 text-xs font-medium',
                   'bg-white/[0.06] text-white/70 hover:bg-white/[0.1]',
-                  'transition-colors',
+                  'transition-colors'
                 )}
               >
                 Add Friend

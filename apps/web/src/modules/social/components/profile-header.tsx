@@ -88,7 +88,7 @@ export function ProfileHeader({
               className={cn(
                 'rounded-md px-4 py-1.5 text-sm font-medium',
                 'bg-white/[0.06] text-white/80 hover:bg-white/[0.1]',
-                'border border-white/[0.08] transition-colors',
+                'border border-white/[0.08] transition-colors'
               )}
             >
               Edit Profile
@@ -101,7 +101,7 @@ export function ProfileHeader({
                 className={cn(
                   'rounded-md px-4 py-1.5 text-sm font-medium',
                   'bg-[#5865F2] text-white hover:bg-[#4752C4]',
-                  'transition-colors',
+                  'transition-colors'
                 )}
               >
                 Message
@@ -113,7 +113,7 @@ export function ProfileHeader({
                   className={cn(
                     'rounded-md px-4 py-1.5 text-sm font-medium',
                     'bg-white/[0.06] text-white/80 hover:bg-white/[0.1]',
-                    'border border-white/[0.08] transition-colors',
+                    'border border-white/[0.08] transition-colors'
                   )}
                 >
                   Add Friend
@@ -133,11 +133,7 @@ export function ProfileHeader({
               {customStatus.text}
             </p>
           )}
-          {bio && (
-            <p className="mt-2 max-w-md text-sm leading-relaxed text-white/60">
-              {bio}
-            </p>
-          )}
+          {bio && <p className="mt-2 max-w-md text-sm leading-relaxed text-white/60">{bio}</p>}
         </div>
 
         {/* Role badges */}

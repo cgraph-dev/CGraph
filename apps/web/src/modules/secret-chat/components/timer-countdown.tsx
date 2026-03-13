@@ -75,23 +75,15 @@ export const TimerCountdown = memo(function TimerCountdown({
 
   return (
     <motion.div
-      className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-mono ${
+      className={`flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-xs ${
         isExpired
           ? 'bg-red-500/20 text-red-400'
           : isUrgent
             ? 'bg-red-500/10 text-red-400'
             : 'bg-white/5 text-white/60'
       }`}
-      animate={
-        isUrgent
-          ? { opacity: [1, 0.5, 1] }
-          : undefined
-      }
-      transition={
-        isUrgent
-          ? { repeat: Infinity, duration: 1 }
-          : undefined
-      }
+      animate={isUrgent ? { opacity: [1, 0.5, 1] } : undefined}
+      transition={isUrgent ? { repeat: Infinity, duration: 1 } : undefined}
     >
       <span>⏱</span>
       <span>{formatTimeRemaining(remaining)}</span>

@@ -1,9 +1,9 @@
 /**
  * VideoPlayerModal Component
- * 
+ *
  * Full-screen video player modal with playback controls.
  * Wraps the VideoPlayerComponent for modal presentation.
- * 
+ *
  * @module components/conversation/VideoPlayerModal
  * @since v0.7.29
  */
@@ -37,14 +37,14 @@ export interface VideoPlayerModalProps {
 
 /**
  * Full-screen video player modal.
- * 
+ *
  * Features:
  * - Uses expo-video for native playback
  * - Loading state with spinner
  * - Error handling with retry option
  * - Fade and scale entrance animation
  * - Tap backdrop to dismiss
- * 
+ *
  * @example
  * ```tsx
  * <VideoPlayerModal

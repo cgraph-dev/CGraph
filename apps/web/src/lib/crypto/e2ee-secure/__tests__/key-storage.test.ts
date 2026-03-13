@@ -36,7 +36,9 @@ const mockExportPrivateKey = vi.fn(async () => new ArrayBuffer(32));
 const mockImportPublicKey = vi.fn(async () => ({ type: 'public' }) as unknown as CryptoKey);
 const mockImportPrivateKey = vi.fn(async () => ({ type: 'private' }) as unknown as CryptoKey);
 const mockImportSigningPublicKey = vi.fn(async () => ({ type: 'public' }) as unknown as CryptoKey);
-const mockImportSigningPrivateKey = vi.fn(async () => ({ type: 'private' }) as unknown as CryptoKey);
+const mockImportSigningPrivateKey = vi.fn(
+  async () => ({ type: 'private' }) as unknown as CryptoKey
+);
 const mockGenerateECDSAKeyPair = vi.fn(async () => ({
   publicKey: { type: 'public' } as unknown as CryptoKey,
   privateKey: { type: 'private' } as unknown as CryptoKey,
@@ -77,7 +79,11 @@ describe('storeKeyBundle', () => {
     mockSecureStorage.isReady.mockReturnValue(false);
     const bundle = {
       identityKey: { keyPair: { publicKey: {}, privateKey: {} }, keyId: 1 },
-      signedPreKey: { keyPair: { publicKey: {}, privateKey: {} }, keyId: 2, signature: new ArrayBuffer(64) },
+      signedPreKey: {
+        keyPair: { publicKey: {}, privateKey: {} },
+        keyId: 2,
+        signature: new ArrayBuffer(64),
+      },
       deviceId: 'dev-1',
       oneTimePreKeys: [],
     };
@@ -88,7 +94,11 @@ describe('storeKeyBundle', () => {
     mockSecureStorage.isReady.mockReturnValue(true);
     const bundle = {
       identityKey: { keyPair: { publicKey: {}, privateKey: {} }, keyId: 1 },
-      signedPreKey: { keyPair: { publicKey: {}, privateKey: {} }, keyId: 2, signature: new ArrayBuffer(64) },
+      signedPreKey: {
+        keyPair: { publicKey: {}, privateKey: {} },
+        keyId: 2,
+        signature: new ArrayBuffer(64),
+      },
       deviceId: 'dev-123',
       oneTimePreKeys: [],
     };
@@ -104,10 +114,7 @@ describe('storeKeyBundle', () => {
       mockConstants.SIGNED_PREKEY,
       expect.any(String)
     );
-    expect(mockSecureStorage.setItem).toHaveBeenCalledWith(
-      mockConstants.DEVICE_ID,
-      'dev-123'
-    );
+    expect(mockSecureStorage.setItem).toHaveBeenCalledWith(mockConstants.DEVICE_ID, 'dev-123');
   });
 });
 
@@ -231,8 +238,11 @@ describe('isE2EESetUp', () => {
     mockSecureStorage.isReady.mockReturnValue(true);
     mockSecureStorage.getItem.mockResolvedValue(
       JSON.stringify({
-        publicKey: 'p', privateKey: 'p', keyId: 1,
-        signingPublicKey: 'sp', signingPrivateKey: 'sp',
+        publicKey: 'p',
+        privateKey: 'p',
+        keyId: 1,
+        signingPublicKey: 'sp',
+        signingPrivateKey: 'sp',
       })
     );
     expect(await isE2EESetUp()).toBe(true);

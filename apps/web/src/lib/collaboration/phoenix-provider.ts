@@ -96,7 +96,7 @@ export class PhoenixProvider {
   private setupChannelListeners(): void {
     // Receive initial state on join
     const ref1 = this.channel.on('initial_state', (payload: Record<string, unknown>) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const stateBase64 = payload.state as string; // type assertion: Phoenix channel payload field
       if (stateBase64) {
         const state = base64ToUint8Array(stateBase64);
@@ -109,7 +109,7 @@ export class PhoenixProvider {
 
     // Receive incremental updates from other clients
     const ref2 = this.channel.on('yjs_update', (payload: Record<string, unknown>) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const updateBase64 = payload.update as string; // type assertion: Phoenix channel payload field
       if (updateBase64) {
         const update = base64ToUint8Array(updateBase64);
@@ -120,9 +120,10 @@ export class PhoenixProvider {
 
     // Receive awareness updates — apply remote state
     const ref3 = this.channel.on('awareness_update', (payload: Record<string, unknown>) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const userId = payload.user_id as string; // type assertion: Phoenix channel payload field
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const data = payload.data as Record<string, unknown> | undefined; // safe downcast – structural boundary
       if (userId && data) {
         // Store the remote awareness state keyed by userId
@@ -136,7 +137,7 @@ export class PhoenixProvider {
 
     // Handle awareness removal (user disconnected)
     const ref4 = this.channel.on('awareness_remove', (payload: Record<string, unknown>) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const userId = payload.user_id as string; // type assertion: Phoenix channel payload field
       if (userId) {
         this.remoteAwarenessStates.delete(userId);

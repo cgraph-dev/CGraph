@@ -143,7 +143,10 @@ function BadgesRow({ badges }: { badges: Badge[] }) {
  * Legacy NAMEPLATE_STYLES export for backward compatibility.
  * New code should use getNameplateById() from the registry instead.
  */
-const NAMEPLATE_STYLES: Record<string, { color: string; fontStyle?: 'normal' | 'italic'; shadowColor?: string; shadowRadius?: number }> = {
+const NAMEPLATE_STYLES: Record<
+  string,
+  { color: string; fontStyle?: 'normal' | 'italic'; shadowColor?: string; shadowRadius?: number }
+> = {
   default: { color: '#ffffff' },
 };
 

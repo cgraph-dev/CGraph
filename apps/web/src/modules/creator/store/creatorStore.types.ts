@@ -56,7 +56,9 @@ export interface CreatorState {
   contentAnalytics: ContentAnalytics | null;
 
   // Premium
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   premiumThreads: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tiers: any[];
   isLoadingPremium: boolean;
 

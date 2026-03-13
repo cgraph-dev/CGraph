@@ -63,7 +63,8 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
       'id' in initialConfig.theme
     ) {
       // If a full theme object is provided with id, use it
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return initialConfig.theme as MatrixTheme; // safe downcast – structural boundary
     }
     // Fall back to default theme
@@ -142,7 +143,8 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
       }
     } catch (error) {
       logger.error('Failed to initialize Matrix engine:', error);
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       events?.onError?.(error as Error); // safe downcast – structural boundary
     }
 
@@ -151,6 +153,7 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
       engine.destroy();
       engineRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canvasRef]); // Only re-init if canvas ref changes
 
   /**

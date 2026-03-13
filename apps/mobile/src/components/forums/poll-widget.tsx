@@ -4,14 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { Poll } from '@/types';
 import { useAuthStore } from '@/stores';
@@ -24,20 +17,18 @@ interface PollWidgetProps {
 }
 
 /**
+ * Poll Widget component.
  *
  */
-export default function PollWidget({
-  poll,
-  isCreator = false,
-  onVote,
-  onClose,
-}: PollWidgetProps) {
+export default function PollWidget({ poll, isCreator = false, onVote, onClose }: PollWidgetProps) {
   const { user } = useAuthStore();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0);
-  const isPollClosed = Boolean(poll.closed || (poll.timeout && new Date(poll.timeout) < new Date()));
+  const isPollClosed = Boolean(
+    poll.closed || (poll.timeout && new Date(poll.timeout) < new Date())
+  );
   const hasVoted = useMemo(() => {
     if (!user?.id) return false;
     return poll.options.some((opt) => opt.voters?.includes(user.id));
@@ -86,25 +77,21 @@ export default function PollWidget({
   const handleClosePoll = () => {
     if (!isCreator || !onClose) return;
 
-    Alert.alert(
-      'Close Poll',
-      'Are you sure you want to close this poll? This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Close Poll',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await onClose();
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            } catch (_error) {
-              Alert.alert('Error', 'Failed to close poll');
-            }
-          },
+    Alert.alert('Close Poll', 'Are you sure you want to close this poll? This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Close Poll',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await onClose();
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          } catch (_error) {
+            Alert.alert('Error', 'Failed to close poll');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const getPercentage = (votes: number): number => {
@@ -139,13 +126,9 @@ export default function PollWidget({
               👥 {totalVotes} vote{totalVotes !== 1 ? 's' : ''}
             </Text>
             {poll.timeout && !isPollClosed && (
-              <Text style={styles.metaText}>
-                ⏰ {formatTimeRemaining()}
-              </Text>
+              <Text style={styles.metaText}>⏰ {formatTimeRemaining()}</Text>
             )}
-            {isPollClosed && (
-              <Text style={styles.closedText}>🔒 Closed</Text>
-            )}
+            {isPollClosed && <Text style={styles.closedText}>🔒 Closed</Text>}
           </View>
         </View>
 
@@ -180,9 +163,7 @@ export default function PollWidget({
                 <View style={styles.resultOption}>
                   {/* Progress Bar */}
                   <View style={styles.progressBarContainer}>
-                    <View
-                      style={[styles.progressBar, { width: `${percentage}%` }]}
-                    />
+                    <View style={[styles.progressBar, { width: `${percentage}%` }]} />
                   </View>
 
                   {/* Content */}
@@ -199,31 +180,18 @@ export default function PollWidget({
                 <TouchableOpacity
                   onPress={() => handleOptionToggle(option.id)}
                   disabled={isPollClosed}
-                  style={[
-                    styles.voteOption,
-                    isSelected && styles.voteOptionSelected,
-                  ]}
+                  style={[styles.voteOption, isSelected && styles.voteOptionSelected]}
                   activeOpacity={0.7}
                 >
                   <View style={styles.optionSelector}>
                     {poll.allow_multiple ? (
                       // Checkbox
-                      <View
-                        style={[
-                          styles.checkbox,
-                          isSelected && styles.checkboxSelected,
-                        ]}
-                      >
+                      <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
                         {isSelected && <Text style={styles.checkmark}>✓</Text>}
                       </View>
                     ) : (
                       // Radio
-                      <View
-                        style={[
-                          styles.radio,
-                          isSelected && styles.radioSelected,
-                        ]}
-                      >
+                      <View style={[styles.radio, isSelected && styles.radioSelected]}>
                         {isSelected && <View style={styles.radioDot} />}
                       </View>
                     )}

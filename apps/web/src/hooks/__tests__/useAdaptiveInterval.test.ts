@@ -42,9 +42,7 @@ describe('useAdaptiveInterval', () => {
 
   it('does not start the interval when disabled', () => {
     const callback = vi.fn();
-    renderHook(() =>
-      useAdaptiveInterval(callback, 1000, { enabled: false })
-    );
+    renderHook(() => useAdaptiveInterval(callback, 1000, { enabled: false }));
 
     act(() => {
       vi.advanceTimersByTime(5000);
@@ -54,9 +52,7 @@ describe('useAdaptiveInterval', () => {
 
   it('fires immediately when immediate option is true', () => {
     const callback = vi.fn();
-    renderHook(() =>
-      useAdaptiveInterval(callback, 1000, { immediate: true })
-    );
+    renderHook(() => useAdaptiveInterval(callback, 1000, { immediate: true }));
 
     expect(callback).toHaveBeenCalledTimes(1);
   });
@@ -92,9 +88,7 @@ describe('useAdaptiveInterval', () => {
 
   it('respects custom hiddenMultiplier', () => {
     const callback = vi.fn();
-    renderHook(() =>
-      useAdaptiveInterval(callback, 1000, { hiddenMultiplier: 2 })
-    );
+    renderHook(() => useAdaptiveInterval(callback, 1000, { hiddenMultiplier: 2 }));
 
     // Simulate tab becoming hidden with 2x multiplier
     Object.defineProperty(document, 'hidden', { value: true, writable: true });
@@ -142,9 +136,7 @@ describe('useAdaptiveInterval', () => {
     const callback = vi.fn();
     const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
 
-    const { unmount } = renderHook(() =>
-      useAdaptiveInterval(callback, 1000)
-    );
+    const { unmount } = renderHook(() => useAdaptiveInterval(callback, 1000));
 
     unmount();
 
@@ -155,20 +147,16 @@ describe('useAdaptiveInterval', () => {
     // No calls after unmount
     expect(callback).not.toHaveBeenCalled();
     // Event listener removed
-    expect(removeEventListenerSpy).toHaveBeenCalledWith(
-      'visibilitychange',
-      expect.any(Function)
-    );
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
   });
 
   it('uses the latest callback via ref', () => {
     const callback1 = vi.fn();
     const callback2 = vi.fn();
 
-    const { rerender } = renderHook(
-      ({ cb }) => useAdaptiveInterval(cb, 1000),
-      { initialProps: { cb: callback1 } }
-    );
+    const { rerender } = renderHook(({ cb }) => useAdaptiveInterval(cb, 1000), {
+      initialProps: { cb: callback1 },
+    });
 
     rerender({ cb: callback2 });
 
@@ -196,8 +184,7 @@ describe('useAdaptiveInterval', () => {
     const callback = vi.fn();
 
     const { rerender } = renderHook(
-      ({ enabled }) =>
-        useAdaptiveInterval(callback, 1000, { enabled }),
+      ({ enabled }) => useAdaptiveInterval(callback, 1000, { enabled }),
       { initialProps: { enabled: false } }
     );
 

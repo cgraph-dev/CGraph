@@ -3,15 +3,7 @@
  * @module components/profile-media-grid
  */
 import React, { memo, useCallback } from 'react';
-import {
-  View,
-  FlatList,
-  Image,
-  Pressable,
-  Text,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { View, FlatList, Image, Pressable, Text, StyleSheet, Dimensions } from 'react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_SIZE = (SCREEN_WIDTH - 2) / 3; // 0.5px gaps
@@ -33,15 +25,8 @@ export const ProfileMediaGrid = memo(function ProfileMediaGrid({
 }: ProfileMediaGridProps) {
   const renderItem = useCallback(
     ({ item }: { item: MediaItem }) => (
-      <Pressable
-        onPress={() => onItemPress?.(item)}
-        style={styles.item}
-      >
-        <Image
-          source={{ uri: item.thumbnailUrl }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+      <Pressable onPress={() => onItemPress?.(item)} style={styles.item}>
+        <Image source={{ uri: item.thumbnailUrl }} style={styles.image} resizeMode="cover" />
         {item.type === 'video' && (
           <View style={styles.playOverlay}>
             <Text style={styles.playIcon}>▶</Text>
@@ -49,7 +34,7 @@ export const ProfileMediaGrid = memo(function ProfileMediaGrid({
         )}
       </Pressable>
     ),
-    [onItemPress],
+    [onItemPress]
   );
 
   if (items.length === 0) {

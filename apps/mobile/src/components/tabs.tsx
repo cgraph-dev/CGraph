@@ -3,14 +3,7 @@
  * @module components/Tabs
  */
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 import { useThemeStore } from '@/stores';
 
 type TabItem = {
@@ -29,6 +22,7 @@ type TabsProps = {
 };
 
 /**
+ * Tabs component.
  *
  */
 export default function Tabs({
@@ -48,10 +42,7 @@ export default function Tabs({
           return (
             <TouchableOpacity
               key={item.id}
-              style={[
-                styles.underlineTab,
-                isActive && { borderBottomColor: colors.primary },
-              ]}
+              style={[styles.underlineTab, isActive && { borderBottomColor: colors.primary }]}
               onPress={() => onTabChange(item.id)}
             >
               {item.icon && <View style={styles.tabIcon}>{item.icon}</View>}
@@ -65,9 +56,7 @@ export default function Tabs({
               </Text>
               {item.badge !== undefined && item.badge > 0 && (
                 <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                  <Text style={styles.badgeText}>
-                    {item.badge > 99 ? '99+' : item.badge}
-                  </Text>
+                  <Text style={styles.badgeText}>{item.badge > 99 ? '99+' : item.badge}</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -84,34 +73,16 @@ export default function Tabs({
         return (
           <TouchableOpacity
             key={item.id}
-            style={[
-              styles.pillTab,
-              isActive && { backgroundColor: colors.primary },
-            ]}
+            style={[styles.pillTab, isActive && { backgroundColor: colors.primary }]}
             onPress={() => onTabChange(item.id)}
           >
             {item.icon && <View style={styles.tabIcon}>{item.icon}</View>}
-            <Text
-              style={[
-                styles.pillTabText,
-                { color: isActive ? '#fff' : colors.textSecondary },
-              ]}
-            >
+            <Text style={[styles.pillTabText, { color: isActive ? '#fff' : colors.textSecondary }]}>
               {item.label}
             </Text>
             {item.badge !== undefined && item.badge > 0 && (
-              <View
-                style={[
-                  styles.badge,
-                  { backgroundColor: isActive ? '#fff' : colors.primary },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.badgeText,
-                    { color: isActive ? colors.primary : '#fff' },
-                  ]}
-                >
+              <View style={[styles.badge, { backgroundColor: isActive ? '#fff' : colors.primary }]}>
+                <Text style={[styles.badgeText, { color: isActive ? colors.primary : '#fff' }]}>
                   {item.badge > 99 ? '99+' : item.badge}
                 </Text>
               </View>

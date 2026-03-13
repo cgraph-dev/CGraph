@@ -22,9 +22,10 @@ import { Ionicons } from '@expo/vector-icons';
 import type { AnimatedHeaderProps } from '../types';
 
 /**
+ * Animated Header component.
  *
  */
-export function AnimatedHeader({ colors, onCreatePress }: AnimatedHeaderProps) {
+export function AnimatedHeader({ _colors, onCreatePress }: AnimatedHeaderProps) {
   const pulseAnim = useSharedValue(1);
   const rotateAnim = useSharedValue(0);
 
@@ -60,9 +61,7 @@ export function AnimatedHeader({ colors, onCreatePress }: AnimatedHeaderProps) {
 
   return (
     <TouchableOpacity onPress={handlePress} style={styles.headerButton}>
-      <Animated.View
-        style={buttonStyle}
-      >
+      <Animated.View style={buttonStyle}>
         <LinearGradient colors={['#8b5cf6', '#7c3aed']} style={styles.headerButtonGradient}>
           <Ionicons name="add" size={20} color="#fff" />
         </LinearGradient>

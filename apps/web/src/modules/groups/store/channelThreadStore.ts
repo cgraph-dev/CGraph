@@ -61,10 +61,9 @@ export const useChannelThreadStore = create<ChannelThreadState>()(
         });
 
         try {
-          const res = await api.get(
-            `/api/v1/channels/${channelId}/messages/${message.id}/thread`
-          );
+          const res = await api.get(`/api/v1/channels/${channelId}/messages/${message.id}/thread`);
 
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const replies = (res.data?.data ?? res.data?.replies ?? []) as ChannelMessage[];
 
           set({
@@ -92,14 +91,12 @@ export const useChannelThreadStore = create<ChannelThreadState>()(
         if (!activeChannelId || !activeThread) return;
 
         try {
-          const res = await api.post(
-            `/api/v1/channels/${activeChannelId}/messages`,
-            {
-              content,
-              reply_to_id: activeThread.id,
-            }
-          );
+          const res = await api.post(`/api/v1/channels/${activeChannelId}/messages`, {
+            content,
+            reply_to_id: activeThread.id,
+          });
 
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const reply = (res.data?.data ?? res.data?.message ?? res.data) as ChannelMessage;
           if (reply?.id) {
             set((state) => ({
@@ -135,11 +132,11 @@ export const useChannelThreadStore = create<ChannelThreadState>()(
         if (messageIds.length === 0) return;
 
         try {
-          const res = await api.post(
-            `/api/v1/channels/${channelId}/thread-counts`,
-            { message_ids: messageIds }
-          );
+          const res = await api.post(`/api/v1/channels/${channelId}/thread-counts`, {
+            message_ids: messageIds,
+          });
 
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const counts = (res.data?.data ?? res.data?.counts ?? {}) as Record<string, number>;
           set((state) => ({
             replyCounts: { ...state.replyCounts, ...counts },

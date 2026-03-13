@@ -98,9 +98,18 @@ let apiBaseUrl = '';
 // ============================================================================
 
 const SENSITIVE_KEYS = [
-  'password', 'token', 'secret', 'apikey', 'api_key',
-  'authorization', 'cookie', 'session', 'credit_card',
-  'ssn', 'private_key', 'privatekey',
+  'password',
+  'token',
+  'secret',
+  'apikey',
+  'api_key',
+  'authorization',
+  'cookie',
+  'session',
+  'credit_card',
+  'ssn',
+  'private_key',
+  'privatekey',
 ];
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
@@ -146,9 +155,10 @@ function getDeviceInfo(): Record<string, unknown> {
     osName: Device.osName,
     osVersion: Device.osVersion,
     appVersion: Constants.expoConfig?.version || '0.0.0',
-    buildNumber: Platform.OS === 'ios'
-      ? Constants.expoConfig?.ios?.buildNumber
-      : Constants.expoConfig?.android?.versionCode,
+    buildNumber:
+      Platform.OS === 'ios'
+        ? Constants.expoConfig?.ios?.buildNumber
+        : Constants.expoConfig?.android?.versionCode,
     isDevice: Device.isDevice,
   };
 }
@@ -158,13 +168,15 @@ function getDeviceInfo(): Record<string, unknown> {
 // ============================================================================
 
 /**
+ * Add breadcrumb.
  *
  */
 export function addBreadcrumb(breadcrumb: Omit<Breadcrumb, 'timestamp'>): void {
   breadcrumbs.push({
     ...breadcrumb,
     timestamp: Date.now(),
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     data: stripPii(breadcrumb.data) as Record<string, unknown> | undefined,
   });
 
@@ -175,6 +187,7 @@ export function addBreadcrumb(breadcrumb: Omit<Breadcrumb, 'timestamp'>): void {
 }
 
 /**
+ * Clear breadcrumbs.
  *
  */
 export function clearBreadcrumbs(): void {
@@ -186,6 +199,7 @@ export function clearBreadcrumbs(): void {
 // ============================================================================
 
 /**
+ * Sets user.
  *
  */
 export function setUser(user: UserContext): void {
@@ -198,6 +212,7 @@ export function setUser(user: UserContext): void {
 }
 
 /**
+ * Clear user.
  *
  */
 export function clearUser(): void {
@@ -222,12 +237,10 @@ function isRateLimited(): boolean {
 }
 
 /**
+ * Capture error.
  *
  */
-export function captureError(
-  error: Error | string,
-  context: ErrorContext = {}
-): string | null {
+export function captureError(error: Error | string, context: ErrorContext = {}): string | null {
   if (!CONFIG.enabled && !CONFIG.debug) return null;
 
   if (isRateLimited()) {
@@ -246,7 +259,8 @@ export function captureError(
     id: errorId,
     error: errorObj.message,
     stack: errorObj.stack,
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     context: stripPii(context) as ErrorContext,
     userContext,
     breadcrumbs: [...breadcrumbs],
@@ -277,6 +291,7 @@ export function captureError(
 }
 
 /**
+ * Capture message.
  *
  */
 export function captureMessage(
@@ -288,6 +303,7 @@ export function captureMessage(
 }
 
 /**
+ * Capture fatal.
  *
  */
 export function captureFatal(error: Error, context: ErrorContext = {}): string | null {
@@ -366,6 +382,7 @@ async function processQueue(): Promise<void> {
 // ============================================================================
 
 /**
+ * Initializes error tracking.
  *
  */
 export async function initErrorTracking(baseUrl: string): Promise<void> {
@@ -376,13 +393,15 @@ export async function initErrorTracking(baseUrl: string): Promise<void> {
 
   // Start queue processor — adaptive: 60s active, 4 min backgrounded
   // Store interval ID for cleanup; AppState-aware to reduce background work
-   
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { AppState } = require('react-native');
   let queueInterval: ReturnType<typeof setInterval> | null = null;
 
   const startQueueProcessor = () => {
     if (queueInterval) clearInterval(queueInterval);
-    const delay = AppState.currentState === 'active' ? CONFIG.retryInterval : CONFIG.retryInterval * 4;
+    const delay =
+      AppState.currentState === 'active' ? CONFIG.retryInterval : CONFIG.retryInterval * 4;
     queueInterval = setInterval(processQueue, delay);
   };
 
@@ -392,7 +411,7 @@ export async function initErrorTracking(baseUrl: string): Promise<void> {
   isInitialized = true;
 
   if (CONFIG.debug) {
-     
+    // eslint-disable-next-line no-console
     console.info('[ErrorTracking] Initialized for mobile');
   }
 }

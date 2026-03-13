@@ -3,7 +3,12 @@
  */
 
 import { motion } from 'motion/react';
-import { PaperAirplaneIcon, FaceSmileIcon, MicrophoneIcon, GifIcon } from '@heroicons/react/24/outline';
+import {
+  PaperAirplaneIcon,
+  FaceSmileIcon,
+  MicrophoneIcon,
+  GifIcon,
+} from '@heroicons/react/24/outline';
 import type { AttachmentMode } from './types';
 
 interface InputToolbarProps {
@@ -71,7 +76,9 @@ export function InputToolbar({
         whileTap={{ scale: 0.9 }}
         onClick={onToggleRecording}
         className={`rounded-lg p-2 transition-colors ${
-          isRecording ? 'bg-red-500 text-white' : 'text-gray-400 hover:bg-white/[0.08] hover:text-white'
+          isRecording
+            ? 'bg-red-500 text-white'
+            : 'text-gray-400 hover:bg-white/[0.08] hover:text-white'
         }`}
       >
         <MicrophoneIcon className="h-6 w-6" />

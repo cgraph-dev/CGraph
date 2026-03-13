@@ -36,6 +36,7 @@ interface SectionProps {
 }
 
 /**
+ * Settings Section component.
  *
  */
 export function SettingsSection({ title, icon, iconColor, children }: SectionProps) {
@@ -66,6 +67,7 @@ interface ToggleRowProps {
 }
 
 /**
+ * Toggle Row component.
  *
  */
 export function ToggleRow({ label, description, value, onToggle }: ToggleRowProps) {
@@ -99,6 +101,7 @@ interface SliderRowProps {
 }
 
 /**
+ * Slider Row component.
  *
  */
 export function SliderRow({
@@ -157,6 +160,7 @@ interface ColorShadePickerProps {
 }
 
 /**
+ * Color Shade Picker component.
  *
  */
 export function ColorShadePicker({ label, shades, onSelect }: ColorShadePickerProps) {
@@ -194,6 +198,7 @@ interface PresetSelectorProps {
 }
 
 /**
+ * Preset Selector component.
  *
  */
 export function PresetSelector({ currentThemeName, themes, onSelect }: PresetSelectorProps) {

@@ -19,6 +19,7 @@ import { PressableFeedbackProps } from '../types';
 import { styles } from '../styles';
 
 /**
+ * Pressable Feedback component.
  *
  */
 export function PressableFeedback({
@@ -43,6 +44,7 @@ export function PressableFeedback({
   const translateY = useSharedValue(0);
 
   const springConfig = SPRING_PRESETS[springPreset];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const pressStyles = Array.isArray(pressStyle) ? pressStyle : [pressStyle];
 
   const handlePressIn = useCallback(

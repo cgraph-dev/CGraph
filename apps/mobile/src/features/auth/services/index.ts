@@ -25,27 +25,27 @@ export const tokenStorage = {
   getAccessToken: async (): Promise<string | null> => {
     return SecureStore.getItemAsync('cgraph_access_token');
   },
-  
+
   setAccessToken: async (token: string): Promise<void> => {
     await SecureStore.setItemAsync('cgraph_access_token', token);
   },
-  
+
   removeAccessToken: async (): Promise<void> => {
     await SecureStore.deleteItemAsync('cgraph_access_token');
   },
-  
+
   getRefreshToken: async (): Promise<string | null> => {
     return SecureStore.getItemAsync('cgraph_refresh_token');
   },
-  
+
   setRefreshToken: async (token: string): Promise<void> => {
     await SecureStore.setItemAsync('cgraph_refresh_token', token);
   },
-  
+
   removeRefreshToken: async (): Promise<void> => {
     await SecureStore.deleteItemAsync('cgraph_refresh_token');
   },
-  
+
   clearAll: async (): Promise<void> => {
     await SecureStore.deleteItemAsync('cgraph_access_token');
     await SecureStore.deleteItemAsync('cgraph_refresh_token');

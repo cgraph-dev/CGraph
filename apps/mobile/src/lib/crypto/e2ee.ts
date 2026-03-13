@@ -282,7 +282,7 @@ export enum CryptoProtocol {
 
 /** Check if a server prekey bundle includes KEM prekeys (PQ-capable peer) */
 export function bundleSupportsPQ(bundle: ServerPrekeyBundle): boolean {
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return !!(bundle && 'kyber_prekey' in bundle && (bundle as Record<string, unknown>).kyber_prekey);
 }
 
@@ -348,9 +348,7 @@ const OPK_REPLENISH_THRESHOLD = 10;
  * Store one-time prekey private keys in SecureStore.
  * Called after generateKeyBundle() so OPK privates survive across sessions.
  */
-export async function storeOneTimePreKeyPrivates(
-  oneTimePreKeys: OneTimePreKey[]
-): Promise<void> {
+export async function storeOneTimePreKeyPrivates(oneTimePreKeys: OneTimePreKey[]): Promise<void> {
   const existing = await loadOneTimePreKeyPrivates();
   for (const opk of oneTimePreKeys) {
     existing.set(opk.keyId, opk.privateKey);
@@ -371,6 +369,7 @@ export async function loadOneTimePreKeyPrivates(): Promise<Map<string, Uint8Arra
   const json = await SecureStore.getItemAsync(OPK_PRIVATE_KEYS);
   if (!json) return new Map();
   try {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const parsed = JSON.parse(json) as Record<string, string>;
     const map = new Map<string, Uint8Array>();
     for (const [keyId, b64] of Object.entries(parsed)) {
@@ -386,9 +385,7 @@ export async function loadOneTimePreKeyPrivates(): Promise<Map<string, Uint8Arra
  * Load a specific OPK private key by key ID.
  * Used by the responder to compute DH4.
  */
-export async function loadOneTimePreKeyPrivate(
-  keyId: string
-): Promise<Uint8Array | null> {
+export async function loadOneTimePreKeyPrivate(keyId: string): Promise<Uint8Array | null> {
   const all = await loadOneTimePreKeyPrivates();
   return all.get(keyId) ?? null;
 }
@@ -929,15 +926,18 @@ export async function loadSessions(): Promise<Map<string, Session>> {
   const map = new Map<string, Session>();
 
   for (const [recipientId, session] of Object.entries(sessions)) {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const s = session as Session;
     map.set(recipientId, {
       ...s,
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       recipientIdentityKey: Buffer.from(s.recipientIdentityKey as unknown as string, 'base64'),
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       sharedSecret: Buffer.from(s.sharedSecret as unknown as string, 'base64'),
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       chainKey: Buffer.from(s.chainKey as unknown as string, 'base64'),
     });
   }
@@ -946,6 +946,7 @@ export async function loadSessions(): Promise<Map<string, Session>> {
 }
 
 /**
+ * Saves session.
  *
  */
 export async function saveSession(recipientId: string, session: Session): Promise<void> {
@@ -966,6 +967,7 @@ export async function saveSession(recipientId: string, session: Session): Promis
 }
 
 /**
+ * Gets session.
  *
  */
 export async function getSession(recipientId: string): Promise<Session | null> {

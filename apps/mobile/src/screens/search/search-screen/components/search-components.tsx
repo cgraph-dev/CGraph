@@ -14,4 +14,3 @@ export { AnimatedResultItem } from './animated-result-item';
 export { FilterModal } from './filter-modal';
 export { defaultFilters } from './search-types';
 export type { SearchFilters } from './search-types';
-

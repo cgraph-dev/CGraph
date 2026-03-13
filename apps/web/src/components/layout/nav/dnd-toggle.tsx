@@ -79,38 +79,36 @@ export function DndToggle() {
   // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const activateDnd = useCallback(
-    async (option: (typeof DND_OPTIONS)[number]) => {
-      setLoading(true);
-      try {
-        let body: Record<string, unknown>;
-        if (option.minutes === -1) {
-          body = { indefinite: true };
-        } else if (option.minutes === 0) {
-          body = { duration_minutes: getMinutesUntilTomorrowMorning() };
-        } else {
-          body = { duration_minutes: option.minutes };
-        }
-        const response = await api.post('/api/v1/settings/dnd', body);
-        const data = response.data?.data?.dnd || response.data?.dnd;
-        if (data) {
-          setDndState({ active: true, dndUntil: data.dnd_until });
-        }
-      } catch {
-        // Silently fail
-      } finally {
-        setLoading(false);
-        setOpen(false);
+  const activateDnd = useCallback(async (option: (typeof DND_OPTIONS)[number]) => {
+    setLoading(true);
+    try {
+      let body: Record<string, unknown>;
+      if (option.minutes === -1) {
+        body = { indefinite: true };
+      } else if (option.minutes === 0) {
+        body = { duration_minutes: getMinutesUntilTomorrowMorning() };
+      } else {
+        body = { duration_minutes: option.minutes };
       }
-    },
-    []
-  );
+      const response = await api.post('/api/v1/settings/dnd', body);
+      const data = response.data?.data?.dnd || response.data?.dnd;
+      if (data) {
+        setDndState({ active: true, dndUntil: data.dnd_until });
+      }
+    } catch {
+      // Silently fail
+    } finally {
+      setLoading(false);
+      setOpen(false);
+    }
+  }, []);
 
   const clearDnd = useCallback(async () => {
     setLoading(true);

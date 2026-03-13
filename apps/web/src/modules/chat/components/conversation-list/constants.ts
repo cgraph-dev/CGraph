@@ -13,4 +13,3 @@ export const FILTER_OPTIONS: FilterOption[] = [
 ];
 
 // User search now uses GET /api/v1/users/search
-

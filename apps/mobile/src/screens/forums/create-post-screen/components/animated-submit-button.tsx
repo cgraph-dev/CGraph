@@ -5,7 +5,15 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
-import Animated, { useSharedValue, withTiming, withSpring, withRepeat, withSequence, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withSpring,
+  withRepeat,
+  withSequence,
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -15,6 +23,7 @@ import { styles } from '../styles';
 import { SCREEN_WIDTH } from '../constants';
 
 /**
+ * Animated Submit Button component.
  *
  */
 export function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitButtonProps) {
@@ -34,12 +43,9 @@ export function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitB
       );
 
       // Shimmer effect
-      shimmerAnim.value = withRepeat(
-        withTiming(1, { duration: 2500 }),
-        -1,
-        false
-      );
+      shimmerAnim.value = withRepeat(withTiming(1, { duration: 2500 }), -1, false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDisabled, isLoading]);
 
   const handlePressIn = () => {
@@ -89,9 +95,7 @@ export function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitB
         >
           {/* Shimmer overlay */}
           {!isDisabled && !isLoading && (
-            <Animated.View
-              style={[styles.shimmerOverlay, shimmerAnimStyle]}
-            >
+            <Animated.View style={[styles.shimmerOverlay, shimmerAnimStyle]}>
               <LinearGradient
                 colors={['transparent', 'rgba(255,255,255,0.2)', 'transparent']}
                 start={{ x: 0, y: 0 }}

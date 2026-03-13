@@ -27,6 +27,7 @@ import { type RequestCardProps, formatTimeAgo } from '../types';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 /**
+ * Request Card component.
  *
  */
 export function RequestCard({
@@ -158,9 +159,21 @@ export function RequestCard({
 
         // Reset backgrounds
         Animated.parallel([
-          Animated.timing(acceptBgOpacity, { toValue: 0, duration: durations.normal.ms, useNativeDriver: true }),
-          Animated.timing(declineBgOpacity, { toValue: 0, duration: durations.normal.ms, useNativeDriver: true }),
-          Animated.timing(actionIconScale, { toValue: 0.5, duration: durations.normal.ms, useNativeDriver: true }),
+          Animated.timing(acceptBgOpacity, {
+            toValue: 0,
+            duration: durations.normal.ms,
+            useNativeDriver: true,
+          }),
+          Animated.timing(declineBgOpacity, {
+            toValue: 0,
+            duration: durations.normal.ms,
+            useNativeDriver: true,
+          }),
+          Animated.timing(actionIconScale, {
+            toValue: 0.5,
+            duration: durations.normal.ms,
+            useNativeDriver: true,
+          }),
         ]).start();
       },
     })
@@ -169,18 +182,42 @@ export function RequestCard({
   const handleAcceptPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Animated.sequence([
-      Animated.timing(acceptScale, { toValue: 0.85, duration: durations.instant.ms, useNativeDriver: true }),
-      Animated.timing(acceptScale, { toValue: 1.1, duration: durations.instant.ms, useNativeDriver: true }),
-      Animated.timing(acceptScale, { toValue: 1, duration: durations.instant.ms, useNativeDriver: true }),
+      Animated.timing(acceptScale, {
+        toValue: 0.85,
+        duration: durations.instant.ms,
+        useNativeDriver: true,
+      }),
+      Animated.timing(acceptScale, {
+        toValue: 1.1,
+        duration: durations.instant.ms,
+        useNativeDriver: true,
+      }),
+      Animated.timing(acceptScale, {
+        toValue: 1,
+        duration: durations.instant.ms,
+        useNativeDriver: true,
+      }),
     ]).start(() => onAccept(item.id));
   };
 
   const handleDeclinePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Animated.sequence([
-      Animated.timing(declineScale, { toValue: 0.85, duration: durations.instant.ms, useNativeDriver: true }),
-      Animated.timing(declineScale, { toValue: 1.1, duration: durations.instant.ms, useNativeDriver: true }),
-      Animated.timing(declineScale, { toValue: 1, duration: durations.instant.ms, useNativeDriver: true }),
+      Animated.timing(declineScale, {
+        toValue: 0.85,
+        duration: durations.instant.ms,
+        useNativeDriver: true,
+      }),
+      Animated.timing(declineScale, {
+        toValue: 1.1,
+        duration: durations.instant.ms,
+        useNativeDriver: true,
+      }),
+      Animated.timing(declineScale, {
+        toValue: 1,
+        duration: durations.instant.ms,
+        useNativeDriver: true,
+      }),
     ]).start(() => onDecline(item.id));
   };
 

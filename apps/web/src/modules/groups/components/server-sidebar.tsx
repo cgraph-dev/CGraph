@@ -11,11 +11,7 @@
  */
 
 import { motion } from 'motion/react';
-import {
-  MicrophoneIcon,
-  SpeakerWaveIcon,
-  Cog6ToothIcon,
-} from '@heroicons/react/24/solid';
+import { MicrophoneIcon, SpeakerWaveIcon, Cog6ToothIcon } from '@heroicons/react/24/solid';
 import { MicrophoneIcon as MicOffIcon } from '@heroicons/react/24/outline';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Tooltip from '@/components/ui/tooltip';
@@ -75,7 +71,11 @@ function UserBar() {
         <div className="relative flex-shrink-0">
           <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-primary-600">
             {user.avatarUrl ? (
-              <img src={user.avatarUrl} alt={user.displayName} className="h-full w-full object-cover" />
+              <img
+                src={user.avatarUrl}
+                alt={user.displayName}
+                className="h-full w-full object-cover"
+              />
             ) : (
               <span className="text-xs font-bold text-white">
                 {user.displayName.charAt(0).toUpperCase()}
@@ -86,7 +86,7 @@ function UserBar() {
           <div
             className={cn(
               'absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-[2.5px] border-[#232428]',
-              statusColors[user.status ?? 'offline'],
+              statusColors[user.status ?? 'offline']
             )}
           />
         </div>
@@ -99,10 +99,7 @@ function UserBar() {
       {/* Control icons */}
       <div className="flex items-center gap-0.5">
         <Tooltip content={isMuted ? 'Unmute' : 'Mute'} side="top">
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            className="rounded p-1.5 hover:bg-white/[0.08]"
-          >
+          <motion.button whileTap={{ scale: 0.9 }} className="rounded p-1.5 hover:bg-white/[0.08]">
             {isMuted ? (
               <MicOffIcon className="h-4 w-4 text-red-400" />
             ) : (
@@ -112,10 +109,7 @@ function UserBar() {
         </Tooltip>
 
         <Tooltip content={isDeafened ? 'Undeafen' : 'Deafen'} side="top">
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            className="rounded p-1.5 hover:bg-white/[0.08]"
-          >
+          <motion.button whileTap={{ scale: 0.9 }} className="rounded p-1.5 hover:bg-white/[0.08]">
             <SpeakerWaveIcon
               className={cn('h-4 w-4', isDeafened ? 'text-red-400' : 'text-gray-400')}
             />
@@ -123,10 +117,7 @@ function UserBar() {
         </Tooltip>
 
         <Tooltip content="User Settings" side="top">
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            className="rounded p-1.5 hover:bg-white/[0.08]"
-          >
+          <motion.button whileTap={{ scale: 0.9 }} className="rounded p-1.5 hover:bg-white/[0.08]">
             <Cog6ToothIcon className="h-4 w-4 text-gray-400" />
           </motion.button>
         </Tooltip>
@@ -137,6 +128,8 @@ function UserBar() {
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Description. */
+/** Server Sidebar component. */
 export function ServerSidebar({ className, server }: ServerSidebarProps) {
   const mockServer = server ?? {
     id: '1',
@@ -145,22 +138,12 @@ export function ServerSidebar({ className, server }: ServerSidebarProps) {
   };
 
   return (
-    <div
-      className={cn(
-        'flex h-full w-60 flex-col bg-[#2b2d31]',
-        className,
-      )}
-    >
+    <div className={cn('flex h-full w-60 flex-col bg-[#2b2d31]', className)}>
       {/* Server Header */}
-      <ServerHeader
-        serverName={mockServer.name}
-        boostLevel={mockServer.boostLevel}
-      />
+      <ServerHeader serverName={mockServer.name} boostLevel={mockServer.boostLevel} />
 
       {/* Optional Banner */}
-      {mockServer.bannerUrl && (
-        <ServerBanner imageUrl={mockServer.bannerUrl} />
-      )}
+      {mockServer.bannerUrl && <ServerBanner imageUrl={mockServer.bannerUrl} />}
 
       {/* Channel List — scrollable */}
       <ScrollArea className="flex-1">

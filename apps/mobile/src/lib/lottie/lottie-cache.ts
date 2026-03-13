@@ -158,9 +158,7 @@ class MobileLottieCache {
     if (totalSize <= MAX_CACHE_SIZE_BYTES) return;
 
     // Sort by last accessed (oldest first)
-    const entries = [...this.manifest.values()].sort(
-      (a, b) => a.lastAccessedAt - b.lastAccessedAt,
-    );
+    const entries = [...this.manifest.values()].sort((a, b) => a.lastAccessedAt - b.lastAccessedAt);
 
     for (const entry of entries) {
       if (totalSize <= MAX_CACHE_SIZE_BYTES) break;

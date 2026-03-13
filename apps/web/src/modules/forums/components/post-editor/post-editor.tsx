@@ -78,7 +78,7 @@ export function PostEditor({
                   onChange={(e) => editor.setPrefixId(e.target.value || undefined)}
                   className="appearance-none rounded-lg bg-white/[0.06] px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
                   style={
-                     
+                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                     {
                       '--tw-ring-color': primaryColor,
                     } as React.CSSProperties /* safe downcast – CSS custom property */
@@ -103,7 +103,7 @@ export function PostEditor({
                   onChange={(e) => editor.setCategoryId(e.target.value || undefined)}
                   className="appearance-none rounded-lg bg-white/[0.06] px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
                   style={
-                     
+                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                     {
                       '--tw-ring-color': primaryColor,
                     } as React.CSSProperties /* safe downcast – CSS custom property */
@@ -144,7 +144,7 @@ export function PostEditor({
         <div
           className={`relative ${editor.isDragging ? 'ring-2' : ''}`}
           style={
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             {
               '--tw-ring-color': primaryColor,
             } as React.CSSProperties /* safe downcast – CSS custom property */
@@ -189,7 +189,7 @@ export function PostEditor({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 flex items-center justify-center bg-white/[0.04]/90"
+                className="bg-white/[0.04]/90 absolute inset-0 flex items-center justify-center"
               >
                 <div className="text-center">
                   <PaperClipIcon

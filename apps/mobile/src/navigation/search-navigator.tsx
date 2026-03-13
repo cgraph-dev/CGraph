@@ -11,6 +11,7 @@ import ExploreScreen from '../screens/explore/explore-screen';
 const Stack = createNativeStackNavigator<SearchStackParamList>();
 
 /**
+ * Search Navigator component.
  *
  */
 export default function SearchNavigator() {

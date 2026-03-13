@@ -47,12 +47,12 @@ function highlight(text: string, query: string): React.ReactNode {
   const parts = text.split(regex);
   return parts.map((part, i) =>
     regex.test(part) ? (
-      <mark key={i} className="bg-primary-500/30 text-primary-300 rounded-sm px-0.5">
+      <mark key={i} className="rounded-sm bg-primary-500/30 px-0.5 text-primary-300">
         {part}
       </mark>
     ) : (
       part
-    ),
+    )
   );
 }
 
@@ -67,21 +67,23 @@ const typeIcons: Record<string, React.ReactNode> = {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Search Result Item component. */
 export function SearchResultItem({ result, query }: SearchResultItemProps) {
   return (
     <button
       onClick={result.onClick}
-      className="w-full flex items-start gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors group"
+      className="group flex w-full items-start gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.04]"
     >
       {/* Avatar or icon */}
       {result.avatar ? (
         <img
           src={result.avatar}
           alt=""
-          className="h-9 w-9 rounded-full object-cover shrink-0 mt-0.5"
+          className="mt-0.5 h-9 w-9 shrink-0 rounded-full object-cover"
         />
       ) : (
-        <div className="h-9 w-9 rounded-lg bg-white/[0.06] flex items-center justify-center shrink-0 mt-0.5 text-white/30">
+        <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-white/30">
           {typeIcons[result.type]}
         </div>
       )}
@@ -89,34 +91,34 @@ export function SearchResultItem({ result, query }: SearchResultItemProps) {
       {/* Content */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-white/80 truncate">
+          <p className="truncate text-sm font-medium text-white/80">
             {highlight(result.title, query)}
           </p>
           {result.timestamp && (
-            <span className="text-[10px] text-white/20 shrink-0">{result.timestamp}</span>
+            <span className="shrink-0 text-[10px] text-white/20">{result.timestamp}</span>
           )}
         </div>
 
         {result.subtitle && (
-          <p className="text-xs text-white/30 truncate mt-0.5">{result.subtitle}</p>
+          <p className="mt-0.5 truncate text-xs text-white/30">{result.subtitle}</p>
         )}
 
         {result.body && (
-          <p className="text-xs text-white/40 line-clamp-2 mt-1 leading-relaxed">
+          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/40">
             {highlight(result.body, query)}
           </p>
         )}
 
         {/* Metadata row */}
-        <div className="flex items-center gap-3 mt-1">
+        <div className="mt-1 flex items-center gap-3">
           {result.channelName && (
-            <span className="text-[10px] text-white/20 flex items-center gap-0.5">
+            <span className="flex items-center gap-0.5 text-[10px] text-white/20">
               <HashtagIcon className="h-3 w-3" />
               {result.channelName}
             </span>
           )}
           {result.hasAttachment && (
-            <span className="text-[10px] text-white/20 flex items-center gap-0.5">
+            <span className="flex items-center gap-0.5 text-[10px] text-white/20">
               <PaperClipIcon className="h-3 w-3" />
               Attachment
             </span>
@@ -127,9 +129,7 @@ export function SearchResultItem({ result, query }: SearchResultItemProps) {
             </span>
           )}
           {result.type === 'thread' && result.voteCount != null && (
-            <span className="text-[10px] text-white/20">
-              {result.voteCount} votes
-            </span>
+            <span className="text-[10px] text-white/20">{result.voteCount} votes</span>
           )}
         </div>
       </div>

@@ -21,6 +21,7 @@ import type { TabsHeaderProps, TabType } from '../types';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 /**
+ * Tabs Header component.
  *
  */
 export function TabsHeader({
@@ -46,11 +47,7 @@ export function TabsHeader({
   const indicatorStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateX: interpolate(
-          tabIndicatorPosition.value,
-          [0, 1],
-          [0, (SCREEN_WIDTH - 48) / 2]
-        ),
+        translateX: interpolate(tabIndicatorPosition.value, [0, 1], [0, (SCREEN_WIDTH - 48) / 2]),
       },
     ],
   }));
@@ -59,12 +56,7 @@ export function TabsHeader({
     <View style={styles.tabsWrapper}>
       <GlassCard variant="frosted" intensity="medium" style={styles.tabsContainer}>
         {/* Animated Indicator */}
-        <Animated.View
-          style={[
-            styles.tabIndicator,
-            indicatorStyle,
-          ]}
-        >
+        <Animated.View style={[styles.tabIndicator, indicatorStyle]}>
           <LinearGradient
             colors={activeTab === 'incoming' ? ['#8B5CF6', '#6366F1'] : ['#06B6D4', '#3B82F6']}
             start={{ x: 0, y: 0 }}

@@ -20,6 +20,7 @@ export interface UseAdminDashboardReturn {
 }
 
 /**
+ * Hook for admin dashboard.
  *
  */
 export function useAdminDashboard(): UseAdminDashboardReturn {
@@ -84,16 +85,18 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
           Array.isArray(reportsData)
             ? reportsData.map((r: Record<string, unknown>) => ({
                 id: String(r.id),
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 type: (r.type || r.report_type || 'post') as 'post' | 'user' | 'thread',
                 reason: String(r.reason || ''),
                 reportedBy: String(
-                   
+                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                   r.reported_by || (r.reporter as { username?: string })?.username || 'Anonymous'
                 ),
                 targetId: String(r.target_id || r.content_id || ''),
                 targetName: String(r.target_name || r.content_preview || 'Unknown'),
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 status: (r.status || 'pending') as 'pending' | 'resolved' | 'dismissed',
                 createdAt: String(r.created_at || r.inserted_at),
               }))
@@ -109,7 +112,8 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
             ? logs.map((l: Record<string, unknown>) => ({
                 id: String(l.id),
                 action: String(l.action || ''),
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 actor: String(l.actor || (l.user as { username?: string })?.username || 'System'),
                 target: String(l.target || l.resource || ''),
                 details: String(l.details || l.metadata || ''),
@@ -127,6 +131,7 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
 
   useEffect(() => {
     fetchDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRefresh = useCallback(async () => {

@@ -30,7 +30,7 @@ import Animated, {
   SlideInLeft,
   SlideOutLeft,
 } from 'react-native-reanimated';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 import * as Haptics from 'expo-haptics';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -75,28 +75,16 @@ function ServerIconItem({
       }}
       style={styles.iconContainer}
     >
-      <View
-        style={[
-          styles.serverIcon,
-          isActive && styles.serverIconActive,
-        ]}
-      >
+      <View style={[styles.serverIcon, isActive && styles.serverIconActive]}>
         {server.iconUrl ? (
-          <Animated.Image
-            source={{ uri: server.iconUrl }}
-            style={styles.serverImage}
-          />
+          <Animated.Image source={{ uri: server.iconUrl }} style={styles.serverImage} />
         ) : (
-          <Text style={styles.serverInitials}>
-            {server.name.slice(0, 2).toUpperCase()}
-          </Text>
+          <Text style={styles.serverInitials}>{server.name.slice(0, 2).toUpperCase()}</Text>
         )}
       </View>
 
       {/* Unread dot */}
-      {server.hasUnread && !isActive && (
-        <View style={styles.unreadDot} />
-      )}
+      {server.hasUnread && !isActive && <View style={styles.unreadDot} />}
 
       {/* Mention badge */}
       {(server.mentionCount ?? 0) > 0 && (
@@ -115,6 +103,8 @@ function ServerIconItem({
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Description. */
+/** Server Sidebar component. */
 export function ServerSidebar({
   visible,
   onClose,
@@ -140,7 +130,7 @@ export function ServerSidebar({
         }
         translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
       },
-    }),
+    })
   ).current;
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -151,7 +141,7 @@ export function ServerSidebar({
     (serverId: string) => {
       onServerSelect?.(serverId);
     },
-    [onServerSelect],
+    [onServerSelect]
   );
 
   return (
@@ -200,9 +190,7 @@ export function ServerSidebar({
         <View style={styles.divider} />
 
         {/* Channel list content */}
-        <View style={styles.channelArea}>
-          {children}
-        </View>
+        <View style={styles.channelArea}>{children}</View>
       </Animated.View>
     </Modal>
   );

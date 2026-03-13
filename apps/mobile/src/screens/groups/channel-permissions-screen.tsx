@@ -72,7 +72,7 @@ const PERMISSION_BITS: Record<string, number> = {
   manage_nicknames: 1 << 21,
   manage_emojis: 1 << 22,
   manage_automod: 1 << 23,
-  administrator: 1 << 31 >>> 0,
+  administrator: (1 << 31) >>> 0,
 };
 
 interface PermissionInfo {
@@ -119,7 +119,7 @@ function setPermState(
   allow: number,
   deny: number,
   bit: number,
-  state: PermState,
+  state: PermState
 ): { allow: number; deny: number } {
   // Clear bit from both
   let newAllow = allow & ~bit;
@@ -158,7 +158,9 @@ function PermissionSegmentedControl({
             style={[segStyles.segment, active && { backgroundColor: opt.activeColor }]}
             onPress={() => onChange(opt.value)}
           >
-            <Text style={[segStyles.segLabel, active && segStyles.segLabelActive]}>{opt.label}</Text>
+            <Text style={[segStyles.segLabel, active && segStyles.segLabelActive]}>
+              {opt.label}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -192,9 +194,10 @@ const segStyles = StyleSheet.create({
 // ============================================================================
 
 /**
+ * Channel Permissions Screen component.
  *
  */
-export default function ChannelPermissionsScreen({ navigation, route }: Props) {
+export default function ChannelPermissionsScreen({ _navigation, route }: Props) {
   const { channelId, groupId } = route.params;
   const { colors } = useThemeStore();
 
@@ -218,8 +221,16 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
         api.get(`/api/v1/groups/${groupId}/channels/${channelId}/permissions`),
         api.get(`/api/v1/groups/${groupId}/roles`),
       ]);
-      const owData = Array.isArray(owRes.data?.data) ? owRes.data.data : Array.isArray(owRes.data) ? owRes.data : [];
-      const rolesData = Array.isArray(rolesRes.data?.data) ? rolesRes.data.data : Array.isArray(rolesRes.data) ? rolesRes.data : [];
+      const owData = Array.isArray(owRes.data?.data)
+        ? owRes.data.data
+        : Array.isArray(owRes.data)
+          ? owRes.data
+          : [];
+      const rolesData = Array.isArray(rolesRes.data?.data)
+        ? rolesRes.data.data
+        : Array.isArray(rolesRes.data)
+          ? rolesRes.data
+          : [];
       setOverwrites(owData);
       setRoles(rolesData.sort((a: Role, b: Role) => b.position - a.position));
     } catch {
@@ -257,7 +268,7 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
     try {
       await api.patch(
         `/api/v1/groups/${groupId}/channels/${channelId}/permissions/${editingOverwrite.id}`,
-        { allow: editAllow, deny: editDeny },
+        { allow: editAllow, deny: editDeny }
       );
       setEditingOverwrite(null);
       fetchData();
@@ -277,7 +288,9 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
         style: 'destructive',
         onPress: async () => {
           try {
-            await api.delete(`/api/v1/groups/${groupId}/channels/${channelId}/permissions/${ow.id}`);
+            await api.delete(
+              `/api/v1/groups/${groupId}/channels/${channelId}/permissions/${ow.id}`
+            );
             fetchData();
           } catch {
             Alert.alert('Error', 'Failed to delete override');
@@ -311,7 +324,8 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
   // ============================================================================
 
   if (editingOverwrite) {
-    const roleName = roles.find((r) => r.id === editingOverwrite.role_id)?.name || 'Member Override';
+    const roleName =
+      roles.find((r) => r.id === editingOverwrite.role_id)?.name || 'Member Override';
     const hasChanges = editAllow !== editingOverwrite.allow || editDeny !== editingOverwrite.deny;
 
     return (
@@ -330,7 +344,9 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
 
             return (
               <View key={perm.key} style={[styles.permRow, { backgroundColor: colors.surface }]}>
-                <Text style={[styles.permLabel, { color: colors.text, flex: 1 }]}>{perm.label}</Text>
+                <Text style={[styles.permLabel, { color: colors.text, flex: 1 }]}>
+                  {perm.label}
+                </Text>
                 <PermissionSegmentedControl
                   state={state}
                   onChange={(s) => handlePermChange(perm.key, s)}
@@ -363,7 +379,9 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
   // ============================================================================
 
   if (showRolePicker) {
-    const existingRoleIds = new Set(overwrites.filter((o) => o.type === 'role').map((o) => o.role_id));
+    const existingRoleIds = new Set(
+      overwrites.filter((o) => o.type === 'role').map((o) => o.role_id)
+    );
     const availableRoles = roles.filter((r) => !existingRoleIds.has(r.id));
 
     return (
@@ -384,7 +402,12 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
               style={[styles.rolePickerItem, { backgroundColor: colors.surface }]}
               onPress={() => handleAddOverride(item)}
             >
-              <View style={[styles.roleColorDot, { backgroundColor: item.color || colors.textSecondary }]} />
+              <View
+                style={[
+                  styles.roleColorDot,
+                  { backgroundColor: item.color || colors.textSecondary },
+                ]}
+              />
               <Text style={[styles.rolePickerName, { color: colors.text }]}>{item.name}</Text>
             </TouchableOpacity>
           )}
@@ -413,8 +436,12 @@ export default function ChannelPermissionsScreen({ navigation, route }: Props) {
   }
 
   const summarizeOverwrite = (ow: PermissionOverwrite): string => {
-    const allowCount = ALL_PERMISSIONS.filter((p) => (ow.allow & PERMISSION_BITS[p.key]) !== 0).length;
-    const denyCount = ALL_PERMISSIONS.filter((p) => (ow.deny & PERMISSION_BITS[p.key]) !== 0).length;
+    const allowCount = ALL_PERMISSIONS.filter(
+      (p) => (ow.allow & PERMISSION_BITS[p.key]) !== 0
+    ).length;
+    const denyCount = ALL_PERMISSIONS.filter(
+      (p) => (ow.deny & PERMISSION_BITS[p.key]) !== 0
+    ).length;
     const parts: string[] = [];
     if (allowCount > 0) parts.push(`${allowCount} allowed`);
     if (denyCount > 0) parts.push(`${denyCount} denied`);

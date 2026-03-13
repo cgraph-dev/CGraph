@@ -50,6 +50,7 @@ async function defaultSearch(query: string): Promise<MentionUser[]> {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Mention Autocomplete component. */
 export default function MentionAutocomplete({
   onMention,
   inputRef,
@@ -155,13 +156,9 @@ export default function MentionAutocomplete({
       const newValue = newTextBefore + textAfter;
 
       // Update input value
-      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-        window.HTMLTextAreaElement.prototype,
-        'value',
-      )?.set ?? Object.getOwnPropertyDescriptor(
-        window.HTMLInputElement.prototype,
-        'value',
-      )?.set;
+      const nativeInputValueSetter =
+        Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set ??
+        Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
 
       nativeInputValueSetter?.call(el, newValue);
       el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -175,7 +172,7 @@ export default function MentionAutocomplete({
       setIsOpen(false);
       setQuery('');
     },
-    [inputRef, onMention],
+    [inputRef, onMention]
   );
 
   // Keyboard navigation
@@ -220,7 +217,7 @@ export default function MentionAutocomplete({
           transition={{ duration: 0.12 }}
           className={cn(
             'fixed z-[100] w-72 rounded-lg border border-white/[0.08] bg-gray-900 shadow-2xl',
-            className,
+            className
           )}
           style={{ top: position.top, left: position.left }}
         >
@@ -240,7 +237,7 @@ export default function MentionAutocomplete({
                       'flex w-full items-center gap-3 px-3 py-2 text-left transition-colors',
                       index === selectedIndex
                         ? 'bg-primary-600/20 text-white'
-                        : 'text-gray-300 hover:bg-white/[0.06]',
+                        : 'text-gray-300 hover:bg-white/[0.06]'
                     )}
                   >
                     <img
@@ -249,13 +246,9 @@ export default function MentionAutocomplete({
                       className="h-7 w-7 rounded-full object-cover"
                     />
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium">
-                        @{user.username}
-                      </div>
+                      <div className="truncate text-sm font-medium">@{user.username}</div>
                       {user.displayName && user.displayName !== user.username && (
-                        <div className="truncate text-xs text-gray-500">
-                          {user.displayName}
-                        </div>
+                        <div className="truncate text-xs text-gray-500">{user.displayName}</div>
                       )}
                     </div>
                   </button>

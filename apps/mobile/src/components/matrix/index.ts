@@ -1,16 +1,16 @@
 /**
  * Matrix Cipher Background Animation - Mobile Exports
- * 
+ *
  * @description Public API for the Matrix animation system on React Native.
- * 
+ *
  * @version 1.0.0
  * @since v0.6.3
  * @author CGraph Development Team
- * 
+ *
  * @example
  * ```tsx
  * import { MatrixBackground, MatrixAuthBackground } from './components/matrix';
- * 
+ *
  * function Screen() {
  *   return (
  *     <View style={{ flex: 1 }}>

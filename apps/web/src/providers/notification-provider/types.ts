@@ -5,12 +5,7 @@
 
 import type { Achievement } from '@cgraph/shared-types';
 
-export type NotificationType =
-  | 'success'
-  | 'error'
-  | 'warning'
-  | 'info'
-  | 'achievement';
+export type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'achievement';
 
 export interface BaseNotification {
   id: string;

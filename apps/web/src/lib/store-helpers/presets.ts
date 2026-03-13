@@ -93,8 +93,6 @@ export function classifyByRules<T>(
   rules: Array<ClassifyRule<T>>,
   defaultCategory?: string
 ): Record<string, T[]> | string {
-   
-
   // Single item classification (returns string)
   if (!Array.isArray(items) && defaultCategory !== undefined) {
     for (const rule of rules) {

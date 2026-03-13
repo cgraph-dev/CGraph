@@ -73,12 +73,7 @@ export default function Skeleton({
     );
   }
 
-  return (
-    <div
-      className={cn(shimmerClass, variantStyles[v], className)}
-      style={style}
-    />
-  );
+  return <div className={cn(shimmerClass, variantStyles[v], className)} style={style} />;
 }
 
 function SkeletonShape({ shape }: { shape: SkeletonShape }) {
@@ -94,9 +89,7 @@ function SkeletonShape({ shape }: { shape: SkeletonShape }) {
     case 'avatar':
       return <div className={cn(shimmerClass, 'h-10 w-10 rounded-full')} />;
     case 'card':
-      return (
-        <div className={cn(shimmerClass, 'h-24 w-full rounded-lg')} />
-      );
+      return <div className={cn(shimmerClass, 'h-24 w-full rounded-lg')} />;
     case 'message':
       return (
         <div className="flex gap-3 py-2">
@@ -112,9 +105,7 @@ function SkeletonShape({ shape }: { shape: SkeletonShape }) {
         </div>
       );
     case 'thumbnail':
-      return (
-        <div className={cn(shimmerClass, 'aspect-video w-full rounded-lg')} />
-      );
+      return <div className={cn(shimmerClass, 'aspect-video w-full rounded-lg')} />;
   }
 }
 
@@ -127,38 +118,38 @@ function SkeletonShape({ shape }: { shape: SkeletonShape }) {
  */
 export function PostCardSkeleton() {
   return (
-    <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4 animate-pulse">
+    <div className="animate-pulse rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
       <div className="flex gap-3">
         {/* Vote buttons skeleton */}
         <div className="flex flex-col items-center gap-1">
-          <div className="h-6 w-6 bg-white/[0.06] rounded" />
-          <div className="h-4 w-8 bg-white/[0.06] rounded" />
-          <div className="h-6 w-6 bg-white/[0.06] rounded" />
+          <div className="h-6 w-6 rounded bg-white/[0.06]" />
+          <div className="h-4 w-8 rounded bg-white/[0.06]" />
+          <div className="h-6 w-6 rounded bg-white/[0.06]" />
         </div>
-        
+
         {/* Content skeleton */}
         <div className="flex-1">
           {/* Meta */}
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-5 w-5 bg-white/[0.06] rounded-full" />
-            <div className="h-4 w-24 bg-white/[0.06] rounded" />
-            <div className="h-4 w-32 bg-white/[0.06] rounded" />
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-5 w-5 rounded-full bg-white/[0.06]" />
+            <div className="h-4 w-24 rounded bg-white/[0.06]" />
+            <div className="h-4 w-32 rounded bg-white/[0.06]" />
           </div>
-          
+
           {/* Title */}
-          <div className="h-6 w-3/4 bg-white/[0.06] rounded mb-2" />
-          
+          <div className="mb-2 h-6 w-3/4 rounded bg-white/[0.06]" />
+
           {/* Content preview */}
           <div className="space-y-2">
-            <div className="h-4 w-full bg-white/[0.06] rounded" />
-            <div className="h-4 w-5/6 bg-white/[0.06] rounded" />
+            <div className="h-4 w-full rounded bg-white/[0.06]" />
+            <div className="h-4 w-5/6 rounded bg-white/[0.06]" />
           </div>
-          
+
           {/* Actions */}
-          <div className="flex gap-4 mt-3">
-            <div className="h-6 w-24 bg-white/[0.06] rounded" />
-            <div className="h-6 w-16 bg-white/[0.06] rounded" />
-            <div className="h-6 w-16 bg-white/[0.06] rounded" />
+          <div className="mt-3 flex gap-4">
+            <div className="h-6 w-24 rounded bg-white/[0.06]" />
+            <div className="h-6 w-16 rounded bg-white/[0.06]" />
+            <div className="h-6 w-16 rounded bg-white/[0.06]" />
           </div>
         </div>
       </div>
@@ -175,14 +166,14 @@ export function PostCardSkeleton() {
  */
 export function ForumCardSkeleton() {
   return (
-    <div className="bg-white/[0.04] border border-white/[0.06] rounded-lg p-4 animate-pulse">
+    <div className="animate-pulse rounded-lg border border-white/[0.06] bg-white/[0.04] p-4">
       <div className="flex items-center gap-3">
-        <div className="h-12 w-12 bg-white/[0.06] rounded-full" />
+        <div className="h-12 w-12 rounded-full bg-white/[0.06]" />
         <div className="flex-1">
-          <div className="h-5 w-32 bg-white/[0.06] rounded mb-1" />
-          <div className="h-4 w-48 bg-white/[0.06] rounded" />
+          <div className="mb-1 h-5 w-32 rounded bg-white/[0.06]" />
+          <div className="h-4 w-48 rounded bg-white/[0.06]" />
         </div>
-        <div className="h-8 w-20 bg-white/[0.06] rounded-full" />
+        <div className="h-8 w-20 rounded-full bg-white/[0.06]" />
       </div>
     </div>
   );
@@ -199,19 +190,19 @@ export function CommentSkeleton({ depth = 0 }: { depth?: number }) {
   return (
     <div className="animate-pulse" style={{ marginLeft: depth * 24 }}>
       <div className="flex gap-3">
-        <div className="h-8 w-8 bg-white/[0.06] rounded-full" />
+        <div className="h-8 w-8 rounded-full bg-white/[0.06]" />
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-4 w-24 bg-white/[0.06] rounded" />
-            <div className="h-4 w-20 bg-white/[0.06] rounded" />
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-4 w-24 rounded bg-white/[0.06]" />
+            <div className="h-4 w-20 rounded bg-white/[0.06]" />
           </div>
           <div className="space-y-2">
-            <div className="h-4 w-full bg-white/[0.06] rounded" />
-            <div className="h-4 w-2/3 bg-white/[0.06] rounded" />
+            <div className="h-4 w-full rounded bg-white/[0.06]" />
+            <div className="h-4 w-2/3 rounded bg-white/[0.06]" />
           </div>
-          <div className="flex gap-4 mt-2">
-            <div className="h-5 w-16 bg-white/[0.06] rounded" />
-            <div className="h-5 w-12 bg-white/[0.06] rounded" />
+          <div className="mt-2 flex gap-4">
+            <div className="h-5 w-16 rounded bg-white/[0.06]" />
+            <div className="h-5 w-12 rounded bg-white/[0.06]" />
           </div>
         </div>
       </div>
@@ -228,18 +219,18 @@ export function CommentSkeleton({ depth = 0 }: { depth?: number }) {
  */
 export function MessageSkeleton({ compact = false }: { compact?: boolean }) {
   return (
-    <div className="flex gap-3 px-4 py-2 animate-pulse">
-      {!compact && <div className="h-10 w-10 shrink-0 bg-white/[0.06] rounded-full" />}
+    <div className="flex animate-pulse gap-3 px-4 py-2">
+      {!compact && <div className="h-10 w-10 shrink-0 rounded-full bg-white/[0.06]" />}
       <div className="flex-1 space-y-1.5">
         {!compact && (
           <div className="flex items-center gap-2">
-            <div className="h-4 w-24 bg-white/[0.06] rounded" />
-            <div className="h-3 w-16 bg-white/[0.04] rounded" />
+            <div className="h-4 w-24 rounded bg-white/[0.06]" />
+            <div className="h-3 w-16 rounded bg-white/[0.04]" />
           </div>
         )}
         <div className="space-y-1.5">
-          <div className="h-4 w-full max-w-[320px] bg-white/[0.06] rounded" />
-          <div className="h-4 w-3/4 max-w-[240px] bg-white/[0.06] rounded" />
+          <div className="h-4 w-full max-w-[320px] rounded bg-white/[0.06]" />
+          <div className="h-4 w-3/4 max-w-[240px] rounded bg-white/[0.06]" />
         </div>
       </div>
     </div>
@@ -272,13 +263,13 @@ export function MessageListSkeleton({ count = 6 }: { count?: number }) {
  */
 export function UserCardSkeleton() {
   return (
-    <div className="flex items-center gap-3 rounded-lg px-3 py-2.5 animate-pulse">
-      <div className="h-10 w-10 shrink-0 bg-white/[0.06] rounded-full" />
-      <div className="flex-1 min-w-0">
-        <div className="h-4 w-28 bg-white/[0.06] rounded mb-1" />
-        <div className="h-3 w-20 bg-white/[0.04] rounded" />
+    <div className="flex animate-pulse items-center gap-3 rounded-lg px-3 py-2.5">
+      <div className="h-10 w-10 shrink-0 rounded-full bg-white/[0.06]" />
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 h-4 w-28 rounded bg-white/[0.06]" />
+        <div className="h-3 w-20 rounded bg-white/[0.04]" />
       </div>
-      <div className="h-2 w-2 bg-white/[0.06] rounded-full" />
+      <div className="h-2 w-2 rounded-full bg-white/[0.06]" />
     </div>
   );
 }
@@ -309,14 +300,14 @@ export function UserCardListSkeleton({ count = 5 }: { count?: number }) {
  */
 export function ConversationItemSkeleton() {
   return (
-    <div className="flex items-center gap-3 rounded-lg px-3 py-3 animate-pulse">
-      <div className="h-12 w-12 shrink-0 bg-white/[0.06] rounded-full" />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-1">
-          <div className="h-4 w-32 bg-white/[0.06] rounded" />
-          <div className="h-3 w-10 bg-white/[0.04] rounded" />
+    <div className="flex animate-pulse items-center gap-3 rounded-lg px-3 py-3">
+      <div className="h-12 w-12 shrink-0 rounded-full bg-white/[0.06]" />
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex items-center justify-between">
+          <div className="h-4 w-32 rounded bg-white/[0.06]" />
+          <div className="h-3 w-10 rounded bg-white/[0.04]" />
         </div>
-        <div className="h-3.5 w-48 bg-white/[0.04] rounded" />
+        <div className="h-3.5 w-48 rounded bg-white/[0.04]" />
       </div>
     </div>
   );

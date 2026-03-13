@@ -11,7 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
-  Dimensions,
+  _Dimensions,
   Alert,
   TextInput,
 } from 'react-native';
@@ -28,7 +28,7 @@ import {
   TwoFactorSetupData,
   SetupStep,
   STEPS,
-  SCREEN_WIDTH,
+  _SCREEN_WIDTH,
 } from './two-factor-setup/two-factor-types';
 import { IntroStep } from './two-factor-setup/intro-step';
 import { ScanStep } from './two-factor-setup/scan-step';
@@ -50,6 +50,7 @@ const COLORS: Record<string, string> = {
 };
 
 /**
+ * Two Factor Setup Screen component.
  *
  */
 export default function TwoFactorSetupScreen() {
@@ -92,7 +93,7 @@ export default function TwoFactorSetupScreen() {
         }).start();
       });
     },
-    [fadeAnim],
+    [fadeAnim]
   );
 
   const generateSecret = useCallback(async () => {
@@ -112,7 +113,10 @@ export default function TwoFactorSetupScreen() {
     try {
       setIsVerifying(true);
       HapticFeedback.medium();
-      const response = await api.post('/api/v1/auth/2fa/verify', { code, secret: setupData?.secret });
+      const response = await api.post('/api/v1/auth/2fa/verify', {
+        code,
+        secret: setupData?.secret,
+      });
       if (response.data.backup_codes) setBackupCodes(response.data.backup_codes);
       HapticFeedback.success();
       goToStep('backup');
@@ -146,7 +150,7 @@ export default function TwoFactorSetupScreen() {
       setVerificationCode(newCode);
       if (value && index < 5) codeInputRefs.current[index + 1]?.focus();
     },
-    [verificationCode],
+    [verificationCode]
   );
 
   const handleKeyPress = useCallback(
@@ -155,7 +159,7 @@ export default function TwoFactorSetupScreen() {
         codeInputRefs.current[index - 1]?.focus();
       }
     },
-    [verificationCode],
+    [verificationCode]
   );
 
   const copySecret = useCallback(async () => {
@@ -227,13 +231,19 @@ export default function TwoFactorSetupScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#111827', '#0f172a', '#111827']} style={StyleSheet.absoluteFillObject} />
+      <LinearGradient
+        colors={['#111827', '#0f172a', '#111827']}
+        style={StyleSheet.absoluteFillObject}
+      />
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => { HapticFeedback.light(); navigation.goBack(); }}
+            onPress={() => {
+              HapticFeedback.light();
+              navigation.goBack();
+            }}
           >
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
@@ -252,19 +262,17 @@ export default function TwoFactorSetupScreen() {
           </View>
           <View style={styles.stepDots}>
             {STEP_ORDER.map((s, i) => (
-              <View
-                key={s}
-                style={[
-                  styles.stepDot,
-                  i <= stepIndex && styles.stepDotActive,
-                ]}
-              />
+              <View key={s} style={[styles.stepDot, i <= stepIndex && styles.stepDotActive]} />
             ))}
           </View>
         </View>
 
         {/* Step content */}
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
           <Animated.View style={{ opacity: fadeAnim }}>{renderStep()}</Animated.View>
         </ScrollView>
       </SafeAreaView>
@@ -276,28 +284,40 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#111827' },
   safeArea: { flex: 1 },
   header: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 16, paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   backButton: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerCenter: { flex: 1, marginLeft: 12 },
   headerTitle: { fontSize: 20, fontWeight: '700', color: '#fff' },
   headerSubtitle: { fontSize: 13, color: '#9ca3af', marginTop: 2 },
   progressContainer: { paddingHorizontal: 16, marginBottom: 8 },
   progressTrack: {
-    height: 4, backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 2, overflow: 'hidden',
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 2,
+    overflow: 'hidden',
   },
   progressFill: { height: '100%', backgroundColor: '#8b5cf6', borderRadius: 2 },
   stepDots: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    marginTop: 8, paddingHorizontal: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    paddingHorizontal: 4,
   },
   stepDot: {
-    width: 8, height: 8, borderRadius: 4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: 'rgba(255,255,255,0.2)',
   },
   stepDotActive: { backgroundColor: '#8b5cf6' },

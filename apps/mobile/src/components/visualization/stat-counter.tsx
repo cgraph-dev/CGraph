@@ -19,8 +19,8 @@ import Animated, {
   withSpring,
   withTiming,
   runOnJS,
-  interpolate,
-  Extrapolate,
+  _interpolate,
+  _Extrapolate,
   Easing,
   SharedValue,
 } from 'react-native-reanimated';
@@ -74,6 +74,7 @@ const SIZE_CONFIG = {
 // ============================================================================
 
 /**
+ * Stat Counter component.
  *
  */
 export function StatCounter({
@@ -134,6 +135,7 @@ export function StatCounter({
     } else {
       animatedValue.value = value;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, animated, animationDuration]);
 
   // Format number
@@ -289,6 +291,7 @@ export interface StatGroupProps {
 }
 
 /**
+ * Stat Group component.
  *
  */
 export function StatGroup({
@@ -355,6 +358,7 @@ export interface ComparisonStatProps {
 }
 
 /**
+ * Comparison Stat component.
  *
  */
 export function ComparisonStat({
@@ -417,6 +421,7 @@ export interface CountdownProps {
 }
 
 /**
+ * Countdown component.
  *
  */
 export function Countdown({
@@ -510,6 +515,7 @@ function CountdownSegment({ value, fontSize, color }: CountdownSegmentProps) {
     scale.value = withSpring(1.1, { damping: 10 }, () => {
       scale.value = withSpring(1, { damping: 15 });
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const animatedStyle = useAnimatedStyle(() => ({

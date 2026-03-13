@@ -31,6 +31,8 @@ const MAX_VISIBLE_AVATARS = 5;
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Voice Channel Item component. */
 export function VoiceChannelItem({ channel, groupId }: VoiceChannelItemProps) {
   const { joinChannel } = useVoiceChannel();
   const currentChannelId = useVoiceStateStore((s) => s.currentChannelId);
@@ -54,9 +56,7 @@ export function VoiceChannelItem({ channel, groupId }: VoiceChannelItemProps) {
       whileHover={{ x: 2 }}
       whileTap={{ scale: 0.98 }}
       className={`relative flex w-full flex-col gap-1 rounded-lg px-2 py-1.5 text-left transition-colors ${
-        isConnected
-          ? 'text-white'
-          : 'text-gray-400 hover:bg-white/[0.08] hover:text-gray-200'
+        isConnected ? 'text-white' : 'text-gray-400 hover:bg-white/[0.08] hover:text-gray-200'
       }`}
     >
       {/* Active indicator */}
@@ -91,9 +91,7 @@ export function VoiceChannelItem({ channel, groupId }: VoiceChannelItemProps) {
           {visibleMembers.map((member) => (
             <MemberAvatar key={member.userId} member={member} />
           ))}
-          {overflow > 0 && (
-            <span className="ml-1 text-xs text-gray-500">+{overflow}</span>
-          )}
+          {overflow > 0 && <span className="ml-1 text-xs text-gray-500">+{overflow}</span>}
         </div>
       )}
     </motion.button>

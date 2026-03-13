@@ -21,14 +21,10 @@ const PADDING = {
 };
 
 /**
+ * Card component.
  *
  */
-export default function Card({
-  children,
-  variant = 'default',
-  padding = 'md',
-  style,
-}: CardProps) {
+export default function Card({ children, variant = 'default', padding = 'md', style }: CardProps) {
   const { colors } = useThemeStore();
 
   const getVariantStyles = (): ViewStyle => {
@@ -58,14 +54,7 @@ export default function Card({
   };
 
   return (
-    <View
-      style={[
-        styles.card,
-        getVariantStyles(),
-        { padding: PADDING[padding] },
-        style,
-      ]}
-    >
+    <View style={[styles.card, getVariantStyles(), { padding: PADDING[padding] }, style]}>
       {children}
     </View>
   );

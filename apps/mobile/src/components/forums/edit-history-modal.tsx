@@ -25,6 +25,7 @@ interface EditHistoryModalProps {
 }
 
 /**
+ * Edit History Modal component.
  *
  */
 export default function EditHistoryModal({
@@ -41,6 +42,7 @@ export default function EditHistoryModal({
     if (visible && postId && onFetchHistory) {
       loadHistory();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, postId]);
 
   const loadHistory = async () => {
@@ -92,12 +94,7 @@ export default function EditHistoryModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={handleClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={handleClose}>
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           {/* Header */}
@@ -108,11 +105,7 @@ export default function EditHistoryModal({
                 {history.length} {history.length === 1 ? 'edit' : 'edits'}
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={handleClose}
-              style={styles.closeButton}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity onPress={handleClose} style={styles.closeButton} activeOpacity={0.7}>
               <Text style={styles.closeButtonText}>✕</Text>
             </TouchableOpacity>
           </View>
@@ -148,25 +141,16 @@ export default function EditHistoryModal({
                       activeOpacity={0.7}
                     >
                       <View style={styles.timelineItemHeader}>
-                        <Text style={styles.timelineItemTitle}>
-                          Edit #{history.length - index}
-                        </Text>
+                        <Text style={styles.timelineItemTitle}>Edit #{history.length - index}</Text>
                       </View>
-                      <Text style={styles.timelineItemUser}>
-                        👤 {edit.edited_by_username}
-                      </Text>
-                      <Text style={styles.timelineItemTime}>
-                        {formatTimeAgo(edit.edited_at)}
-                      </Text>
+                      <Text style={styles.timelineItemUser}>👤 {edit.edited_by_username}</Text>
+                      <Text style={styles.timelineItemTime}>{formatTimeAgo(edit.edited_at)}</Text>
                     </TouchableOpacity>
                   )}
                 />
 
                 {/* Details Panel */}
-                <ScrollView
-                  style={styles.details}
-                  showsVerticalScrollIndicator={false}
-                >
+                <ScrollView style={styles.details} showsVerticalScrollIndicator={false}>
                   {selectedEdit && (
                     <View style={styles.detailsContent}>
                       {/* Edit Info */}
@@ -175,7 +159,8 @@ export default function EditHistoryModal({
                           Edit #{history.findIndex((h) => h.id === selectedEdit.id) + 1}
                         </Text>
                         <Text style={styles.detailsSubtitle}>
-                          By {selectedEdit.edited_by_username} • {formatTimeAgo(selectedEdit.edited_at)}
+                          By {selectedEdit.edited_by_username} •{' '}
+                          {formatTimeAgo(selectedEdit.edited_at)}
                         </Text>
                       </View>
 
@@ -191,9 +176,7 @@ export default function EditHistoryModal({
                       <View style={styles.contentContainer}>
                         <Text style={styles.contentLabel}>Previous Content</Text>
                         <View style={styles.contentBox}>
-                          <Text style={styles.contentText}>
-                            {selectedEdit.previous_content}
-                          </Text>
+                          <Text style={styles.contentText}>{selectedEdit.previous_content}</Text>
                         </View>
                       </View>
 

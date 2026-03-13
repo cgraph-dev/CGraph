@@ -67,6 +67,7 @@ const sections: LegalSection[] = [
 ];
 
 /**
+ * G D P R Screen component.
  *
  */
 export default function GDPRScreen() {

@@ -15,7 +15,7 @@ import type { StateStorage } from 'zustand/middleware';
  */
 export function getApiErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof AxiosError) {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const data = error.response?.data as ApiErrorResponse | undefined; // type assertion: axios error response data shape
     return data?.error || data?.message || fallback;
   }
@@ -32,60 +32,86 @@ export function getApiErrorMessage(error: unknown, fallback: string): string {
  */
 export function mapUserFromApi(apiUser: Record<string, unknown>): User {
   return {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     id: apiUser.id as string, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     uid: (apiUser.uid as string) || '', // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     userId: (apiUser.user_id as number) || 0, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     userIdDisplay: (apiUser.user_id_display as string) || '#0000000000', // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     email: apiUser.email as string, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     username: (apiUser.username as string | null) || null, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     displayName: (apiUser.display_name as string | null) || null, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     avatarUrl: (apiUser.avatar_url as string | null) || null, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     walletAddress: (apiUser.wallet_address as string | null) || null, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     emailVerifiedAt: (apiUser.email_verified_at as string | null) || null, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     twoFactorEnabled: (apiUser.totp_enabled as boolean) || false, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     status: (apiUser.status as 'online' | 'idle' | 'dnd' | 'offline') || 'offline', // type assertion: API field narrowed to status union
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     statusMessage: (apiUser.custom_status as string | null) || null, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     karma: (apiUser.karma as number) || 0, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     isVerified: (apiUser.is_verified as boolean) || false, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     isPremium: (apiUser.is_premium as boolean) || false, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     isAdmin: (apiUser.is_admin as boolean) || false, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     canChangeUsername: (apiUser.can_change_username as boolean) ?? true, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     usernameNextChangeAt: (apiUser.username_next_change_at as string | null) || null, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     createdAt: apiUser.inserted_at as string, // type assertion: API field narrowed from unknown
     // Gamification fields
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     level: (apiUser.level as number) || 1, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     xp: (apiUser.xp as number) || 0, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     coins: (apiUser.coins as number) || 0, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     title: apiUser.title as string | undefined, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     titleColor: apiUser.title_color as string | undefined, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     badges: apiUser.badges as string[] | undefined, // type assertion: API field narrowed from unknown
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     streak: (apiUser.streak as number) || 0, // type assertion: API field narrowed from unknown
   };
 }

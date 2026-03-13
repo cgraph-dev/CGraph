@@ -59,7 +59,7 @@ export function MemberFiltersPanel({
             placeholder="Search members..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="bg-background border-border focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
+            className="bg-background border-border w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
@@ -68,7 +68,7 @@ export function MemberFiltersPanel({
           onClick={onToggleFilters}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 transition-colors ${
             showFilters || hasActiveFilters
-              ? 'bg-primary text-primary-foreground'
+              ? 'text-primary-foreground bg-primary'
               : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
           }`}
         >
@@ -85,14 +85,14 @@ export function MemberFiltersPanel({
         <div className="border-border mt-4 grid grid-cols-1 gap-4 border-t pt-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* User group filter */}
           <div>
-            <label className="text-foreground mb-1 block text-sm font-medium">User Group</label>
+            <label className="mb-1 block text-sm font-medium text-foreground">User Group</label>
             <select
               value={filterGroup}
               onChange={(e) => {
                 onFilterGroupChange(e.target.value);
                 onPageReset();
               }}
-              className="bg-background border-border focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
+              className="bg-background border-border w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="">All Groups</option>
               {userGroups.map((group) => (
@@ -113,15 +113,15 @@ export function MemberFiltersPanel({
                   onFilterOnlineChange(e.target.checked);
                   onPageReset();
                 }}
-                className="border-border text-primary focus:ring-primary h-4 w-4 rounded"
+                className="border-border h-4 w-4 rounded text-primary focus:ring-primary"
               />
-              <span className="text-foreground text-sm font-medium">Online Only</span>
+              <span className="text-sm font-medium text-foreground">Online Only</span>
             </label>
           </div>
 
           {/* Joined after */}
           <div>
-            <label className="text-foreground mb-1 block text-sm font-medium">Joined After</label>
+            <label className="mb-1 block text-sm font-medium text-foreground">Joined After</label>
             <input
               type="date"
               value={filterJoinedAfter}
@@ -129,13 +129,13 @@ export function MemberFiltersPanel({
                 onFilterJoinedAfterChange(e.target.value);
                 onPageReset();
               }}
-              className="bg-background border-border focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
+              className="bg-background border-border w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           {/* Joined before */}
           <div>
-            <label className="text-foreground mb-1 block text-sm font-medium">Joined Before</label>
+            <label className="mb-1 block text-sm font-medium text-foreground">Joined Before</label>
             <input
               type="date"
               value={filterJoinedBefore}
@@ -143,7 +143,7 @@ export function MemberFiltersPanel({
                 onFilterJoinedBeforeChange(e.target.value);
                 onPageReset();
               }}
-              className="bg-background border-border focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
+              className="bg-background border-border w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
@@ -152,7 +152,7 @@ export function MemberFiltersPanel({
             <div className="sm:col-span-2 lg:col-span-4">
               <button
                 onClick={onClearFilters}
-                className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
+                className="text-muted-foreground flex items-center gap-2 text-sm transition-colors hover:text-foreground"
               >
                 <XMarkIcon className="h-4 w-4" />
                 Clear all filters

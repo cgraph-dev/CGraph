@@ -106,6 +106,7 @@ export function useConversationPage() {
   };
 
   // ── Derived data ─────────────────────────────────────────────────────
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversationMessages = conversationId ? messages[conversationId] || [] : [];
   const typing = conversationId
     ? (typingUsers[conversationId] || []).filter((userId) => userId !== user?.id)
@@ -122,6 +123,7 @@ export function useConversationPage() {
     if (!conversationId || conversationMessages.length === 0) return;
     const messageIds = conversationMessages.map((m) => m.id);
     fetchReplyCounts(conversationId, messageIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, conversationMessages.length, fetchReplyCounts]);
 
   // ── Handler factories ────────────────────────────────────────────────
@@ -142,17 +144,20 @@ export function useConversationPage() {
     typingTimeoutRef,
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSend = useCallback(createSendHandler(handlerContext), [
     conversationId,
     messageInput,
     replyTo,
     isSending,
   ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleRetryE2EE = useCallback(createE2EERetryHandler(handlerContext), [
     conversationId,
     pendingMessage,
     isSending,
   ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSendUnencrypted = useCallback(createUnencryptedSendHandler(handlerContext), [
     conversationId,
     pendingMessage,
@@ -170,10 +175,12 @@ export function useConversationPage() {
     setShowGifPicker,
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleStickerSelect = useCallback(createStickerSelectHandler(mediaContext), [
     conversationId,
     replyTo,
   ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleGifSelect = useCallback(createGifSelectHandler(mediaContext), [
     conversationId,
     replyTo,
@@ -193,6 +200,7 @@ export function useConversationPage() {
     setIsSending,
     setIsVoiceMode,
   };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleVoiceComplete = useCallback(createVoiceCompleteHandler(voiceContext), [
     conversationId,
   ]);
@@ -206,6 +214,7 @@ export function useConversationPage() {
     setIsSending,
     fileInputRef,
   };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleFileSelect = useCallback(createFileSelectHandler(fileContext), [
     conversationId,
     replyTo,

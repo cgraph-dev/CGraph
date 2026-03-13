@@ -79,17 +79,64 @@ declare interface Pbkdf2Params extends Algorithm {
 }
 
 declare interface SubtleCrypto {
-  decrypt(algorithm: Algorithm | AesGcmParams, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
-  deriveBits(algorithm: Algorithm | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: CryptoKey, length: number): Promise<ArrayBuffer>;
-  deriveKey(algorithm: Algorithm | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params, baseKey: CryptoKey, derivedKeyType: Algorithm | AesKeyGenParams | HmacImportParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+  decrypt(
+    algorithm: Algorithm | AesGcmParams,
+    key: CryptoKey,
+    data: BufferSource
+  ): Promise<ArrayBuffer>;
+  deriveBits(
+    algorithm: Algorithm | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params,
+    baseKey: CryptoKey,
+    length: number
+  ): Promise<ArrayBuffer>;
+  deriveKey(
+    algorithm: Algorithm | EcdhKeyDeriveParams | HkdfParams | Pbkdf2Params,
+    baseKey: CryptoKey,
+    derivedKeyType: Algorithm | AesKeyGenParams | HmacImportParams,
+    extractable: boolean,
+    keyUsages: KeyUsage[]
+  ): Promise<CryptoKey>;
   digest(algorithm: Algorithm | string, data: BufferSource): Promise<ArrayBuffer>;
-  encrypt(algorithm: Algorithm | AesGcmParams, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
+  encrypt(
+    algorithm: Algorithm | AesGcmParams,
+    key: CryptoKey,
+    data: BufferSource
+  ): Promise<ArrayBuffer>;
   exportKey(format: 'jwk', key: CryptoKey): Promise<JsonWebKey>;
   exportKey(format: Exclude<KeyFormat, 'jwk'>, key: CryptoKey): Promise<ArrayBuffer>;
-  generateKey(algorithm: EcKeyGenParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKeyPair>;
-  generateKey(algorithm: AesKeyGenParams | HmacImportParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
-  importKey(format: 'jwk', keyData: JsonWebKey, algorithm: Algorithm | EcKeyGenParams | HmacImportParams | AesKeyGenParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
-  importKey(format: Exclude<KeyFormat, 'jwk'>, keyData: BufferSource, algorithm: Algorithm | EcKeyGenParams | HmacImportParams | AesKeyGenParams, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
-  sign(algorithm: Algorithm | EcKeyGenParams, key: CryptoKey, data: BufferSource): Promise<ArrayBuffer>;
-  verify(algorithm: Algorithm | EcKeyGenParams, key: CryptoKey, signature: BufferSource, data: BufferSource): Promise<boolean>;
+  generateKey(
+    algorithm: EcKeyGenParams,
+    extractable: boolean,
+    keyUsages: KeyUsage[]
+  ): Promise<CryptoKeyPair>;
+  generateKey(
+    algorithm: AesKeyGenParams | HmacImportParams,
+    extractable: boolean,
+    keyUsages: KeyUsage[]
+  ): Promise<CryptoKey>;
+  importKey(
+    format: 'jwk',
+    keyData: JsonWebKey,
+    algorithm: Algorithm | EcKeyGenParams | HmacImportParams | AesKeyGenParams,
+    extractable: boolean,
+    keyUsages: KeyUsage[]
+  ): Promise<CryptoKey>;
+  importKey(
+    format: Exclude<KeyFormat, 'jwk'>,
+    keyData: BufferSource,
+    algorithm: Algorithm | EcKeyGenParams | HmacImportParams | AesKeyGenParams,
+    extractable: boolean,
+    keyUsages: KeyUsage[]
+  ): Promise<CryptoKey>;
+  sign(
+    algorithm: Algorithm | EcKeyGenParams,
+    key: CryptoKey,
+    data: BufferSource
+  ): Promise<ArrayBuffer>;
+  verify(
+    algorithm: Algorithm | EcKeyGenParams,
+    key: CryptoKey,
+    signature: BufferSource,
+    data: BufferSource
+  ): Promise<boolean>;
 }

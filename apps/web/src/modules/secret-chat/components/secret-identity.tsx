@@ -38,7 +38,7 @@ function hashSeed(seed: string): number {
  * Generates deterministic HSL color from a seed and offset.
  */
 function seedColor(seed: string, offset: number): string {
-  const h = (hashSeed(seed + String(offset)) % 360);
+  const h = hashSeed(seed + String(offset)) % 360;
   return `hsl(${h}, 60%, 50%)`;
 }
 
@@ -83,21 +83,12 @@ export const SecretIdentity = memo(function SecretIdentity({
       >
         <rect width="100" height="100" rx="50" fill={avatarElements.bg} />
         {avatarElements.shapes.map((shape, i) => (
-          <circle
-            key={i}
-            cx={shape.cx}
-            cy={shape.cy}
-            r={shape.r}
-            fill={shape.fill}
-            opacity={0.7}
-          />
+          <circle key={i} cx={shape.cx} cy={shape.cy} r={shape.r} fill={shape.fill} opacity={0.7} />
         ))}
       </svg>
 
       {/* Alias label */}
-      <span className="truncate text-sm font-medium text-white/80">
-        {alias}
-      </span>
+      <span className="truncate text-sm font-medium text-white/80">{alias}</span>
     </div>
   );
 });

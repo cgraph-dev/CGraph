@@ -46,6 +46,7 @@ function TabItem({
   // Update dot when focus changes
   React.useEffect(() => {
     dotScale.value = withSpring(isFocused ? 1 : 0, SPRING_PRESETS.snappy);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
   const iconAnimStyle = useAnimatedStyle(() => ({
@@ -62,7 +63,7 @@ function TabItem({
     // Bounce sequence
     scale.value = withSequence(
       withSpring(0.85, SPRING_PRESETS.snappy),
-      withSpring(isFocused ? 1.15 : 1.0, SPRING_PRESETS.bouncy),
+      withSpring(isFocused ? 1.15 : 1.0, SPRING_PRESETS.bouncy)
     );
     onPress();
   };
@@ -70,6 +71,7 @@ function TabItem({
   // Keep focused scale
   React.useEffect(() => {
     scale.value = withSpring(isFocused ? 1.1 : 1.0, SPRING_PRESETS.snappy);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
   const { options } = descriptor;
@@ -100,23 +102,14 @@ function TabItem({
       </Animated.View>
 
       <Animated.Text
-        style={[
-          styles.label,
-          { color: tintColor, fontWeight: isFocused ? '600' : '400' },
-        ]}
+        style={[styles.label, { color: tintColor, fontWeight: isFocused ? '600' : '400' }]}
         numberOfLines={1}
       >
         {label}
       </Animated.Text>
 
       {/* Active indicator dot */}
-      <Animated.View
-        style={[
-          styles.dot,
-          { backgroundColor: colors.primary },
-          dotAnimStyle,
-        ]}
-      />
+      <Animated.View style={[styles.dot, { backgroundColor: colors.primary }, dotAnimStyle]} />
     </Pressable>
   );
 }
@@ -125,13 +118,10 @@ function TabItem({
 // Tab Bar
 // ---------------------------------------------------------------------------
 /**
+ * Animated Tab Bar component.
  *
  */
-export function AnimatedTabBar({
-  state,
-  descriptors,
-  navigation,
-}: BottomTabBarProps) {
+export function AnimatedTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colors } = useThemeStore();
   const insets = useSafeAreaInsets();
 

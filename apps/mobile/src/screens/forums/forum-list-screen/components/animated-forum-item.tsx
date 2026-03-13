@@ -17,6 +17,8 @@ interface Props {
   onPress: () => void;
 }
 
+/** Description. */
+/** Animated Forum Item component. */
 export function AnimatedForumItem({ item, index, colors, onPress }: Props) {
   const translateX = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -26,15 +28,26 @@ export function AnimatedForumItem({ item, index, colors, onPress }: Props) {
     const delay = index * 100;
     Animated.parallel([
       Animated.timing(translateX, {
-        toValue: 0, duration: durations.smooth.ms, delay, useNativeDriver: true,
+        toValue: 0,
+        duration: durations.smooth.ms,
+        delay,
+        useNativeDriver: true,
       }),
       Animated.timing(opacity, {
-        toValue: 1, duration: 350, delay, useNativeDriver: true,
+        toValue: 1,
+        duration: 350,
+        delay,
+        useNativeDriver: true,
       }),
       Animated.spring(scale, {
-        toValue: 1, friction: 8, tension: 40, delay, useNativeDriver: true,
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        delay,
+        useNativeDriver: true,
       }),
     ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePress = () => {
@@ -47,8 +60,12 @@ export function AnimatedForumItem({ item, index, colors, onPress }: Props) {
 
   const getForumGradient = (): [string, string] => {
     const gradients: [string, string][] = [
-      ['#3b82f6', '#8b5cf6'], ['#10b981', '#34d399'], ['#f59e0b', '#fbbf24'],
-      ['#ec4899', '#f472b6'], ['#06b6d4', '#22d3ee'], ['#8b5cf6', '#a855f7'],
+      ['#3b82f6', '#8b5cf6'],
+      ['#10b981', '#34d399'],
+      ['#f59e0b', '#fbbf24'],
+      ['#ec4899', '#f472b6'],
+      ['#06b6d4', '#22d3ee'],
+      ['#8b5cf6', '#a855f7'],
       ['#ef4444', '#f87171'],
     ];
     const idx = item.name.charCodeAt(0) % gradients.length;
@@ -56,7 +73,9 @@ export function AnimatedForumItem({ item, index, colors, onPress }: Props) {
   };
 
   return (
-    <Animated.View style={[styles.forumWrapper, { transform: [{ translateX }, { scale }], opacity }]}>
+    <Animated.View
+      style={[styles.forumWrapper, { transform: [{ translateX }, { scale }], opacity }]}
+    >
       <GlassCard
         variant={isPopular ? 'neon' : 'frosted'}
         intensity={isPopular ? 'medium' : 'subtle'}
@@ -67,12 +86,22 @@ export function AnimatedForumItem({ item, index, colors, onPress }: Props) {
             {item.icon_url ? (
               <Image source={{ uri: item.icon_url }} style={styles.forumIconImage} />
             ) : (
-              <LinearGradient colors={getForumGradient()} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.forumIconPlaceholder}>
+              <LinearGradient
+                colors={getForumGradient()}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.forumIconPlaceholder}
+              >
                 <Text style={styles.forumIconText}>{item.name.charAt(0).toUpperCase()}</Text>
               </LinearGradient>
             )}
             {isPopular && (
-              <LinearGradient colors={['#f59e0b', '#fbbf24']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.popularBadge}>
+              <LinearGradient
+                colors={['#f59e0b', '#fbbf24']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.popularBadge}
+              >
                 <Ionicons name="star" size={8} color="#fff" />
               </LinearGradient>
             )}
@@ -80,26 +109,46 @@ export function AnimatedForumItem({ item, index, colors, onPress }: Props) {
 
           <View style={styles.forumInfo}>
             <View style={styles.forumNameRow}>
-              <Text style={[styles.forumName, { color: colors.text }]} numberOfLines={1}>c/{item.slug}</Text>
-              {isHot && <View style={styles.hotBadge}><Text style={styles.hotBadgeText}>🔥</Text></View>}
+              <Text style={[styles.forumName, { color: colors.text }]} numberOfLines={1}>
+                c/{item.slug}
+              </Text>
+              {isHot && (
+                <View style={styles.hotBadge}>
+                  <Text style={styles.hotBadgeText}>🔥</Text>
+                </View>
+              )}
             </View>
             {item.description && (
-              <Text style={[styles.forumDescription, { color: colors.textSecondary }]} numberOfLines={1}>{item.description}</Text>
+              <Text
+                style={[styles.forumDescription, { color: colors.textSecondary }]}
+                numberOfLines={1}
+              >
+                {item.description}
+              </Text>
             )}
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
                 <Ionicons name="people" size={12} color={colors.textTertiary} />
-                <Text style={[styles.statText, { color: colors.textTertiary }]}>{formatCount(item.member_count)} members</Text>
+                <Text style={[styles.statText, { color: colors.textTertiary }]}>
+                  {formatCount(item.member_count)} members
+                </Text>
               </View>
               <View style={styles.statDot} />
               <View style={styles.statItem}>
                 <Ionicons name="newspaper" size={12} color={colors.textTertiary} />
-                <Text style={[styles.statText, { color: colors.textTertiary }]}>{formatCount(item.post_count)} posts</Text>
+                <Text style={[styles.statText, { color: colors.textTertiary }]}>
+                  {formatCount(item.post_count)} posts
+                </Text>
               </View>
             </View>
           </View>
 
-          <LinearGradient colors={getForumGradient()} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.arrowContainer}>
+          <LinearGradient
+            colors={getForumGradient()}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.arrowContainer}
+          >
             <Ionicons name="chevron-forward" size={16} color="#fff" />
           </LinearGradient>
         </TouchableOpacity>

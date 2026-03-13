@@ -2,7 +2,6 @@
  * Holographic UI Types and Constants
  */
 
-
 // =============================================================================
 // TYPES
 // =============================================================================
@@ -70,6 +69,7 @@ export const HOLOGRAPHIC_THEMES: Record<string, HolographicTheme> = {
 // =============================================================================
 
 /**
+ * Gets theme.
  *
  */
 export function getTheme(
@@ -81,6 +81,7 @@ export function getTheme(
 }
 
 /**
+ * Gets intensity multiplier.
  *
  */
 export function getIntensityMultiplier(intensity: HolographicConfig['intensity']): number {

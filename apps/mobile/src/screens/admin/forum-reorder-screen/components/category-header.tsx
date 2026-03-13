@@ -16,7 +16,14 @@ interface CategoryHeaderProps {
   isDragging: boolean;
 }
 
-export function CategoryHeader({ category, onToggle, onDragStart, isDragging }: CategoryHeaderProps) {
+/** Description. */
+/** Category Header component. */
+export function CategoryHeader({
+  category,
+  onToggle,
+  onDragStart,
+  isDragging,
+}: CategoryHeaderProps) {
   return (
     <View style={[styles.categoryHeader, isDragging && styles.categoryHeaderDragging]}>
       <TouchableOpacity

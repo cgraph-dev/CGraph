@@ -13,12 +13,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import Animated, {
-  SlideInUp,
-  FadeOutLeft,
-  FadeOutRight,
-  Layout,
-} from 'react-native-reanimated';
+import Animated, { SlideInUp, FadeOutLeft, FadeOutRight, Layout } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -28,13 +23,7 @@ import api from '../../lib/api';
 
 // ── Types ──────────────────────────────────────────────────
 type ReportStatus = 'pending' | 'reviewing' | 'resolved' | 'dismissed';
-type ReportReason =
-  | 'spam'
-  | 'harassment'
-  | 'hate_speech'
-  | 'violence'
-  | 'adult_content'
-  | 'other';
+type ReportReason = 'spam' | 'harassment' | 'hate_speech' | 'violence' | 'adult_content' | 'other';
 
 interface Report {
   id: string;
@@ -101,8 +90,9 @@ function timeAgo(dateStr: string): string {
 }
 
 // ── Component ──────────────────────────────────────────────
- 
+
 /**
+ * Moderation Queue Screen component.
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -118,7 +108,11 @@ export default function ModerationQueueScreen({ navigation }: any) {
   const fetchReports = useCallback(async () => {
     try {
       const res = await api.get('/api/v1/reports', { params: { status: 'pending' } });
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setReports(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data.map((r: Record<string, any>) => ({
@@ -184,7 +178,7 @@ export default function ModerationQueueScreen({ navigation }: any) {
         { text: 'Cancel', style: 'cancel' },
       ]);
     },
-    [handleApprove, handleDismiss],
+    [handleApprove, handleDismiss]
   );
 
   const renderReport = useCallback(
@@ -196,18 +190,25 @@ export default function ModerationQueueScreen({ navigation }: any) {
       return (
         <Animated.View
           style={[styles.card, { backgroundColor: colors.surface }]}
-          entering={SlideInUp.springify().damping(18).stiffness(180).delay(index * 40)}
-          exiting={isResolved ? FadeOutRight.duration(200) : isDismissed ? FadeOutLeft.duration(200) : undefined}
+          entering={SlideInUp.springify()
+            .damping(18)
+            .stiffness(180)
+            .delay(index * 40)}
+          exiting={
+            isResolved
+              ? FadeOutRight.duration(200)
+              : isDismissed
+                ? FadeOutLeft.duration(200)
+                : undefined
+          }
           layout={Layout.springify()}
         >
           {/* Reason badge */}
           <View style={styles.cardHeader}>
             <View style={[styles.reasonBadge, { backgroundColor: reason.color + '20' }]}>
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
               <Ionicons name={reason.icon as any} size={14} color={reason.color} />
-              <Text style={[styles.reasonText, { color: reason.color }]}>
-                {reason.label}
-              </Text>
+              <Text style={[styles.reasonText, { color: reason.color }]}>{reason.label}</Text>
             </View>
             <Text style={[styles.timeText, { color: colors.textSecondary }]}>
               {timeAgo(item.createdAt)}
@@ -216,17 +217,16 @@ export default function ModerationQueueScreen({ navigation }: any) {
 
           {/* Users */}
           <View style={styles.userRow}>
-            <Text style={[styles.userLabel, { color: colors.textSecondary }]}>
-              Reporter:
-            </Text>
-            <Text style={[styles.username, { color: colors.text }]}>
-              @{item.reporterUsername}
-            </Text>
-            <Ionicons name="arrow-forward" size={14} color={colors.textSecondary} style={{ marginHorizontal: 6 }} />
+            <Text style={[styles.userLabel, { color: colors.textSecondary }]}>Reporter:</Text>
+            <Text style={[styles.username, { color: colors.text }]}>@{item.reporterUsername}</Text>
+            <Ionicons
+              name="arrow-forward"
+              size={14}
+              color={colors.textSecondary}
+              style={{ marginHorizontal: 6 }}
+            />
             <Text style={[styles.userLabel, { color: colors.textSecondary }]}>Target:</Text>
-            <Text style={[styles.username, { color: '#ef4444' }]}>
-              @{item.targetUsername}
-            </Text>
+            <Text style={[styles.username, { color: '#ef4444' }]}>@{item.targetUsername}</Text>
           </View>
 
           {/* Description */}
@@ -251,10 +251,7 @@ export default function ModerationQueueScreen({ navigation }: any) {
               <Text style={styles.dismissText}>Dismiss</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => handleAction(item)}
-            >
+            <TouchableOpacity style={styles.actionButton} onPress={() => handleAction(item)}>
               <LinearGradient
                 colors={['#ef4444', '#dc2626']}
                 style={styles.actionGradient}
@@ -269,19 +266,19 @@ export default function ModerationQueueScreen({ navigation }: any) {
         </Animated.View>
       );
     },
-    [colors, handleAction, handleDismiss, resolvedIds, dismissedIds],
+    [colors, handleAction, handleDismiss, resolvedIds, dismissedIds]
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+    <View
+      style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Moderation Queue
-        </Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Moderation Queue</Text>
         <View style={[styles.countBadge, { backgroundColor: '#ef4444' }]}>
           <Text style={styles.countText}>{reports.length}</Text>
         </View>
@@ -295,34 +292,29 @@ export default function ModerationQueueScreen({ navigation }: any) {
           </Text>
         </View>
       ) : (
-      <FlatList
-        data={reports}
-        renderItem={renderReport}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={[
-          styles.list,
-          reports.length === 0 && styles.emptyList,
-        ]}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.primary}
-          />
-        }
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Ionicons name="checkmark-circle" size={48} color="#10b981" />
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>
-              All Clear!
-            </Text>
-            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-              No pending reports to review.
-            </Text>
-          </View>
-        }
-      />
+        <FlatList
+          data={reports}
+          renderItem={renderReport}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={[styles.list, reports.length === 0 && styles.emptyList]}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Ionicons name="checkmark-circle" size={48} color="#10b981" />
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>All Clear!</Text>
+              <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+                No pending reports to review.
+              </Text>
+            </View>
+          }
+        />
       )}
     </View>
   );

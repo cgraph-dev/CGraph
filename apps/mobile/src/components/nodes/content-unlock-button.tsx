@@ -8,13 +8,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNodesStore, useThemeStore } from '@/stores';
 
@@ -35,6 +29,7 @@ interface ContentUnlockButtonProps {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Content Unlock Button component. */
 export default function ContentUnlockButton({
   postId,
   price,
@@ -50,28 +45,24 @@ export default function ContentUnlockButton({
       return;
     }
 
-    Alert.alert(
-      'Unlock Content',
-      `This will cost ${price} Nodes. Continue?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Unlock',
-          onPress: async () => {
-            setIsUnlocking(true);
-            try {
-              await unlock(postId);
-              // Haptic concept: Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-              onUnlocked?.();
-            } catch {
-              Alert.alert('Unlock Failed', 'Something went wrong. Please try again.');
-            } finally {
-              setIsUnlocking(false);
-            }
-          },
+    Alert.alert('Unlock Content', `This will cost ${price} Nodes. Continue?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Unlock',
+        onPress: async () => {
+          setIsUnlocking(true);
+          try {
+            await unlock(postId);
+            // Haptic concept: Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+            onUnlocked?.();
+          } catch {
+            Alert.alert('Unlock Failed', 'Something went wrong. Please try again.');
+          } finally {
+            setIsUnlocking(false);
+          }
         },
-      ],
-    );
+      },
+    ]);
   }, [balance, price, unlock, postId, onUnlocked]);
 
   return (

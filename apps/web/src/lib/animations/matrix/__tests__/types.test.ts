@@ -394,7 +394,7 @@ describe('Matrix Types', () => {
         glow: { enabled: true, radius: 4, intensity: 0.8, color: '#00ff00', pulsate: false },
         opacity: { head: 1, body: 0.7, tail: 0.3, background: 0.05 },
       };
-      
+
       const state: MatrixEngineState = {
         state: 'running',
         theme: mockTheme,

@@ -82,7 +82,8 @@ export function useAvatarSettings(): UseAvatarSettingsReturn {
       const reader = new FileReader();
       reader.onloadend = () => {
         // type assertion: FileReader.result is string when readAsDataURL() is used
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         setAvatarUpload({ file, preview: reader.result as string });
       };
       reader.readAsDataURL(file);
@@ -96,7 +97,8 @@ export function useAvatarSettings(): UseAvatarSettingsReturn {
       const reader = new FileReader();
       reader.onloadend = () => {
         // type assertion: FileReader.result is string when readAsDataURL() is used
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         setBannerUpload({ file, preview: reader.result as string });
       };
       reader.readAsDataURL(file);

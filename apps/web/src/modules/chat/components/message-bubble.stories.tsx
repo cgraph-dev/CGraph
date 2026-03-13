@@ -30,9 +30,7 @@ function MockMessageBubble({
     <div className={`flex flex-col ${alignment} max-w-[320px]`}>
       {!isSent && <span className="mb-1 text-xs text-gray-400">{sender}</span>}
       <div className={`rounded-2xl px-4 py-2.5 ${bg}`}>
-        {type === 'image' && (
-          <div className="mb-2 h-40 w-56 rounded-lg bg-dark-600" />
-        )}
+        {type === 'image' && <div className="mb-2 h-40 w-56 rounded-lg bg-dark-600" />}
         {type === 'voice' && (
           <div className="flex items-center gap-2">
             <button className="text-white">▶</button>
@@ -48,9 +46,7 @@ function MockMessageBubble({
             Replying to: Previous message...
           </div>
         )}
-        <p className={`text-sm ${deleted}`}>
-          {isDeleted ? 'This message was deleted' : content}
-        </p>
+        <p className={`text-sm ${deleted}`}>{isDeleted ? 'This message was deleted' : content}</p>
       </div>
       <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-500">
         <span>{timestamp}</span>

@@ -4,15 +4,23 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, animate }: React.PropsWithChildren<{ className?: string; animate?: Record<string, unknown> }>) => (
-      <div className={className} data-animate={JSON.stringify(animate)}>{children}</div>
+    div: ({
+      children,
+      className,
+      animate,
+    }: React.PropsWithChildren<{ className?: string; animate?: Record<string, unknown> }>) => (
+      <div className={className} data-animate={JSON.stringify(animate)}>
+        {children}
+      </div>
     ),
   },
 }));
 
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, className }: React.PropsWithChildren<{ className?: string }>) => (
-    <div className={className} data-testid="glass-card">{children}</div>
+    <div className={className} data-testid="glass-card">
+      {children}
+    </div>
   ),
 }));
 

@@ -77,11 +77,9 @@ async function computeHmacSignature(challenge: string, userId: string): Promise<
 
   if (keyEncoded.length > 64) {
     // Hash the key if it's longer than block size
-    const hashed = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      key,
-      { encoding: Crypto.CryptoEncoding.HEX },
-    );
+    const hashed = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, key, {
+      encoding: Crypto.CryptoEncoding.HEX,
+    });
     const hashedBytes = hexToBytes(hashed);
     keyBytes.set(hashedBytes);
   } else {
@@ -128,11 +126,9 @@ function concatUint8Arrays(a: Uint8Array, b: Uint8Array): Uint8Array {
 async function digestBytes(data: Uint8Array): Promise<string> {
   // Convert to base64 for expo-crypto
   const base64 = bytesToBase64(data);
-  return await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    base64,
-    { encoding: Crypto.CryptoEncoding.HEX },
-  );
+  return await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, base64, {
+    encoding: Crypto.CryptoEncoding.HEX,
+  });
 }
 
 function bytesToBase64(bytes: Uint8Array): string {
@@ -186,7 +182,7 @@ export default function QrLoginScannerScreen({ navigation }: QrLoginScannerProps
           Alert.alert(
             'Unknown Server',
             `This QR code is from a different server (${parsed.srv}). For security, only your configured server is supported.`,
-            [{ text: 'OK', onPress: () => resetScanner() }],
+            [{ text: 'OK', onPress: () => resetScanner() }]
           );
           return;
         }
@@ -199,7 +195,8 @@ export default function QrLoginScannerScreen({ navigation }: QrLoginScannerProps
         ]);
       }
     },
-    [scanState],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [scanState]
   );
 
   // ── Approve login ──────────────────────────────────────────────────
@@ -226,6 +223,7 @@ export default function QrLoginScannerScreen({ navigation }: QrLoginScannerProps
       }, 1500);
     } catch (err: unknown) {
       const message =
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
         'Failed to approve login. Please try again.';
       setErrorMessage(message);
@@ -316,7 +314,9 @@ export default function QrLoginScannerScreen({ navigation }: QrLoginScannerProps
                 <View style={[styles.corner, styles.topLeft, { borderColor: colors.primary }]} />
                 <View style={[styles.corner, styles.topRight, { borderColor: colors.primary }]} />
                 <View style={[styles.corner, styles.bottomLeft, { borderColor: colors.primary }]} />
-                <View style={[styles.corner, styles.bottomRight, { borderColor: colors.primary }]} />
+                <View
+                  style={[styles.corner, styles.bottomRight, { borderColor: colors.primary }]}
+                />
               </View>
             </View>
           </CameraView>
@@ -330,9 +330,7 @@ export default function QrLoginScannerScreen({ navigation }: QrLoginScannerProps
       {scanState === 'confirming' && (
         <View style={styles.confirmContainer}>
           <Ionicons name="desktop-outline" size={64} color={colors.primary} />
-          <Text style={[styles.confirmTitle, { color: colors.text }]}>
-            Log in to CGraph Web?
-          </Text>
+          <Text style={[styles.confirmTitle, { color: colors.text }]}>Log in to CGraph Web?</Text>
           <Text style={[styles.confirmSubtitle, { color: colors.textSecondary }]}>
             You are approving a login for {user.username || user.email} on the web app.
           </Text>

@@ -11,10 +11,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  ChevronDownIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import {
   UserPlusIcon,
   Cog6ToothIcon,
@@ -76,6 +73,8 @@ function BoostBadge({ level }: { level: number }) {
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Description. */
+/** Server Header component. */
 export function ServerHeader({ serverName, boostLevel = 0, className }: ServerHeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,17 +97,14 @@ export function ServerHeader({ serverName, boostLevel = 0, className }: ServerHe
         className={cn(
           'flex w-full items-center justify-between px-4 py-3',
           'border-b border-black/20 shadow-sm transition-colors',
-          isOpen && 'bg-white/[0.06]',
+          isOpen && 'bg-white/[0.06]'
         )}
       >
         <div className="flex items-center gap-2 overflow-hidden">
           <h2 className="truncate text-[15px] font-semibold text-white">{serverName}</h2>
           {boostLevel > 0 && <BoostBadge level={boostLevel} />}
         </div>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={springs.snappy}
-        >
+        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={springs.snappy}>
           {isOpen ? (
             <XMarkIcon className="h-4 w-4 text-gray-400" />
           ) : (
@@ -138,7 +134,7 @@ export function ServerHeader({ serverName, boostLevel = 0, className }: ServerHe
               transition={springs.snappy}
               className={cn(
                 'absolute left-2 right-2 top-full z-50 mt-1 overflow-hidden rounded-lg',
-                'border border-white/[0.06] bg-[#111214] p-1.5 shadow-xl',
+                'border border-white/[0.06] bg-[#111214] p-1.5 shadow-xl'
               )}
             >
               {menuItems.map((item) => (
@@ -152,15 +148,13 @@ export function ServerHeader({ serverName, boostLevel = 0, className }: ServerHe
                     }}
                     className={cn(
                       'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm',
-                      item.danger ? 'text-red-400' : 'text-gray-300',
+                      item.danger ? 'text-red-400' : 'text-gray-300'
                     )}
                   >
                     <item.icon className="h-4 w-4 flex-shrink-0 opacity-70" />
                     <span className="flex-1">{item.label}</span>
                   </motion.button>
-                  {item.separator && (
-                    <div className="my-1 h-px bg-white/[0.06]" />
-                  )}
+                  {item.separator && <div className="my-1 h-px bg-white/[0.06]" />}
                 </div>
               ))}
             </motion.div>

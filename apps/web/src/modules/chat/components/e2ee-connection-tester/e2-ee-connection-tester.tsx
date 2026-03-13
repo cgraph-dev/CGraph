@@ -106,10 +106,7 @@ export default function E2EEConnectionTester({
                 disabled
                 className="flex flex-1 cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-dark-700 px-6 py-3 font-semibold text-gray-500"
               >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={loop(tweens.slow)}
-                >
+                <motion.div animate={{ rotate: 360 }} transition={loop(tweens.slow)}>
                   <ArrowPathIcon className="h-5 w-5" />
                 </motion.div>
                 Testing in progress...

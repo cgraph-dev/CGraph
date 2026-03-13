@@ -13,7 +13,9 @@ function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-export const CreatorDashboard: React.FC = () => {
+/** Description. */
+/** Creator Dashboard component. */
+export function CreatorDashboard(): React.ReactElement {
   const {
     creatorStatus,
     isLoading: statusLoading,
@@ -21,8 +23,12 @@ export const CreatorDashboard: React.FC = () => {
     startOnboarding,
     continueOnboarding,
   } = useCreator();
-  const { balance, analyticsOverview: overview, fetchBalance, fetchAnalyticsOverview } =
-    useCreatorDashboard();
+  const {
+    balance,
+    analyticsOverview: overview,
+    fetchBalance,
+    fetchAnalyticsOverview,
+  } = useCreatorDashboard();
 
   useEffect(() => {
     fetchStatus();
@@ -45,12 +51,10 @@ export const CreatorDashboard: React.FC = () => {
     return (
       <div className="mx-auto max-w-2xl px-4 py-12 text-center">
         <div className="mb-6 text-6xl">🎨</div>
-        <h1 className="mb-3 text-3xl font-bold text-gray-900 dark:text-white">
-          Become a Creator
-        </h1>
+        <h1 className="mb-3 text-3xl font-bold text-gray-900 dark:text-white">Become a Creator</h1>
         <p className="mb-8 text-lg text-gray-600 dark:text-gray-400">
-          Monetize your forums with paid subscriptions. Set your price,
-          build your community, and earn revenue directly to your bank account.
+          Monetize your forums with paid subscriptions. Set your price, build your community, and
+          earn revenue directly to your bank account.
         </p>
         <ul className="mb-8 space-y-3 text-left text-gray-600 dark:text-gray-400">
           <li className="flex items-start gap-3">
@@ -89,8 +93,8 @@ export const CreatorDashboard: React.FC = () => {
           Complete Your Setup
         </h1>
         <p className="mb-6 text-gray-600 dark:text-gray-400">
-          Your Stripe Connect account has been created. Please complete the
-          onboarding process to start accepting payments.
+          Your Stripe Connect account has been created. Please complete the onboarding process to
+          start accepting payments.
         </p>
         <button
           onClick={continueOnboarding}
@@ -106,9 +110,7 @@ export const CreatorDashboard: React.FC = () => {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Creator Dashboard
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Creator Dashboard</h1>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900/30 dark:text-green-300">
           <span className="h-2 w-2 rounded-full bg-green-500" />
           Active
@@ -122,11 +124,7 @@ export const CreatorDashboard: React.FC = () => {
           value={overview?.subscriberCount?.toString() ?? '0'}
           icon="👥"
         />
-        <StatCard
-          label="Monthly Revenue"
-          value={formatCents(overview?.mrrCents ?? 0)}
-          icon="📈"
-        />
+        <StatCard label="Monthly Revenue" value={formatCents(overview?.mrrCents ?? 0)} icon="📈" />
         <StatCard
           label="Available Balance"
           value={formatCents(balance?.availableBalanceCents ?? 0)}
@@ -163,12 +161,12 @@ export const CreatorDashboard: React.FC = () => {
 
       {/* Fee transparency notice */}
       <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        CGraph takes a {overview?.platformFeePercent ?? 15}% platform fee.
-        You keep {100 - (overview?.platformFeePercent ?? 15)}% of every payment.
+        CGraph takes a {overview?.platformFeePercent ?? 15}% platform fee. You keep{' '}
+        {100 - (overview?.platformFeePercent ?? 15)}% of every payment.
       </p>
     </div>
   );
-};
+}
 
 // ── Sub-components ────────────────────────────────────────────────
 
@@ -178,15 +176,17 @@ interface StatCardProps {
   icon: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ label, value, icon }) => (
-  <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
-    <div className="mb-2 flex items-center justify-between">
-      <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</span>
-      <span className="text-xl">{icon}</span>
+function StatCard({ label, value, icon }: StatCardProps): React.ReactElement {
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</span>
+        <span className="text-xl">{icon}</span>
+      </div>
+      <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
     </div>
-    <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
-  </div>
-);
+  );
+}
 
 interface QuickActionProps {
   title: string;
@@ -195,18 +195,20 @@ interface QuickActionProps {
   icon: string;
 }
 
-const QuickAction: React.FC<QuickActionProps> = ({ title, description, href, icon }) => (
-  <a
-    href={href}
-    className="group rounded-lg border border-gray-200 bg-white p-5 transition hover:border-blue-300 hover:shadow-sm dark:border-white/[0.08] dark:bg-[rgb(30,32,40)] dark:hover:border-blue-600"
-  >
-    <div className="mb-2 text-2xl">{icon}</div>
-    <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-      {title}
-    </h3>
-    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{description}</p>
-  </a>
-);
+function QuickAction({ title, description, href, icon }: QuickActionProps): React.ReactElement {
+  return (
+    <a
+      href={href}
+      className="group rounded-lg border border-gray-200 bg-white p-5 transition hover:border-blue-300 hover:shadow-sm dark:border-white/[0.08] dark:bg-[rgb(30,32,40)] dark:hover:border-blue-600"
+    >
+      <div className="mb-2 text-2xl">{icon}</div>
+      <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+        {title}
+      </h3>
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{description}</p>
+    </a>
+  );
+}
 
 CreatorDashboard.displayName = 'CreatorDashboard';
 

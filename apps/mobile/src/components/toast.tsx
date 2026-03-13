@@ -41,6 +41,7 @@ const COLORS: Record<ToastType, string> = {
 };
 
 /**
+ * Toast component.
  *
  */
 export default function Toast({

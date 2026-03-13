@@ -114,9 +114,7 @@ export function AppealsStats({ data }: AppealsStatsProps) {
                       className="h-3 w-3 rounded-full"
                       style={{ backgroundColor: STATUS_COLORS[status] || '#6b7280' }}
                     />
-                    <span className="text-sm text-gray-300">
-                      {STATUS_LABELS[status] || status}
-                    </span>
+                    <span className="text-sm text-gray-300">{STATUS_LABELS[status] || status}</span>
                   </div>
                   <span className="text-sm font-semibold text-white">{count}</span>
                 </div>

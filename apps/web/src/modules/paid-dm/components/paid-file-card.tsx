@@ -32,6 +32,8 @@ function FileIcon({ type }: { type: string }) {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Paid File Card component. */
 export function PaidFileCard({
   fileUrl,
   fileName,
@@ -43,19 +45,14 @@ export function PaidFileCard({
   const isLocked = status === 'pending';
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-border bg-card">
+    <div className="border-border bg-card relative overflow-hidden rounded-lg border">
       {/* Preview area */}
       <div
-        className="relative flex h-40 items-center justify-center bg-muted"
+        className="bg-muted relative flex h-40 items-center justify-center"
         style={isLocked ? { filter: 'blur(10px)', WebkitFilter: 'blur(10px)' } : undefined}
       >
         {fileType === 'image' ? (
-          <img
-            src={fileUrl}
-            alt={fileName}
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
+          <img src={fileUrl} alt={fileName} className="h-full w-full object-cover" loading="lazy" />
         ) : (
           <FileIcon type={fileType} />
         )}
@@ -63,7 +60,7 @@ export function PaidFileCard({
 
       {/* Price badge */}
       {isLocked && (
-        <div className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+        <div className="text-primary-foreground absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-xs font-semibold">
           {price} Nodes
         </div>
       )}
@@ -76,7 +73,7 @@ export function PaidFileCard({
           <button
             type="button"
             onClick={onUnlock}
-            className="shrink-0 rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+            className="text-primary-foreground shrink-0 rounded-md bg-primary px-3 py-1 text-xs font-medium hover:bg-primary/90"
           >
             Unlock for {price} Nodes
           </button>

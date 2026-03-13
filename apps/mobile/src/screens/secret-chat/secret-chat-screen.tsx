@@ -53,6 +53,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SecretChat'>;
 // Component
 // ---------------------------------------------------------------------------
 
+/** Secret Chat Screen component. */
 export default function SecretChatScreen({ route, navigation }: Props) {
   const { conversationId } = route.params;
   const flatListRef = useRef<FlatList<SecretMessage>>(null);
@@ -156,11 +157,7 @@ export default function SecretChatScreen({ route, navigation }: Props) {
           />
         )}
 
-        <SecretChatInput
-          onSend={handleSend}
-          isSending={isSending}
-          themeColors={themeColors}
-        />
+        <SecretChatInput onSend={handleSend} isSending={isSending} themeColors={themeColors} />
       </KeyboardAvoidingView>
 
       {isSending && (

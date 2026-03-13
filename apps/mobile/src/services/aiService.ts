@@ -71,9 +71,7 @@ export async function summarizeConversation(
  * Generate smart reply suggestions for a message.
  * Endpoint: POST /api/v1/ai/smart-replies
  */
-export async function generateSmartReplies(
-  messageId: string
-): Promise<SmartReply[]> {
+export async function generateSmartReplies(messageId: string): Promise<SmartReply[]> {
   const response = await api.post('/api/v1/ai/smart-replies', {
     message_id: messageId,
   });
@@ -91,9 +89,7 @@ export async function generateSmartReplies(
  * Check content safety via AI moderation.
  * Endpoint: POST /api/v1/ai/moderate
  */
-export async function moderateContent(
-  content: string
-): Promise<ModerationResult> {
+export async function moderateContent(content: string): Promise<ModerationResult> {
   const response = await api.post('/api/v1/ai/moderate', { content });
   const data = response.data?.data || response.data;
   return {
@@ -108,9 +104,7 @@ export async function moderateContent(
  * Analyze text sentiment.
  * Endpoint: POST /api/v1/ai/sentiment
  */
-export async function analyzeSentiment(
-  content: string
-): Promise<SentimentResult> {
+export async function analyzeSentiment(content: string): Promise<SentimentResult> {
   const response = await api.post('/api/v1/ai/sentiment', { content });
   const data = response.data?.data || response.data;
   return {

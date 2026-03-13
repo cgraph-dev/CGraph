@@ -243,7 +243,8 @@ export async function handleDeepLink(
       const code = path.replace('invite/', '');
       // Group invites navigate into the Groups tab's invite acceptance flow
       // TODO: Add a dedicated GroupInviteAccept screen when invite flow is built
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       navigation.navigate('Main', {
         screen: 'GroupsTab',
         params: { screen: 'GroupInvites', params: { code } },

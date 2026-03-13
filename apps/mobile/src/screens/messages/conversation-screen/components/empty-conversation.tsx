@@ -46,11 +46,7 @@ export function EmptyConversation({
   const waveStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        rotate: `${interpolate(
-          waveAnim.value,
-          [0, 0.5, 1],
-          [0, 20, 0]
-        )}deg`,
+        rotate: `${interpolate(waveAnim.value, [0, 0.5, 1], [0, 20, 0])}deg`,
       },
     ],
   }));
@@ -74,9 +70,7 @@ export function EmptyConversation({
 
       {/* Cute message with animated emoji */}
       <View style={styles.emptyMessageRow}>
-        <Animated.Text style={[styles.emptyWaveEmoji, waveStyle]}>
-          👋
-        </Animated.Text>
+        <Animated.Text style={[styles.emptyWaveEmoji, waveStyle]}>👋</Animated.Text>
         <Text style={[styles.emptyMessageText, { color: colors.textSecondary }]}>
           This is the very beginning of your{'\n'}conversation with {otherName}
         </Text>

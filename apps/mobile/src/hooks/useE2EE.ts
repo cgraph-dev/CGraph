@@ -98,6 +98,7 @@ interface UseE2EEReturn {
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes for key operations
 
 /**
+ * Hook for e2 e e.
  *
  */
 export function useE2EE(userId?: string): UseE2EEReturn {
@@ -368,9 +369,7 @@ export function useE2EE(userId?: string): UseE2EEReturn {
         }
 
         // Fetch recipient's prekey bundle from server
-        const response = await api.get<PrekeyBundleResponse>(
-          `/api/v1/e2ee/bundle/${recipientId}`
-        );
+        const response = await api.get<PrekeyBundleResponse>(`/api/v1/e2ee/bundle/${recipientId}`);
 
         const recipientBundle: ServerPrekeyBundle = {
           identity_key: response.data.identity_key,
@@ -396,11 +395,7 @@ export function useE2EE(userId?: string): UseE2EEReturn {
    * Decrypt message
    */
   const decryptMessage = useCallback(
-    async (
-      ciphertext: string,
-      nonce: string,
-      sharedSecret: Uint8Array
-    ): Promise<string | null> => {
+    async (ciphertext: string, nonce: string, sharedSecret: Uint8Array): Promise<string | null> => {
       try {
         const ciphertextBytes = Buffer.from(ciphertext, 'base64');
         const nonceBytes = Buffer.from(nonce, 'base64');
@@ -489,10 +484,13 @@ export function useE2EE(userId?: string): UseE2EEReturn {
   /**
    * Check if session exists for recipient
    */
-  const hasSession = useCallback(async (recipientId: string): Promise<boolean> => {
-    const session = await getSession(recipientId);
-    return session !== null;
-  }, [getSession]);
+  const hasSession = useCallback(
+    async (recipientId: string): Promise<boolean> => {
+      const session = await getSession(recipientId);
+      return session !== null;
+    },
+    [getSession]
+  );
 
   /**
    * Clear session for recipient

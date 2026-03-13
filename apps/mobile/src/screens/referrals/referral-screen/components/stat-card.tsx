@@ -18,13 +18,14 @@ export interface StatCardProps {
 }
 
 /**
+ * Stat Card component.
  *
  */
 export function StatCard({ icon, iconColor, value, label, trend }: StatCardProps) {
   return (
     <BlurView intensity={40} tint="dark" style={styles.container}>
       <View style={[styles.icon, { backgroundColor: iconColor + '20' }]}>
-        { }
+        {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
         <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={20} color={iconColor} />
       </View>
       <View style={styles.value}>

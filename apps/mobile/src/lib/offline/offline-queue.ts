@@ -379,7 +379,7 @@ async function processItem(item: QueueItem): Promise<boolean> {
     if (item.onFailureCallback) {
       const callback = callbackRegistry.get(item.onFailureCallback);
       if (callback) {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         callback(item, undefined, error as Error);
       }
     }
@@ -506,6 +506,7 @@ export function cleanupOfflineQueue(): void {
 
 // Export state getter for debugging
 /**
+ * Gets state.
  *
  */
 export function getState(): Readonly<QueueState> {

@@ -13,6 +13,8 @@ interface FloatingParticleProps {
   startX: number;
 }
 
+/** Description. */
+/** Floating Particle component. */
 export function FloatingParticle({ delay, size, startX }: FloatingParticleProps) {
   const translateY = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -53,6 +55,7 @@ export function FloatingParticle({ delay, size, startX }: FloatingParticleProps)
     };
 
     startAnimation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

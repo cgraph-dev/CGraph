@@ -94,7 +94,7 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
             value={preferences.particleSystem}
             onChange={
               (value) =>
-                 
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 updatePreference('particleSystem', value as UIPreferences['particleSystem']) // safe downcast – runtime verified
             }
             options={[
@@ -109,7 +109,7 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
             label="Particle Color"
             value={preferences.particleColor}
             onChange={
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               (value) => updatePreference('particleColor', value as UIPreferences['particleColor']) // safe downcast – runtime verified
             }
             options={[
@@ -122,7 +122,7 @@ export function EffectsSettings({ preferences, updatePreference }: SettingsTabPr
             label="Particle Shape"
             value={preferences.particleShape}
             onChange={
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               (value) => updatePreference('particleShape', value as UIPreferences['particleShape']) // safe downcast – runtime verified
             }
             options={[

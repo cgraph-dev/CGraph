@@ -22,6 +22,8 @@ import { styles } from './styles';
 // Hue Slider
 // ============================================================================
 
+/** Description. */
+/** Hue Slider component. */
 export function HueSlider({ value, onChange, width, height, hapticFeedback }: SliderProps) {
   const thumbX = useSharedValue((value / 360) * width);
   const scale = useSharedValue(1);
@@ -29,6 +31,7 @@ export function HueSlider({ value, onChange, width, height, hapticFeedback }: Sl
 
   useEffect(() => {
     thumbX.value = withSpring((value / 360) * width, springCfg);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, width]);
 
   const panGesture = Gesture.Pan()
@@ -55,13 +58,12 @@ export function HueSlider({ value, onChange, width, height, hapticFeedback }: Sl
     transform: [{ translateX: thumbX.value - height / 2 }, { scale: scale.value }],
   }));
 
-  const hueColors = Array.from({ length: 12 }, (_, i) =>
-    chroma.hsl((i / 11) * 360, 1, 0.5).hex()
-  );
+  const hueColors = Array.from({ length: 12 }, (_, i) => chroma.hsl((i / 11) * 360, 1, 0.5).hex());
 
   return (
     <View style={[styles.slider, { width, height, borderRadius: height / 2 }]}>
       <LinearGradient
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         colors={hueColors as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -86,6 +88,8 @@ interface SaturationSliderProps extends SliderProps {
   hue: number;
 }
 
+/** Description. */
+/** Saturation Slider component. */
 export function SaturationSlider({
   hue,
   value,
@@ -100,6 +104,7 @@ export function SaturationSlider({
 
   useEffect(() => {
     thumbX.value = withSpring((value / 100) * width, springCfg);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, width]);
 
   const panGesture = Gesture.Pan()
@@ -157,6 +162,8 @@ interface LightnessSliderProps extends SliderProps {
   saturation: number;
 }
 
+/** Description. */
+/** Lightness Slider component. */
 export function LightnessSlider({
   hue,
   saturation,
@@ -172,6 +179,7 @@ export function LightnessSlider({
 
   useEffect(() => {
     thumbX.value = withSpring((value / 100) * width, springCfg);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, width]);
 
   const panGesture = Gesture.Pan()

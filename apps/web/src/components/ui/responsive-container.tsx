@@ -7,7 +7,7 @@
  * @module components/ui/responsive-container
  */
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, use, useState, useEffect, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -30,8 +30,10 @@ const ResponsiveContext = createContext<ResponsiveContextValue>({
   isWide: false,
 });
 
+/** Description. */
+/** Hook for breakpoint. */
 export function useBreakpoint(): ResponsiveContextValue {
-  return useContext(ResponsiveContext);
+  return use(ResponsiveContext);
 }
 
 // ── Breakpoint Detection ───────────────────────────────────────────────
@@ -44,9 +46,11 @@ function getBreakpoint(width: number): Breakpoint {
 
 // ── Provider Component ─────────────────────────────────────────────────
 
+/** Description. */
+/** Responsive Provider component. */
 export function ResponsiveProvider({ children }: { children: React.ReactNode }) {
   const [bp, setBp] = useState<Breakpoint>(() =>
-    typeof window !== 'undefined' ? getBreakpoint(window.innerWidth) : 'normal',
+    typeof window !== 'undefined' ? getBreakpoint(window.innerWidth) : 'normal'
   );
 
   useEffect(() => {
@@ -64,18 +68,16 @@ export function ResponsiveProvider({ children }: { children: React.ReactNode }) 
       isNormal: bp === 'normal',
       isWide: bp === 'wide',
     }),
-    [bp],
+    [bp]
   );
 
-  return (
-    <ResponsiveContext.Provider value={value}>
-      {children}
-    </ResponsiveContext.Provider>
-  );
+  return <ResponsiveContext.Provider value={value}>{children}</ResponsiveContext.Provider>;
 }
 
 // ── Responsive Container ───────────────────────────────────────────────
 
+/** Description. */
+/** Responsive Container component. */
 export function ResponsiveContainer({
   children,
   className,
@@ -86,10 +88,7 @@ export function ResponsiveContainer({
   const { breakpoint } = useBreakpoint();
 
   return (
-    <div
-      className={cn('w-full', className)}
-      data-breakpoint={breakpoint}
-    >
+    <div className={cn('w-full', className)} data-breakpoint={breakpoint}>
       {children}
     </div>
   );
@@ -97,16 +96,22 @@ export function ResponsiveContainer({
 
 // ── Conditional Renderers ──────────────────────────────────────────────
 
+/** Description. */
+/** Show On Compact component. */
 export function ShowOnCompact({ children }: { children: React.ReactNode }) {
   const { isCompact } = useBreakpoint();
   return isCompact ? <>{children}</> : null;
 }
 
+/** Description. */
+/** Show On Wide component. */
 export function ShowOnWide({ children }: { children: React.ReactNode }) {
   const { isWide } = useBreakpoint();
   return isWide ? <>{children}</> : null;
 }
 
+/** Description. */
+/** Hide On Compact component. */
 export function HideOnCompact({ children }: { children: React.ReactNode }) {
   const { isCompact } = useBreakpoint();
   return isCompact ? null : <>{children}</>;

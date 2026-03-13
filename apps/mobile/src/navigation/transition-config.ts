@@ -117,6 +117,7 @@ export const TransitionPresets = {
 // ============================================================================
 
 /**
+ * Gets transition options.
  *
  */
 export function getTransitionOptions(options: TransitionOptions): NativeStackNavigationOptions {
@@ -166,7 +167,7 @@ export function getTransitionOptions(options: TransitionOptions): NativeStackNav
 // Platform-Specific Defaults
 // ============================================================================
 
- 
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 export const PlatformTransitionPreset: NativeStackNavigationOptions = Platform.select({
   ios: slideFromRight,
   android: {
@@ -176,7 +177,7 @@ export const PlatformTransitionPreset: NativeStackNavigationOptions = Platform.s
   default: slideFromRight,
 }) as NativeStackNavigationOptions;
 
- 
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 export const ModalTransitionPreset: NativeStackNavigationOptions = Platform.select({
   ios: modalPresentation,
   android: {

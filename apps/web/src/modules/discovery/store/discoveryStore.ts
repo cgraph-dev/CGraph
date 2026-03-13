@@ -19,7 +19,9 @@ interface DiscoveryState {
 }
 
 const initialState = {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   activeMode: 'pulse' as FeedMode,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   selectedCommunityId: null as string | null,
 };
 

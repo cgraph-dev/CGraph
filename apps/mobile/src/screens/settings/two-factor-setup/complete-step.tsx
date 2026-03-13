@@ -12,6 +12,8 @@ interface CompleteStepProps {
   onDone: () => void;
 }
 
+/** Description. */
+/** Complete Step component. */
 export function CompleteStep({ colors, onDone }: CompleteStepProps) {
   return (
     <View style={styles.stepContent}>
@@ -47,13 +49,20 @@ const styles = StyleSheet.create({
   stepTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 8, textAlign: 'center' },
   stepSubtitle: { fontSize: 14, textAlign: 'center', marginBottom: 32, lineHeight: 20 },
   successIcon: {
-    width: 80, height: 80, borderRadius: 40,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 24,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
   },
   successEmoji: { fontSize: 40 },
   primaryButton: {
-    width: SCREEN_WIDTH - 48, height: 52, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
+    width: SCREEN_WIDTH - 48,
+    height: 52,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });

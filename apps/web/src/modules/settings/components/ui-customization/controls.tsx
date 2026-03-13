@@ -156,7 +156,7 @@ interface ToggleProps {
  */
 export function Toggle({ label, description, value, onChange }: ToggleProps) {
   return (
-    <div className="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-white/[0.08]/30">
+    <div className="hover:bg-white/[0.08]/30 flex items-center justify-between rounded-lg p-3 transition-colors">
       <div className="flex-1">
         <div className="text-sm font-medium text-white">{label}</div>
         {description && <div className="mt-0.5 text-xs text-gray-500">{description}</div>}

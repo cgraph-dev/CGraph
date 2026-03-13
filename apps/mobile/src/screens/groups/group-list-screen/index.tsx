@@ -24,6 +24,7 @@ import type { GroupListScreenProps, Group } from './types';
 import { AnimatedHeader, MorphingGroupCard, EmptyGroupState } from './components';
 
 /**
+ * Group List Screen component.
  *
  */
 export default function GroupListScreen({ navigation }: GroupListScreenProps) {

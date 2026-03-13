@@ -36,16 +36,14 @@ interface WithdrawalPayload {
 
 export const nodesService = {
   // ─── Wallet ──────────────────────────────────────────────────────────
-  getWallet: () =>
-    api.get('/api/v1/nodes/wallet'),
+  getWallet: () => api.get('/api/v1/nodes/wallet'),
 
   // ─── Transactions ────────────────────────────────────────────────────
   getTransactions: (params?: TransactionParams) =>
     api.get('/api/v1/nodes/transactions', { params }),
 
   // ─── Bundles ─────────────────────────────────────────────────────────
-  getBundles: () =>
-    api.get('/api/v1/nodes/bundles'),
+  getBundles: () => api.get('/api/v1/nodes/bundles'),
 
   // ─── Tips ────────────────────────────────────────────────────────────
   sendTip: (recipientId: string, amount: number, context?: Record<string, unknown>) =>
@@ -56,8 +54,7 @@ export const nodesService = {
     } satisfies TipPayload),
 
   // ─── Content Unlock ──────────────────────────────────────────────────
-  unlockContent: (postId: string) =>
-    api.post(`/api/v1/nodes/unlock/${postId}`),
+  unlockContent: (postId: string) => api.post(`/api/v1/nodes/unlock/${postId}`),
 
   // ─── Withdrawals ─────────────────────────────────────────────────────
   requestWithdrawal: (amount: number, payoutMethod: string) =>

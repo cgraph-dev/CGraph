@@ -15,8 +15,10 @@ import LoadingSpinner from '../loading-spinner';
  */
 function ThemeWrapper({ children }: { children: React.ReactNode }): React.ReactElement {
   return (
-  <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 100 }}>{children}</View>
-);
+    <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 100 }}>
+      {children}
+    </View>
+  );
 }
 
 const meta: Meta<typeof LoadingSpinner> = {

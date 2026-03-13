@@ -68,6 +68,7 @@ const DEFAULT_FRAMES: Frame[] = [
 // Component
 // ---------------------------------------------------------------------------
 
+/** Identity Card Screen component. */
 export default function IdentityCardScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const { user } = useAuthStore();
@@ -97,9 +98,7 @@ export default function IdentityCardScreen({ navigation }: Props) {
         setSelectedFrame(card.frame || null);
         setTitle(card.title || '');
         setBio(card.bio || '');
-        setEquippedBadgeIds(
-          (card.badges || []).map((b: Badge) => b.id),
-        );
+        setEquippedBadgeIds((card.badges || []).map((b: Badge) => b.id));
       }
 
       setAvailableBadges(badgesRes.data?.data || []);
@@ -152,6 +151,7 @@ export default function IdentityCardScreen({ navigation }: Props) {
     frame: selectedFrame?.id !== 'none' ? selectedFrame : null,
     badges: availableBadges.filter((b) => equippedBadgeIds.includes(b.id)),
     title: title || null,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     reputation: (user as Record<string, unknown>)?.karma as number | undefined,
     bio: bio || undefined,
   };
@@ -262,7 +262,11 @@ export default function IdentityCardScreen({ navigation }: Props) {
           <TextInput
             style={[
               styles.textInput,
-              { color: colors.text, borderColor: colors.border, backgroundColor: colors.background },
+              {
+                color: colors.text,
+                borderColor: colors.border,
+                backgroundColor: colors.background,
+              },
             ]}
             value={title}
             onChangeText={(t) => setTitle(t.slice(0, 32))}
@@ -270,9 +274,7 @@ export default function IdentityCardScreen({ navigation }: Props) {
             placeholderTextColor={colors.textTertiary}
             maxLength={32}
           />
-          <Text style={[styles.charCount, { color: colors.textTertiary }]}>
-            {title.length}/32
-          </Text>
+          <Text style={[styles.charCount, { color: colors.textTertiary }]}>{title.length}/32</Text>
         </View>
 
         {/* Bio */}
@@ -281,7 +283,11 @@ export default function IdentityCardScreen({ navigation }: Props) {
           <TextInput
             style={[
               styles.textArea,
-              { color: colors.text, borderColor: colors.border, backgroundColor: colors.background },
+              {
+                color: colors.text,
+                borderColor: colors.border,
+                backgroundColor: colors.background,
+              },
             ]}
             value={bio}
             onChangeText={(t) => setBio(t.slice(0, 160))}
@@ -291,16 +297,16 @@ export default function IdentityCardScreen({ navigation }: Props) {
             textAlignVertical="top"
             maxLength={160}
           />
-          <Text style={[styles.charCount, { color: colors.textTertiary }]}>
-            {bio.length}/160
-          </Text>
+          <Text style={[styles.charCount, { color: colors.textTertiary }]}>{bio.length}/160</Text>
         </View>
 
         <View style={{ height: 32 }} />
       </ScrollView>
 
       {/* Save button */}
-      <View style={[styles.footer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+      <View
+        style={[styles.footer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}
+      >
         <TouchableOpacity
           style={[styles.saveButton, { backgroundColor: colors.primary }]}
           onPress={handleSave}

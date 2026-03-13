@@ -34,16 +34,15 @@ export const useSecretChatStore = create<SecretChatState>()(
       // ── Initial State ──────────────────────────────────────────────
       session: null,
       ghostMode: { ...initialGhostMode },
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       selectedThemeId: 'void' as SecretThemeId,
       isPanicWiping: false,
 
       // ── Actions ────────────────────────────────────────────────────
 
-      setSession: (session: SecretChatSession | null) =>
-        set({ session }, false, 'setSession'),
+      setSession: (session: SecretChatSession | null) => set({ session }, false, 'setSession'),
 
-      setTheme: (themeId: SecretThemeId) =>
-        set({ selectedThemeId: themeId }, false, 'setTheme'),
+      setTheme: (themeId: SecretThemeId) => set({ selectedThemeId: themeId }, false, 'setTheme'),
 
       toggleGhostMode: () =>
         set(
@@ -51,9 +50,7 @@ export const useSecretChatStore = create<SecretChatState>()(
             ghostMode: {
               ...state.ghostMode,
               isActive: !state.ghostMode.isActive,
-              activatedAt: !state.ghostMode.isActive
-                ? new Date().toISOString()
-                : null,
+              activatedAt: !state.ghostMode.isActive ? new Date().toISOString() : null,
             },
           }),
           false,
@@ -85,9 +82,7 @@ export const useSecretChatStore = create<SecretChatState>()(
       setExpiresAt: (expiresAt: string) =>
         set(
           (state) => ({
-            session: state.session
-              ? { ...state.session, expiresAt }
-              : null,
+            session: state.session ? { ...state.session, expiresAt } : null,
           }),
           false,
           'setExpiresAt'
@@ -96,9 +91,7 @@ export const useSecretChatStore = create<SecretChatState>()(
       setAlias: (alias: string) =>
         set(
           (state) => ({
-            session: state.session
-              ? { ...state.session, alias }
-              : null,
+            session: state.session ? { ...state.session, alias } : null,
           }),
           false,
           'setAlias'
@@ -120,6 +113,7 @@ export const useSecretChatStore = create<SecretChatState>()(
           {
             session: null,
             ghostMode: { ...initialGhostMode },
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             selectedThemeId: 'void' as SecretThemeId,
             isPanicWiping: false,
           },

@@ -50,6 +50,7 @@ export default function PrivacyScreen({ navigation: _navigation }: Props) {
 
   const toggleSetting = useCallback(
     async (key: BooleanSettingKey) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const currentValue = (settings.privacy as unknown as Record<string, boolean>)[key];
 
       try {
@@ -157,6 +158,7 @@ export default function PrivacyScreen({ navigation: _navigation }: Props) {
         </Text>
       </View>
       <Switch
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         value={(settings.privacy as unknown as Record<string, boolean>)[item.key]}
         onValueChange={() => toggleSetting(item.key)}
         disabled={isSaving}

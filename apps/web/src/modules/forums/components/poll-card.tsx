@@ -56,6 +56,8 @@ function timeRemaining(expiresAt: string): string {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Poll Card component. */
 export function PollCard({
   question,
   options,
@@ -90,7 +92,7 @@ export function PollCard({
         return next;
       });
     },
-    [showResults, isClosed, multiVote],
+    [showResults, isClosed, multiVote]
   );
 
   const handleSubmit = useCallback(() => {
@@ -99,18 +101,11 @@ export function PollCard({
   }, [selected, onVote]);
 
   return (
-    <div
-      className={cn(
-        'rounded-xl border border-white/[0.06] bg-white/[0.03] p-4',
-        className,
-      )}
-    >
+    <div className={cn('rounded-xl border border-white/[0.06] bg-white/[0.03] p-4', className)}>
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
         <ChartBarIcon className="h-4 w-4 text-primary-400" />
-        <span className="text-sm font-bold text-gray-200">
-          {question ?? 'Poll'}
-        </span>
+        <span className="text-sm font-bold text-gray-200">{question ?? 'Poll'}</span>
       </div>
 
       {/* Options */}
@@ -132,7 +127,7 @@ export function PollCard({
                 isSelected
                   ? 'border-primary-500/40 bg-primary-600/10'
                   : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]',
-                isClosed && 'cursor-default',
+                isClosed && 'cursor-default'
               )}
             >
               {/* Progress bar */}
@@ -143,7 +138,7 @@ export function PollCard({
                   transition={springs.snappy}
                   className={cn(
                     'absolute inset-y-0 left-0',
-                    isWinning ? 'bg-primary-600/20' : 'bg-white/[0.04]',
+                    isWinning ? 'bg-primary-600/20' : 'bg-white/[0.04]'
                   )}
                 />
               )}
@@ -154,7 +149,7 @@ export function PollCard({
                   className={cn(
                     'flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border',
                     isSelected ? 'border-primary-500 bg-primary-600' : 'border-white/20',
-                    multiVote && 'rounded',
+                    multiVote && 'rounded'
                   )}
                 >
                   {isSelected && <CheckIcon className="h-2.5 w-2.5 text-white" />}
@@ -164,7 +159,7 @@ export function PollCard({
                 <span
                   className={cn(
                     'flex-1 text-sm',
-                    isSelected ? 'font-semibold text-white' : 'text-gray-300',
+                    isSelected ? 'font-semibold text-white' : 'text-gray-300'
                   )}
                 >
                   {option.text}
@@ -177,7 +172,7 @@ export function PollCard({
                     animate={{ opacity: 1 }}
                     className={cn(
                       'text-xs font-bold',
-                      isWinning ? 'text-primary-400' : 'text-gray-500',
+                      isWinning ? 'text-primary-400' : 'text-gray-500'
                     )}
                   >
                     {pct}%
@@ -192,7 +187,9 @@ export function PollCard({
       {/* Footer */}
       <div className="mt-3 flex items-center justify-between">
         <div className="flex items-center gap-3 text-[11px] text-gray-500">
-          <span>{totalVoters} voter{totalVoters !== 1 ? 's' : ''}</span>
+          <span>
+            {totalVoters} voter{totalVoters !== 1 ? 's' : ''}
+          </span>
           {expiresAt && (
             <span className="flex items-center gap-1">
               <ClockIcon className="h-3 w-3" />
@@ -211,7 +208,7 @@ export function PollCard({
               'rounded-lg px-3 py-1.5 text-xs font-semibold',
               selected.size > 0
                 ? 'bg-primary-600 text-white hover:bg-primary-500'
-                : 'cursor-not-allowed bg-white/[0.04] text-gray-600',
+                : 'cursor-not-allowed bg-white/[0.04] text-gray-600'
             )}
           >
             {hasVoted ? 'Change Vote' : 'Vote'}

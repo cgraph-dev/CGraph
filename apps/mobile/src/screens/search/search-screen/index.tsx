@@ -5,10 +5,7 @@
  * @since v0.8.1
  */
 import React from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity,
-  ScrollView, Animated,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -16,10 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useThemeStore } from '@/stores';
 import GlassCard from '../../../components/ui/glass-card';
 import { styles } from './styles';
-import {
-  VoiceSearchButton,
-  FilterModal,
-} from './components';
+import { VoiceSearchButton, FilterModal } from './components';
 import { categories } from './constants';
 import { useSearch } from './use-search';
 import { IdSearchPanel } from './id-search-panel';
@@ -114,7 +108,9 @@ export default function SearchScreen() {
             >
               <LinearGradient
                 colors={
-                  search.filters.verifiedOnly || search.filters.premiumOnly || search.filters.hasAvatar
+                  search.filters.verifiedOnly ||
+                  search.filters.premiumOnly ||
+                  search.filters.hasAvatar
                     ? ['#3b82f6', '#8b5cf6']
                     : [colors.surface, colors.surface]
                 }
@@ -124,15 +120,25 @@ export default function SearchScreen() {
                   name="options"
                   size={20}
                   color={
-                    search.filters.verifiedOnly || search.filters.premiumOnly || search.filters.hasAvatar
+                    search.filters.verifiedOnly ||
+                    search.filters.premiumOnly ||
+                    search.filters.hasAvatar
                       ? '#fff'
                       : colors.textSecondary
                   }
                 />
-                {(search.filters.verifiedOnly || search.filters.premiumOnly || search.filters.hasAvatar) && (
+                {(search.filters.verifiedOnly ||
+                  search.filters.premiumOnly ||
+                  search.filters.hasAvatar) && (
                   <View style={styles.filterBadge}>
                     <Text style={styles.filterBadgeText}>
-                      {[search.filters.verifiedOnly, search.filters.premiumOnly, search.filters.hasAvatar].filter(Boolean).length}
+                      {
+                        [
+                          search.filters.verifiedOnly,
+                          search.filters.premiumOnly,
+                          search.filters.hasAvatar,
+                        ].filter(Boolean).length
+                      }
                     </Text>
                   </View>
                 )}
@@ -147,10 +153,16 @@ export default function SearchScreen() {
               }}
             >
               <LinearGradient
-                colors={search.showIdSearch ? ['#3b82f6', '#8b5cf6'] : [colors.surface, colors.surface]}
+                colors={
+                  search.showIdSearch ? ['#3b82f6', '#8b5cf6'] : [colors.surface, colors.surface]
+                }
                 style={styles.idToggleGradient}
               >
-                <Ionicons name="key" size={20} color={search.showIdSearch ? '#fff' : colors.textSecondary} />
+                <Ionicons
+                  name="key"
+                  size={20}
+                  color={search.showIdSearch ? '#fff' : colors.textSecondary}
+                />
               </LinearGradient>
             </TouchableOpacity>
           </View>

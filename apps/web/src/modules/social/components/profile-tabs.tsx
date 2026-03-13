@@ -34,7 +34,7 @@ export function ProfileTabs({
       className={cn(
         'border-b border-white/[0.06] bg-[rgb(18,18,24)]',
         sticky && 'sticky top-0 z-[var(--z-sticky,10)]',
-        className,
+        className
       )}
     >
       <div className="flex">
@@ -46,14 +46,12 @@ export function ProfileTabs({
             className={cn(
               'relative flex-1 px-4 py-3 text-center text-sm font-medium',
               'transition-colors',
-              activeTab === tab.key ? 'text-white' : 'text-white/40 hover:text-white/60',
+              activeTab === tab.key ? 'text-white' : 'text-white/40 hover:text-white/60'
             )}
           >
             {tab.label}
             {tab.count !== undefined && (
-              <span className="ml-1.5 text-[11px] text-white/30">
-                {tab.count}
-              </span>
+              <span className="ml-1.5 text-[11px] text-white/30">{tab.count}</span>
             )}
 
             {activeTab === tab.key && (

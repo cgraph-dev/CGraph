@@ -128,9 +128,7 @@ export async function encryptGroupMessage(
 
   // Hash to derive AES key
   const hashBuffer = await subtle.digest('SHA-256', combined);
-  const aesKey = await subtle.importKey('raw', hashBuffer, { name: 'AES-GCM' }, false, [
-    'encrypt',
-  ]);
+  const aesKey = await subtle.importKey('raw', hashBuffer, { name: 'AES-GCM' }, false, ['encrypt']);
 
   // Encrypt with AES-256-GCM
   const iv = getRandomValues(new Uint8Array(12));
@@ -160,9 +158,7 @@ export async function decryptGroupMessage(
   const combined = new Uint8Array([...new Uint8Array(rawKey), ...chainData]);
 
   const hashBuffer = await subtle.digest('SHA-256', combined);
-  const aesKey = await subtle.importKey('raw', hashBuffer, { name: 'AES-GCM' }, false, [
-    'decrypt',
-  ]);
+  const aesKey = await subtle.importKey('raw', hashBuffer, { name: 'AES-GCM' }, false, ['decrypt']);
 
   const iv = base64ToArrayBuffer(encrypted.iv);
   const ciphertext = base64ToArrayBuffer(encrypted.ciphertext);

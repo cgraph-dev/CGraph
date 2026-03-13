@@ -89,7 +89,7 @@ export function BanManager() {
       {isLoadingBans && <div className="py-8 text-center text-gray-500">Loading bans…</div>}
 
       {!isLoadingBans && bans.length === 0 && (
-        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04]/30 py-8 text-center text-gray-500">
+        <div className="bg-white/[0.04]/30 rounded-lg border border-white/[0.08] py-8 text-center text-gray-500">
           No bans recorded
         </div>
       )}
@@ -126,7 +126,7 @@ export function BanManager() {
           <h3 className="mb-2 text-sm font-medium text-gray-500">
             Lifted / Expired ({liftedBans.length})
           </h3>
-          <div className="overflow-x-auto rounded-lg border border-white/[0.08] bg-white/[0.04]/30">
+          <div className="bg-white/[0.04]/30 overflow-x-auto rounded-lg border border-white/[0.08]">
             <table className="w-full text-left">
               <tbody className="pl-4">
                 {liftedBans.map((ban) => (

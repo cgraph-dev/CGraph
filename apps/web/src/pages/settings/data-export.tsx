@@ -128,7 +128,7 @@ export default function DataExport() {
 
       {/* Category Selection */}
       <motion.div
-        className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.04]/40 p-5 backdrop-blur-xl"
+        className="bg-white/[0.04]/40 relative overflow-hidden rounded-2xl border border-white/[0.06] p-5 backdrop-blur-xl"
         variants={entranceVariants.fadeUp}
         initial="hidden"
         animate="visible"
@@ -275,7 +275,7 @@ export default function DataExport() {
 
       {/* Info */}
       <motion.div
-        className="rounded-2xl border border-white/[0.06] bg-white/[0.04]/40 p-5 text-xs text-white/40 backdrop-blur-xl"
+        className="bg-white/[0.04]/40 rounded-2xl border border-white/[0.06] p-5 text-xs text-white/40 backdrop-blur-xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}

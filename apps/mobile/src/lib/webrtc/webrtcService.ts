@@ -34,7 +34,7 @@ interface RTCMediaStreamTrack {
 }
 
 /** RTCPeerConnection state values */
-type RTCPeerConnectionState =
+type _RTCPeerConnectionState =
   | 'new'
   | 'connecting'
   | 'connected'
@@ -43,7 +43,7 @@ type RTCPeerConnectionState =
   | 'closed';
 
 /** ICE Candidate event */
-interface RTCIceCandidateEvent {
+interface _RTCIceCandidateEvent {
   candidate: RTCIceCandidateInit | null;
 }
 
@@ -56,13 +56,13 @@ interface RTCIceCandidateInit {
 }
 
 /** Track event with remote streams */
-interface RTCTrackEvent {
+interface _RTCTrackEvent {
   streams: RTCMediaStream[];
   track: RTCMediaStreamTrack;
 }
 
 /** Session description initialization */
-interface RTCSessionDescriptionInit {
+interface _RTCSessionDescriptionInit {
   type: RTCSessionDescriptionType;
   sdp?: string;
 }
@@ -127,6 +127,7 @@ export class WebRTCManager {
   private socket: Socket | null = null;
   private channel: Channel | null = null;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private peerConnections: Map<string, any> = new Map();
   private localStream: RTCMediaStream | null = null;
   private eventHandlers: CallEventHandler = {};
@@ -187,11 +188,12 @@ export class WebRTCManager {
 
     try {
       // Get local media stream (requires react-native-webrtc)
-       
-      this.localStream = await mediaDevices.getUserMedia({
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      this.localStream = (await mediaDevices.getUserMedia({
         video: options.video ? { facingMode: 'user' } : false,
         audio: options.audio !== false,
-      }) as unknown as RTCMediaStream;
+      })) as unknown as RTCMediaStream;
       this.state.localStream = this.localStream;
       this.state.isVideoEnabled = options.video ?? true;
 
@@ -205,7 +207,7 @@ export class WebRTCManager {
         call_type: options.video ? 'video' : 'audio',
       });
 
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const roomId = (response as { room_id: string }).room_id;
       this.state.roomId = roomId;
       this.state.status = 'ringing';
@@ -238,10 +240,11 @@ export class WebRTCManager {
 
     try {
       // Get local media stream via react-native-webrtc
-      this.localStream = await mediaDevices.getUserMedia({
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      this.localStream = (await mediaDevices.getUserMedia({
         video: options.video ? { facingMode: 'user' } : false,
         audio: options.audio !== false,
-      }) as unknown as RTCMediaStream;
+      })) as unknown as RTCMediaStream;
       this.state.localStream = this.localStream;
       this.state.isVideoEnabled = options.video ?? true;
 
@@ -358,9 +361,11 @@ export class WebRTCManager {
 
   private async joinChannel(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.channel?.join()
+      this.channel
+        ?.join()
         .receive('ok', () => resolve())
         .receive('error', (resp: unknown) => {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const reason = (resp as { reason?: string })?.reason || 'Failed to join channel';
           reject(new Error(reason));
         });
@@ -369,9 +374,11 @@ export class WebRTCManager {
 
   private pushToChannel(event: string, payload: Record<string, unknown>): Promise<unknown> {
     return new Promise((resolve, reject) => {
-      this.channel?.push(event, payload)
+      this.channel
+        ?.push(event, payload)
         .receive('ok', resolve)
         .receive('error', (resp: unknown) => {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const reason = (resp as { reason?: string })?.reason || 'Push failed';
           reject(new Error(reason));
         });
@@ -383,7 +390,7 @@ export class WebRTCManager {
 
     // Handle incoming offer
     this.channel.on('offer', async (payload: unknown) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const { from, sdp } = payload as { from: string; sdp: string };
       try {
         const pc = this.getOrCreatePeerConnection(from);
@@ -400,7 +407,7 @@ export class WebRTCManager {
 
     // Handle incoming answer
     this.channel.on('answer_sdp', async (payload: unknown) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const { from, sdp } = payload as { from: string; sdp: string };
       try {
         const pc = this.peerConnections.get(from);
@@ -414,7 +421,7 @@ export class WebRTCManager {
 
     // Handle ICE candidates
     this.channel.on('ice_candidate', async (payload: unknown) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const { from, candidate } = payload as {
         from: string;
         candidate: RTCIceCandidateInit | null;
@@ -431,7 +438,7 @@ export class WebRTCManager {
 
     // Handle participant joined
     this.channel.on('user_joined', (payload: unknown) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const { user } = payload as { user: CallParticipant };
       this.state.participants.push(user);
       this.eventHandlers.onParticipantJoined?.(user);
@@ -440,7 +447,7 @@ export class WebRTCManager {
 
     // Handle participant left
     this.channel.on('user_left', (payload: unknown) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const { user_id } = payload as { user_id: string };
       this.state.participants = this.state.participants.filter((p) => p.userId !== user_id);
       this.state.remoteStreams.delete(user_id);
@@ -457,16 +464,16 @@ export class WebRTCManager {
 
     // Handle call ended
     this.channel.on('call_ended', (payload: unknown) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const { reason } = payload as { reason: string };
       this.endCall();
       this.eventHandlers.onCallEnded?.(reason);
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private getOrCreatePeerConnection(userId: string): any {
     if (this.peerConnections.has(userId)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.peerConnections.get(userId)!;
     }
 
@@ -475,12 +482,13 @@ export class WebRTCManager {
     // Add local tracks
     if (this.localStream) {
       this.localStream.getTracks().forEach((track) => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
         pc.addTrack(track as any, this.localStream!);
       });
     }
 
     // Handle ICE candidates
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
     (pc as any).onicecandidate = (event: any) => {
       if (event.candidate) {
         this.pushToChannel('ice_candidate', {
@@ -491,6 +499,7 @@ export class WebRTCManager {
     };
 
     // Handle remote tracks
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
     (pc as any).ontrack = (event: any) => {
       const [stream] = event.streams;
       this.state.remoteStreams.set(userId, stream);
@@ -498,6 +507,7 @@ export class WebRTCManager {
     };
 
     // Handle connection state changes
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
     (pc as any).onconnectionstatechange = () => {
       // eslint-disable-next-line no-console
       if (__DEV__) console.log(`[WebRTC] Connection state for ${userId}: ${pc.connectionState}`);
@@ -543,7 +553,7 @@ export class WebRTCManager {
         ice_restart: true,
       });
 
-      if (__DEV__) console.log(`[WebRTC] ICE restart initiated for ${userId}`);
+      if (__DEV__) console.warn(`[WebRTC] ICE restart initiated for ${userId}`);
     } catch (error) {
       console.error('[WebRTC] Error restarting ICE:', error);
     }
@@ -554,6 +564,7 @@ export class WebRTCManager {
    */
   switchCamera(): void {
     if (this.localStream) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const videoTrack = this.localStream.getVideoTracks()[0] as RTCMediaStreamTrack | undefined;
       if (videoTrack && videoTrack._switchCamera) {
         videoTrack._switchCamera();
@@ -568,18 +579,22 @@ export class WebRTCManager {
   async startScreenShare(): Promise<boolean> {
     try {
       // react-native-webrtc supports getDisplayMedia on Android
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
       const displayMedia = (mediaDevices as any).getDisplayMedia;
       if (typeof displayMedia !== 'function') {
-        if (__DEV__) console.log('[WebRTC] Screen share not available on this platform');
+        if (__DEV__) console.warn('[WebRTC] Screen share not available on this platform');
         return false;
       }
 
-      const screenStream = await displayMedia({ video: true }) as unknown as RTCMediaStream;
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const screenStream = (await displayMedia({ video: true })) as unknown as RTCMediaStream;
       const screenTrack = screenStream.getVideoTracks()[0];
 
       // Replace video track in all peer connections
       this.peerConnections.forEach((pc) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
         const senders = (pc as any).getSenders?.() ?? [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const videoSender = senders.find((s: any) => s.track?.kind === 'video');
         if (videoSender) {
           videoSender.replaceTrack(screenTrack);
@@ -602,7 +617,9 @@ export class WebRTCManager {
 
     const cameraTrack = this.localStream.getVideoTracks()[0];
     this.peerConnections.forEach((pc) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
       const senders = (pc as any).getSenders?.() ?? [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const videoSender = senders.find((s: any) => s.track?.kind === 'video');
       if (videoSender && cameraTrack) {
         videoSender.replaceTrack(cameraTrack);
@@ -617,6 +634,7 @@ export class WebRTCManager {
 let managerInstance: WebRTCManager | null = null;
 
 /**
+ * Gets web r t c manager.
  *
  */
 export function getWebRTCManager(socket: Socket): WebRTCManager {
@@ -627,6 +645,7 @@ export function getWebRTCManager(socket: Socket): WebRTCManager {
 }
 
 /**
+ * Destroy web r t c manager.
  *
  */
 export function destroyWebRTCManager(): void {

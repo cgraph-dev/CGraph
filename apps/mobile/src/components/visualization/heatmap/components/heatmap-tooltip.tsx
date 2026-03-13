@@ -12,6 +12,8 @@ interface HeatmapTooltipProps {
   selectedCell: HeatmapData | null;
 }
 
+/** Description. */
+/** Heatmap Tooltip component. */
 export function HeatmapTooltip({ selectedCell }: HeatmapTooltipProps) {
   if (!selectedCell) return null;
 

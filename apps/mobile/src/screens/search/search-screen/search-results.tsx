@@ -38,6 +38,8 @@ interface SearchResultsProps {
   isDark: boolean;
 }
 
+/** Description. */
+/** Search Results component. */
 export function SearchResults({
   loading,
   hasSearched,

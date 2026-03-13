@@ -38,6 +38,7 @@ interface Invite {
 }
 
 /**
+ * Group Invites Screen component.
  *
  */
 export default function GroupInvitesScreen({ route }: Props) {
@@ -53,22 +54,32 @@ export default function GroupInvitesScreen({ route }: Props) {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/groups/${groupId}/invites`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setInvites(
         data.map((i: Record<string, unknown>) => ({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: (i.id ?? '') as string,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           code: (i.code ?? '') as string,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           uses: (i.uses ?? 0) as number,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           maxUses: (i.max_uses ?? i.maxUses ?? null) as number | null,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           expiresAt: (i.expires_at ?? i.expiresAt ?? null) as string | null,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           createdBy: (i.created_by ?? i.createdBy ?? '') as string,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           createdAt: (i.inserted_at ?? i.createdAt ?? '') as string,
         }))
       );
@@ -151,7 +162,10 @@ export default function GroupInvitesScreen({ route }: Props) {
   };
 
   const renderInvite = ({ item, index }: { item: Invite; index: number }) => (
-    <Animated.View entering={FadeInDown.springify().delay(index * 40)} exiting={FadeOutLeft.duration(200)}>
+    <Animated.View
+      entering={FadeInDown.springify().delay(index * 40)}
+      exiting={FadeOutLeft.duration(200)}
+    >
       <View style={[styles.inviteItem, { backgroundColor: colors.surface }]}>
         <View style={styles.inviteInfo}>
           <View style={styles.codeRow}>
@@ -159,7 +173,8 @@ export default function GroupInvitesScreen({ route }: Props) {
             <Text style={[styles.codeText, { color: colors.text }]}>{item.code}</Text>
           </View>
           <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-            {item.uses}{item.maxUses ? `/${item.maxUses}` : ''} uses · {formatExpiry(item.expiresAt)}
+            {item.uses}
+            {item.maxUses ? `/${item.maxUses}` : ''} uses · {formatExpiry(item.expiresAt)}
           </Text>
         </View>
         <View style={styles.actions}>
@@ -189,7 +204,10 @@ export default function GroupInvitesScreen({ route }: Props) {
             autoCorrect={false}
           />
           <TouchableOpacity
-            style={[styles.joinBtn, { backgroundColor: colors.primary, opacity: joinCode.trim() && !isJoining ? 1 : 0.5 }]}
+            style={[
+              styles.joinBtn,
+              { backgroundColor: colors.primary, opacity: joinCode.trim() && !isJoining ? 1 : 0.5 },
+            ]}
             onPress={handleJoinByCode}
             disabled={!joinCode.trim() || isJoining}
           >
@@ -229,7 +247,9 @@ export default function GroupInvitesScreen({ route }: Props) {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Ionicons name="link-outline" size={48} color={colors.textTertiary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No invite links yet</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No invite links yet
+              </Text>
               <Text style={[styles.emptySubtext, { color: colors.textTertiary }]}>
                 Create one to invite friends
               </Text>

@@ -86,7 +86,8 @@ export function isNativeCryptoAvailable(): boolean {
 
   try {
     // Dynamic require for optional native module detection
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-require-imports
     _quickCrypto = require('react-native-quick-crypto') as QuickCrypto;
     _nativeAvailable = _quickCrypto !== null;
     logger.info(`Native crypto: ${_nativeAvailable ? 'available' : 'unavailable'}`);
@@ -287,15 +288,21 @@ export async function initiateSession(
 
   const pqBundle: PQXDHPreKeyBundle = {
     identityKey: fromBase64(remoteBundle.identity_key),
-    signingKey: remoteBundle.signing_key ? fromBase64(remoteBundle.signing_key) : fromBase64(remoteBundle.identity_key),
+    signingKey: remoteBundle.signing_key
+      ? fromBase64(remoteBundle.signing_key)
+      : fromBase64(remoteBundle.identity_key),
     signedPreKey: fromBase64(remoteBundle.signed_prekey),
     signedPreKeySignature: fromBase64(remoteBundle.signed_prekey_signature),
     signedPreKeyId: parseInt(remoteBundle.signed_prekey_id, 10) || 0,
     kyberPreKey: new Uint8Array(1184), // placeholder — server must provide
     kyberPreKeySignature: new Uint8Array(64),
     kyberPreKeyId: 0,
-    oneTimePreKey: remoteBundle.one_time_prekey ? fromBase64(remoteBundle.one_time_prekey) : undefined,
-    oneTimePreKeyId: remoteBundle.one_time_prekey_id ? parseInt(remoteBundle.one_time_prekey_id, 10) : undefined,
+    oneTimePreKey: remoteBundle.one_time_prekey
+      ? fromBase64(remoteBundle.one_time_prekey)
+      : undefined,
+    oneTimePreKeyId: remoteBundle.one_time_prekey_id
+      ? parseInt(remoteBundle.one_time_prekey_id, 10)
+      : undefined,
   };
 
   // Perform PQXDH key agreement (positional args)
@@ -305,11 +312,7 @@ export async function initiateSession(
   const { skEc, skScka } = splitTripleRatchetSecret(result.sharedSecret);
 
   // Initialize Triple Ratchet via static factory (constructor is private)
-  const ratchet = await TripleRatchetEngine.initializeAlice(
-    skEc,
-    skScka,
-    pqBundle.signedPreKey
-  );
+  const ratchet = await TripleRatchetEngine.initializeAlice(skEc, skScka, pqBundle.signedPreKey);
 
   const sessionId = `pqxdh_${Date.now()}_${toBase64(fromBase64(remoteBundle.identity_key)).slice(0, 8)}`;
 
@@ -384,21 +387,17 @@ export async function respondToSession(
     identityECKeyPair,
     signedPreKeyPair,
     fromBase64(pqPreKeyStr),
-    identityKey.publicKey,  // aliceIdentityKey
-    initialMessage,         // aliceEphemeralKey
-    new Uint8Array(1088),   // kemCipherText placeholder
-    undefined,              // oneTimePreKeyPair
-    64                      // outputLength for Triple Ratchet
+    identityKey.publicKey, // aliceIdentityKey
+    initialMessage, // aliceEphemeralKey
+    new Uint8Array(1088), // kemCipherText placeholder
+    undefined, // oneTimePreKeyPair
+    64 // outputLength for Triple Ratchet
   );
 
   // Split 64-byte shared secret for Triple Ratchet
   const { skEc, skScka } = splitTripleRatchetSecret(result.sharedSecret);
 
-  const ratchet = await TripleRatchetEngine.initializeBob(
-    skEc,
-    skScka,
-    signedPreKeyPair
-  );
+  const ratchet = await TripleRatchetEngine.initializeBob(skEc, skScka, signedPreKeyPair);
 
   const sessionId = `pqxdh_${Date.now()}_resp`;
 
@@ -423,7 +422,10 @@ export async function respondToSession(
 /**
  * Encrypt a message using the Triple Ratchet.
  */
-export async function encryptMessage(sessionId: string, plaintext: string): Promise<TripleRatchetMessage> {
+export async function encryptMessage(
+  sessionId: string,
+  plaintext: string
+): Promise<TripleRatchetMessage> {
   const session = activeSessions.get(sessionId);
   if (!session) {
     throw new CryptoError(CryptoErrorCode.SESSION_NOT_FOUND, `No active session: ${sessionId}`);
@@ -436,7 +438,10 @@ export async function encryptMessage(sessionId: string, plaintext: string): Prom
 /**
  * Decrypt a message using the Triple Ratchet.
  */
-export async function decryptMessage(sessionId: string, ciphertext: TripleRatchetMessage): Promise<string> {
+export async function decryptMessage(
+  sessionId: string,
+  ciphertext: TripleRatchetMessage
+): Promise<string> {
   const session = activeSessions.get(sessionId);
   if (!session) {
     throw new CryptoError(CryptoErrorCode.SESSION_NOT_FOUND, `No active session: ${sessionId}`);
@@ -451,6 +456,7 @@ export async function decryptMessage(sessionId: string, ciphertext: TripleRatche
 // =============================================================================
 
 /**
+ * Gets session.
  *
  */
 export function getSession(sessionId: string): PQSession | undefined {
@@ -458,6 +464,7 @@ export function getSession(sessionId: string): PQSession | undefined {
 }
 
 /**
+ * Gets active sessions.
  *
  */
 export function getActiveSessions(): Map<string, PQSession> {
@@ -465,6 +472,7 @@ export function getActiveSessions(): Map<string, PQSession> {
 }
 
 /**
+ * Close session.
  *
  */
 export async function closeSession(sessionId: string): Promise<void> {
@@ -478,6 +486,7 @@ export async function closeSession(sessionId: string): Promise<void> {
 }
 
 /**
+ * Close all sessions.
  *
  */
 export async function closeAllSessions(): Promise<void> {

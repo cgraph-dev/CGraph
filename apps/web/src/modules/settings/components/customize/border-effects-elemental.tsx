@@ -42,7 +42,11 @@ export function renderFireBorder({
             rotate: `${i * 30}deg`,
           }}
           animate={{ scaleY: [0.5, 1.2, 0.5], opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: durations.smooth.ms / 1000 * speedMultiplier, repeat: Infinity, delay: i * 0.05 }}
+          transition={{
+            duration: (durations.smooth.ms / 1000) * speedMultiplier,
+            repeat: Infinity,
+            delay: i * 0.05,
+          }}
         />
       ))}
     </>
@@ -82,7 +86,11 @@ export function renderIceBorder({
             opacity: [0, 1, 0],
             rotate: [0, 180],
           }}
-          transition={{ duration: durations.loop.ms / 1000 * speedMultiplier, repeat: Infinity, delay: i * 0.2 }}
+          transition={{
+            duration: (durations.loop.ms / 1000) * speedMultiplier,
+            repeat: Infinity,
+            delay: i * 0.2,
+          }}
         />
       ))}
     </>
@@ -113,7 +121,11 @@ export function renderElectricBorder({
             `0 0 10px ${colors.glow}`,
           ],
         }}
-        transition={{ duration: durations.fast.ms / 1000 * speedMultiplier, repeat: Infinity, repeatDelay: 0.5 }}
+        transition={{
+          duration: (durations.fast.ms / 1000) * speedMultiplier,
+          repeat: Infinity,
+          repeatDelay: 0.5,
+        }}
       />
       {Array.from({ length: 6 }).map((_, i) => (
         <motion.svg
@@ -129,7 +141,7 @@ export function renderElectricBorder({
           }}
           animate={{ opacity: [0, 1, 0], scale: [0.5, 1, 0.5] }}
           transition={{
-            duration: durations.slow.ms / 1000 * speedMultiplier,
+            duration: (durations.slow.ms / 1000) * speedMultiplier,
             repeat: Infinity,
             repeatDelay: 1 + Math.random(),
             delay: i * 0.2,

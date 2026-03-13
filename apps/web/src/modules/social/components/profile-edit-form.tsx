@@ -59,23 +59,13 @@ async function getCroppedBlob(imageSrc: string, crop: Area): Promise<Blob> {
   canvas.width = crop.width;
   canvas.height = crop.height;
 
-  ctx.drawImage(
-    image,
-    crop.x,
-    crop.y,
-    crop.width,
-    crop.height,
-    0,
-    0,
-    crop.width,
-    crop.height,
-  );
+  ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, crop.width, crop.height);
 
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error('Canvas toBlob failed'))),
       'image/jpeg',
-      0.9,
+      0.9
     );
   });
 }
@@ -84,6 +74,8 @@ async function getCroppedBlob(imageSrc: string, crop: Area): Promise<Blob> {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Description. */
+/** Profile Edit Form component. */
 export function ProfileEditForm({ user, onSaved, onCancel }: ProfileEditFormProps) {
   // Form state
   const [displayName, setDisplayName] = useState(user.display_name ?? '');
@@ -124,6 +116,7 @@ export function ProfileEditForm({ user, onSaved, onCancel }: ProfileEditFormProp
 
     const reader = new FileReader();
     reader.onload = () => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       setCropImageSrc(reader.result as string);
     };
     reader.readAsDataURL(file);
@@ -218,11 +211,7 @@ export function ProfileEditForm({ user, onSaved, onCancel }: ProfileEditFormProp
           aria-label="Change avatar"
         >
           {avatarPreview ? (
-            <img
-              src={avatarPreview}
-              alt="Avatar preview"
-              className="h-full w-full object-cover"
-            />
+            <img src={avatarPreview} alt="Avatar preview" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-white/[0.06] text-2xl text-gray-400">
               {displayName?.[0]?.toUpperCase() ?? '?'}

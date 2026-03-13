@@ -40,7 +40,7 @@ export const UnknownError: Story = {
 export const LongErrorMessage: Story = {
   args: {
     error: new Error(
-      'TypeError: Cannot read properties of undefined (reading "map") — this error occurred while rendering the message list in the conversation view component.',
+      'TypeError: Cannot read properties of undefined (reading "map") — this error occurred while rendering the message list in the conversation view component.'
     ),
     resetErrorBoundary: () => alert('Retry clicked'),
     componentName: 'MessageList',

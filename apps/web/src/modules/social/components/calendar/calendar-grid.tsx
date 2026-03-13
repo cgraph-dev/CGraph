@@ -36,7 +36,7 @@ export function CalendarGrid({
   if (isLoading) {
     return (
       <div className="p-8 text-center">
-        <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         <p className="text-muted-foreground">Loading calendar...</p>
       </div>
     );
@@ -81,7 +81,7 @@ export function CalendarGrid({
               <div
                 className={`mb-1 text-sm font-medium ${
                   current
-                    ? 'bg-primary text-primary-foreground flex h-7 w-7 items-center justify-center rounded-full'
+                    ? 'text-primary-foreground flex h-7 w-7 items-center justify-center rounded-full bg-primary'
                     : 'text-foreground'
                 }`}
               >

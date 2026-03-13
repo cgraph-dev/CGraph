@@ -107,6 +107,6 @@ export function PremiumBanner({
     default:
       return <CardBanner {...shared} />;
   }
-};
+}
 
 export default PremiumBanner;

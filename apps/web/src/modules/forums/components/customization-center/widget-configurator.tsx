@@ -33,14 +33,36 @@ interface WidgetConfig {
 }
 
 const WIDGETS: WidgetConfig[] = [
-  { key: 'statistics', label: 'Forum Statistics', icon: ChartBarIcon, optionKey: 'widget_statistics' },
-  { key: 'recent_threads', label: 'Recent Threads', icon: ChatBubbleLeftRightIcon, optionKey: 'widget_recent_threads' },
-  { key: 'online_users', label: 'Online Users', icon: UserGroupIcon, optionKey: 'widget_online_users' },
+  {
+    key: 'statistics',
+    label: 'Forum Statistics',
+    icon: ChartBarIcon,
+    optionKey: 'widget_statistics',
+  },
+  {
+    key: 'recent_threads',
+    label: 'Recent Threads',
+    icon: ChatBubbleLeftRightIcon,
+    optionKey: 'widget_recent_threads',
+  },
+  {
+    key: 'online_users',
+    label: 'Online Users',
+    icon: UserGroupIcon,
+    optionKey: 'widget_online_users',
+  },
   { key: 'leaderboard', label: 'Leaderboard', icon: TrophyIcon, optionKey: 'widget_leaderboard' },
   { key: 'poll', label: 'Active Poll', icon: ChartPieIcon, optionKey: 'widget_poll' },
-  { key: 'custom_html', label: 'Custom HTML', icon: CodeBracketIcon, optionKey: 'widget_custom_html' },
+  {
+    key: 'custom_html',
+    label: 'Custom HTML',
+    icon: CodeBracketIcon,
+    optionKey: 'widget_custom_html',
+  },
 ];
 
+/** Description. */
+/** Widget Configurator component. */
 export function WidgetConfigurator({ options, onSave, saving }: WidgetConfiguratorProps) {
   const [draft, setDraft] = useState<Record<string, unknown>>({});
   const [widgetOrder, setWidgetOrder] = useState<string[]>([]);
@@ -48,6 +70,7 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
 
   useEffect(() => {
     setDraft({ ...options });
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const order = (options.widget_order as string[]) ?? WIDGETS.map((w) => w.key);
     setWidgetOrder(order);
   }, [options]);
@@ -69,16 +92,19 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
     setDraggedItem(key);
   }, []);
 
-  const handleDragOver = useCallback((e: React.DragEvent, targetKey: string) => {
-    e.preventDefault();
-    if (draggedItem && draggedItem !== targetKey) {
-      const fromIndex = widgetOrder.indexOf(draggedItem);
-      const toIndex = widgetOrder.indexOf(targetKey);
-      if (fromIndex !== -1 && toIndex !== -1) {
-        moveWidget(fromIndex, toIndex);
+  const handleDragOver = useCallback(
+    (e: React.DragEvent, targetKey: string) => {
+      e.preventDefault();
+      if (draggedItem && draggedItem !== targetKey) {
+        const fromIndex = widgetOrder.indexOf(draggedItem);
+        const toIndex = widgetOrder.indexOf(targetKey);
+        if (fromIndex !== -1 && toIndex !== -1) {
+          moveWidget(fromIndex, toIndex);
+        }
       }
-    }
-  }, [draggedItem, widgetOrder, moveWidget]);
+    },
+    [draggedItem, widgetOrder, moveWidget]
+  );
 
   const handleDragEnd = useCallback(() => {
     setDraggedItem(null);
@@ -100,6 +126,7 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
           const widget = WIDGETS.find((w) => w.key === key);
           if (!widget) return null;
           const Icon = widget.icon;
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const enabled = draft[widget.optionKey] as boolean;
 
           return (
@@ -109,23 +136,21 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
               onDragStart={() => handleDragStart(key)}
               onDragOver={(e) => handleDragOver(e, key)}
               onDragEnd={handleDragEnd}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-colors cursor-move ${
-                enabled
-                  ? 'bg-white/5 border-white/10'
-                  : 'bg-white/[0.02] border-white/5 opacity-50'
+              className={`flex cursor-move items-center gap-3 rounded-lg border px-4 py-3 transition-colors ${
+                enabled ? 'border-white/10 bg-white/5' : 'border-white/5 bg-white/[0.02] opacity-50'
               } ${draggedItem === key ? 'ring-2 ring-blue-500' : ''}`}
             >
-              <ArrowsUpDownIcon className="w-4 h-4 text-white/30 flex-shrink-0" />
-              <Icon className="w-5 h-5 text-white/60 flex-shrink-0" />
+              <ArrowsUpDownIcon className="h-4 w-4 flex-shrink-0 text-white/30" />
+              <Icon className="h-5 w-5 flex-shrink-0 text-white/60" />
               <span className="flex-1 text-sm text-white/80">{widget.label}</span>
               <button
                 onClick={() => toggleWidget(widget.optionKey)}
-                className={`relative w-10 h-5 rounded-full transition-colors ${
+                className={`relative h-5 w-10 rounded-full transition-colors ${
                   enabled ? 'bg-green-500' : 'bg-white/20'
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                  className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
                     enabled ? 'left-5' : 'left-0.5'
                   }`}
                 />
@@ -137,32 +162,34 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
 
       {/* Widget Visibility */}
       <div>
-        <h4 className="text-sm font-semibold text-white/80 mb-2">Widget Visibility</h4>
+        <h4 className="mb-2 text-sm font-semibold text-white/80">Widget Visibility</h4>
         <div className="flex gap-4">
           {['guests', 'members', 'mods'].map((role) => {
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             const visibility = (draft.widget_visibility as Record<string, boolean>) ?? {};
             const enabled = visibility[role] !== false;
             return (
               <div key={role} className="flex items-center gap-2">
                 <button
                   onClick={() => {
+                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                     const current = (draft.widget_visibility as Record<string, boolean>) ?? {};
                     setDraft((prev) => ({
                       ...prev,
                       widget_visibility: { ...current, [role]: !enabled },
                     }));
                   }}
-                  className={`relative w-8 h-4 rounded-full transition-colors ${
+                  className={`relative h-4 w-8 rounded-full transition-colors ${
                     enabled ? 'bg-green-500' : 'bg-white/20'
                   }`}
                 >
                   <span
-                    className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${
+                    className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-transform ${
                       enabled ? 'left-4' : 'left-0.5'
                     }`}
                   />
                 </button>
-                <span className="text-xs text-white/60 capitalize">{role}</span>
+                <span className="text-xs capitalize text-white/60">{role}</span>
               </div>
             );
           })}
@@ -170,13 +197,13 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
       </div>
 
       {/* Save */}
-      <div className="flex justify-end pt-4 border-t border-white/10">
+      <div className="flex justify-end border-t border-white/10 pt-4">
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-500 disabled:opacity-50"
         >
-          <CheckIcon className="w-4 h-4" />
+          <CheckIcon className="h-4 w-4" />
           {saving ? 'Saving...' : 'Save Widgets'}
         </button>
       </div>

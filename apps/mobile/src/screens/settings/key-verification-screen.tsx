@@ -55,6 +55,7 @@ function getQRData(userId: string, safetyNumber: string): string {
 }
 
 /**
+ * Key Verification Screen component.
  *
  */
 export function KeyVerificationScreen() {
@@ -72,6 +73,7 @@ export function KeyVerificationScreen() {
 
   useEffect(() => {
     fetchSafetyNumber();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchSafetyNumber = async () => {
@@ -97,7 +99,7 @@ export function KeyVerificationScreen() {
         error: null,
       });
     } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
       const error = err as any;
       setState((s) => ({
         ...s,
@@ -121,7 +123,7 @@ export function KeyVerificationScreen() {
               setState((s) => ({ ...s, isVerified: true }));
               Alert.alert('Success', `${username} is now verified!`);
             } catch (err: unknown) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
               const error = err as any;
               Alert.alert('Error', error?.response?.data?.message || 'Failed to mark as verified');
             }

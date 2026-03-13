@@ -18,6 +18,8 @@ interface FriendOptionsMenuProps {
   onBlock: () => void;
 }
 
+/** Description. */
+/** Friend Options Menu component. */
 export function FriendOptionsMenu({
   visible,
   colors,
@@ -35,17 +37,26 @@ export function FriendOptionsMenu({
             <View style={[styles.menuContainer, { backgroundColor: colors.surface }]}>
               <Text style={[styles.menuTitle, { color: colors.text }]}>Friend Options</Text>
 
-              <TouchableOpacity style={[styles.menuItem, { borderBottomColor: colors.border }]} onPress={onInviteToForum}>
+              <TouchableOpacity
+                style={[styles.menuItem, { borderBottomColor: colors.border }]}
+                onPress={onInviteToForum}
+              >
                 <Ionicons name="people" size={22} color={colors.text} />
                 <Text style={[styles.menuItemText, { color: colors.text }]}>Invite to Forum</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.menuItem, { borderBottomColor: colors.border }]} onPress={onMute}>
+              <TouchableOpacity
+                style={[styles.menuItem, { borderBottomColor: colors.border }]}
+                onPress={onMute}
+              >
                 <Ionicons name="notifications-off" size={22} color={colors.text} />
                 <Text style={[styles.menuItemText, { color: colors.text }]}>Mute</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.menuItem, { borderBottomColor: colors.border }]} onPress={onRemoveFriend}>
+              <TouchableOpacity
+                style={[styles.menuItem, { borderBottomColor: colors.border }]}
+                onPress={onRemoveFriend}
+              >
                 <Ionicons name="person-remove" size={22} color={colors.error} />
                 <Text style={[styles.menuItemText, { color: colors.error }]}>Remove Friend</Text>
               </TouchableOpacity>
@@ -55,7 +66,10 @@ export function FriendOptionsMenu({
                 <Text style={[styles.menuItemText, { color: colors.error }]}>Block</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.cancelButton, { backgroundColor: colors.surfaceHover }]} onPress={onClose}>
+              <TouchableOpacity
+                style={[styles.cancelButton, { backgroundColor: colors.surfaceHover }]}
+                onPress={onClose}
+              >
                 <Text style={[styles.cancelButtonText, { color: colors.text }]}>Cancel</Text>
               </TouchableOpacity>
             </View>

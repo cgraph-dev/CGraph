@@ -131,7 +131,9 @@ export default function ForgotPassword() {
           />
         </div>
 
-        <SubmitButton pendingText="Sending..." className="auth-cta-button w-full py-3">{t('forgot_password.submit')}</SubmitButton>
+        <SubmitButton pendingText="Sending..." className="auth-cta-button w-full py-3">
+          {t('forgot_password.submit')}
+        </SubmitButton>
       </form>
 
       {/* Back to Login */}

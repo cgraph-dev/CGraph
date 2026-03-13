@@ -25,6 +25,7 @@ interface FileUnlockSheetProps {
   onConfirm: () => void;
 }
 
+/** File Unlock Sheet component. */
 export default function FileUnlockSheet({
   visible,
   onClose,
@@ -41,6 +42,7 @@ export default function FileUnlockSheet({
   const handleConfirm = () => {
     try {
       // Optional haptic feedback — expo-haptics may not be available in all envs
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const Haptics = require('expo-haptics');
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     } catch {
@@ -50,12 +52,7 @@ export default function FileUnlockSheet({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <Pressable style={styles.backdrop} onPress={onClose} />
 
@@ -82,18 +79,13 @@ export default function FileUnlockSheet({
 
           <View style={[styles.infoRow, { borderColor: colors.border }]}>
             <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Price</Text>
-            <Text style={[styles.infoValue, { color: colors.primary }]}>
-              {file.price} nodes
-            </Text>
+            <Text style={[styles.infoValue, { color: colors.primary }]}>{file.price} nodes</Text>
           </View>
 
           <View style={[styles.infoRow, { borderColor: colors.border }]}>
             <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Your Balance</Text>
             <Text
-              style={[
-                styles.infoValue,
-                { color: insufficientBalance ? '#ef4444' : colors.text },
-              ]}
+              style={[styles.infoValue, { color: insufficientBalance ? '#ef4444' : colors.text }]}
             >
               {userBalance} nodes
             </Text>

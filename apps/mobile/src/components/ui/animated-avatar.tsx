@@ -6,7 +6,15 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, ViewStyle, ImageSourcePropType } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, cancelAnimation } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolate,
+  cancelAnimation,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimationColors } from '@/lib/animations/animation-engine';
 import LottieView from 'lottie-react-native';
@@ -56,6 +64,7 @@ interface AnimatedAvatarProps {
 }
 
 /**
+ * Animated Avatar component.
  *
  */
 export default function AnimatedAvatar({
@@ -90,10 +99,7 @@ export default function AnimatedAvatar({
 
     // Rotation animation for spin, rainbow, cosmic effects
     if (['spin', 'rainbow', 'cosmic', 'celestial'].includes(borderAnimation)) {
-      rotationAnim.value = withRepeat(
-        withTiming(1, { duration: durations.cinematic.ms }),
-        -1
-      );
+      rotationAnim.value = withRepeat(withTiming(1, { duration: durations.cinematic.ms }), -1);
     }
 
     // Pulse animation - keep separate from glow
@@ -123,6 +129,7 @@ export default function AnimatedAvatar({
       cancelAnimation(pulseAnim);
       cancelAnimation(glowAnim);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [borderAnimation, particleEffect]);
 
   const generateParticles = () => {

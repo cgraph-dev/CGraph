@@ -224,12 +224,7 @@ export function createModerationActions(set: Set, _get: Get) {
       }
     },
 
-    issueWarning: async (
-      forumId: string,
-      userId: string,
-      reason: string,
-      points: number
-    ) => {
+    issueWarning: async (forumId: string, userId: string, reason: string, points: number) => {
       try {
         const response = await api.post(`/api/v1/forums/${forumId}/moderation/warn`, {
           user_id: userId,
@@ -238,10 +233,7 @@ export function createModerationActions(set: Set, _get: Get) {
         });
         return response.data?.warning;
       } catch (error: unknown) {
-        logger.error(
-          error instanceof Error ? error : new Error(String(error)),
-          'issueWarning'
-        );
+        logger.error(error instanceof Error ? error : new Error(String(error)), 'issueWarning');
         throw error;
       }
     },

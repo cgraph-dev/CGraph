@@ -116,7 +116,7 @@ export function ErrorFallback({
         `URL: ${window.location.href}`,
         `Time: ${new Date().toISOString()}`,
         `User Agent: ${navigator.userAgent}`,
-      ].join('\n'),
+      ].join('\n')
     );
     window.open(`mailto:support@cgraph.app?subject=${subject}&body=${body}`, '_blank');
   };

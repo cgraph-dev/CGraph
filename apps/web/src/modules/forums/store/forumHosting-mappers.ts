@@ -32,7 +32,7 @@ function bool(val: unknown): boolean {
 
 /** Narrow unknown to Record — necessary cast after runtime object check. */
 function record(val: unknown): Record<string, unknown> {
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return typeof val === 'object' && val !== null ? (val as Record<string, unknown>) : {}; // safe downcast – runtime verified
 }
 
@@ -115,7 +115,8 @@ export function mapThreadFromApi(data: Record<string, unknown>): Thread {
     slug: str(data.slug),
     content: strOrNull(data.content),
     contentHtml: strOrNull(data.content_html),
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     threadType: (data.thread_type as Thread['threadType']) || 'normal', // safe downcast — API enum
     isLocked: bool(data.is_locked),
     isPinned: bool(data.is_pinned),
@@ -193,7 +194,8 @@ export function mapMemberFromApi(data: Record<string, unknown>): ForumMember {
     postCount: num(data.post_count),
     threadCount: num(data.thread_count),
     reputation: num(data.reputation),
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     role: (data.role as ForumMember['role']) || 'member', // safe downcast — API enum
     isBanned: bool(data.is_banned),
     joinedAt: str(data.joined_at) || str(data.inserted_at) || null,

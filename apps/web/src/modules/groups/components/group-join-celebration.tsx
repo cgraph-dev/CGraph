@@ -34,11 +34,7 @@ export interface GroupJoinCelebrationProps {
 /**
  * Group Join Celebration component.
  */
-export function GroupJoinCelebration({
-  groupName,
-  show,
-  onComplete,
-}: GroupJoinCelebrationProps) {
+export function GroupJoinCelebration({ groupName, show, onComplete }: GroupJoinCelebrationProps) {
   const fireCelebration = useCallback(() => {
     // Big center burst
     confetti({
@@ -100,9 +96,7 @@ export function GroupJoinCelebration({
             >
               🎉
             </motion.div>
-            <h2 className="mt-2 text-2xl font-bold text-white drop-shadow-lg">
-              Welcome to
-            </h2>
+            <h2 className="mt-2 text-2xl font-bold text-white drop-shadow-lg">Welcome to</h2>
             <p className="mt-1 text-lg font-semibold text-primary-400 drop-shadow-lg">
               {groupName}
             </p>

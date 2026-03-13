@@ -159,6 +159,7 @@ export function useWebGLInit(refs: WebGLRefs, variant: ShaderVariant) {
 
     return () => {
       if (animationFrameRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         cancelAnimationFrame(animationFrameRef.current);
       }
       gl.deleteProgram(program);

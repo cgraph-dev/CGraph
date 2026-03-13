@@ -119,7 +119,8 @@ export function voteOnThread(
   return new Promise((resolve, reject) => {
     channel
       .push('vote', { value })
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .receive('ok', (resp: unknown) => resolve(resp as ThreadVotePayload)) // safe downcast – API response field
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -142,7 +143,8 @@ export function voteOnComment(
   return new Promise((resolve, reject) => {
     channel
       .push('vote_comment', { comment_id: commentId, value })
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .receive('ok', (resp: unknown) => resolve(resp as CommentVotePayload)) // safe downcast – API response field
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -165,7 +167,8 @@ export function sendComment(
   return new Promise((resolve, reject) => {
     channel
       .push('new_comment', { content, parent_id: parentId })
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .receive('ok', (resp: unknown) => resolve(resp as { comment_id: string }))
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -202,7 +205,8 @@ export function voteOnPoll(
   return new Promise((resolve, reject) => {
     channel
       .push('vote_poll', { option_id: optionId })
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .receive('ok', (resp: unknown) => resolve(resp as { poll: ThreadPollData }))
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -223,7 +227,8 @@ export function getThreadViewers(
   return new Promise((resolve, reject) => {
     channel
       .push('get_viewers', {})
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .receive('ok', (resp: unknown) => resolve(resp as { viewers: ThreadViewerPayload[] }))
       .receive('error', (resp: unknown) => reject(resp));
   });

@@ -73,9 +73,9 @@ function FallbackLayer({ config, index, totalLayers, borderRadius = 0 }: Fallbac
 
   return (
     <LinearGradient
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       colors={gradient.colors as [string, string, ...string[]]}
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       locations={gradient.locations as [number, number, ...number[]]}
       start={gradient.start}
       end={gradient.end}
@@ -117,10 +117,14 @@ function ShimmerOverlay({ borderRadius = 0 }: ShimmerOverlayProps) {
 
   React.useEffect(() => {
     translateX.value = withRepeat(
-      withSequence(withTiming(300, { duration: durations.loop.ms }), withTiming(-300, { duration: 0 })),
+      withSequence(
+        withTiming(300, { duration: durations.loop.ms }),
+        withTiming(-300, { duration: 0 })
+      ),
       -1,
       false
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -147,6 +151,7 @@ function ShimmerOverlay({ borderRadius = 0 }: ShimmerOverlayProps) {
 // ============================================================================
 
 /**
+ * Blur View Cross component.
  *
  */
 export default function BlurViewCross({
@@ -258,7 +263,7 @@ export default function BlurViewCross({
 
       {/* Style-specific gradient overlay */}
       <LinearGradient
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         colors={[colors.gradientStart, colors.gradientEnd] as [string, string]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -333,6 +338,7 @@ const styles = StyleSheet.create({
 // ============================================================================
 
 /**
+ * Light Blur component.
  *
  */
 export function LightBlur(props: Omit<BlurViewCrossProps, 'tint'>) {
@@ -340,6 +346,7 @@ export function LightBlur(props: Omit<BlurViewCrossProps, 'tint'>) {
 }
 
 /**
+ * Dark Blur component.
  *
  */
 export function DarkBlur(props: Omit<BlurViewCrossProps, 'tint'>) {
@@ -347,6 +354,7 @@ export function DarkBlur(props: Omit<BlurViewCrossProps, 'tint'>) {
 }
 
 /**
+ * Frosted Glass component.
  *
  */
 export function FrostedGlass(props: Omit<BlurViewCrossProps, 'style'>) {
@@ -354,6 +362,7 @@ export function FrostedGlass(props: Omit<BlurViewCrossProps, 'style'>) {
 }
 
 /**
+ * Crystal Glass component.
  *
  */
 export function CrystalGlass(props: Omit<BlurViewCrossProps, 'style'>) {
@@ -361,6 +370,7 @@ export function CrystalGlass(props: Omit<BlurViewCrossProps, 'style'>) {
 }
 
 /**
+ * Neon Glass component.
  *
  */
 export function NeonGlass(props: Omit<BlurViewCrossProps, 'style'>) {
@@ -368,6 +378,7 @@ export function NeonGlass(props: Omit<BlurViewCrossProps, 'style'>) {
 }
 
 /**
+ * Holographic Glass component.
  *
  */
 export function HolographicGlass(props: Omit<BlurViewCrossProps, 'style'>) {
@@ -375,6 +386,7 @@ export function HolographicGlass(props: Omit<BlurViewCrossProps, 'style'>) {
 }
 
 /**
+ * Aurora Glass component.
  *
  */
 export function AuroraGlass(props: Omit<BlurViewCrossProps, 'style'>) {
@@ -382,6 +394,7 @@ export function AuroraGlass(props: Omit<BlurViewCrossProps, 'style'>) {
 }
 
 /**
+ * Midnight Glass component.
  *
  */
 export function MidnightGlass(props: Omit<BlurViewCrossProps, 'style'>) {
@@ -389,6 +402,7 @@ export function MidnightGlass(props: Omit<BlurViewCrossProps, 'style'>) {
 }
 
 /**
+ * Ocean Glass component.
  *
  */
 export function OceanGlass(props: Omit<BlurViewCrossProps, 'style'>) {
@@ -396,6 +410,7 @@ export function OceanGlass(props: Omit<BlurViewCrossProps, 'style'>) {
 }
 
 /**
+ * Ember Glass component.
  *
  */
 export function EmberGlass(props: Omit<BlurViewCrossProps, 'style'>) {

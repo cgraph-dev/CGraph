@@ -67,6 +67,7 @@ export interface UseRealtimeChannelReturn {
 }
 
 /**
+ * Hook for realtime channel.
  *
  */
 export function useRealtimeChannel(
@@ -89,21 +90,21 @@ export function useRealtimeChannel(
   const [error, setError] = useState<Error | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
-  
+
   const mountedRef = useRef(true);
   const eventCallbacksRef = useRef<Map<string, Set<(payload: unknown) => void>>>(new Map());
   const cleanupFunctionsRef = useRef<(() => void)[]>([]);
 
   const join = useCallback(async () => {
     if (isJoined || isJoining) return;
-    
+
     setIsJoining(true);
     setError(null);
-    
+
     try {
       await socketManager.connect();
       await socketManager.joinChannel(topic, params);
-      
+
       if (mountedRef.current) {
         setIsJoined(true);
         setIsJoining(false);
@@ -128,44 +129,48 @@ export function useRealtimeChannel(
     logger.log('Left channel:', topic);
   }, [topic, onLeave]);
 
-  const push = useCallback(async <T = unknown>(
-    event: string,
-    payload: Record<string, unknown> = {}
-  ): Promise<T> => {
-    return new Promise((resolve, reject) => {
-      // Use the socket manager's channel push mechanism
-      // The channel must be joined before pushing
-      if (!isJoined) {
-        reject(new Error('Channel not joined'));
-        return;
+  const push = useCallback(
+    async <T = unknown>(event: string, payload: Record<string, unknown> = {}): Promise<T> => {
+      return new Promise((resolve, reject) => {
+        // Use the socket manager's channel push mechanism
+        // The channel must be joined before pushing
+        if (!isJoined) {
+          reject(new Error('Channel not joined'));
+          return;
+        }
+        // For now, just log the push attempt
+        // The actual push is handled through specific methods on socketManager
+        logger.log('Push to channel:', topic, event, payload);
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        resolve(undefined as T);
+      });
+    },
+    [topic, isJoined]
+  );
+
+  const on = useCallback(
+    (event: string, callback: (payload: unknown) => void) => {
+      if (!eventCallbacksRef.current.has(event)) {
+        eventCallbacksRef.current.set(event, new Set());
       }
-      // For now, just log the push attempt
-      // The actual push is handled through specific methods on socketManager
-      logger.log('Push to channel:', topic, event, payload);
-       
-      resolve(undefined as T);
-    });
-  }, [topic, isJoined]);
+      eventCallbacksRef.current.get(event)?.add(callback);
 
-  const on = useCallback((event: string, callback: (payload: unknown) => void) => {
-    if (!eventCallbacksRef.current.has(event)) {
-      eventCallbacksRef.current.set(event, new Set());
-    }
-    eventCallbacksRef.current.get(event)?.add(callback);
+      // Subscribe to the event if we're joined
+      const unsubscribe = socketManager.onChannelMessage(topic, (eventName, payload) => {
+        if (eventName === event) {
+          callback(payload);
+        }
+      });
+      cleanupFunctionsRef.current.push(unsubscribe);
 
-    // Subscribe to the event if we're joined
-    const unsubscribe = socketManager.onChannelMessage(topic, (eventName, payload) => {
-      if (eventName === event) {
-        callback(payload);
-      }
-    });
-    cleanupFunctionsRef.current.push(unsubscribe);
-
-    return () => {
-      eventCallbacksRef.current.get(event)?.delete(callback);
-      unsubscribe();
-    };
-  }, [topic]);
+      return () => {
+        eventCallbacksRef.current.get(event)?.delete(callback);
+        unsubscribe();
+      };
+    },
+    [topic]
+  );
 
   // Set up event subscriptions
   useEffect(() => {
@@ -238,6 +243,7 @@ export function useRealtimeChannel(
         leave();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic]); // Only depend on topic to prevent re-joining
 
   return {
@@ -259,16 +265,19 @@ export function useRealtimeChannel(
  */
 export function useConversationChannel(conversationId: string) {
   const topic = `conversation:${conversationId}`;
-  
+
   const channel = useRealtimeChannel(topic, {
     trackPresence: true,
     events: ['new_message', 'message_updated', 'message_deleted', 'user_typing'],
   });
 
-  const sendTyping = useCallback((isTyping: boolean) => {
-    const topic = `conversation:${conversationId}`;
-    socketManager.sendTyping(topic, isTyping);
-  }, [conversationId]);
+  const sendTyping = useCallback(
+    (isTyping: boolean) => {
+      const topic = `conversation:${conversationId}`;
+      socketManager.sendTyping(topic, isTyping);
+    },
+    [conversationId]
+  );
 
   return {
     ...channel,
@@ -281,10 +290,17 @@ export function useConversationChannel(conversationId: string) {
  */
 export function useGroupChannel(groupId: string, channelId: string) {
   const topic = `group:${channelId}`;
-  
+
   return useRealtimeChannel(topic, {
     trackPresence: true,
-    events: ['new_message', 'message_updated', 'message_deleted', 'user_typing', 'member_joined', 'member_left'],
+    events: [
+      'new_message',
+      'message_updated',
+      'message_deleted',
+      'user_typing',
+      'member_joined',
+      'member_left',
+    ],
   });
 }
 
@@ -294,13 +310,17 @@ export function useGroupChannel(groupId: string, channelId: string) {
  */
 export function useForumChannel(forumSlug: string) {
   const topic = `forum:${forumSlug}`;
-  const [stats, setStats] = useState<{ member_count: number; online_count: number; thread_count: number } | null>(null);
-  
+  const [stats, setStats] = useState<{
+    member_count: number;
+    online_count: number;
+    thread_count: number;
+  } | null>(null);
+
   const channel = useRealtimeChannel(topic, {
     trackPresence: true,
     events: [
       'new_thread',
-      'thread_updated', 
+      'thread_updated',
       'thread_deleted',
       'member_joined',
       'member_left',
@@ -312,7 +332,7 @@ export function useForumChannel(forumSlug: string) {
     ],
     onEvent: (event) => {
       if (event.event === 'stats_update') {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         setStats(event.payload as typeof stats);
       }
     },
@@ -347,14 +367,17 @@ export function useThreadChannel(threadId: string) {
     ],
     onEvent: (event) => {
       if (event.event === 'vote_update') {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const payload = event.payload as { upvotes: number; downvotes: number };
         setVotes(payload);
       }
     },
     onJoin: (response) => {
-       
-      const resp = response as { viewers?: string[]; votes?: { upvotes: number; downvotes: number } };
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const resp = response as {
+        viewers?: string[];
+        votes?: { upvotes: number; downvotes: number };
+      };
       if (resp.viewers) setViewers(resp.viewers);
       if (resp.votes) setVotes(resp.votes);
     },
@@ -366,19 +389,28 @@ export function useThreadChannel(threadId: string) {
   }, [channel]);
 
   // Vote on thread
-  const vote = useCallback((value: 1 | -1) => {
-    return channel.push<{ upvotes: number; downvotes: number }>('vote', { value });
-  }, [channel]);
+  const vote = useCallback(
+    (value: 1 | -1) => {
+      return channel.push<{ upvotes: number; downvotes: number }>('vote', { value });
+    },
+    [channel]
+  );
 
   // Post a comment
-  const postComment = useCallback((content: string, parentId?: string) => {
-    return channel.push('new_comment', { content, parent_id: parentId });
-  }, [channel]);
+  const postComment = useCallback(
+    (content: string, parentId?: string) => {
+      return channel.push('new_comment', { content, parent_id: parentId });
+    },
+    [channel]
+  );
 
   // Vote on a poll option
-  const votePoll = useCallback((pollId: string, optionId: string) => {
-    return channel.push('vote_poll', { poll_id: pollId, option_id: optionId });
-  }, [channel]);
+  const votePoll = useCallback(
+    (pollId: string, optionId: string) => {
+      return channel.push('vote_poll', { poll_id: pollId, option_id: optionId });
+    },
+    [channel]
+  );
 
   return {
     ...channel,

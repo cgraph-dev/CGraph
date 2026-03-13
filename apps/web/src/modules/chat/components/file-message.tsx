@@ -34,19 +34,24 @@ export function FileMessage({ message, isOwnMessage, className = '' }: FileMessa
   const [imageError, setImageError] = useState(false);
 
   // Extract file metadata from message with proper type casting
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const fileUrl = (message.metadata?.fileUrl || message.metadata?.file_url) as string | undefined; // type assertion: message metadata field
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const fileName = (message.metadata?.fileName ||
     message.metadata?.file_name ||
     'Unknown file') as string; // type assertion: message metadata field
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const fileSize = (message.metadata?.fileSize || message.metadata?.file_size || 0) as number; // type assertion: message metadata field
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const fileMimeType = (message.metadata?.fileMimeType ||
     message.metadata?.file_mime_type ||
     '') as string; // type assertion: message metadata field
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const thumbnailUrl = (message.metadata?.thumbnailUrl || message.metadata?.thumbnail_url) as
     | string
     | undefined; // type assertion: message metadata field

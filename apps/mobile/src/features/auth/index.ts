@@ -1,6 +1,6 @@
 /**
  * Auth Feature Module (Mobile)
- * 
+ *
  * @module @features/auth
  * @since v0.8.3
  */

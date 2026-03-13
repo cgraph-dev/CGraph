@@ -25,6 +25,7 @@ import { ConnectingView } from './video-call-screen/components/connecting-view';
 import { CallControls } from './video-call-screen/components/call-controls';
 
 /**
+ * Video Call Screen component.
  *
  */
 export default function VideoCallScreen() {
@@ -51,11 +52,20 @@ export default function VideoCallScreen() {
 
         {/* Remote video placeholder */}
         <View style={styles.remoteVideo}>
-          <LinearGradient colors={[Colors.dark[800], Colors.dark[900]]} style={StyleSheet.absoluteFill} />
+          <LinearGradient
+            colors={[Colors.dark[800], Colors.dark[900]]}
+            style={StyleSheet.absoluteFill}
+          />
           <AnimatedAvatar
-            source={vc.recipientAvatar ? { uri: vc.recipientAvatar }
-              : require('@/assets/default-avatar.png')}
-            size={100} borderAnimation="glow" shape="circle"
+            source={
+              vc.recipientAvatar
+                ? { uri: vc.recipientAvatar }
+                : // eslint-disable-next-line @typescript-eslint/no-require-imports
+                  require('@/assets/default-avatar.png')
+            }
+            size={100}
+            borderAnimation="glow"
+            shape="circle"
           />
           <Text style={styles.noVideoText}>{vc.recipientName}</Text>
           <Text style={styles.noVideoSubtext}>Video paused</Text>
@@ -64,13 +74,18 @@ export default function VideoCallScreen() {
         {/* Local video PiP */}
         <Animated.View
           {...vc.pipPanResponder.panHandlers}
-          style={[styles.pip, {
-            transform: [
-              { translateX: vc.pipAnimX }, { translateY: vc.pipAnimY },
-              { scale: vc.pipScale }, { rotateY: vc.cameraFlipRotate },
-              { scaleX: vc.cameraFlipScale },
-            ],
-          }]}
+          style={[
+            styles.pip,
+            {
+              transform: [
+                { translateX: vc.pipAnimX },
+                { translateY: vc.pipAnimY },
+                { scale: vc.pipScale },
+                { rotateY: vc.cameraFlipRotate },
+                { scaleX: vc.cameraFlipScale },
+              ],
+            },
+          ]}
         >
           <LinearGradient colors={[Colors.dark[700], Colors.dark[800]]} style={styles.pipContent}>
             {vc.isVideoOff ? (
@@ -103,10 +118,19 @@ export default function VideoCallScreen() {
             layoutMode={vc.layoutMode}
             onFlipCamera={vc.handleFlipCamera}
             onEndCall={vc.handleEndCall}
-            onToggleMute={() => { HapticFeedback.medium(); vc.setIsMuted(!vc.isMuted); }}
-            onToggleVideo={() => { HapticFeedback.medium(); vc.setIsVideoOff(!vc.isVideoOff); }}
+            onToggleMute={() => {
+              HapticFeedback.medium();
+              vc.setIsMuted(!vc.isMuted);
+            }}
+            onToggleVideo={() => {
+              HapticFeedback.medium();
+              vc.setIsVideoOff(!vc.isVideoOff);
+            }}
             onToggleLayout={vc.toggleLayout}
-            onGoBack={() => { HapticFeedback.light(); vc.navigation.goBack(); }}
+            onGoBack={() => {
+              HapticFeedback.light();
+              vc.navigation.goBack();
+            }}
           />
         </Animated.View>
       </View>

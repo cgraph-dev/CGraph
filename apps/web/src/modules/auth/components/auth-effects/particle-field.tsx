@@ -56,7 +56,8 @@ export const ParticleField = memo(function ParticleField({
           vx: (Math.random() - 0.5) * speed,
           vy: (Math.random() - 0.5) * speed,
           size: Math.random() * 2 + 1,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           color: colors[Math.floor(Math.random() * colors.length)] as string, // type assertion: array index returns valid color string
           alpha: Math.random() * 0.5 + 0.3,
         });

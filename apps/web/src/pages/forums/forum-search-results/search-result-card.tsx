@@ -10,7 +10,10 @@
 import type { ForumSearchResult } from '@/modules/forums/store/forumStore.types';
 import { Link } from 'react-router-dom';
 
-const TYPE_BADGE_STYLES: Record<ForumSearchResult['type'], { bg: string; text: string; label: string }> = {
+const TYPE_BADGE_STYLES: Record<
+  ForumSearchResult['type'],
+  { bg: string; text: string; label: string }
+> = {
   thread: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Thread' },
   post: { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Post' },
   comment: { bg: 'bg-gray-500/20', text: 'text-gray-400', label: 'Comment' },
@@ -20,12 +23,15 @@ function highlightText(text: string, highlights?: string[]): React.ReactNode {
   if (!highlights?.length) return text;
   let result = text;
   for (const h of highlights) {
-    result = result.replace(new RegExp(`(${h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '**$1**');
+    result = result.replace(
+      new RegExp(`(${h.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+      '**$1**'
+    );
   }
   const parts = result.split(/\*\*(.*?)\*\*/g);
   return parts.map((part, i) =>
     i % 2 === 1 ? (
-      <mark key={i} className="bg-yellow-500/30 text-yellow-200 rounded px-0.5">
+      <mark key={i} className="rounded bg-yellow-500/30 px-0.5 text-yellow-200">
         {part}
       </mark>
     ) : (
@@ -52,15 +58,19 @@ interface SearchResultCardProps {
   result: ForumSearchResult;
 }
 
+/** Description. */
+/** Search Result Card component. */
 export function SearchResultCard({ result }: SearchResultCardProps) {
   const badge = TYPE_BADGE_STYLES[result.type];
-  const preview = result.contentPreview.length > 200
-    ? result.contentPreview.slice(0, 200) + '…'
-    : result.contentPreview;
+  const preview =
+    result.contentPreview.length > 200
+      ? result.contentPreview.slice(0, 200) + '…'
+      : result.contentPreview;
 
-  const linkTo = result.type === 'thread' || result.type === 'post'
-    ? `/forums/${result.forum.slug}/post/${result.id}`
-    : `/forums/${result.forum.slug}/post/${result.id}`;
+  const linkTo =
+    result.type === 'thread' || result.type === 'post'
+      ? `/forums/${result.forum.slug}/post/${result.id}`
+      : `/forums/${result.forum.slug}/post/${result.id}`;
 
   return (
     <Link
@@ -69,7 +79,9 @@ export function SearchResultCard({ result }: SearchResultCardProps) {
     >
       <div className="flex items-start gap-3">
         {/* Type Badge */}
-        <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium ${badge.bg} ${badge.text}`}>
+        <span
+          className={`shrink-0 rounded px-2 py-0.5 text-xs font-medium ${badge.bg} ${badge.text}`}
+        >
           {badge.label}
         </span>
 
@@ -91,11 +103,7 @@ export function SearchResultCard({ result }: SearchResultCardProps) {
             {/* Author */}
             <div className="flex items-center gap-1.5">
               {result.author.avatar ? (
-                <img
-                  src={result.author.avatar}
-                  alt=""
-                  className="h-4 w-4 rounded-full"
-                />
+                <img src={result.author.avatar} alt="" className="h-4 w-4 rounded-full" />
               ) : (
                 <div className="h-4 w-4 rounded-full bg-gray-600" />
               )}
@@ -116,7 +124,8 @@ export function SearchResultCard({ result }: SearchResultCardProps) {
 
             {/* Score */}
             <span className="ml-auto tabular-nums">
-              {result.score > 0 ? '+' : ''}{result.score} pts
+              {result.score > 0 ? '+' : ''}
+              {result.score} pts
             </span>
 
             {/* Timestamp */}

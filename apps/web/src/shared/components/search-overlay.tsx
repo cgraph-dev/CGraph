@@ -58,6 +58,8 @@ const scopes: { value: SearchScope; label: string }[] = [
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Search Overlay component. */
 export function SearchOverlay({
   open,
   onClose,
@@ -127,48 +129,53 @@ export function SearchOverlay({
           <motion.div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
           <motion.div
-            className="relative w-full max-w-[480px] h-full bg-[#1e1f22] border-l border-white/[0.06] flex flex-col"
+            className="relative flex h-full w-full max-w-[480px] flex-col border-l border-white/[0.06] bg-[#1e1f22]"
             initial={{ x: 480 }}
             animate={{ x: 0 }}
             exit={{ x: 480 }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
           >
             {/* Header */}
-            <div className="p-4 border-b border-white/[0.06]">
+            <div className="border-b border-white/[0.06] p-4">
               <div className="flex items-center gap-3">
-                <MagnifyingGlassIcon className="h-5 w-5 text-white/40 shrink-0" />
+                <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-white/40" />
                 <input
                   ref={inputRef}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search messages, people, channels..."
-                  className="flex-1 bg-transparent text-white text-[15px] placeholder:text-white/25 outline-none"
+                  className="flex-1 bg-transparent text-[15px] text-white outline-none placeholder:text-white/25"
                 />
                 <button
                   onClick={() => setShowFilters((f) => !f)}
                   className={cn(
-                    'p-1.5 rounded-md transition-colors',
-                    showFilters ? 'bg-primary-600/20 text-primary-400' : 'text-white/40 hover:text-white/60',
+                    'rounded-md p-1.5 transition-colors',
+                    showFilters
+                      ? 'bg-primary-600/20 text-primary-400'
+                      : 'text-white/40 hover:text-white/60'
                   )}
                 >
                   <AdjustmentsHorizontalIcon className="h-4 w-4" />
                 </button>
-                <button onClick={onClose} className="p-1.5 rounded-md text-white/40 hover:text-white/60">
+                <button
+                  onClick={onClose}
+                  className="rounded-md p-1.5 text-white/40 hover:text-white/60"
+                >
                   <XMarkIcon className="h-4 w-4" />
                 </button>
               </div>
 
               {/* Scope selector */}
-              <div className="flex gap-1 mt-3">
+              <div className="mt-3 flex gap-1">
                 {scopes.map((s) => (
                   <button
                     key={s.value}
                     onClick={() => setScope(s.value)}
                     className={cn(
-                      'px-3 py-1 rounded-full text-xs font-medium transition-colors',
+                      'rounded-full px-3 py-1 text-xs font-medium transition-colors',
                       scope === s.value
                         ? 'bg-primary-600/20 text-primary-400'
-                        : 'bg-white/[0.04] text-white/40 hover:text-white/60',
+                        : 'bg-white/[0.04] text-white/40 hover:text-white/60'
                     )}
                   >
                     {s.label}
@@ -183,7 +190,7 @@ export function SearchOverlay({
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden mt-3"
+                    className="mt-3 overflow-hidden"
                   >
                     <div className="flex flex-wrap gap-2">
                       <FilterChip
@@ -194,12 +201,16 @@ export function SearchOverlay({
                       <FilterChip
                         label="In channel"
                         active={!!filters.inChannel}
-                        onClick={() => setFilters((f) => ({ ...f, inChannel: f.inChannel ? undefined : '' }))}
+                        onClick={() =>
+                          setFilters((f) => ({ ...f, inChannel: f.inChannel ? undefined : '' }))
+                        }
                       />
                       <FilterChip
                         label="Has attachment"
                         active={!!filters.hasAttachment}
-                        onClick={() => setFilters((f) => ({ ...f, hasAttachment: !f.hasAttachment }))}
+                        onClick={() =>
+                          setFilters((f) => ({ ...f, hasAttachment: !f.hasAttachment }))
+                        }
                       />
                       <FilterChip
                         label="Has link"
@@ -217,17 +228,17 @@ export function SearchOverlay({
               {!query.trim() ? (
                 /* Recent searches */
                 <div className="px-4">
-                  <p className="text-[11px] font-semibold text-white/30 uppercase tracking-wider mb-2">
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/30">
                     Recent Searches
                   </p>
                   {recentSearches.length === 0 ? (
-                    <p className="text-sm text-white/20 py-4">No recent searches</p>
+                    <p className="py-4 text-sm text-white/20">No recent searches</p>
                   ) : (
                     recentSearches.map((s, i) => (
                       <button
                         key={i}
                         onClick={() => setQuery(s)}
-                        className="flex items-center gap-2 w-full px-2 py-1.5 text-sm text-white/50 hover:text-white/80 hover:bg-white/[0.04] rounded-md transition-colors"
+                        className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-white/50 transition-colors hover:bg-white/[0.04] hover:text-white/80"
                       >
                         <ClockIcon className="h-4 w-4 shrink-0" />
                         <span className="truncate">{s}</span>
@@ -236,13 +247,13 @@ export function SearchOverlay({
                   )}
                 </div>
               ) : results.length === 0 && !loading ? (
-                <div className="px-4 py-8 text-center text-white/25 text-sm">
+                <div className="px-4 py-8 text-center text-sm text-white/25">
                   No results for &ldquo;{query}&rdquo;
                 </div>
               ) : (
                 Array.from(grouped.entries()).map(([type, items]) => (
                   <div key={type} className="mb-3">
-                    <div className="px-4 py-1.5 text-[11px] font-semibold text-white/30 uppercase tracking-wider">
+                    <div className="px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/30">
                       {typeLabels[type] || type} &middot; {items.length}
                     </div>
                     {items.map((item) => (
@@ -254,7 +265,7 @@ export function SearchOverlay({
 
               {loading && (
                 <div className="flex justify-center py-4">
-                  <div className="h-5 w-5 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-500/30 border-t-primary-500" />
                 </div>
               )}
             </div>
@@ -280,10 +291,10 @@ function FilterChip({
     <button
       onClick={onClick}
       className={cn(
-        'flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors',
+        'flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
         active
           ? 'bg-primary-600/20 text-primary-400'
-          : 'bg-white/[0.04] text-white/40 hover:text-white/60',
+          : 'bg-white/[0.04] text-white/40 hover:text-white/60'
       )}
     >
       <FunnelIcon className="h-3 w-3" />

@@ -46,7 +46,7 @@ interface UserGroup {
   permissions: Record<string, boolean | number>;
 }
 
-interface SecondaryMember {
+interface _SecondaryMember {
   id: string;
   user_id: string;
   username?: string;
@@ -60,14 +60,26 @@ type Props = {
 };
 
 const PERMISSION_KEYS = [
-  'can_view_forum', 'can_post_threads', 'can_post_replies', 'can_edit_own_posts',
-  'can_delete_own_posts', 'can_upload_attachments', 'can_create_polls',
-  'can_moderate', 'can_edit_posts', 'can_delete_posts', 'can_lock_threads',
-  'can_warn_users', 'can_ban_users', 'can_manage_boards', 'can_manage_settings',
+  'can_view_forum',
+  'can_post_threads',
+  'can_post_replies',
+  'can_edit_own_posts',
+  'can_delete_own_posts',
+  'can_upload_attachments',
+  'can_create_polls',
+  'can_moderate',
+  'can_edit_posts',
+  'can_delete_posts',
+  'can_lock_threads',
+  'can_warn_users',
+  'can_ban_users',
+  'can_manage_boards',
+  'can_manage_settings',
 ];
 
 // ── Screen ───────────────────────────────────────────────────────────────
 
+/** Forum User Groups Screen component. */
 export default function ForumUserGroupsScreen({ route }: Props) {
   const { forumId } = route.params;
   const { colors } = useThemeStore();
@@ -82,6 +94,7 @@ export default function ForumUserGroupsScreen({ route }: Props) {
   const fetchGroups = useCallback(async () => {
     try {
       const res = await api.get(`/api/v1/forums/${forumId}/user-groups`);
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const data = (res.data?.user_groups || []) as UserGroup[];
       setGroups(data.sort((a: UserGroup, b: UserGroup) => a.position - b.position));
     } catch {
@@ -92,27 +105,35 @@ export default function ForumUserGroupsScreen({ route }: Props) {
     }
   }, [forumId]);
 
-  useEffect(() => { fetchGroups(); }, [fetchGroups]);
+  useEffect(() => {
+    fetchGroups();
+  }, [fetchGroups]);
 
-  const handleRefresh = () => { setRefreshing(true); fetchGroups(); };
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchGroups();
+  };
 
-  const handleTogglePermission = useCallback(async (group: UserGroup, key: string) => {
-    const newPerms = { ...group.permissions, [key]: !group.permissions[key] };
-    try {
-      await api.put(`/api/v1/forums/${forumId}/user-groups/${group.id}`, {
-        user_group: { permissions: newPerms },
-      });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setGroups((prev) =>
-        prev.map((g) => (g.id === group.id ? { ...g, permissions: newPerms } : g)),
-      );
-      if (selectedGroup?.id === group.id) {
-        setSelectedGroup({ ...group, permissions: newPerms });
+  const handleTogglePermission = useCallback(
+    async (group: UserGroup, key: string) => {
+      const newPerms = { ...group.permissions, [key]: !group.permissions[key] };
+      try {
+        await api.put(`/api/v1/forums/${forumId}/user-groups/${group.id}`, {
+          user_group: { permissions: newPerms },
+        });
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setGroups((prev) =>
+          prev.map((g) => (g.id === group.id ? { ...g, permissions: newPerms } : g))
+        );
+        if (selectedGroup?.id === group.id) {
+          setSelectedGroup({ ...group, permissions: newPerms });
+        }
+      } catch {
+        Alert.alert('Error', 'Failed to update permission');
       }
-    } catch {
-      Alert.alert('Error', 'Failed to update permission');
-    }
-  }, [forumId, selectedGroup]);
+    },
+    [forumId, selectedGroup]
+  );
 
   const handleAssign = useCallback(async () => {
     if (!assignUserId.trim() || !assignGroupId) return;
@@ -129,22 +150,26 @@ export default function ForumUserGroupsScreen({ route }: Props) {
     }
   }, [forumId, assignUserId, assignGroupId]);
 
-  const handleReorder = useCallback(async (group: UserGroup, direction: 'up' | 'down') => {
-    const idx = groups.findIndex((g) => g.id === group.id);
-    if ((direction === 'up' && idx === 0) || (direction === 'down' && idx === groups.length - 1)) return;
-    const newGroups = [...groups];
-    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
-    [newGroups[idx], newGroups[swapIdx]] = [newGroups[swapIdx], newGroups[idx]];
-    setGroups(newGroups);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      await api.put(`/api/v1/forums/${forumId}/user-groups/reorder`, {
-        group_ids: newGroups.map((g) => g.id),
-      });
-    } catch {
-      fetchGroups(); // revert
-    }
-  }, [forumId, groups, fetchGroups]);
+  const handleReorder = useCallback(
+    async (group: UserGroup, direction: 'up' | 'down') => {
+      const idx = groups.findIndex((g) => g.id === group.id);
+      if ((direction === 'up' && idx === 0) || (direction === 'down' && idx === groups.length - 1))
+        return;
+      const newGroups = [...groups];
+      const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+      [newGroups[idx], newGroups[swapIdx]] = [newGroups[swapIdx], newGroups[idx]];
+      setGroups(newGroups);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      try {
+        await api.put(`/api/v1/forums/${forumId}/user-groups/reorder`, {
+          group_ids: newGroups.map((g) => g.id),
+        });
+      } catch {
+        fetchGroups(); // revert
+      }
+    },
+    [forumId, groups, fetchGroups]
+  );
 
   if (loading) {
     return (
@@ -157,7 +182,13 @@ export default function ForumUserGroupsScreen({ route }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+          />
+        }
       >
         {/* Header actions */}
         <View style={styles.headerRow}>
@@ -165,7 +196,10 @@ export default function ForumUserGroupsScreen({ route }: Props) {
             User Groups ({groups.length})
           </Text>
           <TouchableOpacity
-            onPress={() => { setAssignGroupId(groups[0]?.id || ''); setShowAssignModal(true); }}
+            onPress={() => {
+              setAssignGroupId(groups[0]?.id || '');
+              setShowAssignModal(true);
+            }}
             style={[styles.smallButton, { backgroundColor: colors.primary }]}
           >
             <Ionicons name="person-add" size={16} color="#fff" />
@@ -179,7 +213,10 @@ export default function ForumUserGroupsScreen({ route }: Props) {
             key={group.id}
             onPress={() => setSelectedGroup(selectedGroup?.id === group.id ? null : group)}
             onLongPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)}
-            style={[styles.groupCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            style={[
+              styles.groupCard,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
           >
             <View style={styles.groupHeader}>
               <View style={styles.groupInfo}>
@@ -195,9 +232,7 @@ export default function ForumUserGroupsScreen({ route }: Props) {
                     {group.is_staff && (
                       <Ionicons name="shield-checkmark" size={14} color="#eab308" />
                     )}
-                    {group.is_super_mod && (
-                      <Ionicons name="star" size={14} color="#a855f7" />
-                    )}
+                    {group.is_super_mod && <Ionicons name="star" size={14} color="#a855f7" />}
                   </View>
                   <Text style={[styles.memberCount, { color: colors.textSecondary }]}>
                     {group.member_count} members · {group.type}
@@ -206,10 +241,21 @@ export default function ForumUserGroupsScreen({ route }: Props) {
               </View>
               <View style={styles.reorderButtons}>
                 <TouchableOpacity onPress={() => handleReorder(group, 'up')} disabled={idx === 0}>
-                  <Ionicons name="chevron-up" size={18} color={idx === 0 ? colors.border : colors.text} />
+                  <Ionicons
+                    name="chevron-up"
+                    size={18}
+                    color={idx === 0 ? colors.border : colors.text}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleReorder(group, 'down')} disabled={idx === groups.length - 1}>
-                  <Ionicons name="chevron-down" size={18} color={idx === groups.length - 1 ? colors.border : colors.text} />
+                <TouchableOpacity
+                  onPress={() => handleReorder(group, 'down')}
+                  disabled={idx === groups.length - 1}
+                >
+                  <Ionicons
+                    name="chevron-down"
+                    size={18}
+                    color={idx === groups.length - 1 ? colors.border : colors.text}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -253,7 +299,14 @@ export default function ForumUserGroupsScreen({ route }: Props) {
               onChangeText={setAssignUserId}
               placeholder="User ID or username"
               placeholderTextColor={colors.textSecondary}
-              style={[styles.input, { color: colors.text, borderColor: colors.border, backgroundColor: colors.background }]}
+              style={[
+                styles.input,
+                {
+                  color: colors.text,
+                  borderColor: colors.border,
+                  backgroundColor: colors.background,
+                },
+              ]}
             />
             <View style={styles.modalActions}>
               <TouchableOpacity onPress={() => setShowAssignModal(false)} style={styles.cancelBtn}>
@@ -278,12 +331,36 @@ export default function ForumUserGroupsScreen({ route }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, paddingBottom: 8 },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    paddingBottom: 8,
+  },
   sectionTitle: { fontSize: 18, fontWeight: '700' },
-  smallButton: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
+  smallButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
   smallButtonText: { color: '#fff', fontSize: 13, fontWeight: '600' },
-  groupCard: { marginHorizontal: 16, marginBottom: 8, borderRadius: 12, borderWidth: 1, overflow: 'hidden' },
-  groupHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14 },
+  groupCard: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  groupHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 14,
+  },
   groupInfo: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   colorDot: { width: 12, height: 12, borderRadius: 6 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
@@ -294,7 +371,12 @@ const styles = StyleSheet.create({
   reorderButtons: { gap: 2 },
   permissionsSection: { borderTopWidth: 1, padding: 14 },
   permTitle: { fontSize: 12, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 },
-  permRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 },
+  permRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
   permLabel: { fontSize: 13, textTransform: 'capitalize' },
   empty: { alignItems: 'center', paddingVertical: 48 },
   emptyText: { marginTop: 12, fontSize: 15 },

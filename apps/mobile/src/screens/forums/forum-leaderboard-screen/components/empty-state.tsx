@@ -10,7 +10,14 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withRepeat,
+  withSequence,
+  useAnimatedStyle,
+  Easing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -19,6 +26,7 @@ import { Ionicons } from '@expo/vector-icons';
 // =============================================================================
 
 /**
+ * Empty State component.
  *
  */
 export function EmptyState() {
@@ -47,6 +55,7 @@ export function EmptyState() {
       ),
       -1
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -17,12 +17,7 @@ import Animated, {
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
 // ── Types ──────────────────────────────────────────────────
-export type SeasonalTheme =
-  | 'snow'
-  | 'hearts'
-  | 'cherry-blossoms'
-  | 'confetti'
-  | 'none';
+export type SeasonalTheme = 'snow' | 'hearts' | 'cherry-blossoms' | 'confetti' | 'none';
 
 interface SeasonalEffectsProps {
   theme: SeasonalTheme;
@@ -45,10 +40,7 @@ interface ParticleConfig {
   rotation: number;
 }
 
-function buildParticles(
-  theme: SeasonalTheme,
-  count: number,
-): ParticleConfig[] {
+function buildParticles(theme: SeasonalTheme, count: number): ParticleConfig[] {
   const particles: ParticleConfig[] = [];
 
   for (let i = 0; i < count; i++) {
@@ -73,7 +65,7 @@ function buildParticles(
 
       case 'hearts':
         particles.push({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           emoji: ['❤️', '💕', '💖', '💗', '💘'][Math.floor(Math.random() * 5)] as string,
           size: 14 + Math.random() * 12,
           startX,
@@ -104,7 +96,7 @@ function buildParticles(
 
       case 'confetti':
         particles.push({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           emoji: ['🎊', '🎉', '✨', '⭐'][Math.floor(Math.random() * 4)] as string,
           size: 12 + Math.random() * 8,
           startX,
@@ -127,11 +119,7 @@ function buildParticles(
 }
 
 // ── Single Particle ────────────────────────────────────────
-const FloatingParticle = memo(function FloatingParticle({
-  config,
-}: {
-  config: ParticleConfig;
-}) {
+const FloatingParticle = memo(function FloatingParticle({ config }: { config: ParticleConfig }) {
   const translateX = useSharedValue(config.startX);
   const translateY = useSharedValue(config.startY);
   const opacity = useSharedValue(0);
@@ -148,11 +136,11 @@ const FloatingParticle = memo(function FloatingParticle({
           withTiming(config.endX, {
             duration: dur,
             easing: Easing.linear,
-          }),
+          })
         ),
         -1,
-        false,
-      ),
+        false
+      )
     );
 
     translateY.value = withDelay(
@@ -163,11 +151,11 @@ const FloatingParticle = memo(function FloatingParticle({
           withTiming(config.endY, {
             duration: dur,
             easing: Easing.linear,
-          }),
+          })
         ),
         -1,
-        false,
-      ),
+        false
+      )
     );
 
     opacity.value = withDelay(
@@ -177,11 +165,11 @@ const FloatingParticle = memo(function FloatingParticle({
           withTiming(config.opacity, { duration: dur * 0.1 }),
           withTiming(config.opacity, { duration: dur * 0.7 }),
           withTiming(0, { duration: dur * 0.2 }),
-          withTiming(0, { duration: 0 }),
+          withTiming(0, { duration: 0 })
         ),
         -1,
-        false,
-      ),
+        false
+      )
     );
 
     rotate.value = withDelay(
@@ -192,9 +180,10 @@ const FloatingParticle = memo(function FloatingParticle({
           easing: Easing.linear,
         }),
         -1,
-        false,
-      ),
+        false
+      )
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -207,13 +196,7 @@ const FloatingParticle = memo(function FloatingParticle({
   }));
 
   return (
-    <Animated.Text
-      style={[
-        styles.particle,
-        { fontSize: config.size },
-        animatedStyle,
-      ]}
-    >
+    <Animated.Text style={[styles.particle, { fontSize: config.size }, animatedStyle]}>
       {config.emoji}
     </Animated.Text>
   );
@@ -225,10 +208,7 @@ export const SeasonalEffects = memo(function SeasonalEffects({
   intensity = 'medium',
 }: SeasonalEffectsProps) {
   const count = INTENSITY_COUNTS[intensity];
-  const particles = useMemo(
-    () => buildParticles(theme, count),
-    [theme, count],
-  );
+  const particles = useMemo(() => buildParticles(theme, count), [theme, count]);
 
   if (theme === 'none' || particles.length === 0) return null;
 
@@ -243,6 +223,7 @@ export const SeasonalEffects = memo(function SeasonalEffects({
 
 // ── Auto Theme ─────────────────────────────────────────────
 /**
+ * Gets auto seasonal theme.
  *
  */
 export function getAutoSeasonalTheme(): SeasonalTheme {
@@ -253,8 +234,9 @@ export function getAutoSeasonalTheme(): SeasonalTheme {
   if (month === 12 && day >= 15) return 'snow';
   if (month === 1 && day <= 5) return 'snow';
   if (month === 2 && day >= 13 && day <= 15) return 'hearts';
-  if ((month === 3 && day >= 20) || (month === 4 && day <= 15))
-    {return 'cherry-blossoms';}
+  if ((month === 3 && day >= 20) || (month === 4 && day <= 15)) {
+    return 'cherry-blossoms';
+  }
 
   return 'none';
 }

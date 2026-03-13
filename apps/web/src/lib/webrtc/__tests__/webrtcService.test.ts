@@ -13,15 +13,29 @@ import { WebRTCManager, getWebRTCManager, destroyWebRTCManager } from '../webrtc
 import type { Socket, Channel } from 'phoenix';
 
 // ── Mock navigator.mediaDevices ──────────────────────────────────────────
-const mockAudioTrack = { kind: 'audio', enabled: true, stop: vi.fn() } as unknown as MediaStreamTrack;
-const mockVideoTrack = { kind: 'video', enabled: true, stop: vi.fn(), onended: null } as unknown as MediaStreamTrack;
+const mockAudioTrack = {
+  kind: 'audio',
+  enabled: true,
+  stop: vi.fn(),
+} as unknown as MediaStreamTrack;
+const mockVideoTrack = {
+  kind: 'video',
+  enabled: true,
+  stop: vi.fn(),
+  onended: null,
+} as unknown as MediaStreamTrack;
 const mockStream = {
   getTracks: vi.fn(() => [mockAudioTrack, mockVideoTrack]),
   getAudioTracks: vi.fn(() => [mockAudioTrack]),
   getVideoTracks: vi.fn(() => [mockVideoTrack]),
 } as unknown as MediaStream;
 
-const mockScreenTrack = { kind: 'video', enabled: true, onended: null, stop: vi.fn() } as unknown as MediaStreamTrack;
+const mockScreenTrack = {
+  kind: 'video',
+  enabled: true,
+  onended: null,
+  stop: vi.fn(),
+} as unknown as MediaStreamTrack;
 const mockScreenStream = {
   getVideoTracks: vi.fn(() => [mockScreenTrack]),
 } as unknown as MediaStream;
@@ -40,13 +54,21 @@ Object.defineProperty(global, 'navigator', {
 function createMockChannel(): Channel {
   const channel = {
     join: vi.fn().mockReturnValue({
-      receive: vi.fn().mockImplementation(function (this: unknown, event: string, cb: (data?: unknown) => void) {
+      receive: vi.fn().mockImplementation(function (
+        this: unknown,
+        event: string,
+        cb: (data?: unknown) => void
+      ) {
         if (event === 'ok') cb();
         return { receive: vi.fn().mockReturnThis() };
       }),
     }),
     push: vi.fn().mockReturnValue({
-      receive: vi.fn().mockImplementation(function (this: unknown, event: string, cb: (data?: unknown) => void) {
+      receive: vi.fn().mockImplementation(function (
+        this: unknown,
+        event: string,
+        cb: (data?: unknown) => void
+      ) {
         if (event === 'ok') cb({ room_id: 'room-123', ice_servers: [] });
         return { receive: vi.fn().mockReturnThis() };
       }),
@@ -220,9 +242,7 @@ describe('WebRTCManager', () => {
       manager.on(handlers);
 
       // Trigger error path
-      vi.mocked(navigator.mediaDevices.getUserMedia).mockRejectedValueOnce(
-        new Error('Test error')
-      );
+      vi.mocked(navigator.mediaDevices.getUserMedia).mockRejectedValueOnce(new Error('Test error'));
       await manager.startCall('user-456');
 
       expect(handlers.onError).toHaveBeenCalledWith('Test error');

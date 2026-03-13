@@ -1,12 +1,5 @@
 import React, { memo } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Linking,
-} from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -21,31 +14,20 @@ interface LinkPreviewProps {
   embed: LinkMetadata;
 }
 
-const LinkPreview = memo(function LinkPreview({ embed }: LinkPreviewProps): React.ReactElement | null {
+const LinkPreview = memo(function LinkPreview({
+  embed,
+}: LinkPreviewProps): React.ReactElement | null {
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Linking.openURL(embed.url);
   };
 
   return (
-    <TouchableOpacity
-      style={styles.linkContainer}
-      onPress={handlePress}
-      activeOpacity={0.8}
-    >
-      <GlassCard
-        variant="crystal"
-        intensity="medium"
-        style={styles.linkCard}
-        borderGradient
-      >
+    <TouchableOpacity style={styles.linkContainer} onPress={handlePress} activeOpacity={0.8}>
+      <GlassCard variant="crystal" intensity="medium" style={styles.linkCard} borderGradient>
         {embed.image && (
           <View style={styles.linkImageContainer}>
-            <Image
-              source={{ uri: embed.image }}
-              style={styles.linkImage}
-              resizeMode="cover"
-            />
+            <Image source={{ uri: embed.image }} style={styles.linkImage} resizeMode="cover" />
             <LinearGradient
               colors={['transparent', 'rgba(17, 24, 39, 0.9)']}
               style={styles.linkImageGradient}
@@ -74,9 +56,7 @@ const LinkPreview = memo(function LinkPreview({ embed }: LinkPreviewProps): Reac
                 </Text>
               )}
               <View style={styles.linkFooter}>
-                {embed.siteName && (
-                  <Text style={styles.linkSite}>{embed.siteName}</Text>
-                )}
+                {embed.siteName && <Text style={styles.linkSite}>{embed.siteName}</Text>}
                 <Ionicons name="open-outline" size={12} color="rgba(255,255,255,0.5)" />
               </View>
             </View>

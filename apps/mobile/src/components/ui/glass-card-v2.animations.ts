@@ -106,6 +106,7 @@ export function useGlassAnimations({
         false
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [borderAnimation, animated, scanlines, borderAnimationDuration, shimmerSpeed, scanlineSpeed]);
 
   // Animated styles

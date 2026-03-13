@@ -348,7 +348,7 @@ const AttachmentPicker = memo(
         });
 
         if (data.length > 0) {
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           setContacts(data as (Contacts.Contact & { id: string })[]);
           setShowContactPicker(true);
           Animated.spring(contactCardAnim, {
@@ -540,6 +540,7 @@ const AttachmentPicker = memo(
             visible={showContactPicker}
             contacts={contacts}
             searchQuery={contactSearchQuery}
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
             animation={contactCardAnim as any}
             onShareContact={shareContact}
             onClose={() => setShowContactPicker(false)}

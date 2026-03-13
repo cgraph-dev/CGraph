@@ -171,6 +171,6 @@ export function PaymentModal({
       )}
     </AnimatePresence>
   );
-};
+}
 
 export default PaymentModal;

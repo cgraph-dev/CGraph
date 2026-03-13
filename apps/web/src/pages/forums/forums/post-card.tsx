@@ -214,7 +214,7 @@ export function PostCard({ post, onVote }: PostCardProps) {
                 <Link
                   to={post.forum ? `/forums/${post.forum.slug}/post/${post.id}` : '#'}
                   onClick={() => HapticFeedback.light()}
-                  className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-all hover:bg-white/[0.08]/80 hover:text-primary-400"
+                  className="hover:bg-white/[0.08]/80 flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-all hover:text-primary-400"
                   style={{
                     boxShadow: '0 0 0 rgba(16, 185, 129, 0)',
                     transition: 'box-shadow 0.3s',
@@ -235,7 +235,7 @@ export function PostCard({ post, onVote }: PostCardProps) {
                 onClick={() => HapticFeedback.light()}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-all hover:bg-white/[0.08]/80 hover:text-purple-400"
+                className="hover:bg-white/[0.08]/80 flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-all hover:text-purple-400"
               >
                 <ShareIcon className="h-4 w-4" />
                 <span>Share</span>
@@ -245,7 +245,7 @@ export function PostCard({ post, onVote }: PostCardProps) {
                 onClick={() => HapticFeedback.light()}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-all hover:bg-white/[0.08]/80 hover:text-yellow-400"
+                className="hover:bg-white/[0.08]/80 flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-all hover:text-yellow-400"
               >
                 <BookmarkIcon className="h-4 w-4" />
                 <span>Save</span>

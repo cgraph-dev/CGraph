@@ -1,6 +1,6 @@
 /**
  * Label Component
- * 
+ *
  * Form label with optional required indicator.
  */
 
@@ -19,15 +19,9 @@ export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
  */
 export function Label({ children, required = false, className = '', ...props }: LabelProps) {
   return (
-    <label
-      className={`
-        block text-sm font-medium text-textPrimary mb-1.5
-        ${className}
-      `}
-      {...props}
-    >
+    <label className={`text-textPrimary mb-1.5 block text-sm font-medium ${className} `} {...props}>
       {children}
-      {required && <span className="text-error ml-1">*</span>}
+      {required && <span className="ml-1 text-error">*</span>}
     </label>
   );
 }

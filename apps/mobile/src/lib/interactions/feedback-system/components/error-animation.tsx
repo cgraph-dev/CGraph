@@ -21,6 +21,7 @@ import { ErrorAnimationProps } from '../types';
 import { styles } from '../styles';
 
 /**
+ * Error Animation component.
  *
  */
 export function ErrorAnimation({

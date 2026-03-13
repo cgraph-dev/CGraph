@@ -298,19 +298,19 @@ export const CHAT_BACKGROUNDS: ChatBackground[] = [
  * Get backgrounds by category
  */
 export function getBackgroundsByCategory(category: BackgroundCategory): ChatBackground[] {
-  return CHAT_BACKGROUNDS.filter(bg => bg.category === category);
+  return CHAT_BACKGROUNDS.filter((bg) => bg.category === category);
 }
 
 /**
  * Get background by ID
  */
 export function getBackgroundById(id: string): ChatBackground | undefined {
-  return CHAT_BACKGROUNDS.find(bg => bg.id === id);
+  return CHAT_BACKGROUNDS.find((bg) => bg.id === id);
 }
 
 /**
  * Get all free backgrounds
  */
 export function getFreeBackgrounds(): ChatBackground[] {
-  return CHAT_BACKGROUNDS.filter(bg => bg.coinPrice === 0);
+  return CHAT_BACKGROUNDS.filter((bg) => bg.coinPrice === 0);
 }

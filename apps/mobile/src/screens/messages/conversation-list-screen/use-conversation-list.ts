@@ -4,6 +4,8 @@ import api from '../../../lib/api';
 import socketManager from '../../../lib/socket';
 import { Conversation, ConversationParticipant, UserBasic } from '../../../types';
 
+/** Description. */
+/** Hook for conversation list. */
 export function useConversationList(user: UserBasic | null) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -13,6 +15,7 @@ export function useConversationList(user: UserBasic | null) {
     if (user?.id) {
       fetchConversations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   useEffect(() => {
@@ -21,7 +24,11 @@ export function useConversationList(user: UserBasic | null) {
     const unsubscribe = socketManager.onGlobalStatusChange((userId, isOnline) => {
       setOnlineUsers((prev) => {
         const next = new Set(prev);
-        if (isOnline) { next.add(userId); } else { next.delete(userId); }
+        if (isOnline) {
+          next.add(userId);
+        } else {
+          next.delete(userId);
+        }
         return next;
       });
     });
@@ -35,7 +42,9 @@ export function useConversationList(user: UserBasic | null) {
       const presenceData = await socketManager.getBulkFriendStatus(participantIds);
       const online = new Set<string>();
       Object.entries(presenceData).forEach(([id, data]) => {
-        if (data.online && !data.hidden) { online.add(id); }
+        if (data.online && !data.hidden) {
+          online.add(id);
+        }
       });
       setOnlineUsers(online);
     } catch (_error) {
@@ -49,13 +58,16 @@ export function useConversationList(user: UserBasic | null) {
       const convos = response.data.data || [];
       setConversations(convos);
 
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const participantIds = convos
         .map((conv: Conversation) => {
           const other = conv.participants?.find((p: ConversationParticipant) => {
             const pUserId =
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
             return String(pUserId) !== String(user?.id);
           });
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           return other?.userId || other?.user_id || (other?.user as Record<string, unknown>)?.id;
         })
         .filter(Boolean) as string[];

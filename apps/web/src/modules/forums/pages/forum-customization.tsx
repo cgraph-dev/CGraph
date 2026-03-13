@@ -10,14 +10,13 @@
 import { useParams } from 'react-router-dom';
 import { CustomizationCenter } from '../components/customization-center';
 
+/** Forum Customization Page component. */
 export default function ForumCustomizationPage() {
   const { forumId } = useParams<{ forumId: string }>();
 
   if (!forumId) {
     return (
-      <div className="flex items-center justify-center h-96 text-white/50">
-        Forum not found
-      </div>
+      <div className="flex h-96 items-center justify-center text-white/50">Forum not found</div>
     );
   }
 

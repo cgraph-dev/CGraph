@@ -18,6 +18,7 @@ export interface AnimatedTextProps {
 }
 
 /**
+ * Animated Text component.
  *
  */
 export function AnimatedText({

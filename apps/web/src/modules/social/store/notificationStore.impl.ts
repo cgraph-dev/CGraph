@@ -66,9 +66,10 @@ export const useNotificationStore = create<NotificationState>()(
           const meta = extractPagination(response.data);
           const hasMore = newNotifications.length === 20 || meta.hasMore;
 
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const responseData = response.data as Record<string, unknown>; // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const metaUnreadCount = (responseData?.meta as Record<string, number> | undefined) // safe downcast – API response field
             ?.unread_count;
           const calculatedUnreadCount = newNotifications.filter((n) => !n.isRead).length;

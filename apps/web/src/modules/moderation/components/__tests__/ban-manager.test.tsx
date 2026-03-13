@@ -30,7 +30,7 @@ describe('BanManager', () => {
       isLoadingBans: false,
       fetchBans: mockFetchBans,
       liftBan: mockLiftBan,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
   });
 
@@ -50,7 +50,7 @@ describe('BanManager', () => {
       isLoadingBans: true,
       fetchBans: mockFetchBans,
       liftBan: mockLiftBan,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     render(<BanManager />);
@@ -83,7 +83,7 @@ describe('BanManager', () => {
       isLoadingBans: false,
       fetchBans: mockFetchBans,
       liftBan: mockLiftBan,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     render(<BanManager />);
@@ -115,7 +115,7 @@ describe('BanManager', () => {
       isLoadingBans: false,
       fetchBans: mockFetchBans,
       liftBan: mockLiftBan,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     render(<BanManager />);

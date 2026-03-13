@@ -31,7 +31,9 @@ export default function CallHistoryPage() {
             type="button"
             onClick={() => setFilter(opt.value)}
             className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-              filter === opt.value ? 'bg-white/[0.06] text-white' : 'text-white/50 hover:text-white/70'
+              filter === opt.value
+                ? 'bg-white/[0.06] text-white'
+                : 'text-white/50 hover:text-white/70'
             }`}
           >
             {opt.label}

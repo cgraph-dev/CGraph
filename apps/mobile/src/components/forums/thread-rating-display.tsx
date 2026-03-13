@@ -19,6 +19,7 @@ interface ThreadRatingDisplayProps {
 }
 
 /**
+ * Thread Rating Display component.
  *
  */
 export default function ThreadRatingDisplay({
@@ -78,11 +79,7 @@ export default function ThreadRatingDisplay({
               activeOpacity={0.7}
             >
               <Text
-                style={[
-                  styles.star,
-                  { fontSize: starSize },
-                  isMyRating && styles.myRatingStar,
-                ]}
+                style={[styles.star, { fontSize: starSize }, isMyRating && styles.myRatingStar]}
               >
                 {isFilled ? '★' : '☆'}
               </Text>
@@ -103,9 +100,7 @@ export default function ThreadRatingDisplay({
 
       {/* My Rating Indicator */}
       {myRating !== null && interactive && (
-        <Text style={styles.myRatingText}>
-          Your rating: {myRating}★
-        </Text>
+        <Text style={styles.myRatingText}>Your rating: {myRating}★</Text>
       )}
     </View>
   );

@@ -56,17 +56,21 @@ export function useMemberList() {
     const fetchUserGroups = async () => {
       try {
         const response = await api.get('/api/v1/user-groups');
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const groups = ensureArray(response.data, 'groups') as Record<string, unknown>[]; // safe downcast – API response field
         setUserGroups(
           groups.map((g) => ({
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             id: g.id as string, // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             name: (g.name as string) || 'Unknown', // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             color: (g.color as string) || null, // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             memberCount: (g.member_count as number) || 0, // safe downcast – API response field
           }))
         );
@@ -98,39 +102,53 @@ export function useMemberList() {
       const response = await api.get('/api/v1/members', { params });
       const data = response.data;
 
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const memberList = ensureArray(data, 'members') as Record<string, unknown>[]; // safe downcast – API response field
       setMembers(
         memberList.map((m) => ({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: m.id as string, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           username: (m.username as string) || 'Unknown', // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           displayName: (m.display_name as string) || null, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           avatarUrl: (m.avatar_url as string) || null, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           avatarBorderId: (m.avatar_border_id as string) || (m.avatarBorderId as string) || null, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           userGroup: (m.user_group as string) || 'Member', // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           userGroupId: (m.user_group_id as string) || '', // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           userGroupColor: (m.user_group_color as string) || null, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           isOnline: (m.is_online as boolean) || false, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           lastActive: (m.last_active as string) || null, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           joinedAt: (m.joined_at as string) || new Date().toISOString(), // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           postCount: (m.post_count as number) || 0, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           threadCount: (m.thread_count as number) || 0, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           reputation: (m.reputation as number) || 0, // safe downcast – API response field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           stars: (m.stars as number) || 0, // safe downcast – API response field
         }))
       );

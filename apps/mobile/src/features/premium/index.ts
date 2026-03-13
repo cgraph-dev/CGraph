@@ -1,6 +1,6 @@
 /**
  * Premium Feature Module (Mobile)
- * 
+ *
  * @module @features/premium
  * @since v0.8.3
  */

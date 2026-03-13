@@ -25,6 +25,8 @@ interface VerifyStepProps {
   onBack: () => void;
 }
 
+/** Description. */
+/** Verify Step component. */
 export function VerifyStep({
   colors,
   verificationCode,
@@ -71,20 +73,11 @@ export function VerifyStep({
       </View>
 
       {/* Error */}
-      {error ? (
-        <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
-      ) : null}
+      {error ? <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text> : null}
 
-      <TouchableOpacity
-        onPress={onVerify}
-        disabled={isLoading || !allFilled}
-      >
+      <TouchableOpacity onPress={onVerify} disabled={isLoading || !allFilled}>
         <LinearGradient
-          colors={
-            allFilled
-              ? [colors.primary, colors.secondary]
-              : [colors.border, colors.border]
-          }
+          colors={allFilled ? [colors.primary, colors.secondary] : [colors.border, colors.border]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[styles.primaryButton, !allFilled && styles.buttonDisabled]}
@@ -98,9 +91,7 @@ export function VerifyStep({
       </TouchableOpacity>
 
       <TouchableOpacity onPress={onBack} style={styles.backLink}>
-        <Text style={[styles.backLinkText, { color: colors.textSecondary }]}>
-          Back to QR Code
-        </Text>
+        <Text style={[styles.backLinkText, { color: colors.textSecondary }]}>Back to QR Code</Text>
       </TouchableOpacity>
     </View>
   );
@@ -112,13 +103,21 @@ const styles = StyleSheet.create({
   stepSubtitle: { fontSize: 14, textAlign: 'center', marginBottom: 32, lineHeight: 20 },
   codeInputContainer: { flexDirection: 'row', gap: 8, marginBottom: 24 },
   codeInput: {
-    width: 48, height: 56, borderWidth: 2, borderRadius: 12,
-    textAlign: 'center', fontSize: 24, fontWeight: 'bold',
+    width: 48,
+    height: 56,
+    borderWidth: 2,
+    borderRadius: 12,
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   errorText: { fontSize: 14, marginBottom: 16, textAlign: 'center' },
   primaryButton: {
-    width: SCREEN_WIDTH - 48, height: 52, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
+    width: SCREEN_WIDTH - 48,
+    height: 52,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonDisabled: { opacity: 0.5 },
   primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },

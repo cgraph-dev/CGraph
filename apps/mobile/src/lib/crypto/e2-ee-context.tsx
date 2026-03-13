@@ -12,7 +12,10 @@
 import React, { type ReactNode, useCallback, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import Constants from 'expo-constants';
-import { useE2EEStore, usePreKeyReplenishment as usePreKeyReplenishmentStore } from './store/e2eeStore';
+import {
+  useE2EEStore,
+  usePreKeyReplenishment as usePreKeyReplenishmentStore,
+} from './store/e2eeStore';
 import { useAuthStore } from '@/stores';
 import type { EncryptedMessage } from './e2ee';
 import { e2eeLogger as logger } from '../logger';

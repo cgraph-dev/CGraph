@@ -63,7 +63,7 @@ import { BottomSheet } from '@/components';
 
 // Pickers (open as bottom sheets)
 import { NameStylePicker } from '../../modules/profile/pickers/NameStylePicker';
-import { NameplatePicker } from '../../modules/profile/pickers/NameplatePicker';
+import { NameplatePicker } from '../../modules/profile/pickers/nameplate-picker';
 import { ProfileEffectPicker } from '../../modules/profile/pickers/ProfileEffectPicker';
 import { ProfileThemePicker } from '../../modules/profile/pickers/ProfileThemePicker';
 
@@ -210,8 +210,8 @@ async function pickImage(fieldName: string, aspect: [number, number] = [1, 1]) {
       bannerFormData: null,
       profileTheme: { ...DEFAULT_PROFILE_THEME },
       bio: user?.bio ?? '',
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally stable: only recompute when user identity changes
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user?.id]
   );
 

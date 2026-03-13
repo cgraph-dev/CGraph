@@ -42,7 +42,7 @@ export function CalendarSidebar({
       {/* Upcoming Events */}
       <div className="bg-card border-border overflow-hidden rounded-lg border">
         <div className="border-border border-b p-4">
-          <h3 className="text-foreground font-semibold">Upcoming Events</h3>
+          <h3 className="font-semibold text-foreground">Upcoming Events</h3>
         </div>
 
         {upcomingEvents.length === 0 ? (
@@ -61,7 +61,7 @@ export function CalendarSidebar({
                     style={{ backgroundColor: getCategoryColor(categories, event.categoryId) }}
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="text-foreground truncate font-medium">
+                    <div className="truncate font-medium text-foreground">
                       {getEventTypeIcon(event.type)} {event.title}
                     </div>
                     <div className="text-muted-foreground mt-1 flex items-center gap-2 text-xs">
@@ -86,7 +86,7 @@ export function CalendarSidebar({
         )}
 
         <div className="border-border border-t p-3">
-          <Link to="/calendar/events" className="text-primary text-sm hover:underline">
+          <Link to="/calendar/events" className="text-sm text-primary hover:underline">
             View all events →
           </Link>
         </div>
@@ -95,7 +95,7 @@ export function CalendarSidebar({
       {/* Categories */}
       <div className="bg-card border-border overflow-hidden rounded-lg border">
         <div className="border-border border-b p-4">
-          <h3 className="text-foreground font-semibold">Categories</h3>
+          <h3 className="font-semibold text-foreground">Categories</h3>
         </div>
 
         {categories.length === 0 ? (
@@ -115,7 +115,7 @@ export function CalendarSidebar({
       {/* Mini Calendar */}
       <div className="bg-card border-border rounded-lg border p-4">
         <div className="mb-3 text-center">
-          <span className="text-foreground text-sm font-medium">{monthName}</span>
+          <span className="text-sm font-medium text-foreground">{monthName}</span>
         </div>
         <div className="grid grid-cols-7 gap-1 text-xs">
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
@@ -129,10 +129,10 @@ export function CalendarSidebar({
               className={`rounded p-1 text-center ${
                 date
                   ? isToday(date)
-                    ? 'bg-primary text-primary-foreground font-medium'
+                    ? 'text-primary-foreground bg-primary font-medium'
                     : getEventsForDate(date).length > 0
                       ? 'bg-primary/20 text-primary'
-                      : 'text-foreground hover:bg-muted cursor-pointer'
+                      : 'hover:bg-muted cursor-pointer text-foreground'
                   : ''
               }`}
             >

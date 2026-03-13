@@ -88,7 +88,7 @@ export function PrivacySettingsPanel() {
             onChange={async (e) => {
               try {
                 await updatePrivacySettings({
-                   
+                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                   allowGroupInvites: e.target.value as
                     | 'anyone'
                     | 'friends'
@@ -115,7 +115,7 @@ export function PrivacySettingsPanel() {
             onChange={async (e) => {
               try {
                 await updatePrivacySettings({
-                   
+                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                   profileVisibility: e.target.value as
                     | 'public'
                     | 'friends'
@@ -167,7 +167,8 @@ export function PrivacySettingsPanel() {
                       try {
                         await updatePrivacySettings({
                           // safe downcast – dynamic key access on typed settings object
-                           
+
+                          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                           [key]: !(settings.privacy as unknown as Record<string, unknown>)[key], // type assertion: dynamic privacy setting key access
                         });
                         toast.success(`${label} visibility updated`);
@@ -178,7 +179,8 @@ export function PrivacySettingsPanel() {
                     disabled={isSaving}
                     className={`relative h-6 w-11 rounded-full transition-colors ${
                       // safe downcast – dynamic key access on typed settings object
-                       
+
+                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                       (settings.privacy as unknown as Record<string, unknown>)[key] !== false // type assertion: dynamic privacy setting key access
                         ? 'bg-primary-600'
                         : 'bg-white/[0.08]'
@@ -187,7 +189,8 @@ export function PrivacySettingsPanel() {
                     <span
                       className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${
                         // safe downcast – dynamic key access on typed settings object
-                         
+
+                        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                         (settings.privacy as unknown as Record<string, unknown>)[key] !== false // type assertion: dynamic privacy setting key access
                           ? 'translate-x-5'
                           : ''

@@ -45,22 +45,14 @@ describe('Toast', () => {
   describe('rendering', () => {
     it('renders toast message when visible', () => {
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message="Test notification"
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Test notification" onClose={mockOnClose} />
       );
       expect(getByText('Test notification')).toBeTruthy();
     });
 
     it('renders correct message text', () => {
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message="Custom message content"
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Custom message content" onClose={mockOnClose} />
       );
       expect(getByText('Custom message content')).toBeTruthy();
     });
@@ -69,59 +61,35 @@ describe('Toast', () => {
   describe('toast types', () => {
     it('renders success toast', () => {
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message="Success!"
-          type="success"
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Success!" type="success" onClose={mockOnClose} />
       );
       expect(getByText('Success!')).toBeTruthy();
     });
 
     it('renders error toast', () => {
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message="Error occurred"
-          type="error"
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Error occurred" type="error" onClose={mockOnClose} />
       );
       expect(getByText('Error occurred')).toBeTruthy();
     });
 
     it('renders warning toast', () => {
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message="Warning!"
-          type="warning"
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Warning!" type="warning" onClose={mockOnClose} />
       );
       expect(getByText('Warning!')).toBeTruthy();
     });
 
     it('renders info toast (default)', () => {
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message="Info message"
-          type="info"
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Info message" type="info" onClose={mockOnClose} />
       );
       expect(getByText('Info message')).toBeTruthy();
     });
 
     it('defaults to info type when not specified', () => {
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message="Default type"
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Default type" onClose={mockOnClose} />
       );
       expect(getByText('Default type')).toBeTruthy();
     });
@@ -129,13 +97,7 @@ describe('Toast', () => {
 
   describe('auto-dismiss', () => {
     it('calls onClose after default duration', () => {
-      render(
-        <Toast
-          visible={true}
-          message="Auto dismiss"
-          onClose={mockOnClose}
-        />
-      );
+      render(<Toast visible={true} message="Auto dismiss" onClose={mockOnClose} />);
 
       // Default duration is 3000ms
       act(() => {
@@ -152,12 +114,7 @@ describe('Toast', () => {
 
     it('calls onClose after custom duration', () => {
       render(
-        <Toast
-          visible={true}
-          message="Custom duration"
-          duration={5000}
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Custom duration" duration={5000} onClose={mockOnClose} />
       );
 
       // Should not close before custom duration
@@ -180,11 +137,7 @@ describe('Toast', () => {
   describe('manual dismiss', () => {
     it('toast is pressable', () => {
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message="Tap to dismiss"
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Tap to dismiss" onClose={mockOnClose} />
       );
       // Toast should render and be visible
       expect(getByText('Tap to dismiss')).toBeTruthy();
@@ -194,40 +147,20 @@ describe('Toast', () => {
   describe('visibility transitions', () => {
     it('handles visibility change from false to true', () => {
       const { rerender, getByText } = render(
-        <Toast
-          visible={false}
-          message="Appearing toast"
-          onClose={mockOnClose}
-        />
+        <Toast visible={false} message="Appearing toast" onClose={mockOnClose} />
       );
 
-      rerender(
-        <Toast
-          visible={true}
-          message="Appearing toast"
-          onClose={mockOnClose}
-        />
-      );
+      rerender(<Toast visible={true} message="Appearing toast" onClose={mockOnClose} />);
 
       expect(getByText('Appearing toast')).toBeTruthy();
     });
 
     it('handles visibility change from true to false', () => {
       const { rerender, queryByText } = render(
-        <Toast
-          visible={true}
-          message="Disappearing toast"
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Disappearing toast" onClose={mockOnClose} />
       );
 
-      rerender(
-        <Toast
-          visible={false}
-          message="Disappearing toast"
-          onClose={mockOnClose}
-        />
-      );
+      rerender(<Toast visible={false} message="Disappearing toast" onClose={mockOnClose} />);
 
       // Animation runs
       act(() => {
@@ -243,12 +176,7 @@ describe('Toast', () => {
     it('applies custom style prop', () => {
       const customStyle = { marginTop: 100 };
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message="Styled toast"
-          style={customStyle}
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message="Styled toast" style={customStyle} onClose={mockOnClose} />
       );
       expect(getByText('Styled toast')).toBeTruthy();
     });
@@ -273,13 +201,7 @@ describe('Toast', () => {
 
   describe('edge cases', () => {
     it('handles empty message', () => {
-      const { toJSON } = render(
-        <Toast
-          visible={true}
-          message=""
-          onClose={mockOnClose}
-        />
-      );
+      const { toJSON } = render(<Toast visible={true} message="" onClose={mockOnClose} />);
       // Should still render without crashing
       expect(toJSON()).toBeDefined();
     });
@@ -287,11 +209,7 @@ describe('Toast', () => {
     it('handles very long message', () => {
       const longMessage = 'A'.repeat(500);
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message={longMessage}
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message={longMessage} onClose={mockOnClose} />
       );
       expect(getByText(longMessage)).toBeTruthy();
     });
@@ -299,11 +217,7 @@ describe('Toast', () => {
     it('handles special characters in message', () => {
       const specialMessage = '<script>alert("xss")</script> & < > "';
       const { getByText } = render(
-        <Toast
-          visible={true}
-          message={specialMessage}
-          onClose={mockOnClose}
-        />
+        <Toast visible={true} message={specialMessage} onClose={mockOnClose} />
       );
       expect(getByText(specialMessage)).toBeTruthy();
     });

@@ -184,13 +184,21 @@ export const Particle = memo(function Particle({
           x: [0, Math.sin(index * 2) * 15],
           rotate: [0, 360],
           opacity: [1, 0],
-          transition: { duration: durations.cinematic.ms / 1000, repeat: Infinity, delay: index * 0.4 },
+          transition: {
+            duration: durations.cinematic.ms / 1000,
+            repeat: Infinity,
+            delay: index * 0.4,
+          },
         };
       case 'electric':
         return {
           opacity: [0, 1, 0],
           scaleY: [0.5, 1.5, 0.5],
-          transition: { duration: durations.normal.ms / 1000, repeat: Infinity, delay: index * 0.05 },
+          transition: {
+            duration: durations.normal.ms / 1000,
+            repeat: Infinity,
+            delay: index * 0.05,
+          },
         };
       default:
         return ANIMATION_KEYFRAMES.orbit(index, total);

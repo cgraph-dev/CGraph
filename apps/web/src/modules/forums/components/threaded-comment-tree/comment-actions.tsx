@@ -43,11 +43,14 @@ export function CommentActions({
 }: CommentActionsProps) {
   const [voteAnim, setVoteAnim] = useState<string | null>(null);
 
-  const handleVote = useCallback((value: 1 | -1) => {
-    onVote(value);
-    setVoteAnim(value === 1 ? '+1' : '-1');
-    setTimeout(() => setVoteAnim(null), 600);
-  }, [onVote]);
+  const handleVote = useCallback(
+    (value: 1 | -1) => {
+      onVote(value);
+      setVoteAnim(value === 1 ? '+1' : '-1');
+      setTimeout(() => setVoteAnim(null), 600);
+    },
+    [onVote]
+  );
 
   return (
     <div className="mt-3 flex items-center gap-4">

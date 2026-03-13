@@ -3,9 +3,9 @@
  * @module components/chat/message-group
  */
 import React, { memo, type ReactNode } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Avatar from '../ui/avatar';
-import { space, radius } from '../../theme/tokens';
+import { space } from '../../theme/tokens';
 
 interface Author {
   id: string;
@@ -70,11 +70,7 @@ export const GroupedMessage = memo(function GroupedMessage({
   children,
   isOwnMessage = false,
 }: GroupedMessageProps) {
-  return (
-    <View style={isOwnMessage ? styles.ownGrouped : styles.otherGrouped}>
-      {children}
-    </View>
-  );
+  return <View style={isOwnMessage ? styles.ownGrouped : styles.otherGrouped}>{children}</View>;
 });
 
 const styles = StyleSheet.create({

@@ -82,7 +82,9 @@ function ToolButton({
       title={label}
       className={cn(
         'rounded p-1.5 transition-colors',
-        active ? 'bg-primary-600/20 text-primary-400' : 'text-gray-500 hover:bg-white/[0.06] hover:text-gray-300',
+        active
+          ? 'bg-primary-600/20 text-primary-400'
+          : 'text-gray-500 hover:bg-white/[0.06] hover:text-gray-300'
       )}
     >
       <Icon className="h-4 w-4" />
@@ -94,7 +96,13 @@ function ToolButton({
 
 function StrikethroughIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      className={className}
+    >
       <path d="M16 4H9a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6H8" />
       <line x1="4" y1="12" x2="20" y2="12" />
     </svg>
@@ -103,7 +111,13 @@ function StrikethroughIcon({ className }: { className?: string }) {
 
 function HeadingIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={className}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      className={className}
+    >
       <path d="M6 4v16M18 4v16M6 12h12" />
     </svg>
   );
@@ -111,6 +125,8 @@ function HeadingIcon({ className }: { className?: string }) {
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Description. */
+/** Post Composer component. */
 export function PostComposer({
   availableTags = [],
   onSubmit,
@@ -148,7 +164,7 @@ export function PostComposer({
         el.setSelectionRange(start + prefix.length, start + prefix.length + selected.length);
       }, 0);
     },
-    [content],
+    [content]
   );
 
   const toggleTag = useCallback((tagId: string) => {
@@ -165,10 +181,13 @@ export function PostComposer({
     setPollOptions((prev) => [...prev, { id: String(Date.now()), text: '' }]);
   }, [pollOptions.length]);
 
-  const removePollOption = useCallback((id: string) => {
-    if (pollOptions.length <= 2) return;
-    setPollOptions((prev) => prev.filter((o) => o.id !== id));
-  }, [pollOptions.length]);
+  const removePollOption = useCallback(
+    (id: string) => {
+      if (pollOptions.length <= 2) return;
+      setPollOptions((prev) => prev.filter((o) => o.id !== id));
+    },
+    [pollOptions.length]
+  );
 
   const updatePollOption = useCallback((id: string, text: string) => {
     setPollOptions((prev) => prev.map((o) => (o.id === id ? { ...o, text } : o)));
@@ -212,7 +231,7 @@ export function PostComposer({
               onClick={() => toggleTag(tag.id)}
               className={cn(
                 'rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all',
-                selectedTags.has(tag.id) ? 'ring-1 ring-white/20' : 'opacity-50 hover:opacity-100',
+                selectedTags.has(tag.id) ? 'ring-1 ring-white/20' : 'opacity-50 hover:opacity-100'
               )}
               style={{ backgroundColor: `${tag.color}20`, color: tag.color }}
             >
@@ -226,14 +245,30 @@ export function PostComposer({
       <div className="flex flex-wrap items-center gap-0.5 border-b border-white/[0.04] px-3 py-1.5">
         <ToolButton icon={BoldIcon} label="Bold" onClick={() => insertMarkdown('**', '**')} />
         <ToolButton icon={ItalicIcon} label="Italic" onClick={() => insertMarkdown('*', '*')} />
-        <ToolButton icon={StrikethroughIcon} label="Strikethrough" onClick={() => insertMarkdown('~~', '~~')} />
+        <ToolButton
+          icon={StrikethroughIcon}
+          label="Strikethrough"
+          onClick={() => insertMarkdown('~~', '~~')}
+        />
         <div className="mx-1 h-4 w-px bg-white/[0.06]" />
         <ToolButton icon={HeadingIcon} label="Heading" onClick={() => insertMarkdown('## ')} />
         <ToolButton icon={CodeBracketIcon} label="Code" onClick={() => insertMarkdown('`', '`')} />
-        <ToolButton icon={ChatBubbleBottomCenterTextIcon} label="Quote" onClick={() => insertMarkdown('> ')} />
+        <ToolButton
+          icon={ChatBubbleBottomCenterTextIcon}
+          label="Quote"
+          onClick={() => insertMarkdown('> ')}
+        />
         <div className="mx-1 h-4 w-px bg-white/[0.06]" />
-        <ToolButton icon={ListBulletIcon} label="Bullet List" onClick={() => insertMarkdown('- ')} />
-        <ToolButton icon={NumberedListIcon} label="Numbered List" onClick={() => insertMarkdown('1. ')} />
+        <ToolButton
+          icon={ListBulletIcon}
+          label="Bullet List"
+          onClick={() => insertMarkdown('- ')}
+        />
+        <ToolButton
+          icon={NumberedListIcon}
+          label="Numbered List"
+          onClick={() => insertMarkdown('1. ')}
+        />
         <div className="mx-1 h-4 w-px bg-white/[0.06]" />
         <ToolButton icon={LinkIcon} label="Link" onClick={() => insertMarkdown('[', '](url)')} />
         <ToolButton icon={PhotoIcon} label="Image" onClick={() => insertMarkdown('![alt](', ')')} />
@@ -251,10 +286,14 @@ export function PostComposer({
           onClick={() => setShowPreview((p) => !p)}
           className={cn(
             'flex items-center gap-1 rounded px-2 py-1 text-[11px] font-medium transition-colors',
-            showPreview ? 'bg-primary-600/20 text-primary-400' : 'text-gray-500 hover:text-gray-300',
+            showPreview ? 'bg-primary-600/20 text-primary-400' : 'text-gray-500 hover:text-gray-300'
           )}
         >
-          {showPreview ? <PencilIcon className="h-3.5 w-3.5" /> : <EyeIcon className="h-3.5 w-3.5" />}
+          {showPreview ? (
+            <PencilIcon className="h-3.5 w-3.5" />
+          ) : (
+            <EyeIcon className="h-3.5 w-3.5" />
+          )}
           {showPreview ? 'Edit' : 'Preview'}
         </button>
       </div>
@@ -379,7 +418,7 @@ export function PostComposer({
             whileTap={{ scale: 0.98 }}
             className={cn(
               'rounded-lg bg-primary-600 px-4 py-1.5 text-xs font-semibold text-white',
-              (!title.trim() || !content.trim()) && 'cursor-not-allowed opacity-40',
+              (!title.trim() || !content.trim()) && 'cursor-not-allowed opacity-40'
             )}
           >
             Post Thread

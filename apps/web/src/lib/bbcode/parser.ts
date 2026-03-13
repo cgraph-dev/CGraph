@@ -42,7 +42,8 @@ export function parseBBCode(input: string, options: { escapeInput?: boolean } = 
 
     while (prevText !== text && iterations < maxIterations) {
       prevText = text;
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       text = text.replace(tag.pattern, tag.replace as (...args: string[]) => string);
       iterations++;
     }

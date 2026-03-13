@@ -39,7 +39,7 @@ export default function EventForm(props: EventFormProps) {
       <div className="bg-card border-border max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-xl border shadow-xl">
         {/* Header */}
         <div className="border-border flex items-center justify-between border-b p-4">
-          <h2 className="text-foreground text-xl font-semibold">
+          <h2 className="text-xl font-semibold text-foreground">
             {eventId ? 'Edit Event' : 'Create Event'}
           </h2>
           <button onClick={onClose} className="hover:bg-muted rounded-lg p-2 transition-colors">
@@ -52,7 +52,7 @@ export default function EventForm(props: EventFormProps) {
           <div className="space-y-6">
             {/* Title */}
             <div>
-              <label className="text-foreground mb-1 block text-sm font-medium">
+              <label className="mb-1 block text-sm font-medium text-foreground">
                 Event Title *
               </label>
               <div className="relative">
@@ -63,7 +63,7 @@ export default function EventForm(props: EventFormProps) {
                   value={formData.title}
                   onChange={handleChange}
                   placeholder="Enter event title"
-                  className={`bg-background focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 ${
+                  className={`bg-background w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary ${
                     errors.title ? 'border-destructive' : 'border-border'
                   }`}
                 />
@@ -98,14 +98,14 @@ export default function EventForm(props: EventFormProps) {
             <button
               type="button"
               onClick={onClose}
-              className="text-foreground bg-secondary hover:bg-secondary/80 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+              className="bg-secondary hover:bg-secondary/80 rounded-lg px-4 py-2 text-sm font-medium text-foreground transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || isLoading}
-              className="text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+              className="text-primary-foreground rounded-lg bg-primary px-4 py-2 text-sm font-medium transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : eventId ? 'Update Event' : 'Create Event'}
             </button>

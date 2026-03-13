@@ -31,28 +31,33 @@ interface SettingItem {
 }
 
 /**
+ * Notifications Screen component.
  *
  */
 export default function NotificationsScreen({ navigation: _navigation }: Props) {
   const { colors } = useThemeStore();
-  const { settings, updateNotificationSettings, isLoading, isSaving, fetchSettings } = useSettingsStore();
+  const { settings, updateNotificationSettings, isLoading, isSaving, fetchSettings } =
+    useSettingsStore();
   const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
     fetchSettings().finally(() => setHasLoaded(true));
   }, [fetchSettings]);
 
-  const toggleSetting = useCallback(async (key: SettingKey) => {
-    const currentValue = settings.notifications[key];
-    if (typeof currentValue !== 'boolean') return;
-    
-    try {
-      await updateNotificationSettings({ [key]: !currentValue });
-    } catch {
-      Alert.alert('Error', 'Failed to save settings. Please try again.');
-    }
-  }, [settings.notifications, updateNotificationSettings]);
-  
+  const toggleSetting = useCallback(
+    async (key: SettingKey) => {
+      const currentValue = settings.notifications[key];
+      if (typeof currentValue !== 'boolean') return;
+
+      try {
+        await updateNotificationSettings({ [key]: !currentValue });
+      } catch {
+        Alert.alert('Error', 'Failed to save settings. Please try again.');
+      }
+    },
+    [settings.notifications, updateNotificationSettings]
+  );
+
   const notificationSettings: SettingItem[] = [
     {
       title: '📲 Push Notifications',
@@ -65,7 +70,7 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
       description: 'Receive notifications via email',
     },
   ];
-  
+
   const messageSettings: SettingItem[] = [
     {
       title: 'Direct Messages',
@@ -83,7 +88,7 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
       description: 'When someone replies to your post',
     },
   ];
-  
+
   const activitySettings: SettingItem[] = [
     {
       title: 'Group Invites',
@@ -96,7 +101,7 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
       description: 'When someone sends you a friend request',
     },
   ];
-  
+
   const soundSettings: SettingItem[] = [
     {
       title: '🔔 Notification Sound',
@@ -104,11 +109,11 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
       description: 'Play a sound for notifications',
     },
   ];
-  
+
   const renderSwitch = (item: SettingItem) => {
     const value = settings.notifications[item.key];
     const boolValue = typeof value === 'boolean' ? value : false;
-    
+
     return (
       <View key={item.key} style={[styles.settingItem, { borderBottomColor: colors.border }]}>
         <View style={styles.settingInfo}>
@@ -135,7 +140,7 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
       </View>
     );
   }
-  
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.section}>
@@ -144,21 +149,21 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
           {notificationSettings.map(renderSwitch)}
         </View>
       </View>
-      
+
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Messages</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           {messageSettings.map(renderSwitch)}
         </View>
       </View>
-      
+
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Activity</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           {activitySettings.map(renderSwitch)}
         </View>
       </View>
-      
+
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Sound</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>

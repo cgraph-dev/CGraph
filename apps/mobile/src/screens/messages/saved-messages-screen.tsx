@@ -41,6 +41,7 @@ interface SavedMessage {
 }
 
 /**
+ * Saved Messages Screen component.
  *
  */
 export default function SavedMessagesScreen() {
@@ -78,26 +79,23 @@ export default function SavedMessagesScreen() {
     fetchSaved();
   }, [fetchSaved]);
 
-  const handleRemove = useCallback(
-    async (id: string) => {
-      Alert.alert('Remove Bookmark', 'Remove this saved message?', [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.delete(`/api/v1/saved-messages/${id}`);
-              setMessages((prev) => prev.filter((m) => m.id !== id));
-            } catch {
-              Alert.alert('Error', 'Failed to remove bookmark');
-            }
-          },
+  const handleRemove = useCallback(async (id: string) => {
+    Alert.alert('Remove Bookmark', 'Remove this saved message?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await api.delete(`/api/v1/saved-messages/${id}`);
+            setMessages((prev) => prev.filter((m) => m.id !== id));
+          } catch {
+            Alert.alert('Error', 'Failed to remove bookmark');
+          }
         },
-      ]);
-    },
-    []
-  );
+      },
+    ]);
+  }, []);
 
   const handleNavigate = useCallback(
     (conversationId?: string) => {
@@ -125,7 +123,10 @@ export default function SavedMessagesScreen() {
       <TouchableOpacity
         onPress={() => handleNavigate(item.conversation_id)}
         activeOpacity={0.7}
-        style={[styles.messageCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        style={[
+          styles.messageCard,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+        ]}
       >
         <View style={styles.messageHeader}>
           <View style={styles.senderInfo}>
@@ -139,7 +140,10 @@ export default function SavedMessagesScreen() {
                 {item.sender_name}
               </Text>
               {item.conversation_name && (
-                <Text style={[styles.conversationName, { color: colors.textSecondary }]} numberOfLines={1}>
+                <Text
+                  style={[styles.conversationName, { color: colors.textSecondary }]}
+                  numberOfLines={1}
+                >
                   in {item.conversation_name}
                 </Text>
               )}
@@ -179,7 +183,12 @@ export default function SavedMessagesScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Search Bar */}
-      <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View
+        style={[
+          styles.searchContainer,
+          { backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
         <View style={[styles.searchBar, { backgroundColor: colors.input }]}>
           <Ionicons name="search" size={18} color={colors.textSecondary} />
           <TextInput
@@ -208,9 +217,15 @@ export default function SavedMessagesScreen() {
           data={messages}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          contentContainerStyle={messages.length === 0 ? styles.emptyListContainer : styles.listContainer}
+          contentContainerStyle={
+            messages.length === 0 ? styles.emptyListContainer : styles.listContainer
+          }
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.primary}
+            />
           }
           ListEmptyComponent={
             <View style={styles.centerContainer}>

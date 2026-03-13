@@ -38,7 +38,6 @@ declare module 'livekit-client' {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Track {
     sid: string;
     kind: string;
@@ -62,7 +61,9 @@ declare module 'livekit-client' {
     source: Track.Source;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface RemoteTrackPublication extends TrackPublication {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface LocalTrackPublication extends TrackPublication {}
 
   export interface Participant {
@@ -77,6 +78,7 @@ declare module 'livekit-client' {
     getTrackPublication(source: Track.Source): TrackPublication | undefined;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface RemoteParticipant extends Participant {}
 
   export interface LocalParticipant extends Participant {
@@ -103,11 +105,14 @@ declare module 'livekit-client' {
     [key: string]: unknown;
   }
 
+  /** ExternalE2EEKeyProvider class. */
   export class ExternalE2EEKeyProvider {
     constructor();
+    /** Description. */
     setKey(key: CryptoKey | Uint8Array, participantIdentity?: string): void;
   }
 
+  /** Room class. */
   export class Room {
     constructor(opts?: RoomOptions);
     name: string;
@@ -116,22 +121,24 @@ declare module 'livekit-client' {
     remoteParticipants: Map<string, RemoteParticipant>;
     activeSpeakers: Participant[];
     isE2EEEnabled: boolean;
+    /** Description. */
     setE2EEEnabled(enabled: boolean, options?: E2EEOptions): Promise<void>;
+    /** Description. */
     connect(url: string, token: string): Promise<void>;
+    /** Description. */
     disconnect(stopTracks?: boolean | string): Promise<void>;
+    /** Description. */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     on(event: RoomEvent | string, handler: (...args: any[]) => void): this;
+    /** Description. */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     off(event: RoomEvent | string, handler: (...args: any[]) => void): this;
+    /** Description. */
     emit(event: RoomEvent | string, ...args: unknown[]): boolean;
   }
 
   // ── Track factories ──────────────────────────────────────────────────
 
-  export function createLocalAudioTrack(
-    options?: Record<string, unknown>
-  ): Promise<Track>;
-  export function createLocalVideoTrack(
-    options?: Record<string, unknown>
-  ): Promise<Track>;
+  export function createLocalAudioTrack(options?: Record<string, unknown>): Promise<Track>;
+  export function createLocalVideoTrack(options?: Record<string, unknown>): Promise<Track>;
 }

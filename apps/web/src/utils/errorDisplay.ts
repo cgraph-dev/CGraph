@@ -53,7 +53,7 @@ export function getDisplayError(error: unknown, fallback = 'An unexpected error 
 
   // API error object with various message fields
   if (error && typeof error === 'object') {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const errorObj = error as ErrorLike; // type assertion: unknown error to ErrorLike shape
     return (
       errorObj.message ||

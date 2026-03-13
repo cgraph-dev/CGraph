@@ -23,11 +23,10 @@ interface Logger {
  */
 export const createLogger = (namespace: string): Logger => {
   const prefix = `[${namespace}]`;
-  
+
   return {
     debug: (...args: unknown[]) => {
       if (isDev) {
-        // eslint-disable-next-line no-console
         console.debug(prefix, ...args);
       }
     },
@@ -38,7 +37,6 @@ export const createLogger = (namespace: string): Logger => {
     },
     log: (...args: unknown[]) => {
       if (isDev) {
-        // eslint-disable-next-line no-console
         console.log(prefix, ...args);
       }
     },

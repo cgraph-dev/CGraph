@@ -1,15 +1,15 @@
 /**
  * WebRTC Module (Mobile)
- * 
+ *
  * Exports WebRTC service and hooks for voice/video calls.
- * 
+ *
  * @module lib/webrtc
  * @version 0.8.6
  */
 
-export { 
-  WebRTCManager, 
-  getWebRTCManager, 
+export {
+  WebRTCManager,
+  getWebRTCManager,
   destroyWebRTCManager,
   isWebRTCAvailable,
   type CallState,
@@ -17,8 +17,4 @@ export {
   type CallEventHandler,
 } from './webrtcService';
 
-export { 
-  useCall, 
-  useIncomingCallListener,
-  type UseCallReturn,
-} from './useCall';
+export { useCall, useIncomingCallListener, type UseCallReturn } from './useCall';

@@ -118,7 +118,7 @@ export function connectSocket(state: SocketManagerState): Promise<void> {
         state.socket?.disconnect();
         state.socket = null;
       }
-      // Preserve session info for resumption on reconnect  
+      // Preserve session info for resumption on reconnect
       if (state.sessionId) {
         try {
           sessionStorage.setItem('ws_session_id', state.sessionId);

@@ -37,7 +37,7 @@ interface ChannelThreadSheetProps {
 export default function ChannelThreadSheet({
   visible,
   parentMessage,
-  groupId,
+  _groupId,
   channelId,
   onClose,
 }: ChannelThreadSheetProps) {
@@ -56,6 +56,7 @@ export default function ChannelThreadSheet({
       setReplies([]);
       setInputText('');
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, parentMessage?.id]);
 
   const fetchReplies = async () => {
@@ -126,7 +127,12 @@ export default function ChannelThreadSheet({
   if (!parentMessage) return null;
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         {/* Header */}
         <View style={[styles.header, { borderBottomColor: colors.border }]}>
@@ -165,9 +171,7 @@ export default function ChannelThreadSheet({
                 {safeFormatTime(parentMessage.inserted_at)}
               </Text>
             </View>
-            <Text style={[styles.parentText, { color: colors.text }]}>
-              {parentMessage.content}
-            </Text>
+            <Text style={[styles.parentText, { color: colors.text }]}>{parentMessage.content}</Text>
             <Text style={[styles.replyCount, { color: colors.textSecondary }]}>
               {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
             </Text>

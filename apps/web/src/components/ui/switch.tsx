@@ -37,15 +37,7 @@ export function Switch({
       disabled={disabled}
       onClick={() => onCheckedChange?.(!checked)}
       whileTap={{ scale: 0.95 }}
-      className={`
-        relative inline-flex h-6 w-11 items-center rounded-full
-        transition-colors duration-200 ease-in-out
-        focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2
-        focus:ring-offset-background
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${checked ? 'bg-primary' : 'bg-surfaceBorder'}
-        ${className}
-      `}
+      className={`focus:ring-offset-background relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${checked ? 'bg-primary' : 'bg-surfaceBorder'} ${className} `}
     >
       <motion.span
         className="inline-block h-4 w-4 rounded-full bg-white shadow-sm"

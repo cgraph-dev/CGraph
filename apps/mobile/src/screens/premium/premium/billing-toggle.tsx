@@ -26,6 +26,8 @@ function DiscountBadge() {
   );
 }
 
+/** Description. */
+/** Billing Toggle component. */
 export function BillingToggle({ billingCycle, onToggle }: BillingToggleProps) {
   return (
     <View style={styles.billingToggleContainer}>

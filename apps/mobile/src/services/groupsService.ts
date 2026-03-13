@@ -211,7 +211,8 @@ export async function uploadGroupAvatar(
   file: { uri: string; type: string; name: string }
 ): Promise<string> {
   const formData = new FormData();
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   formData.append('avatar', file as unknown as Blob);
 
   const response = await api.post(`/api/v1/groups/${groupId}/avatar`, formData, {
@@ -228,7 +229,8 @@ export async function uploadGroupBanner(
   file: { uri: string; type: string; name: string }
 ): Promise<string> {
   const formData = new FormData();
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   formData.append('banner', file as unknown as Blob);
 
   const response = await api.post(`/api/v1/groups/${groupId}/banner`, formData, {

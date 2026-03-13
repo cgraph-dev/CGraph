@@ -59,6 +59,7 @@ interface UseNotificationsReturn extends NotificationsState {
 }
 
 /**
+ * Hook for notifications.
  *
  */
 export function useNotifications(options: UseNotificationsOptions = {}): UseNotificationsReturn {

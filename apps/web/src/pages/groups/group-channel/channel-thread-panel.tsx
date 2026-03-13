@@ -8,24 +8,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { entranceVariants, springs } from '@/lib/animation-presets';
-import {
-  XMarkIcon,
-  PaperAirplaneIcon,
-  ChatBubbleLeftRightIcon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon, PaperAirplaneIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { useChannelThreadStore } from '@/modules/groups/store/channelThreadStore';
 
 /**
  * Channel Thread Panel component.
  */
 export function ChannelThreadPanel() {
-  const {
-    activeThread,
-    threadReplies,
-    isLoading,
-    closeThread,
-    sendThreadReply,
-  } = useChannelThreadStore();
+  const { activeThread, threadReplies, isLoading, closeThread, sendThreadReply } =
+    useChannelThreadStore();
 
   const [replyText, setReplyText] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -178,9 +169,7 @@ export function ChannelThreadPanel() {
                         <span className="text-sm font-medium text-white">
                           {reply.author?.displayName ?? reply.author?.username}
                         </span>
-                        <span className="text-xs text-white/30">
-                          {formatTime(reply.createdAt)}
-                        </span>
+                        <span className="text-xs text-white/30">{formatTime(reply.createdAt)}</span>
                       </div>
                       <p className="mt-0.5 whitespace-pre-wrap break-words text-sm text-white/70">
                         {reply.content}

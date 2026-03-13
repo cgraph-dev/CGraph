@@ -104,9 +104,10 @@ jest.mock('expo-font', () => ({
 
 // Mock @expo/vector-icons - creates simple Text components
 jest.mock('@expo/vector-icons', () => {
-   
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require('react');
-   
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { Text } = require('react-native');
 
   const createMockIcon = (name: string) => {
@@ -245,7 +246,7 @@ jest.mock('expo-audio', () => ({
 
 // Mock React Native Gesture Handler
 jest.mock('react-native-gesture-handler', () => {
-   
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const View = require('react-native').View;
   return {
     GestureHandlerRootView: View,
@@ -293,7 +294,7 @@ jest.mock('react-native-safe-area-context', () => {
 
 // Mock React Native Reanimated
 jest.mock('react-native-reanimated', () => {
-   
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const Reanimated = require('react-native-reanimated/mock');
   Reanimated.default.call = () => {};
   return Reanimated;

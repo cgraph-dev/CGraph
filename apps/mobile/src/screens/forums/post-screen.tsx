@@ -37,6 +37,7 @@ type Props = {
 };
 
 /**
+ * Post Screen component.
  *
  */
 export default function PostScreen({ navigation: _navigation, route }: Props) {
@@ -65,46 +66,43 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
             }
           },
         },
-      ],
+      ]
     );
   }, [postId, _navigation]);
 
   const handleDeleteComment = useCallback((commentId: string) => {
-    Alert.alert(
-      'Delete Comment',
-      'Are you sure you want to delete this comment?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.delete(`/api/v1/comments/${commentId}`);
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              setComments((prev) => prev.filter((c) => c.id !== commentId));
-            } catch (error) {
-              console.error('Error deleting comment:', error);
-              Alert.alert('Error', 'Failed to delete comment.');
-            }
-          },
+    Alert.alert('Delete Comment', 'Are you sure you want to delete this comment?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await api.delete(`/api/v1/comments/${commentId}`);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            setComments((prev) => prev.filter((c) => c.id !== commentId));
+          } catch (error) {
+            console.error('Error deleting comment:', error);
+            Alert.alert('Error', 'Failed to delete comment.');
+          }
         },
-      ],
-    );
+      },
+    ]);
   }, []);
-  
+
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [commentText, setCommentText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEditHistory, setShowEditHistory] = useState(false);
-  
+
   useEffect(() => {
     fetchPost();
     fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
-  
+
   const fetchPost = async () => {
     try {
       const response = await api.get(`/api/v1/posts/${postId}`);
@@ -113,7 +111,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
       console.error('Error fetching post:', error);
     }
   };
-  
+
   const fetchComments = async () => {
     try {
       const response = await api.get(`/api/v1/posts/${postId}/comments`);
@@ -124,7 +122,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
       setIsLoading(false);
     }
   };
-  
+
   const handleVotePost = async (value: 1 | -1) => {
     if (!post) return;
     // Haptic feedback on vote
@@ -145,7 +143,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
       console.error('Error voting:', error);
     }
   };
-  
+
   const submitComment = async () => {
     if (!commentText.trim() || isSubmitting) return;
 
@@ -215,50 +213,50 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
       return [];
     }
   };
-  
-  const renderComment = useCallback((comment: Comment, depth: number = 0) => {
-    const authorName = comment.author?.username || comment.author?.display_name || 'unknown';
-    return (
-      <View key={comment.id} style={[styles.comment, { marginLeft: depth * 16 }]}>
-        <View style={[styles.commentLine, { backgroundColor: colors.border }]} />
-        <View style={styles.commentContent}>
-          <Text style={[styles.commentMeta, { color: colors.textSecondary }]}>
-            u/{authorName} • {safeFormatMessageTime(comment.inserted_at)}
-          </Text>
-          <Text style={[styles.commentText, { color: colors.text }]}>
-            {comment.content}
-          </Text>
-          <View style={styles.commentActions}>
-            <TouchableOpacity style={styles.commentAction}>
-              <Ionicons name="arrow-up-outline" size={16} color={colors.textSecondary} />
-              <Text style={[styles.commentActionText, { color: colors.textSecondary }]}>
-                {comment.vote_count}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.commentAction}>
-              <Ionicons name="chatbubble-outline" size={16} color={colors.textSecondary} />
-              <Text style={[styles.commentActionText, { color: colors.textSecondary }]}>
-                Reply
-              </Text>
-            </TouchableOpacity>
-            {(_user?.id === comment.author?.id) && (
-              <TouchableOpacity
-                style={styles.commentAction}
-                onPress={() => handleDeleteComment(comment.id)}
-              >
-                <Ionicons name="trash-outline" size={16} color="#dc2626" />
-                <Text style={[styles.commentActionText, { color: '#dc2626' }]}>
-                  Delete
+
+  const renderComment = useCallback(
+    (comment: Comment, depth: number = 0) => {
+      const authorName = comment.author?.username || comment.author?.display_name || 'unknown';
+      return (
+        <View key={comment.id} style={[styles.comment, { marginLeft: depth * 16 }]}>
+          <View style={[styles.commentLine, { backgroundColor: colors.border }]} />
+          <View style={styles.commentContent}>
+            <Text style={[styles.commentMeta, { color: colors.textSecondary }]}>
+              u/{authorName} • {safeFormatMessageTime(comment.inserted_at)}
+            </Text>
+            <Text style={[styles.commentText, { color: colors.text }]}>{comment.content}</Text>
+            <View style={styles.commentActions}>
+              <TouchableOpacity style={styles.commentAction}>
+                <Ionicons name="arrow-up-outline" size={16} color={colors.textSecondary} />
+                <Text style={[styles.commentActionText, { color: colors.textSecondary }]}>
+                  {comment.vote_count}
                 </Text>
               </TouchableOpacity>
-            )}
+              <TouchableOpacity style={styles.commentAction}>
+                <Ionicons name="chatbubble-outline" size={16} color={colors.textSecondary} />
+                <Text style={[styles.commentActionText, { color: colors.textSecondary }]}>
+                  Reply
+                </Text>
+              </TouchableOpacity>
+              {_user?.id === comment.author?.id && (
+                <TouchableOpacity
+                  style={styles.commentAction}
+                  onPress={() => handleDeleteComment(comment.id)}
+                >
+                  <Ionicons name="trash-outline" size={16} color="#dc2626" />
+                  <Text style={[styles.commentActionText, { color: '#dc2626' }]}>Delete</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
+          {comment.replies?.map((reply) => renderComment(reply, depth + 1))}
         </View>
-        {comment.replies?.map((reply) => renderComment(reply, depth + 1))}
-      </View>
-    );
-  }, [colors]);
-  
+      );
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [colors]
+  );
+
   if (isLoading) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -274,7 +272,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
       </View>
     );
   }
-  
+
   if (!post) {
     return (
       <View style={[styles.errorContainer, { backgroundColor: colors.background }]}>
@@ -282,7 +280,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
       </View>
     );
   }
-  
+
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -292,14 +290,14 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
         {/* Post */}
         <View style={[styles.postContainer, { backgroundColor: colors.surface }]}>
           <Text style={[styles.postMeta, { color: colors.textSecondary }]}>
-            c/{post.forum.slug} • u/{post.author?.username || post.author?.display_name || 'unknown'} • {safeFormatMessageTime(post.inserted_at)}
+            c/{post.forum.slug} • u/
+            {post.author?.username || post.author?.display_name || 'unknown'} •{' '}
+            {safeFormatMessageTime(post.inserted_at)}
           </Text>
-          
+
           {/* Prefix and Status Badges */}
           <View style={styles.badgesRow}>
-            {post.prefix && (
-              <ThreadPrefixBadge prefix={post.prefix} size="md" />
-            )}
+            {post.prefix && <ThreadPrefixBadge prefix={post.prefix} size="md" />}
             {post.is_pinned && (
               <View style={[styles.badge, { backgroundColor: '#16a34a' }]}>
                 <Ionicons name="pin" size={12} color="#fff" />
@@ -369,7 +367,8 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
             >
               <Ionicons name="time-outline" size={14} color={colors.textSecondary} />
               <Text style={[styles.editHistoryText, { color: colors.textSecondary }]}>
-                Edited {post.edit_history.length} {post.edit_history.length === 1 ? 'time' : 'times'} • View history
+                Edited {post.edit_history.length}{' '}
+                {post.edit_history.length === 1 ? 'time' : 'times'} • View history
               </Text>
             </TouchableOpacity>
           )}
@@ -378,54 +377,60 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
           <View style={styles.postActions}>
             <VoteButtons
               voteCount={post.vote_count}
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               myVote={(post.my_vote || 0) as 0 | 1 | -1}
               onVote={(dir) => handleVotePost(dir)}
               size={22}
               colors={colors}
             />
-            
+
             <View style={styles.postAction}>
               <Ionicons name="chatbubble-outline" size={18} color={colors.textSecondary} />
               <Text style={[styles.postActionText, { color: colors.textSecondary }]}>
                 {post.comment_count} Comments
               </Text>
             </View>
-            
+
             <TouchableOpacity style={styles.postAction}>
               <Ionicons name="share-outline" size={18} color={colors.textSecondary} />
-              <Text style={[styles.postActionText, { color: colors.textSecondary }]}>
-                Share
-              </Text>
+              <Text style={[styles.postActionText, { color: colors.textSecondary }]}>Share</Text>
             </TouchableOpacity>
 
-            {(_user?.id === post.author?.id) && (
+            {_user?.id === post.author?.id && (
               <TouchableOpacity style={styles.postAction} onPress={handleDeletePost}>
                 <Ionicons name="trash-outline" size={18} color="#dc2626" />
-                <Text style={[styles.postActionText, { color: '#dc2626' }]}>
-                  Delete
-                </Text>
+                <Text style={[styles.postActionText, { color: '#dc2626' }]}>Delete</Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
-        
+
         {/* Comments */}
         <View style={styles.commentsContainer}>
           {comments.map((comment) => renderComment(comment))}
         </View>
       </ScrollView>
-      
+
       {/* Comment input */}
       {post.is_locked ? (
-        <View style={[styles.lockedContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+        <View
+          style={[
+            styles.lockedContainer,
+            { backgroundColor: colors.surface, borderTopColor: colors.border },
+          ]}
+        >
           <Ionicons name="lock-closed" size={18} color="#ca8a04" />
           <Text style={[styles.lockedText, { color: '#ca8a04' }]}>
             This post is locked. New comments are disabled.
           </Text>
         </View>
       ) : (
-        <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+        <View
+          style={[
+            styles.inputContainer,
+            { backgroundColor: colors.surface, borderTopColor: colors.border },
+          ]}
+        >
           <TextInput
             style={[styles.commentInput, { backgroundColor: colors.input, color: colors.text }]}
             placeholder="Add a comment..."

@@ -87,9 +87,7 @@ describe('initialize', () => {
       if (url === '/api/v1/coins/packages') {
         return Promise.resolve({
           data: {
-            packages: [
-              { id: 'cgraph_coins_100', coins: 100, price: 0.99, title: '100 Coins' },
-            ],
+            packages: [{ id: 'cgraph_coins_100', coins: 100, price: 0.99, title: '100 Coins' }],
           },
         });
       }
@@ -146,7 +144,6 @@ describe('getProduct', () => {
 
     const product = paymentService.getProduct(PRODUCT_IDS.PREMIUM_MONTHLY);
     expect(product).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(product!.id).toBe(PRODUCT_IDS.PREMIUM_MONTHLY);
   });
 
@@ -175,14 +172,16 @@ describe('purchaseProduct — subscription', () => {
 
     const result = await paymentService.purchaseProduct(PRODUCT_IDS.PREMIUM_MONTHLY);
 
-    expect(mockApi.post).toHaveBeenCalledWith('/api/v1/premium/subscribe', expect.objectContaining({
-      tier: 'premium',
-      billing_interval: 'month',
-      platform: 'ios',
-    }));
+    expect(mockApi.post).toHaveBeenCalledWith(
+      '/api/v1/premium/subscribe',
+      expect.objectContaining({
+        tier: 'premium',
+        billing_interval: 'month',
+        platform: 'ios',
+      })
+    );
     expect(mockOpenURL).toHaveBeenCalledWith('https://checkout.stripe.com/session/test');
     expect(result).not.toBeNull();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result!.purchaseState).toBe('pending');
   });
 
@@ -193,14 +192,19 @@ describe('purchaseProduct — subscription', () => {
 
     await paymentService.purchaseProduct(PRODUCT_IDS.PREMIUM_PLUS_YEARLY);
 
-    expect(mockApi.post).toHaveBeenCalledWith('/api/v1/premium/subscribe', expect.objectContaining({
-      tier: 'enterprise',
-      billing_interval: 'year',
-    }));
+    expect(mockApi.post).toHaveBeenCalledWith(
+      '/api/v1/premium/subscribe',
+      expect.objectContaining({
+        tier: 'enterprise',
+        billing_interval: 'year',
+      })
+    );
   });
 
   it('throws when product not found', async () => {
-    await expect(paymentService.purchaseProduct('bad-id')).rejects.toThrow('Product not found: bad-id');
+    await expect(paymentService.purchaseProduct('bad-id')).rejects.toThrow(
+      'Product not found: bad-id'
+    );
   });
 
   it('shows alert on purchase error', async () => {
@@ -234,11 +238,13 @@ describe('purchaseProduct — coins', () => {
 
     const result = await paymentService.purchaseProduct(PRODUCT_IDS.COINS_100);
 
-    expect(mockApi.post).toHaveBeenCalledWith('/api/v1/coins/purchase', expect.objectContaining({
-      package_id: PRODUCT_IDS.COINS_100,
-    }));
+    expect(mockApi.post).toHaveBeenCalledWith(
+      '/api/v1/coins/purchase',
+      expect.objectContaining({
+        package_id: PRODUCT_IDS.COINS_100,
+      })
+    );
     expect(result).not.toBeNull();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result!.purchaseState).toBe('pending');
   });
 
@@ -250,7 +256,6 @@ describe('purchaseProduct — coins', () => {
     const result = await paymentService.purchaseProduct(PRODUCT_IDS.COINS_100);
 
     expect(result).not.toBeNull();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result!.purchaseState).toBe('purchased');
   });
 });
@@ -331,9 +336,7 @@ describe('cancelSubscription', () => {
     const result = await paymentService.cancelSubscription();
 
     expect(result).toBe(true);
-    expect(mockOpenURL).toHaveBeenCalledWith(
-      'https://apps.apple.com/account/subscriptions'
-    );
+    expect(mockOpenURL).toHaveBeenCalledWith('https://apps.apple.com/account/subscriptions');
   });
 
   it('returns false on error', async () => {

@@ -50,8 +50,8 @@ export function AddOverrideForm({
                 onClick={() => onTypeChange('role')}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm ${
                   addType === 'role'
-                    ? 'bg-primary-500/10 text-primary-400 border border-primary-500'
-                    : 'text-gray-400 border border-white/[0.08]'
+                    ? 'border border-primary-500 bg-primary-500/10 text-primary-400'
+                    : 'border border-white/[0.08] text-gray-400'
                 }`}
               >
                 <ShieldCheckIcon className="h-4 w-4" />
@@ -61,8 +61,8 @@ export function AddOverrideForm({
                 onClick={() => onTypeChange('member')}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm ${
                   addType === 'member'
-                    ? 'bg-primary-500/10 text-primary-400 border border-primary-500'
-                    : 'text-gray-400 border border-white/[0.08]'
+                    ? 'border border-primary-500 bg-primary-500/10 text-primary-400'
+                    : 'border border-white/[0.08] text-gray-400'
                 }`}
               >
                 <UserIcon className="h-4 w-4" />

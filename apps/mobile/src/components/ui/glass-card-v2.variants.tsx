@@ -9,6 +9,7 @@ import type { GlassCardV2Props } from './glass-card-v2.types';
 import GlassCardV2 from './glass-card-v2';
 
 /**
+ * Frosted Card component.
  *
  */
 export function FrostedCard(props: Omit<GlassCardV2Props, 'variant'>) {
@@ -16,6 +17,7 @@ export function FrostedCard(props: Omit<GlassCardV2Props, 'variant'>) {
 }
 
 /**
+ * Crystal Card component.
  *
  */
 export function CrystalCard(props: Omit<GlassCardV2Props, 'variant'>) {
@@ -23,6 +25,7 @@ export function CrystalCard(props: Omit<GlassCardV2Props, 'variant'>) {
 }
 
 /**
+ * Neon Card component.
  *
  */
 export function NeonCard(props: Omit<GlassCardV2Props, 'variant'>) {
@@ -30,6 +33,7 @@ export function NeonCard(props: Omit<GlassCardV2Props, 'variant'>) {
 }
 
 /**
+ * Holographic Card component.
  *
  */
 export function HolographicCard(props: Omit<GlassCardV2Props, 'variant'>) {
@@ -39,6 +43,7 @@ export function HolographicCard(props: Omit<GlassCardV2Props, 'variant'>) {
 }
 
 /**
+ * Aurora Card component.
  *
  */
 export function AuroraCard(props: Omit<GlassCardV2Props, 'variant'>) {
@@ -46,6 +51,7 @@ export function AuroraCard(props: Omit<GlassCardV2Props, 'variant'>) {
 }
 
 /**
+ * Midnight Card component.
  *
  */
 export function MidnightCard(props: Omit<GlassCardV2Props, 'variant'>) {
@@ -53,6 +59,7 @@ export function MidnightCard(props: Omit<GlassCardV2Props, 'variant'>) {
 }
 
 /**
+ * Dawn Card component.
  *
  */
 export function DawnCard(props: Omit<GlassCardV2Props, 'variant'>) {
@@ -60,6 +67,7 @@ export function DawnCard(props: Omit<GlassCardV2Props, 'variant'>) {
 }
 
 /**
+ * Ember Card component.
  *
  */
 export function EmberCard(props: Omit<GlassCardV2Props, 'variant'>) {
@@ -67,6 +75,7 @@ export function EmberCard(props: Omit<GlassCardV2Props, 'variant'>) {
 }
 
 /**
+ * Ocean Card component.
  *
  */
 export function OceanCard(props: Omit<GlassCardV2Props, 'variant'>) {

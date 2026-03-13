@@ -34,6 +34,7 @@ type Props = {
 };
 
 /**
+ * Channel Screen component.
  *
  */
 export default function ChannelScreen({ navigation, route }: Props) {
@@ -59,6 +60,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
     return () => {
       socketManager.leaveChannel(`group:${channelId}`);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupId, channelId]);
 
   const fetchChannel = async () => {
@@ -87,7 +89,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
     const phoenixChannel = socketManager.joinChannel(`group:${channelId}`);
     if (phoenixChannel) {
       phoenixChannel.on('new_message', (payload: unknown) => {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const data = payload as { message: Message };
         setMessages((prev) => [...prev, data.message].slice(-500));
       });
@@ -169,50 +171,51 @@ export default function ChannelScreen({ navigation, route }: Props) {
             }
           }}
         >
-        <View style={[styles.messageContainer, !isGrouped && styles.messageWithAvatar]}>
-          {!isGrouped && (
-            <View style={styles.messageSender}>
-              <View style={styles.avatarSmall}>
-                {item.sender.avatar_url ? (
-                  <Image source={{ uri: item.sender.avatar_url }} style={styles.avatarImage} />
-                ) : (
-                  <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
-                    <Text style={styles.avatarText}>
-                      {item.sender.username?.charAt(0).toUpperCase()}
-                    </Text>
-                  </View>
-                )}
+          <View style={[styles.messageContainer, !isGrouped && styles.messageWithAvatar]}>
+            {!isGrouped && (
+              <View style={styles.messageSender}>
+                <View style={styles.avatarSmall}>
+                  {item.sender.avatar_url ? (
+                    <Image source={{ uri: item.sender.avatar_url }} style={styles.avatarImage} />
+                  ) : (
+                    <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
+                      <Text style={styles.avatarText}>
+                        {item.sender.username?.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+                <Text style={[styles.senderName, { color: colors.text }]}>
+                  {item.sender.display_name || item.sender.username}
+                </Text>
+                <Text style={[styles.messageTime, { color: colors.textTertiary }]}>
+                  {safeFormatTime(item.inserted_at)}
+                </Text>
               </View>
-              <Text style={[styles.senderName, { color: colors.text }]}>
-                {item.sender.display_name || item.sender.username}
-              </Text>
-              <Text style={[styles.messageTime, { color: colors.textTertiary }]}>
-                {safeFormatTime(item.inserted_at)}
-              </Text>
+            )}
+            <View style={[styles.messageContent, !isGrouped && styles.messageContentWithAvatar]}>
+              <Text style={[styles.messageText, { color: colors.text }]}>{item.content}</Text>
             </View>
-          )}
-          <View style={[styles.messageContent, !isGrouped && styles.messageContentWithAvatar]}>
-            <Text style={[styles.messageText, { color: colors.text }]}>{item.content}</Text>
+            {/* Thread reply hint */}
+            {item.thread_count != null && item.thread_count > 0 && (
+              <TouchableOpacity
+                style={[styles.threadBadge, { borderColor: colors.border }]}
+                onPress={() => {
+                  setThreadMessage(item);
+                  setThreadVisible(true);
+                }}
+              >
+                <Ionicons name="chatbubbles-outline" size={14} color={colors.primary} />
+                <Text style={[styles.threadBadgeText, { color: colors.primary }]}>
+                  {item.thread_count} {item.thread_count === 1 ? 'reply' : 'replies'}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
-          {/* Thread reply hint */}
-          {item.thread_count != null && item.thread_count > 0 && (
-            <TouchableOpacity
-              style={[styles.threadBadge, { borderColor: colors.border }]}
-              onPress={() => {
-                setThreadMessage(item);
-                setThreadVisible(true);
-              }}
-            >
-              <Ionicons name="chatbubbles-outline" size={14} color={colors.primary} />
-              <Text style={[styles.threadBadgeText, { color: colors.primary }]}>
-                {item.thread_count} {item.thread_count === 1 ? 'reply' : 'replies'}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
         </TouchableOpacity>
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [messages, colors]
   );
 

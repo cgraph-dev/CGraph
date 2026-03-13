@@ -22,6 +22,8 @@ interface FrequencyPickerProps {
   onSaved?: () => void;
 }
 
+/** Description. */
+/** Frequency Picker component. */
 export function FrequencyPicker({ className, onSaved }: FrequencyPickerProps) {
   const { data: topics = [], isLoading: topicsLoading } = useTopics();
   const { data: existing = [] } = useUserFrequencies();
@@ -51,9 +53,7 @@ export function FrequencyPicker({ className, onSaved }: FrequencyPickerProps) {
   }, []);
 
   const setWeight = useCallback((topicId: string, weight: number) => {
-    setEntries((prev) =>
-      prev.map((e) => (e.topic_id === topicId ? { ...e, weight } : e))
-    );
+    setEntries((prev) => prev.map((e) => (e.topic_id === topicId ? { ...e, weight } : e)));
   }, []);
 
   const handleSave = useCallback(async () => {
@@ -63,9 +63,7 @@ export function FrequencyPicker({ className, onSaved }: FrequencyPickerProps) {
 
   if (topicsLoading) {
     return (
-      <div className="flex items-center justify-center py-12 text-white/40">
-        Loading topics...
-      </div>
+      <div className="flex items-center justify-center py-12 text-white/40">Loading topics...</div>
     );
   }
 
@@ -91,9 +89,7 @@ export function FrequencyPicker({ className, onSaved }: FrequencyPickerProps) {
       {/* Weight sliders for selected topics */}
       {entries.length > 0 && (
         <div>
-          <h3 className="mb-3 text-sm font-medium text-white/60">
-            Adjust interest levels
-          </h3>
+          <h3 className="mb-3 text-sm font-medium text-white/60">Adjust interest levels</h3>
           <div className="space-y-3">
             {entries.map((entry) => {
               const topic = topics.find((t: Topic) => t.id === entry.topic_id);
@@ -101,9 +97,7 @@ export function FrequencyPicker({ className, onSaved }: FrequencyPickerProps) {
               return (
                 <div key={entry.topic_id} className="flex items-center gap-3">
                   <span className="w-6 text-center">{topic.icon}</span>
-                  <span className="w-24 truncate text-sm text-white/80">
-                    {topic.name}
-                  </span>
+                  <span className="w-24 truncate text-sm text-white/80">{topic.name}</span>
                   <input
                     type="range"
                     min={0}
@@ -112,9 +106,7 @@ export function FrequencyPicker({ className, onSaved }: FrequencyPickerProps) {
                     onChange={(e) => setWeight(entry.topic_id, Number(e.target.value))}
                     className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/10 accent-indigo-500"
                   />
-                  <span className="w-8 text-right text-xs text-white/40">
-                    {entry.weight}
-                  </span>
+                  <span className="w-8 text-right text-xs text-white/40">{entry.weight}</span>
                 </div>
               );
             })}

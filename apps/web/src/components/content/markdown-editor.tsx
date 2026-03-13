@@ -46,7 +46,8 @@ const toolbarButtons: ToolbarButton[] = [
   { icon: ItalicIcon, label: 'Italic', prefix: '_', suffix: '_' },
   {
     // type assertion: StrikethroughIcon component type compatible with toolbar interface
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     icon: StrikethroughIcon as React.ComponentType<{ className?: string }>,
     label: 'Strikethrough',
     prefix: '~~',
@@ -146,7 +147,9 @@ export default function MarkdownEditor({
   );
 
   return (
-    <div className={`overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.06] ${className}`}>
+    <div
+      className={`overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.06] ${className}`}
+    >
       {/* Toolbar */}
       <div className="flex items-center justify-between border-b border-white/[0.08] bg-white/[0.04] px-2 py-1.5">
         <div className="flex items-center gap-0.5">
@@ -169,7 +172,9 @@ export default function MarkdownEditor({
           type="button"
           onClick={() => setShowPreview(!showPreview)}
           className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
-            showPreview ? 'bg-primary-600 text-white' : 'bg-white/[0.08] text-gray-400 hover:text-white'
+            showPreview
+              ? 'bg-primary-600 text-white'
+              : 'bg-white/[0.08] text-gray-400 hover:text-white'
           }`}
         >
           {showPreview ? 'Edit' : 'Preview'}

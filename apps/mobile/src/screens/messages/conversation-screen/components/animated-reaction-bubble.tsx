@@ -16,7 +16,7 @@ import Animated, {
   withSpring,
   withSequence,
   withTiming,
-  withDelay,
+  _withDelay,
   FadeIn,
   FadeOut,
   Easing,
@@ -90,13 +90,13 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
     const peakScale = isSuperReaction ? 1.6 : 1.3;
     scale.value = withSequence(
       withSpring(peakScale, SPRING_PRESETS.bouncy),
-      withSpring(1, SPRING_PRESETS.snappy),
+      withSpring(1, SPRING_PRESETS.snappy)
     );
 
     // Emoji vertical bounce
     emojiY.value = withSequence(
       withTiming(-8, { duration: durations.instant.ms, easing: Easing.out(Easing.quad) }),
-      withSpring(0, SPRING_PRESETS.snappy),
+      withSpring(0, SPRING_PRESETS.snappy)
     );
 
     // Super reaction particle burst
@@ -128,6 +128,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
             },
           ]}
         >
+          {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
           <Animated.View style={[styles.reactionEmoji, emojiStyle as any]}>
             <LottieRenderer
               emoji={reaction.emoji}
@@ -153,12 +154,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
       {showBurst && (
         <View style={styles.burstContainer} pointerEvents="none">
           {Array.from({ length: SUPER_PARTICLE_COUNT }).map((_, i) => (
-            <BurstParticle
-              key={i}
-              emoji={reaction.emoji}
-              index={i}
-              total={SUPER_PARTICLE_COUNT}
-            />
+            <BurstParticle key={i} emoji={reaction.emoji} index={i} total={SUPER_PARTICLE_COUNT} />
           ))}
         </View>
       )}

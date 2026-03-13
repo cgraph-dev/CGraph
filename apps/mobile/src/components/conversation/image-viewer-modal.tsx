@@ -143,12 +143,7 @@ export const ImageViewerModal = memo(function ImageViewerModal({
         <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
 
         {/* Image content */}
-        <ReanimatedAnimated.View
-          style={[
-            styles.content,
-            contentAnimatedStyle,
-          ]}
-        >
+        <ReanimatedAnimated.View style={[styles.content, contentAnimatedStyle]}>
           {images.length > 1 ? (
             <FlatList
               ref={galleryRef}

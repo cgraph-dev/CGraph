@@ -33,6 +33,7 @@ type Props = {
 };
 
 /**
+ * Account Screen component.
  *
  */
 export default function AccountScreen({ navigation: _navigation }: Props) {
@@ -42,12 +43,12 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  
+
   // Biometric authentication state
   const [biometricStatus, setBiometricStatus] = useState<BiometricStatus | null>(null);
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [isTogglingBiometric, setIsTogglingBiometric] = useState(false);
-  
+
   // Load biometric status on mount
   useEffect(() => {
     const loadBiometricStatus = async () => {
@@ -60,43 +61,46 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
     };
     loadBiometricStatus();
   }, []);
-  
+
   // Handle biometric toggle
-  const handleBiometricToggle = useCallback(async (value: boolean) => {
-    if (!biometricStatus?.isAvailable) {
-      Alert.alert('Not Available', 'Biometric authentication is not available on this device.');
-      return;
-    }
-    
-    if (!biometricStatus?.isEnrolled) {
-      Alert.alert(
-        'Setup Required',
-        `Please set up ${getBiometricName(biometricStatus.biometricType)} in your device settings first.`
-      );
-      return;
-    }
-    
-    setIsTogglingBiometric(true);
-    try {
-      const success = await setBiometricLockEnabled(value);
-      if (success) {
-        setBiometricEnabled(value);
-        Alert.alert(
-          'Success',
-          value
-            ? `${getBiometricName(biometricStatus.biometricType)} lock enabled.`
-            : 'Biometric lock disabled.'
-        );
-      } else {
-        Alert.alert('Cancelled', 'Biometric authentication was cancelled.');
+  const handleBiometricToggle = useCallback(
+    async (value: boolean) => {
+      if (!biometricStatus?.isAvailable) {
+        Alert.alert('Not Available', 'Biometric authentication is not available on this device.');
+        return;
       }
-    } catch (_error) {
-      Alert.alert('Error', 'Failed to update biometric settings.');
-    } finally {
-      setIsTogglingBiometric(false);
-    }
-  }, [biometricStatus]);
-  
+
+      if (!biometricStatus?.isEnrolled) {
+        Alert.alert(
+          'Setup Required',
+          `Please set up ${getBiometricName(biometricStatus.biometricType)} in your device settings first.`
+        );
+        return;
+      }
+
+      setIsTogglingBiometric(true);
+      try {
+        const success = await setBiometricLockEnabled(value);
+        if (success) {
+          setBiometricEnabled(value);
+          Alert.alert(
+            'Success',
+            value
+              ? `${getBiometricName(biometricStatus.biometricType)} lock enabled.`
+              : 'Biometric lock disabled.'
+          );
+        } else {
+          Alert.alert('Cancelled', 'Biometric authentication was cancelled.');
+        }
+      } catch (_error) {
+        Alert.alert('Error', 'Failed to update biometric settings.');
+      } finally {
+        setIsTogglingBiometric(false);
+      }
+    },
+    [biometricStatus]
+  );
+
   const handleChangePassword = () => {
     Alert.alert('Change Password', 'This will send a password reset link to your email.', [
       { text: 'Cancel', style: 'cancel' },
@@ -144,7 +148,7 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
       ]
     );
   };
-  
+
   const handleDeleteAccount = () => {
     Alert.alert(
       'Delete Account',
@@ -187,7 +191,7 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
   const openTermsOfService = () => {
     Linking.openURL('https://cgraph.org/terms');
   };
-  
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Email Section */}
@@ -200,36 +204,38 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
           </View>
         </View>
       </View>
-      
+
       {/* Security Section */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Security</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           <TouchableOpacity style={styles.settingsItem} onPress={handleChangePassword}>
             <Ionicons name="key-outline" size={22} color={colors.textSecondary} />
-            <Text style={[styles.settingsItemText, { color: colors.text }]}>
-              Change Password
-            </Text>
+            <Text style={[styles.settingsItemText, { color: colors.text }]}>Change Password</Text>
             <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
-          
+
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          
+
           {/* Biometric Authentication */}
           {biometricStatus && biometricStatus.isAvailable && (
             <>
               <View style={styles.settingsItemRow}>
-                <Ionicons 
-                  name={biometricStatus.biometricType === 'facial' ? 'scan-outline' : 'finger-print-outline'} 
-                  size={22} 
-                  color={colors.textSecondary} 
+                <Ionicons
+                  name={
+                    biometricStatus.biometricType === 'facial'
+                      ? 'scan-outline'
+                      : 'finger-print-outline'
+                  }
+                  size={22}
+                  color={colors.textSecondary}
                 />
                 <View style={styles.settingsItemContent}>
                   <Text style={[styles.settingsItemText, { color: colors.text }]}>
                     {getBiometricName(biometricStatus.biometricType)}
                   </Text>
                   <Text style={[styles.settingsItemSubtext, { color: colors.textTertiary }]}>
-                    {biometricStatus.isEnrolled 
+                    {biometricStatus.isEnrolled
                       ? 'Require biometric to access app'
                       : 'Set up in device settings first'}
                   </Text>
@@ -249,7 +255,7 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
               <View style={[styles.divider, { backgroundColor: colors.border }]} />
             </>
           )}
-          
+
           <TouchableOpacity style={styles.settingsItem}>
             <Ionicons name="phone-portrait-outline" size={22} color={colors.textSecondary} />
             <Text style={[styles.settingsItemText, { color: colors.text }]}>
@@ -259,19 +265,17 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
               <Text style={[styles.badgeText, { color: colors.textSecondary }]}>Off</Text>
             </View>
           </TouchableOpacity>
-          
+
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          
+
           <TouchableOpacity style={styles.settingsItem}>
             <Ionicons name="desktop-outline" size={22} color={colors.textSecondary} />
-            <Text style={[styles.settingsItemText, { color: colors.text }]}>
-              Active Sessions
-            </Text>
+            <Text style={[styles.settingsItemText, { color: colors.text }]}>Active Sessions</Text>
             <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
       </View>
-      
+
       {/* Connected Accounts */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
@@ -281,12 +285,13 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
           <TouchableOpacity style={styles.settingsItem}>
             <Ionicons name="wallet-outline" size={22} color={colors.textSecondary} />
             <View style={styles.connectedInfo}>
-              <Text style={[styles.settingsItemText, { color: colors.text }]}>
-                Wallet
-              </Text>
+              <Text style={[styles.settingsItemText, { color: colors.text }]}>Wallet</Text>
               {user?.wallet_address ? (
                 <Text style={[styles.connectedValue, { color: colors.textSecondary }]}>
-                  {(user.wallet_address as string).slice(0, 6)}...{(user.wallet_address as string).slice(-4)}
+                  {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+                  {(user.wallet_address as string).slice(0, 6)}...
+                  {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+                  {(user.wallet_address as string).slice(-4)}
                 </Text>
               ) : (
                 <Text style={[styles.connectedValue, { color: colors.textTertiary }]}>
@@ -303,15 +308,17 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Data & Privacy</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
-          <TouchableOpacity style={styles.settingsItem} onPress={handleExportData} disabled={isExporting}>
+          <TouchableOpacity
+            style={styles.settingsItem}
+            onPress={handleExportData}
+            disabled={isExporting}
+          >
             {isExporting ? (
               <ActivityIndicator size="small" color={colors.primary} />
             ) : (
               <Ionicons name="download-outline" size={22} color={colors.textSecondary} />
             )}
-            <Text style={[styles.settingsItemText, { color: colors.text }]}>
-              Export My Data
-            </Text>
+            <Text style={[styles.settingsItemText, { color: colors.text }]}>Export My Data</Text>
             <Text style={[styles.settingsItemHint, { color: colors.textTertiary }]}>GDPR</Text>
           </TouchableOpacity>
 
@@ -319,9 +326,7 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
 
           <TouchableOpacity style={styles.settingsItem} onPress={openPrivacyPolicy}>
             <Ionicons name="shield-outline" size={22} color={colors.textSecondary} />
-            <Text style={[styles.settingsItemText, { color: colors.text }]}>
-              Privacy Policy
-            </Text>
+            <Text style={[styles.settingsItemText, { color: colors.text }]}>Privacy Policy</Text>
             <Ionicons name="open-outline" size={18} color={colors.textTertiary} />
           </TouchableOpacity>
 
@@ -329,14 +334,12 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
 
           <TouchableOpacity style={styles.settingsItem} onPress={openTermsOfService}>
             <Ionicons name="document-text-outline" size={22} color={colors.textSecondary} />
-            <Text style={[styles.settingsItemText, { color: colors.text }]}>
-              Terms of Service
-            </Text>
+            <Text style={[styles.settingsItemText, { color: colors.text }]}>Terms of Service</Text>
             <Ionicons name="open-outline" size={18} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
       </View>
-      
+
       {/* Danger Zone */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.error }]}>Danger Zone</Text>
@@ -345,9 +348,7 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
           onPress={handleDeleteAccount}
         >
           <Ionicons name="trash-outline" size={22} color={colors.error} />
-          <Text style={[styles.dangerButtonText, { color: colors.error }]}>
-            Delete Account
-          </Text>
+          <Text style={[styles.dangerButtonText, { color: colors.error }]}>Delete Account</Text>
         </TouchableOpacity>
       </View>
 
@@ -357,15 +358,18 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
           <View style={[styles.modal, { backgroundColor: colors.surface }]}>
             <Text style={[styles.modalTitle, { color: colors.text }]}>Confirm Deletion</Text>
             <Text style={[styles.modalText, { color: colors.textSecondary }]}>
-              This will permanently delete your account and all associated data. 
-              Type DELETE to confirm.
+              This will permanently delete your account and all associated data. Type DELETE to
+              confirm.
             </Text>
             <TextInput
-              style={[styles.confirmInput, { 
-                backgroundColor: colors.background, 
-                color: colors.text,
-                borderColor: colors.border 
-              }]}
+              style={[
+                styles.confirmInput,
+                {
+                  backgroundColor: colors.background,
+                  color: colors.text,
+                  borderColor: colors.border,
+                },
+              ]}
               value={deleteConfirmText}
               onChangeText={setDeleteConfirmText}
               placeholder="Type DELETE"

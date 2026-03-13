@@ -59,10 +59,7 @@ export function FriendRequestCard({ request, type, onAccept, onDecline }: Friend
               trigger="both"
               className="cursor-pointer"
             >
-              <motion.div
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={springs.bouncy}
-              >
+              <motion.div whileHover={{ scale: 1.1, rotate: 5 }} transition={springs.bouncy}>
                 {avatarUrl ? (
                   <div className="rounded-full bg-gradient-to-br from-primary-500 to-purple-600 p-0.5">
                     <img

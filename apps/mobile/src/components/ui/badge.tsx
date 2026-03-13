@@ -5,7 +5,15 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, withRepeat, withSequence, withTiming, Easing as ReanimatedEasing } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withRepeat,
+  withSequence,
+  withTiming,
+  Easing as ReanimatedEasing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
 type BadgeVariant =
@@ -75,8 +83,14 @@ export default function Badge({
     if (pulse) {
       pulseAnim.value = withRepeat(
         withSequence(
-          withTiming(1.15, { duration: durations.extended.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
-          withTiming(1, { duration: durations.extended.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
+          withTiming(1.15, {
+            duration: durations.extended.ms,
+            easing: ReanimatedEasing.inOut(ReanimatedEasing.ease),
+          }),
+          withTiming(1, {
+            duration: durations.extended.ms,
+            easing: ReanimatedEasing.inOut(ReanimatedEasing.ease),
+          })
         ),
         -1
       );
@@ -86,12 +100,19 @@ export default function Badge({
     if (glow) {
       glowAnim.value = withRepeat(
         withSequence(
-          withTiming(0.8, { duration: durations.ambient.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
-          withTiming(0.3, { duration: durations.ambient.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
+          withTiming(0.8, {
+            duration: durations.ambient.ms,
+            easing: ReanimatedEasing.inOut(ReanimatedEasing.ease),
+          }),
+          withTiming(0.3, {
+            duration: durations.ambient.ms,
+            easing: ReanimatedEasing.inOut(ReanimatedEasing.ease),
+          })
         ),
         -1
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animated, pulse, glow]);
 
   const variantStyles: Record<
@@ -201,7 +222,7 @@ export default function Badge({
     >
       {gradient && currentVariant.gradient ? (
         <LinearGradient
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
           colors={currentVariant.gradient as any}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -225,6 +246,7 @@ export default function Badge({
 
 // Predefined badge variants for common use cases
 /**
+ * New Badge component.
  *
  */
 export function NewBadge({ style }: { style?: ViewStyle }) {
@@ -236,6 +258,7 @@ export function NewBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Hot Badge component.
  *
  */
 export function HotBadge({ style }: { style?: ViewStyle }) {
@@ -247,6 +270,7 @@ export function HotBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Nsfw Badge component.
  *
  */
 export function NsfwBadge({ style }: { style?: ViewStyle }) {
@@ -258,6 +282,7 @@ export function NsfwBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Pinned Badge component.
  *
  */
 export function PinnedBadge({ style }: { style?: ViewStyle }) {
@@ -269,6 +294,7 @@ export function PinnedBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Private Badge component.
  *
  */
 export function PrivateBadge({ style }: { style?: ViewStyle }) {
@@ -280,6 +306,7 @@ export function PrivateBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Public Badge component.
  *
  */
 export function PublicBadge({ style }: { style?: ViewStyle }) {
@@ -291,6 +318,7 @@ export function PublicBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Owner Badge component.
  *
  */
 export function OwnerBadge({ style }: { style?: ViewStyle }) {
@@ -302,6 +330,7 @@ export function OwnerBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Moderator Badge component.
  *
  */
 export function ModeratorBadge({ style }: { style?: ViewStyle }) {
@@ -313,6 +342,7 @@ export function ModeratorBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Member Badge component.
  *
  */
 export function MemberBadge({ style }: { style?: ViewStyle }) {
@@ -324,6 +354,7 @@ export function MemberBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Premium Badge component.
  *
  */
 export function PremiumBadge({ style }: { style?: ViewStyle }) {
@@ -335,6 +366,7 @@ export function PremiumBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Legendary Badge component.
  *
  */
 export function LegendaryBadge({ style }: { style?: ViewStyle }) {
@@ -346,6 +378,7 @@ export function LegendaryBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Rare Badge component.
  *
  */
 export function RareBadge({ style }: { style?: ViewStyle }) {
@@ -357,6 +390,7 @@ export function RareBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Epic Badge component.
  *
  */
 export function EpicBadge({ style }: { style?: ViewStyle }) {
@@ -368,6 +402,7 @@ export function EpicBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Online Badge component.
  *
  */
 export function OnlineBadge({ style }: { style?: ViewStyle }) {
@@ -379,6 +414,7 @@ export function OnlineBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Offline Badge component.
  *
  */
 export function OfflineBadge({ style }: { style?: ViewStyle }) {
@@ -390,6 +426,7 @@ export function OfflineBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Away Badge component.
  *
  */
 export function AwayBadge({ style }: { style?: ViewStyle }) {
@@ -401,6 +438,7 @@ export function AwayBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Busy Badge component.
  *
  */
 export function BusyBadge({ style }: { style?: ViewStyle }) {
@@ -412,6 +450,7 @@ export function BusyBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Verified Badge component.
  *
  */
 export function VerifiedBadge({ style }: { style?: ViewStyle }) {
@@ -423,6 +462,7 @@ export function VerifiedBadge({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Admin Badge component.
  *
  */
 export function AdminBadge({ style }: { style?: ViewStyle }) {

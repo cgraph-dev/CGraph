@@ -26,7 +26,7 @@ export function renderLegendaryBorder({
         className="absolute inset-0 rounded-full"
         style={{ background: `radial-gradient(circle, transparent 60%, ${colors.glow} 100%)` }}
         animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: durations.loop.ms / 1000 * speedMultiplier, repeat: Infinity }}
+        transition={{ duration: (durations.loop.ms / 1000) * speedMultiplier, repeat: Infinity }}
       />
       {/* Rotating outer ring */}
       <motion.div
@@ -57,7 +57,11 @@ export function renderLegendaryBorder({
             scale: [1, 1.5, 1],
             opacity: [0.6, 1, 0.6],
           }}
-          transition={{ duration: durations.verySlow.ms / 1000 * speedMultiplier, repeat: Infinity, delay: i * 0.1 }}
+          transition={{
+            duration: (durations.verySlow.ms / 1000) * speedMultiplier,
+            repeat: Infinity,
+            delay: i * 0.1,
+          }}
         />
       ))}
     </>
@@ -83,7 +87,10 @@ export function renderMythicBorder({
         className="absolute inset-[-8px] rounded-full"
         style={{ background: `radial-gradient(circle, ${colors.glow}, transparent 70%)` }}
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-        transition={{ duration: durations.cinematic.ms / 1000 * speedMultiplier, repeat: Infinity }}
+        transition={{
+          duration: (durations.cinematic.ms / 1000) * speedMultiplier,
+          repeat: Infinity,
+        }}
       />
       {/* Multi-layer rotating rings */}
       <motion.div

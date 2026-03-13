@@ -27,6 +27,7 @@ function getActionColor(action: string): string {
 }
 
 /**
+ * Audit Tab component.
  *
  */
 export function AuditTab({ logs }: AuditTabProps) {

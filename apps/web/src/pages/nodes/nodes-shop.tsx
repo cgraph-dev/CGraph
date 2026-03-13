@@ -3,11 +3,14 @@
  *
  * Displays purchasable node bundles and current balance.
  */
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useNodeWallet, useNodeBundles, useCreateCheckout } from '@/modules/nodes/hooks/useNodes';
 import { BundleCard } from '@/modules/nodes/components/bundle-card';
 
-export const NodesShopPage: React.FC = () => {
+/** Description. */
+/** Nodes Shop Page component. */
+export function NodesShopPage(): React.ReactElement {
   const { data: wallet } = useNodeWallet();
   const { data: bundles, isLoading } = useNodeBundles();
   const checkout = useCreateCheckout();
@@ -26,14 +29,9 @@ export const NodesShopPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-100">Get Nodes</h1>
-          <p className="mt-1 text-sm text-zinc-400">
-            Power tips, unlocks, and more with Nodes.
-          </p>
+          <p className="mt-1 text-sm text-zinc-400">Power tips, unlocks, and more with Nodes.</p>
         </div>
-        <Link
-          to="/nodes"
-          className="text-sm text-purple-400 hover:text-purple-300"
-        >
+        <Link to="/nodes" className="text-sm text-purple-400 hover:text-purple-300">
           ← Wallet
         </Link>
       </div>
@@ -66,7 +64,7 @@ export const NodesShopPage: React.FC = () => {
       </p>
     </div>
   );
-};
+}
 
 NodesShopPage.displayName = 'NodesShopPage';
 export default NodesShopPage;

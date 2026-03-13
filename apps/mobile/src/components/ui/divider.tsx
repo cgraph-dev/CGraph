@@ -11,11 +11,11 @@ interface DividerProps {
   style?: ViewStyle;
 }
 
+/** Description. */
+/** Divider component. */
 export function Divider({ orientation = 'horizontal', label, style }: DividerProps) {
   if (orientation === 'vertical') {
-    return (
-      <View style={[styles.vertical, style]} />
-    );
+    return <View style={[styles.vertical, style]} />;
   }
 
   if (label) {

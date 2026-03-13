@@ -21,6 +21,8 @@ interface FeedModeTabsProps {
   className?: string;
 }
 
+/** Description. */
+/** Feed Mode Tabs component. */
 export function FeedModeTabs({ activeMode, onModeChange, className }: FeedModeTabsProps) {
   return (
     <div className={cn('flex gap-1 overflow-x-auto rounded-xl bg-white/5 p-1', className)}>

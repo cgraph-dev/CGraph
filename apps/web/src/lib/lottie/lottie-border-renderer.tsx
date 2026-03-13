@@ -105,7 +105,7 @@ export const LottieBorderRenderer = memo(function LottieBorderRenderer({
       ([entry]) => {
         setIsVisible(!!entry?.isIntersecting);
       },
-      { threshold: 0.1 },
+      { threshold: 0.1 }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -238,7 +238,7 @@ export const LottieBorderRenderer = memo(function LottieBorderRenderer({
   // Cut out only the center circle where the avatar sits.
   // This keeps all decorative frame elements (stars, wings, ornaments) visible
   // while preventing the Lottie's background shapes from covering the avatar.
-  const innerRadius = Math.max(0, (avatarSize / 2) - 2); // slightly smaller hole for overlap
+  const innerRadius = Math.max(0, avatarSize / 2 - 2); // slightly smaller hole for overlap
   const maskCenter = totalSize / 2;
   const maskStyle: React.CSSProperties = {
     position: 'absolute' as const,
@@ -258,10 +258,7 @@ export const LottieBorderRenderer = memo(function LottieBorderRenderer({
       }}
     >
       {/* Lottie animation layer — masked to cut out only the avatar center */}
-      <div
-        ref={containerRef}
-        style={maskStyle}
-      />
+      <div ref={containerRef} style={maskStyle} />
 
       {/* Avatar centered inside the frame hole */}
       <div

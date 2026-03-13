@@ -307,16 +307,18 @@ export class ParticleEngine {
     const { width, height } = Dimensions.get('window');
 
     this.config = {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       particles: {
         type: config.particles?.type || 'dots',
         count: config.particles?.count || 50,
         ...PARTICLE_PRESETS[config.particles?.type || 'dots'],
         ...(config.particles?.colors && { colors: config.particles.colors }),
       } as ParticleConfig,
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       emitter: { ...DEFAULT_EMITTER, ...config.emitter } as EmitterConfig,
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       physics: { ...DEFAULT_PHYSICS, ...config.physics } as ParticlePhysics,
       behavior: config.behavior || 'float',
       bounds: {
@@ -727,11 +729,12 @@ export class ParticleEngine {
 // ============================================================================
 
 /**
+ * Creates sparkles.
  *
  */
 export function createSparkles(count: number = 30): ParticleEngine {
   return new ParticleEngine({
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     particles: { type: 'sparkles', count } as ParticleConfig,
     behavior: 'float',
     emitter: { shape: 'rectangle', position: { x: 0.5, y: 0.5 }, size: { x: 1, y: 1 } },
@@ -739,11 +742,12 @@ export function createSparkles(count: number = 30): ParticleEngine {
 }
 
 /**
+ * Creates confetti.
  *
  */
 export function createConfetti(count: number = 100): ParticleEngine {
   return new ParticleEngine({
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     particles: { type: 'confetti', count } as ParticleConfig,
     behavior: 'fall',
     emitter: { shape: 'line', position: { x: 0.5, y: 0 }, size: { x: 1, y: 0 }, burst: true },
@@ -751,11 +755,12 @@ export function createConfetti(count: number = 100): ParticleEngine {
 }
 
 /**
+ * Creates snow.
  *
  */
 export function createSnow(count: number = 50): ParticleEngine {
   return new ParticleEngine({
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     particles: { type: 'snow', count } as ParticleConfig,
     behavior: 'fall',
     emitter: {
@@ -770,11 +775,12 @@ export function createSnow(count: number = 50): ParticleEngine {
 }
 
 /**
+ * Creates rain.
  *
  */
 export function createRain(count: number = 80): ParticleEngine {
   return new ParticleEngine({
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     particles: { type: 'rain', count } as ParticleConfig,
     behavior: 'fall',
     emitter: {
@@ -789,11 +795,12 @@ export function createRain(count: number = 80): ParticleEngine {
 }
 
 /**
+ * Creates fireflies.
  *
  */
 export function createFireflies(count: number = 20): ParticleEngine {
   return new ParticleEngine({
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     particles: { type: 'fireflies', count } as ParticleConfig,
     behavior: 'wander',
     emitter: { shape: 'rectangle', position: { x: 0.5, y: 0.5 }, size: { x: 1, y: 1 } },
@@ -802,11 +809,12 @@ export function createFireflies(count: number = 20): ParticleEngine {
 }
 
 /**
+ * Creates bubbles.
  *
  */
 export function createBubbles(count: number = 25): ParticleEngine {
   return new ParticleEngine({
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     particles: { type: 'bubbles', count } as ParticleConfig,
     behavior: 'rise',
     emitter: {
@@ -821,11 +829,12 @@ export function createBubbles(count: number = 25): ParticleEngine {
 }
 
 /**
+ * Creates stars.
  *
  */
 export function createStars(count: number = 40): ParticleEngine {
   return new ParticleEngine({
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     particles: { type: 'stars', count } as ParticleConfig,
     behavior: 'float',
     emitter: {

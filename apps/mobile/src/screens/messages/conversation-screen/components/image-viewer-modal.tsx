@@ -7,16 +7,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  Modal,
-  TouchableOpacity,
-  FlatList,
-  Alert,
-  Linking,
-} from 'react-native';
+import { View, Text, Image, Modal, TouchableOpacity, FlatList, Alert, Linking } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { styles, SCREEN_WIDTH, SCREEN_HEIGHT } from '../styles';
@@ -92,12 +83,7 @@ export function ImageViewerModal({
     >
       <Animated.View style={[styles.imageViewerContainer, containerAnimatedStyle]}>
         <TouchableOpacity style={styles.imageViewerBackdrop} activeOpacity={1} onPress={onClose} />
-        <Animated.View
-          style={[
-            styles.imageViewerContent,
-            contentAnimatedStyle,
-          ]}
-        >
+        <Animated.View style={[styles.imageViewerContent, contentAnimatedStyle]}>
           {imageGallery.length > 1 ? (
             <FlatList
               ref={galleryRef}

@@ -18,10 +18,7 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
-import type {
-  NotificationMode,
-  NotificationPreference,
-} from '@cgraph/shared-types';
+import type { NotificationMode, NotificationPreference } from '@cgraph/shared-types';
 
 interface ConversationNotificationSettingsProps {
   conversationId: string;
@@ -30,7 +27,12 @@ interface ConversationNotificationSettingsProps {
   onClose: () => void;
 }
 
-const MODE_OPTIONS: { value: NotificationMode; label: string; description: string; icon: typeof BellIcon }[] = [
+const MODE_OPTIONS: {
+  value: NotificationMode;
+  label: string;
+  description: string;
+  icon: typeof BellIcon;
+}[] = [
   {
     value: 'all',
     label: 'All messages',
@@ -59,6 +61,8 @@ const MUTE_DURATIONS = [
   { label: 'Forever', seconds: null },
 ] as const;
 
+/** Description. */
+/** Conversation Notification Settings component. */
 export function ConversationNotificationSettings({
   conversationId,
   targetType = 'conversation',
@@ -79,8 +83,12 @@ export function ConversationNotificationSettings({
         const res = await api.get<{ data: { preference: NotificationPreference } }>(
           `/api/v1/notification-preferences/${targetType}/${conversationId}`
         );
-        const pref = res.data?.data?.preference ?? (res.data as unknown as { preference: NotificationPreference })?.preference;
+        const pref =
+          res.data?.data?.preference ??
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          (res.data as unknown as { preference: NotificationPreference })?.preference;
         if (pref) {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           setCurrentMode((pref.mode as NotificationMode) || 'all');
           setMutedUntil(pref.mutedUntil ?? null);
         }
@@ -101,10 +109,10 @@ export function ConversationNotificationSettings({
           // Reset to default — delete the preference
           await api.delete(`/api/v1/notification-preferences/${targetType}/${conversationId}`);
         } else {
-          await api.put(
-            `/api/v1/notification-preferences/${targetType}/${conversationId}`,
-            { mode, muted_until: muteUntil ?? null }
-          );
+          await api.put(`/api/v1/notification-preferences/${targetType}/${conversationId}`, {
+            mode,
+            muted_until: muteUntil ?? null,
+          });
         }
         setCurrentMode(mode);
         setMutedUntil(muteUntil ?? null);
@@ -131,9 +139,7 @@ export function ConversationNotificationSettings({
 
   const handleMuteDuration = useCallback(
     (seconds: number | null) => {
-      const muteUntil = seconds
-        ? new Date(Date.now() + seconds * 1000).toISOString()
-        : null;
+      const muteUntil = seconds ? new Date(Date.now() + seconds * 1000).toISOString() : null;
       updatePreference('none', muteUntil);
     },
     [updatePreference]

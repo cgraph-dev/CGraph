@@ -33,26 +33,36 @@ export function createRsvpActions(set: SetState, _get: GetState) {
     fetchRsvps: async (eventId: string) => {
       try {
         const response = await api.get(`/api/v1/calendar/events/${eventId}/rsvps`);
-         
-        const rsvps = (ensureArray(response.data, 'rsvps') as Record<string, unknown>[]).map( // safe downcast – API response field
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const rsvps = (ensureArray(response.data, 'rsvps') as Record<string, unknown>[]).map(
+          // safe downcast – API response field
           (r): EventRSVP => ({
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             id: r.id as string, // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             eventId: r.event_id as string, // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             userId: r.user_id as string, // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             username: (r.username as string) || 'Unknown', // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             displayName: (r.display_name as string) || null, // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             avatarUrl: (r.avatar_url as string) || null, // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             status: (r.status as RSVPStatus) || 'no_response', // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             note: r.note as string | undefined, // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             respondedAt: (r.responded_at as string) || new Date().toISOString(), // safe downcast – API response field
           })
         );

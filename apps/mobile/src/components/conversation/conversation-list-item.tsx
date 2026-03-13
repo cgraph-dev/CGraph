@@ -4,14 +4,10 @@
  */
 import React, { memo, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import Animated, {
-  FadeInRight,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { FadeInRight, _useAnimatedStyle, _withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import Avatar from '../ui/avatar';
-import { space, radius } from '../../theme/tokens';
+import { space } from '../../theme/tokens';
 
 interface ConversationListItemProps {
   id: string;
@@ -59,17 +55,9 @@ export const ConversationListItem = memo(function ConversationListItem({
         onPress={handlePress}
         onLongPress={handleLongPress}
         delayLongPress={500}
-        style={({ pressed }) => [
-          styles.container,
-          pressed && styles.pressed,
-        ]}
+        style={({ pressed }) => [styles.container, pressed && styles.pressed]}
       >
-        <Avatar
-          size="lg"
-          name={name}
-          src={avatarUrl}
-          status={isOnline ? 'online' : undefined}
-        />
+        <Avatar size="lg" name={name} src={avatarUrl} status={isOnline ? 'online' : undefined} />
 
         <View style={styles.content}>
           <View style={styles.topRow}>
@@ -77,25 +65,14 @@ export const ConversationListItem = memo(function ConversationListItem({
               {name}
             </Text>
             {lastMessageTime && (
-              <Text
-                style={[
-                  styles.time,
-                  unreadCount > 0 && styles.timeUnread,
-                ]}
-              >
+              <Text style={[styles.time, unreadCount > 0 && styles.timeUnread]}>
                 {lastMessageTime}
               </Text>
             )}
           </View>
 
           <View style={styles.bottomRow}>
-            <Text
-              style={[
-                styles.preview,
-                isMuted && styles.previewMuted,
-              ]}
-              numberOfLines={1}
-            >
+            <Text style={[styles.preview, isMuted && styles.previewMuted]} numberOfLines={1}>
               {lastMessage || 'No messages yet'}
             </Text>
 
@@ -103,9 +80,7 @@ export const ConversationListItem = memo(function ConversationListItem({
 
             {unreadCount > 0 && !isMuted && (
               <View style={styles.badge}>
-                <Text style={styles.badgeText}>
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </Text>
+                <Text style={styles.badgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
               </View>
             )}
           </View>

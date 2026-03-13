@@ -28,6 +28,7 @@ export interface ChromaticEffectProps {
 // ============================================================================
 
 /**
+ * Chromatic Effect component.
  *
  */
 export function ChromaticEffect({ config, style, children }: ChromaticEffectProps) {
@@ -45,6 +46,7 @@ export function ChromaticEffect({ config, style, children }: ChromaticEffectProp
         false
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mergedConfig.animated, mergedConfig.pulseSpeed]);
 
   const angleRad = (mergedConfig.angle * Math.PI) / 180;

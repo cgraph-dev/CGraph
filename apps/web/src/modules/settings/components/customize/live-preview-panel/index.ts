@@ -6,7 +6,13 @@
  */
 
 // Types
-export type { ChatBubbleProps, ParticleData, ParticleStyle, PreviewBadge, ThemeColors } from './types';
+export type {
+  ChatBubbleProps,
+  ParticleData,
+  ParticleStyle,
+  PreviewBadge,
+  ThemeColors,
+} from './types';
 
 // Constants
 export {

@@ -45,6 +45,7 @@ export interface ShaderOverlayProps {
 // ============================================================================
 
 /**
+ * Shader Overlay component.
  *
  */
 export function ShaderOverlay({

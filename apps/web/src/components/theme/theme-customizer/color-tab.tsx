@@ -19,7 +19,8 @@ import type { ColorTabProps } from './types';
  */
 export function ColorTab({ selectedColor, onSelectColor }: ColorTabProps) {
   // type assertion: Object.entries loses key type, re-assert ThemeColorPreset tuple
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const colors = Object.entries(THEME_COLORS) as [
     ThemeColorPreset,
     (typeof THEME_COLORS)[ThemeColorPreset],

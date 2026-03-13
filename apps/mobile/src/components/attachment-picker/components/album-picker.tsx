@@ -25,6 +25,7 @@ interface AlbumPickerProps {
 }
 
 /**
+ * Album Picker component.
  *
  */
 export function AlbumPicker({

@@ -16,14 +16,14 @@ const { mockChatState, mockAuthStore, mockFriendStore, mockUnsubscribe } = vi.ho
           { user_id: 'user-2', display_name: 'Alice' },
         ],
       },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ] as any[],
     messages: {
       'conv-1': [
         { id: 'm1', content: 'hi' },
         { id: 'm2', content: 'hey' },
       ],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
     isLoadingMessages: false,
     typingUsers: { 'conv-1': ['user-2'] } as Record<string, string[]>,

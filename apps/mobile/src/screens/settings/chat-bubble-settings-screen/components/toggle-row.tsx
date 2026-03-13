@@ -14,6 +14,7 @@ interface ToggleRowProps {
 }
 
 /**
+ * Toggle Row component.
  *
  */
 export function ToggleRow({ label, description, value, onToggle }: ToggleRowProps) {

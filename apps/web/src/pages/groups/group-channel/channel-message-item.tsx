@@ -6,7 +6,12 @@
  */
 
 import { useState } from 'react';
-import { FaceSmileIcon, EllipsisVerticalIcon, ChatBubbleLeftRightIcon, FlagIcon } from '@heroicons/react/24/outline';
+import {
+  FaceSmileIcon,
+  EllipsisVerticalIcon,
+  ChatBubbleLeftRightIcon,
+  FlagIcon,
+} from '@heroicons/react/24/outline';
 import type { ChannelMessageItemProps } from './types';
 import { formatMessageTime, getAvatarInitial, getDisplayName } from './utils';
 
@@ -16,7 +21,15 @@ import { formatMessageTime, getAvatarInitial, getDisplayName } from './utils';
 /**
  * Channel Message Item component.
  */
-export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread, onReport, currentUserId, threadReplyCount }: ChannelMessageItemProps) {
+export function ChannelMessageItem({
+  message,
+  showHeader,
+  onReply,
+  onOpenThread,
+  onReport,
+  currentUserId,
+  threadReplyCount,
+}: ChannelMessageItemProps) {
   const [showActions, setShowActions] = useState(false);
 
   const displayName = getDisplayName(message.author.username, message.author.displayName);
@@ -103,10 +116,12 @@ export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread,
         {threadReplyCount != null && threadReplyCount > 0 && (
           <button
             onClick={onOpenThread}
-            className="mt-1 flex items-center gap-1.5 rounded px-2 py-1 text-xs text-primary-400 hover:bg-primary-500/10 transition-colors"
+            className="mt-1 flex items-center gap-1.5 rounded px-2 py-1 text-xs text-primary-400 transition-colors hover:bg-primary-500/10"
           >
             <ChatBubbleLeftRightIcon className="h-3.5 w-3.5" />
-            <span>{threadReplyCount} {threadReplyCount === 1 ? 'reply' : 'replies'}</span>
+            <span>
+              {threadReplyCount} {threadReplyCount === 1 ? 'reply' : 'replies'}
+            </span>
           </button>
         )}
       </div>
@@ -114,7 +129,10 @@ export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread,
       {/* Actions */}
       {showActions && (
         <div className="absolute -top-4 right-4 flex items-center gap-0.5 rounded border border-white/[0.08] bg-white/[0.06] shadow-lg">
-          <button className="p-1.5 text-gray-400 hover:bg-white/[0.10] hover:text-white" title="React">
+          <button
+            className="p-1.5 text-gray-400 hover:bg-white/[0.10] hover:text-white"
+            title="React"
+          >
             <FaceSmileIcon className="h-4 w-4" />
           </button>
           <button
@@ -140,7 +158,10 @@ export function ChannelMessageItem({ message, showHeader, onReply, onOpenThread,
               <FlagIcon className="h-4 w-4" />
             </button>
           )}
-          <button className="p-1.5 text-gray-400 hover:bg-white/[0.10] hover:text-white" title="More">
+          <button
+            className="p-1.5 text-gray-400 hover:bg-white/[0.10] hover:text-white"
+            title="More"
+          >
             <EllipsisVerticalIcon className="h-4 w-4" />
           </button>
         </div>

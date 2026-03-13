@@ -56,18 +56,11 @@ export function ProfileMutualFriends({
             onClick={() => onFriendClick?.(friend.id)}
             className={cn(
               'flex items-center gap-2 rounded-lg px-3 py-2',
-              'bg-white/[0.03] transition-colors hover:bg-white/[0.06]',
+              'bg-white/[0.03] transition-colors hover:bg-white/[0.06]'
             )}
           >
-            <Avatar
-              size="sm"
-              name={friend.name}
-              src={friend.avatarUrl}
-              status={friend.status}
-            />
-            <span className="min-w-0 truncate text-xs text-white/80">
-              {friend.name}
-            </span>
+            <Avatar size="sm" name={friend.name} src={friend.avatarUrl} status={friend.status} />
+            <span className="min-w-0 truncate text-xs text-white/80">{friend.name}</span>
           </motion.button>
         ))}
       </div>

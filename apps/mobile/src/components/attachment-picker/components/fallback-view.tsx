@@ -17,6 +17,7 @@ interface FallbackViewProps {
 }
 
 /**
+ * Fallback View component.
  *
  */
 export function FallbackView({

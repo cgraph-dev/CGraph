@@ -22,6 +22,7 @@ import { useFriendRequests } from './hooks/useFriendRequests';
 import { RequestCard, EmptyRequestsState, TabsHeader, StatsHeader } from './components';
 
 /**
+ * Friend Requests Screen component.
  *
  */
 export default function FriendRequestsScreen() {
@@ -58,9 +59,7 @@ export default function FriendRequestsScreen() {
       <Header title="Friend Requests" showBack onBack={() => navigation.goBack()} />
 
       {/* Stats Header */}
-      <Animated.View
-        style={headerAnimStyle}
-      >
+      <Animated.View style={headerAnimStyle}>
         <StatsHeader
           incomingCount={incomingRequests.length}
           outgoingCount={outgoingRequests.length}

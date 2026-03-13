@@ -16,6 +16,8 @@ interface ForumItemProps {
   isDragging: boolean;
 }
 
+/** Description. */
+/** Forum Item component. */
 export function ForumItem({ forum, isActive, onDragStart, isDragging }: ForumItemProps) {
   return (
     <View
@@ -38,6 +40,7 @@ export function ForumItem({ forum, isActive, onDragStart, isDragging }: ForumIte
 
       <View style={[styles.forumIcon, { backgroundColor: (forum.color || '#10b981') + '30' }]}>
         <Ionicons
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
           name={(forum.icon as any) || 'chatbubbles'}
           size={20}
           color={forum.color || '#10b981'}

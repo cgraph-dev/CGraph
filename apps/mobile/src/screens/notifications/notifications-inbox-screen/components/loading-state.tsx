@@ -14,6 +14,7 @@ export interface LoadingStateProps {
 }
 
 /**
+ * Loading State component.
  *
  */
 export function LoadingState({ colors }: LoadingStateProps) {

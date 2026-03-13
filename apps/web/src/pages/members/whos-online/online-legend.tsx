@@ -13,7 +13,7 @@ import { EyeIcon, ComputerDesktopIcon, DevicePhoneMobileIcon } from '@heroicons/
 export function OnlineLegend() {
   return (
     <div className="bg-card border-border mt-6 rounded-lg border p-4">
-      <h3 className="text-foreground mb-3 text-sm font-semibold">Legend</h3>
+      <h3 className="mb-3 text-sm font-semibold text-foreground">Legend</h3>
       <div className="flex flex-wrap gap-4 text-sm">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-green-500" />

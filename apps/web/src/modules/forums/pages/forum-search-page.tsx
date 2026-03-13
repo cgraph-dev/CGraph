@@ -59,6 +59,7 @@ interface ForumSearchPageProps {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Forum Search Page component. */
 export default function ForumSearchPage({
   forumId,
   categories = [],
@@ -89,27 +90,21 @@ export default function ForumSearchPage({
       setPageResults(results);
       return results;
     },
-    [onSearch],
+    [onSearch]
   );
 
-  const handleFilterChange = useCallback(
-    (partial: Partial<SearchFilters>) => {
-      setFilters((prev) => ({ ...prev, ...partial }));
-    },
-    [],
-  );
+  const handleFilterChange = useCallback((partial: Partial<SearchFilters>) => {
+    setFilters((prev) => ({ ...prev, ...partial }));
+  }, []);
 
-  const handleToggleCategory = useCallback(
-    (categoryId: string) => {
-      setFilters((prev) => ({
-        ...prev,
-        categories: prev.categories.includes(categoryId)
-          ? prev.categories.filter((c) => c !== categoryId)
-          : [...prev.categories, categoryId],
-      }));
-    },
-    [],
-  );
+  const handleToggleCategory = useCallback((categoryId: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      categories: prev.categories.includes(categoryId)
+        ? prev.categories.filter((c) => c !== categoryId)
+        : [...prev.categories, categoryId],
+    }));
+  }, []);
 
   const handleClearFilters = useCallback(() => {
     setFilters(DEFAULT_FILTERS);
@@ -181,14 +176,12 @@ export default function ForumSearchPage({
                 <button
                   key={tpl.id}
                   type="button"
-                  onClick={() =>
-                    setSelectedTemplate(selectedTemplate === tpl.id ? null : tpl.id)
-                  }
+                  onClick={() => setSelectedTemplate(selectedTemplate === tpl.id ? null : tpl.id)}
                   className={cn(
                     'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
                     selectedTemplate === tpl.id
                       ? 'bg-primary-600 text-white'
-                      : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300',
+                      : 'bg-white/[0.06] text-gray-400 hover:bg-white/[0.1] hover:text-gray-300'
                   )}
                 >
                   {tpl.name}
@@ -235,12 +228,8 @@ export default function ForumSearchPage({
                     />
                   )}
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-sm font-semibold text-white">
-                      {result.title}
-                    </h3>
-                    <p className="mt-0.5 line-clamp-2 text-xs text-gray-400">
-                      {result.snippet}
-                    </p>
+                    <h3 className="truncate text-sm font-semibold text-white">{result.title}</h3>
+                    <p className="mt-0.5 line-clamp-2 text-xs text-gray-400">{result.snippet}</p>
                     <div className="mt-1.5 flex items-center gap-2 text-[11px] text-gray-500">
                       <span>@{result.author.username}</span>
                       <span>&middot;</span>

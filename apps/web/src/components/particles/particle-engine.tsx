@@ -65,9 +65,7 @@ const PARTICLE_COLORS: Record<ParticleSource, string[]> = {
  */
 function resolveActiveSource(sources: ParticleSource[]): ParticleSource | null {
   if (sources.length === 0) return null;
-  return sources.reduce((best, src) =>
-    SOURCE_PRIORITY[src] < SOURCE_PRIORITY[best] ? src : best
-  );
+  return sources.reduce((best, src) => (SOURCE_PRIORITY[src] < SOURCE_PRIORITY[best] ? src : best));
 }
 
 /**

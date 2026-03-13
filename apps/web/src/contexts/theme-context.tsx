@@ -175,6 +175,7 @@ export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
 
   const isSystemPreference = preferences.settings.respectSystemPreference;
   const resolvedBaseTheme: 'dark' | 'light' = theme.category === 'light' ? 'light' : 'dark';
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const availableThemes = useMemo(() => getAllThemes(), [preferences.customThemes]);
 
   // Enhanced context value

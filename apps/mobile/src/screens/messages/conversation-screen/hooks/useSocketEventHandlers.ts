@@ -177,10 +177,7 @@ export function useSocketEventHandlers(
  * Safety net hook: auto-clears typing state for users after 6s if no follow-up event.
  * Prevents "stuck typing" indicators when stop-typing events are lost.
  */
-export function useTypingAutoClear(
-  typingUsers: string[],
-  onClearTyping: (userId: string) => void
-) {
+export function useTypingAutoClear(typingUsers: string[], onClearTyping: (userId: string) => void) {
   const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   useEffect(() => {

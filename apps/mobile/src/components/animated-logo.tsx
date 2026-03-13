@@ -187,6 +187,7 @@ function GeometricLogo({ size }: { size: number }) {
 }
 
 /**
+ * Animated Logo component.
  *
  */
 export function AnimatedLogo({
@@ -211,7 +212,10 @@ export function AnimatedLogo({
       withTiming(1, { duration: durations.slower.ms, easing: Easing.out(Easing.back(1.5)) })
     );
 
-    textOpacity.value = withTiming(1, { duration: durations.dramatic.ms, easing: Easing.out(Easing.quad) });
+    textOpacity.value = withTiming(1, {
+      duration: durations.dramatic.ms,
+      easing: Easing.out(Easing.quad),
+    });
 
     if (isAnimated) {
       // Continuous rotation for loading/splash
@@ -335,13 +339,17 @@ export function AnimatedLogo({
 
 // Splash Screen Component
 /**
+ * Splash Screen component.
  *
  */
 export function SplashScreen() {
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.value = withTiming(1, { duration: durations.ambient.ms, easing: Easing.out(Easing.quad) });
+    progress.value = withTiming(1, {
+      duration: durations.ambient.ms,
+      easing: Easing.out(Easing.quad),
+    });
   }, [progress]);
 
   const progressStyle = useAnimatedStyle(() => ({

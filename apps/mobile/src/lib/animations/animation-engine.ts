@@ -86,7 +86,7 @@ export class HapticFeedback {
   static async celebration() {
     for (let i = 0; i < 3; i++) {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 
@@ -96,7 +96,7 @@ export class HapticFeedback {
    */
   static async longPressConfirm() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise((resolve) => setTimeout(resolve, 150));
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }
 
@@ -107,11 +107,11 @@ export class HapticFeedback {
   static async levelUp() {
     // Rising pattern
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await new Promise(resolve => setTimeout(resolve, 80));
+    await new Promise((resolve) => setTimeout(resolve, 80));
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await new Promise(resolve => setTimeout(resolve, 80));
+    await new Promise((resolve) => setTimeout(resolve, 80));
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }
 
@@ -121,7 +121,7 @@ export class HapticFeedback {
    */
   static async deleteWarning() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
   }
 }

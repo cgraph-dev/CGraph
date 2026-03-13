@@ -26,6 +26,7 @@ import { ReorderHeader } from './forum-reorder-screen/components/reorder-header'
 import { styles } from './forum-reorder-screen/styles';
 
 /**
+ * Forum Reorder Screen component.
  *
  */
 export default function ForumReorderScreen() {
@@ -35,7 +36,9 @@ export default function ForumReorderScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [draggedItem, setDraggedItem] = useState<{ type: 'category' | 'forum'; id: string } | null>(null);
+  const [draggedItem, setDraggedItem] = useState<{ type: 'category' | 'forum'; id: string } | null>(
+    null
+  );
   const _dragY = useRef(new Animated.Value(0)).current;
 
   const fetchCategories = useCallback(async () => {
@@ -49,12 +52,23 @@ export default function ForumReorderScreen() {
         const catId = forum.category_id || forum.category?.id || 'uncategorized';
         const catName = forum.category_name || forum.category?.name || 'Uncategorized';
         if (!categoryMap.has(catId)) {
-          categoryMap.set(catId, { id: catId, name: catName, order: forum.category_order || categoryMap.size, isExpanded: true, forums: [] });
+          categoryMap.set(catId, {
+            id: catId,
+            name: catName,
+            order: forum.category_order || categoryMap.size,
+            isExpanded: true,
+            forums: [],
+          });
         }
         categoryMap.get(catId)?.forums.push({
-          id: forum.id, name: forum.name || forum.title || 'Unnamed', description: forum.description || '',
-          threadCount: forum.thread_count || forum.threads_count || 0, postCount: forum.post_count || forum.posts_count || 0,
-          order: forum.order || forum.display_order || 0, icon: forum.icon, color: forum.color,
+          id: forum.id,
+          name: forum.name || forum.title || 'Unnamed',
+          description: forum.description || '',
+          threadCount: forum.thread_count || forum.threads_count || 0,
+          postCount: forum.post_count || forum.posts_count || 0,
+          order: forum.order || forum.display_order || 0,
+          icon: forum.icon,
+          color: forum.color,
         });
       }
 
@@ -69,38 +83,49 @@ export default function ForumReorderScreen() {
     }
   }, []);
 
-  useEffect(() => { fetchCategories(); }, []);
+  useEffect(() => {
+    fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleCategory = (categoryId: string) => {
     HapticFeedback.light();
-    setCategories(categories.map((cat) => cat.id === categoryId ? { ...cat, isExpanded: !cat.isExpanded } : cat));
+    setCategories(
+      categories.map((cat) =>
+        cat.id === categoryId ? { ...cat, isExpanded: !cat.isExpanded } : cat
+      )
+    );
   };
 
   const moveForumUp = (categoryId: string, forumId: string) => {
     HapticFeedback.light();
-    setCategories(categories.map((cat) => {
-      if (cat.id !== categoryId) return cat;
-      const idx = cat.forums.findIndex((f) => f.id === forumId);
-      if (idx <= 0) return cat;
-      const newForums = [...cat.forums];
-      [newForums[idx - 1], newForums[idx]] = [newForums[idx], newForums[idx - 1]];
-      newForums.forEach((f, i) => (f.order = i));
-      return { ...cat, forums: newForums };
-    }));
+    setCategories(
+      categories.map((cat) => {
+        if (cat.id !== categoryId) return cat;
+        const idx = cat.forums.findIndex((f) => f.id === forumId);
+        if (idx <= 0) return cat;
+        const newForums = [...cat.forums];
+        [newForums[idx - 1], newForums[idx]] = [newForums[idx], newForums[idx - 1]];
+        newForums.forEach((f, i) => (f.order = i));
+        return { ...cat, forums: newForums };
+      })
+    );
     setHasChanges(true);
   };
 
   const moveForumDown = (categoryId: string, forumId: string) => {
     HapticFeedback.light();
-    setCategories(categories.map((cat) => {
-      if (cat.id !== categoryId) return cat;
-      const idx = cat.forums.findIndex((f) => f.id === forumId);
-      if (idx < 0 || idx >= cat.forums.length - 1) return cat;
-      const newForums = [...cat.forums];
-      [newForums[idx], newForums[idx + 1]] = [newForums[idx + 1], newForums[idx]];
-      newForums.forEach((f, i) => (f.order = i));
-      return { ...cat, forums: newForums };
-    }));
+    setCategories(
+      categories.map((cat) => {
+        if (cat.id !== categoryId) return cat;
+        const idx = cat.forums.findIndex((f) => f.id === forumId);
+        if (idx < 0 || idx >= cat.forums.length - 1) return cat;
+        const newForums = [...cat.forums];
+        [newForums[idx], newForums[idx + 1]] = [newForums[idx + 1], newForums[idx]];
+        newForums.forEach((f, i) => (f.order = i));
+        return { ...cat, forums: newForums };
+      })
+    );
     setHasChanges(true);
   };
 
@@ -130,14 +155,26 @@ export default function ForumReorderScreen() {
     try {
       setIsSaving(true);
       HapticFeedback.medium();
-      const orderData = { categories: categories.map((cat) => ({ id: cat.id, order: cat.order, forums: cat.forums.map((f) => ({ id: f.id, order: f.order })) })) };
+      const orderData = {
+        categories: categories.map((cat) => ({
+          id: cat.id,
+          order: cat.order,
+          forums: cat.forums.map((f) => ({ id: f.id, order: f.order })),
+        })),
+      };
       try {
         await api.put('/api/v1/admin/config', { forum_order: orderData });
       } catch {
         for (const cat of categories) {
           for (const forum of cat.forums) {
-            try { await api.put(`/api/v1/forums/${forum.id}`, { display_order: forum.order, category_order: cat.order }); }
-            catch (e) { console.warn(`[ForumReorder] Could not update forum ${forum.id}:`, e); }
+            try {
+              await api.put(`/api/v1/forums/${forum.id}`, {
+                display_order: forum.order,
+                category_order: cat.order,
+              });
+            } catch (e) {
+              console.warn(`[ForumReorder] Could not update forum ${forum.id}:`, e);
+            }
           }
         }
       }
@@ -167,9 +204,17 @@ export default function ForumReorderScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#111827', '#0f172a', '#111827']} style={StyleSheet.absoluteFillObject} />
+      <LinearGradient
+        colors={['#111827', '#0f172a', '#111827']}
+        style={StyleSheet.absoluteFillObject}
+      />
 
-      <ReorderHeader hasChanges={hasChanges} isSaving={isSaving} onBack={handleBack} onSave={handleSave} />
+      <ReorderHeader
+        hasChanges={hasChanges}
+        isSaving={isSaving}
+        onBack={handleBack}
+        onSave={handleSave}
+      />
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
@@ -177,7 +222,11 @@ export default function ForumReorderScreen() {
           <Text style={styles.loadingText}>Loading forums...</Text>
         </View>
       ) : (
-        <Animated.ScrollView style={styles.scrollView} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <Animated.ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
           {categories.map((category, catIndex) => (
             <View key={category.id} style={styles.categoryContainer}>
               <View style={styles.categoryRow}>
@@ -188,11 +237,30 @@ export default function ForumReorderScreen() {
                   isDragging={draggedItem?.type === 'category' && draggedItem?.id === category.id}
                 />
                 <View style={styles.moveButtons}>
-                  <TouchableOpacity style={[styles.moveButton, catIndex === 0 && styles.moveButtonDisabled]} onPress={() => moveCategoryUp(category.id)} disabled={catIndex === 0}>
-                    <Ionicons name="arrow-up" size={18} color={catIndex === 0 ? '#4b5563' : '#9ca3af'} />
+                  <TouchableOpacity
+                    style={[styles.moveButton, catIndex === 0 && styles.moveButtonDisabled]}
+                    onPress={() => moveCategoryUp(category.id)}
+                    disabled={catIndex === 0}
+                  >
+                    <Ionicons
+                      name="arrow-up"
+                      size={18}
+                      color={catIndex === 0 ? '#4b5563' : '#9ca3af'}
+                    />
                   </TouchableOpacity>
-                  <TouchableOpacity style={[styles.moveButton, catIndex === categories.length - 1 && styles.moveButtonDisabled]} onPress={() => moveCategoryDown(category.id)} disabled={catIndex === categories.length - 1}>
-                    <Ionicons name="arrow-down" size={18} color={catIndex === categories.length - 1 ? '#4b5563' : '#9ca3af'} />
+                  <TouchableOpacity
+                    style={[
+                      styles.moveButton,
+                      catIndex === categories.length - 1 && styles.moveButtonDisabled,
+                    ]}
+                    onPress={() => moveCategoryDown(category.id)}
+                    disabled={catIndex === categories.length - 1}
+                  >
+                    <Ionicons
+                      name="arrow-down"
+                      size={18}
+                      color={catIndex === categories.length - 1 ? '#4b5563' : '#9ca3af'}
+                    />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -208,11 +276,32 @@ export default function ForumReorderScreen() {
                         isDragging={draggedItem?.type === 'forum' && draggedItem?.id === forum.id}
                       />
                       <View style={styles.moveButtons}>
-                        <TouchableOpacity style={[styles.moveButton, forumIndex === 0 && styles.moveButtonDisabled]} onPress={() => moveForumUp(category.id, forum.id)} disabled={forumIndex === 0}>
-                          <Ionicons name="arrow-up" size={16} color={forumIndex === 0 ? '#4b5563' : '#9ca3af'} />
+                        <TouchableOpacity
+                          style={[styles.moveButton, forumIndex === 0 && styles.moveButtonDisabled]}
+                          onPress={() => moveForumUp(category.id, forum.id)}
+                          disabled={forumIndex === 0}
+                        >
+                          <Ionicons
+                            name="arrow-up"
+                            size={16}
+                            color={forumIndex === 0 ? '#4b5563' : '#9ca3af'}
+                          />
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.moveButton, forumIndex === category.forums.length - 1 && styles.moveButtonDisabled]} onPress={() => moveForumDown(category.id, forum.id)} disabled={forumIndex === category.forums.length - 1}>
-                          <Ionicons name="arrow-down" size={16} color={forumIndex === category.forums.length - 1 ? '#4b5563' : '#9ca3af'} />
+                        <TouchableOpacity
+                          style={[
+                            styles.moveButton,
+                            forumIndex === category.forums.length - 1 && styles.moveButtonDisabled,
+                          ]}
+                          onPress={() => moveForumDown(category.id, forum.id)}
+                          disabled={forumIndex === category.forums.length - 1}
+                        >
+                          <Ionicons
+                            name="arrow-down"
+                            size={16}
+                            color={
+                              forumIndex === category.forums.length - 1 ? '#4b5563' : '#9ca3af'
+                            }
+                          />
                         </TouchableOpacity>
                       </View>
                     </View>

@@ -34,9 +34,7 @@ export const SecretThemeSection = memo(function SecretThemeSection({
     if (!searchQuery) return SECRET_THEMES;
     const q = searchQuery.toLowerCase();
     return SECRET_THEMES.filter(
-      (theme) =>
-        theme.name.toLowerCase().includes(q) ||
-        theme.description.toLowerCase().includes(q)
+      (theme) => theme.name.toLowerCase().includes(q) || theme.description.toLowerCase().includes(q)
     );
   }, [searchQuery]);
 
@@ -52,16 +50,17 @@ export const SecretThemeSection = memo(function SecretThemeSection({
       {/* Section Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm" role="img" aria-label="lock">🔒</span>
+          <span className="text-sm" role="img" aria-label="lock">
+            🔒
+          </span>
           <span className="text-sm font-medium text-white/80">Secret Chat Themes</span>
         </div>
-        <span className="text-xs text-white/40">
-          {filteredThemes.length} themes
-        </span>
+        <span className="text-xs text-white/40">{filteredThemes.length} themes</span>
       </div>
 
       <p className="text-xs text-white/40">
-        Choose a theme for your encrypted secret conversations. This is separate from your regular chat theme.
+        Choose a theme for your encrypted secret conversations. This is separate from your regular
+        chat theme.
       </p>
 
       {/* Theme Grid */}
@@ -98,9 +97,7 @@ export const SecretThemeSection = memo(function SecretThemeSection({
               </span>
 
               {/* Description */}
-              <span className="text-[10px] leading-tight text-white/30">
-                {theme.description}
-              </span>
+              <span className="text-[10px] leading-tight text-white/30">{theme.description}</span>
 
               {/* Selected indicator */}
               {isSelected && (

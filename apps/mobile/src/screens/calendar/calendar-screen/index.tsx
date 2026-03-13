@@ -23,6 +23,7 @@ import { useCalendar } from './hooks/useCalendar';
 import { CalendarHeader, CalendarGrid, EventsList, EventForm } from './components';
 
 /**
+ * Calendar Screen component.
  *
  */
 export default function CalendarScreen() {

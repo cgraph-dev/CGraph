@@ -74,9 +74,7 @@ const INTENSITY_MAPPING: Record<HapticIntensity, Haptics.ImpactFeedbackStyle | n
 // ============================================================================
 
 const PATTERNS: Record<HapticPattern, PatternStep[]> = {
-  tap: [
-    { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-  ],
+  tap: [{ type: 'impact', style: Haptics.ImpactFeedbackStyle.Light }],
 
   doubleTap: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
@@ -90,33 +88,19 @@ const PATTERNS: Record<HapticPattern, PatternStep[]> = {
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
   ],
 
-  success: [
-    { type: 'notification', style: Haptics.NotificationFeedbackType.Success },
-  ],
+  success: [{ type: 'notification', style: Haptics.NotificationFeedbackType.Success }],
 
-  error: [
-    { type: 'notification', style: Haptics.NotificationFeedbackType.Error },
-  ],
+  error: [{ type: 'notification', style: Haptics.NotificationFeedbackType.Error }],
 
-  warning: [
-    { type: 'notification', style: Haptics.NotificationFeedbackType.Warning },
-  ],
+  warning: [{ type: 'notification', style: Haptics.NotificationFeedbackType.Warning }],
 
-  selection: [
-    { type: 'selection' },
-  ],
+  selection: [{ type: 'selection' }],
 
-  toggle: [
-    { type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium },
-  ],
+  toggle: [{ type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium }],
 
-  slider: [
-    { type: 'selection' },
-  ],
+  slider: [{ type: 'selection' }],
 
-  scroll: [
-    { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-  ],
+  scroll: [{ type: 'impact', style: Haptics.ImpactFeedbackStyle.Light }],
 
   refresh: [
     { type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium },
@@ -186,29 +170,17 @@ const PATTERNS: Record<HapticPattern, PatternStep[]> = {
     { type: 'notification', style: Haptics.NotificationFeedbackType.Success },
   ],
 
-  cancel: [
-    { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-  ],
+  cancel: [{ type: 'impact', style: Haptics.ImpactFeedbackStyle.Light }],
 
-  swipe: [
-    { type: 'impact', style: Haptics.ImpactFeedbackStyle.Light },
-  ],
+  swipe: [{ type: 'impact', style: Haptics.ImpactFeedbackStyle.Light }],
 
-  pop: [
-    { type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium },
-  ],
+  pop: [{ type: 'impact', style: Haptics.ImpactFeedbackStyle.Medium }],
 
-  impact: [
-    { type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy },
-  ],
+  impact: [{ type: 'impact', style: Haptics.ImpactFeedbackStyle.Heavy }],
 
-  soft: [
-    { type: 'impact', style: Haptics.ImpactFeedbackStyle.Soft },
-  ],
+  soft: [{ type: 'impact', style: Haptics.ImpactFeedbackStyle.Soft }],
 
-  rigid: [
-    { type: 'impact', style: Haptics.ImpactFeedbackStyle.Rigid },
-  ],
+  rigid: [{ type: 'impact', style: Haptics.ImpactFeedbackStyle.Rigid }],
 
   morse: [
     // SOS pattern: ... --- ...
@@ -352,8 +324,10 @@ class HapticEngine {
         switch (step.type) {
           case 'impact':
             if (step.style) {
-               
-              const effectiveStyle = this.getEffectiveStyle(step.style as Haptics.ImpactFeedbackStyle);
+              const effectiveStyle = this.getEffectiveStyle(
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                step.style as Haptics.ImpactFeedbackStyle
+              );
               if (effectiveStyle) {
                 await Haptics.impactAsync(effectiveStyle);
               }
@@ -362,7 +336,7 @@ class HapticEngine {
 
           case 'notification':
             if (step.style) {
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               await Haptics.notificationAsync(step.style as Haptics.NotificationFeedbackType);
             }
             break;
@@ -402,14 +376,14 @@ class HapticEngine {
         switch (step.type) {
           case 'impact':
             if (step.style) {
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               await Haptics.impactAsync(step.style as Haptics.ImpactFeedbackStyle);
             }
             break;
 
           case 'notification':
             if (step.style) {
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               await Haptics.notificationAsync(step.style as Haptics.NotificationFeedbackType);
             }
             break;
@@ -457,7 +431,9 @@ class HapticEngine {
     return true;
   }
 
-  private getEffectiveStyle(style?: Haptics.ImpactFeedbackStyle): Haptics.ImpactFeedbackStyle | null {
+  private getEffectiveStyle(
+    style?: Haptics.ImpactFeedbackStyle
+  ): Haptics.ImpactFeedbackStyle | null {
     // If intensity is off, return null
     if (this.config.intensity === 'off') return null;
 
@@ -470,7 +446,10 @@ class HapticEngine {
     switch (this.config.intensity) {
       case 'light':
         // Downgrade heavy/medium to light
-        if (style === Haptics.ImpactFeedbackStyle.Heavy || style === Haptics.ImpactFeedbackStyle.Medium) {
+        if (
+          style === Haptics.ImpactFeedbackStyle.Heavy ||
+          style === Haptics.ImpactFeedbackStyle.Medium
+        ) {
           return Haptics.ImpactFeedbackStyle.Light;
         }
         return style;
@@ -504,6 +483,7 @@ export const hapticEngine = new HapticEngine();
 // ============================================================================
 
 /**
+ * Haptic tap.
  *
  */
 export function hapticTap(): void {
@@ -511,6 +491,7 @@ export function hapticTap(): void {
 }
 
 /**
+ * Haptic medium.
  *
  */
 export function hapticMedium(): void {
@@ -518,6 +499,7 @@ export function hapticMedium(): void {
 }
 
 /**
+ * Haptic heavy.
  *
  */
 export function hapticHeavy(): void {
@@ -525,6 +507,7 @@ export function hapticHeavy(): void {
 }
 
 /**
+ * Haptic success.
  *
  */
 export function hapticSuccess(): void {
@@ -532,6 +515,7 @@ export function hapticSuccess(): void {
 }
 
 /**
+ * Haptic error.
  *
  */
 export function hapticError(): void {
@@ -539,6 +523,7 @@ export function hapticError(): void {
 }
 
 /**
+ * Haptic warning.
  *
  */
 export function hapticWarning(): void {
@@ -546,6 +531,7 @@ export function hapticWarning(): void {
 }
 
 /**
+ * Haptic selection.
  *
  */
 export function hapticSelection(): void {
@@ -553,6 +539,7 @@ export function hapticSelection(): void {
 }
 
 /**
+ * Play haptic pattern.
  *
  */
 export function playHapticPattern(pattern: HapticPattern): Promise<void> {
@@ -566,6 +553,7 @@ export function playHapticPattern(pattern: HapticPattern): Promise<void> {
 import { useCallback } from 'react';
 
 /**
+ * Hook for haptics.
  *
  */
 export function useHaptics() {

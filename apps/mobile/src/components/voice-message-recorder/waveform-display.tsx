@@ -17,6 +17,8 @@ interface WaveformDisplayProps {
   textSecondaryColor: string;
 }
 
+/** Description. */
+/** Waveform Display component. */
 export function WaveformDisplay({
   state,
   waveformBarHeights,

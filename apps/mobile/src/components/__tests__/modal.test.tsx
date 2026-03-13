@@ -99,11 +99,7 @@ describe('Modal', () => {
 
     it('hides close button when showCloseButton is false', () => {
       const { queryByTestId } = render(
-        <Modal
-          visible={true}
-          onClose={mockOnClose}
-          showCloseButton={false}
-        >
+        <Modal visible={true} onClose={mockOnClose} showCloseButton={false}>
           <Text>Content</Text>
         </Modal>
       );
@@ -173,11 +169,7 @@ describe('Modal', () => {
   describe('footer', () => {
     it('renders footer when provided', () => {
       const { getByText } = render(
-        <Modal
-          visible={true}
-          onClose={mockOnClose}
-          footer={<Text>Footer Content</Text>}
-        >
+        <Modal visible={true} onClose={mockOnClose} footer={<Text>Footer Content</Text>}>
           <Text>Body</Text>
         </Modal>
       );
@@ -198,11 +190,7 @@ describe('Modal', () => {
     it('applies contentStyle to modal content', () => {
       const customStyle = { marginTop: 50, padding: 30 };
       const { getByText } = render(
-        <Modal
-          visible={true}
-          onClose={mockOnClose}
-          contentStyle={customStyle}
-        >
+        <Modal visible={true} onClose={mockOnClose} contentStyle={customStyle}>
           <Text>Styled Content</Text>
         </Modal>
       );

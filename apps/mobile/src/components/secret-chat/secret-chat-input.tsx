@@ -26,6 +26,8 @@ interface SecretChatInputProps {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Description. */
+/** Secret Chat Input component. */
 export function SecretChatInput({ onSend, isSending, themeColors }: SecretChatInputProps) {
   const [text, setText] = useState('');
 
@@ -39,14 +41,19 @@ export function SecretChatInput({ onSend, isSending, themeColors }: SecretChatIn
   const canSend = text.trim().length > 0 && !isSending;
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.surface, borderTopColor: themeColors.border }]}>
-      <View style={[styles.inputWrapper, { backgroundColor: themeColors.inputBackground, borderColor: themeColors.border }]}>
-        <Ionicons
-          name="lock-closed"
-          size={14}
-          color={themeColors.accent}
-          style={styles.lockIcon}
-        />
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: themeColors.surface, borderTopColor: themeColors.border },
+      ]}
+    >
+      <View
+        style={[
+          styles.inputWrapper,
+          { backgroundColor: themeColors.inputBackground, borderColor: themeColors.border },
+        ]}
+      >
+        <Ionicons name="lock-closed" size={14} color={themeColors.accent} style={styles.lockIcon} />
         <TextInput
           style={[styles.input, { color: themeColors.text }]}
           value={text}

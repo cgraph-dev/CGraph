@@ -17,14 +17,7 @@ import { cn } from '@/lib/utils';
 // ── Skeleton Primitive ─────────────────────────────────────────────────
 
 function Sk({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        'animate-pulse rounded bg-white/[0.06]',
-        className,
-      )}
-    />
-  );
+  return <div className={cn('animate-pulse rounded bg-white/[0.06]', className)} />;
 }
 
 // ── Variants ───────────────────────────────────────────────────────────
@@ -34,8 +27,8 @@ export function ConversationListLoading() {
   return (
     <div className="space-y-1 p-2">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 px-2 py-2.5 rounded-lg">
-          <Sk className="h-10 w-10 rounded-full shrink-0" />
+        <div key={i} className="flex items-center gap-3 rounded-lg px-2 py-2.5">
+          <Sk className="h-10 w-10 shrink-0 rounded-full" />
           <div className="flex-1 space-y-1.5">
             <Sk className="h-3.5 w-3/5 rounded" />
             <Sk className="h-3 w-4/5 rounded" />
@@ -54,7 +47,7 @@ export function MessageListLoading() {
     <div className="space-y-6 px-4 py-4">
       {widths.map((w, i) => (
         <div key={i} className="flex items-start gap-3">
-          <Sk className="h-10 w-10 rounded-full shrink-0" />
+          <Sk className="h-10 w-10 shrink-0 rounded-full" />
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
               <Sk className="h-3.5 w-24 rounded" />
@@ -75,10 +68,10 @@ export function ChannelListLoading() {
     <div className="space-y-4 p-2">
       {[0, 1, 2].map((cat) => (
         <div key={cat}>
-          <Sk className="h-3 w-20 rounded ml-2 mb-2" />
+          <Sk className="mb-2 ml-2 h-3 w-20 rounded" />
           {[0, 1, 2, 3].map((ch) => (
             <div key={ch} className="flex items-center gap-2 px-2 py-1.5">
-              <Sk className="h-4 w-4 rounded shrink-0" />
+              <Sk className="h-4 w-4 shrink-0 rounded" />
               <Sk className="h-3.5 w-28 rounded" />
             </div>
           ))}
@@ -93,21 +86,21 @@ export function ProfileLoading() {
   return (
     <div>
       <Sk className="h-40 w-full rounded-none" />
-      <div className="px-4 -mt-12">
+      <div className="-mt-12 px-4">
         <Sk className="h-24 w-24 rounded-full border-4 border-[#111214]" />
         <div className="mt-3 space-y-2">
           <Sk className="h-5 w-40 rounded" />
           <Sk className="h-3.5 w-28 rounded" />
         </div>
-        <div className="flex gap-6 mt-4">
+        <div className="mt-4 flex gap-6">
           {[0, 1, 2].map((i) => (
             <div key={i} className="space-y-1">
-              <Sk className="h-5 w-10 rounded mx-auto" />
+              <Sk className="mx-auto h-5 w-10 rounded" />
               <Sk className="h-3 w-14 rounded" />
             </div>
           ))}
         </div>
-        <div className="flex gap-2 mt-4 border-b border-white/[0.06] pb-2">
+        <div className="mt-4 flex gap-2 border-b border-white/[0.06] pb-2">
           {[0, 1, 2, 3].map((i) => (
             <Sk key={i} className="h-8 w-20 rounded-lg" />
           ))}
@@ -122,7 +115,7 @@ export function ForumListLoading() {
   return (
     <div className="grid grid-cols-2 gap-3 p-4">
       {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="rounded-xl bg-white/[0.02] p-3 space-y-2.5">
+        <div key={i} className="space-y-2.5 rounded-xl bg-white/[0.02] p-3">
           <div className="flex items-center gap-2">
             <Sk className="h-6 w-6 rounded-full" />
             <Sk className="h-3 w-16 rounded" />
@@ -145,11 +138,11 @@ export function ForumListLoading() {
 export function MemberListLoading() {
   return (
     <div className="space-y-0.5 p-2">
-      <Sk className="h-3 w-24 rounded ml-2 mb-2" />
+      <Sk className="mb-2 ml-2 h-3 w-24 rounded" />
       {Array.from({ length: 10 }).map((_, i) => (
         <div key={i} className="flex items-center gap-2.5 px-2 py-1.5">
-          <Sk className="h-8 w-8 rounded-full shrink-0" />
-          <Sk className="h-3.5 w-24 rounded flex-1" />
+          <Sk className="h-8 w-8 shrink-0 rounded-full" />
+          <Sk className="h-3.5 w-24 flex-1 rounded" />
           <Sk className="h-4 w-12 rounded-full" />
         </div>
       ))}
@@ -163,7 +156,7 @@ export function SearchResultsLoading() {
     <div className="space-y-1 p-2">
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="flex items-center gap-3 px-3 py-2.5">
-          <Sk className="h-9 w-9 rounded-lg shrink-0" />
+          <Sk className="h-9 w-9 shrink-0 rounded-lg" />
           <div className="flex-1 space-y-1.5">
             <Sk className="h-3.5 w-2/5 rounded" />
             <Sk className="h-3 w-3/5 rounded" />
@@ -185,7 +178,7 @@ type LoadingVariant =
   | 'member-list'
   | 'search-results';
 
-const variantMap: Record<LoadingVariant, React.FC> = {
+const variantMap: Record<LoadingVariant, React.ComponentType> = {
   'conversation-list': ConversationListLoading,
   'message-list': MessageListLoading,
   'channel-list': ChannelListLoading,
@@ -195,6 +188,8 @@ const variantMap: Record<LoadingVariant, React.FC> = {
   'search-results': SearchResultsLoading,
 };
 
+/** Description. */
+/** Loading State component. */
 export function LoadingState({ variant }: { variant: LoadingVariant }) {
   const Component = variantMap[variant];
   return (

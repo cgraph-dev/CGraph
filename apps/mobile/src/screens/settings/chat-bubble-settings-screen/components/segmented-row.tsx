@@ -19,6 +19,7 @@ interface SegmentedRowProps {
 }
 
 /**
+ * Segmented Row component.
  *
  */
 export function SegmentedRow({ label, options, selected, onSelect }: SegmentedRowProps) {

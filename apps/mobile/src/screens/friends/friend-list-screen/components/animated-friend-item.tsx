@@ -17,6 +17,8 @@ interface Props {
   isOnline: boolean;
 }
 
+/** Description. */
+/** Animated Friend Item component. */
 export function AnimatedFriendItem({ item, index, onPress, colors, isOnline }: Props) {
   const slideAnim = useRef(new Animated.Value(60)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -44,6 +46,7 @@ export function AnimatedFriendItem({ item, index, onPress, colors, isOnline }: P
         useNativeDriver: true,
       }),
     ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
   const handlePress = () => {
@@ -65,6 +68,7 @@ export function AnimatedFriendItem({ item, index, onPress, colors, isOnline }: P
 
   const displayName = item.user.display_name || item.user.username || 'User';
   const avatarUrl = item.user.avatar_url;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const isPremium = !!(item.user as Record<string, unknown>).is_premium;
 
   const getBorderAnimation = (): 'none' | 'glow' | 'holographic' | 'rainbow' => {

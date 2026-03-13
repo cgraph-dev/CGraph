@@ -226,7 +226,8 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
     set({
       query: '',
       // type assertion: string literal matches SearchCategory union type
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       category: 'all' as SearchCategory,
       users: [],
       groups: [],

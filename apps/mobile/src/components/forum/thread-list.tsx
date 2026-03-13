@@ -65,6 +65,8 @@ const sortOptions: { value: SortMode; label: string; icon: string }[] = [
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Thread List component. */
 export function ThreadList({
   threads,
   isLoading = false,
@@ -76,40 +78,36 @@ export function ThreadList({
 }: ThreadListProps): React.ReactElement {
   const [sortBy, setSortBy] = useState<SortMode>('latest');
 
-  const renderHeader = useCallback(() => (
-    <View style={styles.header}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.sortRow}
-      >
-        {sortOptions.map((opt) => (
-          <Pressable
-            key={opt.value}
-            onPress={() => setSortBy(opt.value)}
-            style={[
-              styles.sortPill,
-              sortBy === opt.value && styles.sortPillActive,
-            ]}
-          >
-            <MaterialCommunityIcons
-              name={opt.icon as keyof typeof MaterialCommunityIcons.glyphMap}
-              size={14}
-              color={sortBy === opt.value ? '#FFFFFF' : 'rgba(255,255,255,0.4)'}
-            />
-            <Text
-              style={[
-                styles.sortText,
-                sortBy === opt.value && styles.sortTextActive,
-              ]}
+  const renderHeader = useCallback(
+    () => (
+      <View style={styles.header}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.sortRow}
+        >
+          {sortOptions.map((opt) => (
+            <Pressable
+              key={opt.value}
+              onPress={() => setSortBy(opt.value)}
+              style={[styles.sortPill, sortBy === opt.value && styles.sortPillActive]}
             >
-              {opt.label}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-    </View>
-  ), [sortBy]);
+              <MaterialCommunityIcons
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                name={opt.icon as keyof typeof MaterialCommunityIcons.glyphMap}
+                size={14}
+                color={sortBy === opt.value ? '#FFFFFF' : 'rgba(255,255,255,0.4)'}
+              />
+              <Text style={[styles.sortText, sortBy === opt.value && styles.sortTextActive]}>
+                {opt.label}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
+    ),
+    [sortBy]
+  );
 
   const renderEmpty = useCallback(() => {
     if (isLoading) return null;
@@ -124,14 +122,9 @@ export function ThreadList({
 
   const renderItem = useCallback(
     ({ item, index }: { item: Thread; index: number }) => (
-      <ThreadCard
-        thread={item}
-        index={index}
-        onPress={onThreadPress}
-        onVote={onVote}
-      />
+      <ThreadCard thread={item} index={index} onPress={onThreadPress} onVote={onVote} />
     ),
-    [onThreadPress, onVote],
+    [onThreadPress, onVote]
   );
 
   return (

@@ -20,6 +20,8 @@ interface ContextMenuContentProps {
   className?: string;
 }
 
+/** Description. */
+/** Context Menu Content component. */
 export function ContextMenuContent({ children, className }: ContextMenuContentProps) {
   return (
     <ContextMenuPrimitive.Portal>
@@ -29,7 +31,7 @@ export function ContextMenuContent({ children, className }: ContextMenuContentPr
           'border border-white/[0.08] bg-[rgb(18,18,24)]/[0.95] backdrop-blur-xl',
           'p-1 shadow-[var(--shadow-lg)]',
           'animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95',
-          className,
+          className
         )}
       >
         {children}
@@ -51,6 +53,8 @@ interface ContextMenuItemProps {
   className?: string;
 }
 
+/** Description. */
+/** Context Menu Item component. */
 export function ContextMenuItem({
   children,
   icon,
@@ -69,8 +73,9 @@ export function ContextMenuItem({
         'text-white/80 transition-colors',
         'data-[highlighted]:bg-brand-purple/[0.25] data-[highlighted]:text-white',
         disabled && 'pointer-events-none opacity-40',
-        destructive && 'text-red-400 data-[highlighted]:bg-red-500/[0.2] data-[highlighted]:text-red-300',
-        className,
+        destructive &&
+          'text-red-400 data-[highlighted]:bg-red-500/[0.2] data-[highlighted]:text-red-300',
+        className
       )}
     >
       {icon && (
@@ -90,6 +95,8 @@ export function ContextMenuItem({
 
 /* ─── Label ────────────────────────────────────────────────────────────────── */
 
+/** Description. */
+/** Context Menu Label component. */
 export function ContextMenuLabel({
   children,
   className,
@@ -101,7 +108,7 @@ export function ContextMenuLabel({
     <ContextMenuPrimitive.Label
       className={cn(
         'px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-white/30',
-        className,
+        className
       )}
     >
       {children}
@@ -111,12 +118,10 @@ export function ContextMenuLabel({
 
 /* ─── Separator ────────────────────────────────────────────────────────────── */
 
+/** Description. */
+/** Context Menu Separator component. */
 export function ContextMenuSeparator({ className }: { className?: string }) {
-  return (
-    <ContextMenuPrimitive.Separator
-      className={cn('my-1 h-px bg-white/[0.06]', className)}
-    />
-  );
+  return <ContextMenuPrimitive.Separator className={cn('my-1 h-px bg-white/[0.06]', className)} />;
 }
 
 /* ─── Sub-menu ─────────────────────────────────────────────────────────────── */
@@ -133,8 +138,8 @@ export const ContextMenuSubTrigger = ({
   <ContextMenuPrimitive.SubTrigger
     className={cn(
       'group relative flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none',
-      'text-white/80 data-[highlighted]:bg-brand-purple/[0.25] data-[highlighted]:text-white',
-      className,
+      'data-[highlighted]:bg-brand-purple/[0.25] text-white/80 data-[highlighted]:text-white',
+      className
     )}
   >
     {icon && (
@@ -143,16 +148,14 @@ export const ContextMenuSubTrigger = ({
       </span>
     )}
     <span className="flex-1">{children}</span>
-    <svg
-      className="ml-auto h-4 w-4 text-white/30"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-    >
+    <svg className="ml-auto h-4 w-4 text-white/30" viewBox="0 0 16 16" fill="currentColor">
       <path d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.75.75 0 0 1-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 0 1 0-1.06Z" />
     </svg>
   </ContextMenuPrimitive.SubTrigger>
 );
 
+/** Description. */
+/** Context Menu Sub Content component. */
 export function ContextMenuSubContent({
   children,
   className,
@@ -168,7 +171,7 @@ export function ContextMenuSubContent({
           'border border-white/[0.08] bg-[rgb(18,18,24)]/[0.95] backdrop-blur-xl',
           'p-1 shadow-[var(--shadow-lg)]',
           'animate-in fade-in slide-in-from-left-1',
-          className,
+          className
         )}
         sideOffset={2}
         alignOffset={-5}

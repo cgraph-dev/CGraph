@@ -70,7 +70,11 @@ export function UserCardSkeleton({
   className = '',
 }: UserCardSkeletonProps) {
   return (
-    <div className={variant === 'card' ? `grid grid-cols-2 gap-3 ${className}` : `space-y-1 ${className}`}>
+    <div
+      className={
+        variant === 'card' ? `grid grid-cols-2 gap-3 ${className}` : `space-y-1 ${className}`
+      }
+    >
       {Array.from({ length: count }).map((_, i) => (
         <SingleUserCardSkeleton key={i} variant={variant} />
       ))}

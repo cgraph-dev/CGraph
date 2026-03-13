@@ -20,6 +20,7 @@ interface EmojiItemProps {
 }
 
 /**
+ * Emoji Item component.
  *
  */
 export function EmojiItem({ emoji, onPress, onLongPress }: EmojiItemProps) {

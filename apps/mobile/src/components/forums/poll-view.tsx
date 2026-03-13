@@ -8,12 +8,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -60,7 +55,7 @@ function AnimatedBar({
         damping: 18,
         stiffness: 90,
         mass: 0.8,
-      }),
+      })
     );
   }, [percentage, index, width]);
 
@@ -136,6 +131,7 @@ function useCountdown(timeout?: string) {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Poll View component. */
 export default function PollView({
   poll,
   onVote,
@@ -148,11 +144,11 @@ export default function PollView({
 
   const totalVotes = useMemo(
     () => poll.options.reduce((sum, opt) => sum + opt.votes, 0),
-    [poll.options],
+    [poll.options]
   );
 
   const isPollClosed = Boolean(
-    poll.closed || (poll.timeout && new Date(poll.timeout) < new Date()),
+    poll.closed || (poll.timeout && new Date(poll.timeout) < new Date())
   );
 
   const hasVoted = useMemo(() => {
@@ -163,10 +159,7 @@ export default function PollView({
   const showResults = hasVoted || isPollClosed;
   const timeLeft = useCountdown(poll.timeout || undefined);
 
-  const maxVotes = useMemo(
-    () => Math.max(...poll.options.map((o) => o.votes), 1),
-    [poll.options],
-  );
+  const maxVotes = useMemo(() => Math.max(...poll.options.map((o) => o.votes), 1), [poll.options]);
 
   const getPercentage = (votes: number) =>
     totalVotes === 0 ? 0 : Math.round((votes / totalVotes) * 100);
@@ -235,9 +228,7 @@ export default function PollView({
                 <View style={styles.resultRow}>
                   <View style={styles.resultHeader}>
                     <Text style={styles.optionText}>{option.text}</Text>
-                    <Text style={[styles.pctText, isLeading && styles.pctLeading]}>
-                      {pct}%
-                    </Text>
+                    <Text style={[styles.pctText, isLeading && styles.pctLeading]}>{pct}%</Text>
                   </View>
                   <AnimatedBar percentage={pct} index={index} isLeading={isLeading} />
                   <Text style={styles.votesCount}>
@@ -247,19 +238,14 @@ export default function PollView({
               ) : (
                 /* Voting mode */
                 <TouchableOpacity
-                  style={[
-                    styles.voteOption,
-                    isSelected && styles.voteOptionSelected,
-                  ]}
+                  style={[styles.voteOption, isSelected && styles.voteOptionSelected]}
                   onPress={() => handleToggle(option.id)}
                   activeOpacity={0.7}
                 >
                   <View style={styles.selector}>
                     {poll.allow_multiple ? (
                       <View style={[styles.checkbox, isSelected && styles.checkboxActive]}>
-                        {isSelected && (
-                          <Ionicons name="checkmark" size={12} color="#fff" />
-                        )}
+                        {isSelected && <Ionicons name="checkmark" size={12} color="#fff" />}
                       </View>
                     ) : (
                       <View style={[styles.radio, isSelected && styles.radioActive]}>

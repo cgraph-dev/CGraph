@@ -123,7 +123,7 @@ export function useLottie(config: UseLottieConfig): UseLottieReturn {
         animationRef.current?.play();
       }
     },
-    [autoplay],
+    [autoplay]
   );
 
   return { source, isLoading, reducedMotion, animationRef, play, pause, reset };

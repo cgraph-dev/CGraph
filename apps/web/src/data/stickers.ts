@@ -5,9 +5,33 @@
  * Designed for monetization with tiered pricing and sticker packs.
  */
 
-export type StickerCategory = 'emotions' | 'reactions' | 'memes' | 'seasonal' | 'gaming' | 'animals' | 'food' | 'special';
+export type StickerCategory =
+  | 'emotions'
+  | 'reactions'
+  | 'memes'
+  | 'seasonal'
+  | 'gaming'
+  | 'animals'
+  | 'food'
+  | 'special';
 export type StickerRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-export type StickerAnimation = 'none' | 'bounce' | 'shake' | 'spin' | 'pulse' | 'wiggle' | 'float' | 'pop' | 'wave' | 'zoom' | 'flip' | 'swing' | 'jello' | 'heartbeat' | 'flash' | 'rubberband';
+export type StickerAnimation =
+  | 'none'
+  | 'bounce'
+  | 'shake'
+  | 'spin'
+  | 'pulse'
+  | 'wiggle'
+  | 'float'
+  | 'pop'
+  | 'wave'
+  | 'zoom'
+  | 'flip'
+  | 'swing'
+  | 'jello'
+  | 'heartbeat'
+  | 'flash'
+  | 'rubberband';
 
 export interface Sticker {
   id: string;
@@ -39,7 +63,10 @@ export interface StickerPack {
 }
 
 // Rarity colors for UI styling
-export const STICKER_RARITY_COLORS: Record<StickerRarity, { bg: string; border: string; text: string; glow: string }> = {
+export const STICKER_RARITY_COLORS: Record<
+  StickerRarity,
+  { bg: string; border: string; text: string; glow: string }
+> = {
   common: {
     bg: 'bg-gray-500/20',
     border: 'border-gray-500/50',
@@ -1342,56 +1369,56 @@ export const STICKERS: Sticker[] = [
  * Get all stickers in a pack
  */
 export function getStickersByPack(packId: string): Sticker[] {
-  return STICKERS.filter(s => s.packId === packId);
+  return STICKERS.filter((s) => s.packId === packId);
 }
 
 /**
  * Get sticker pack by ID
  */
 export function getStickerPackById(packId: string): StickerPack | undefined {
-  return STICKER_PACKS.find(p => p.id === packId);
+  return STICKER_PACKS.find((p) => p.id === packId);
 }
 
 /**
  * Get stickers by category
  */
 export function getStickersByCategory(category: StickerCategory): Sticker[] {
-  return STICKERS.filter(s => s.category === category);
+  return STICKERS.filter((s) => s.category === category);
 }
 
 /**
  * Get stickers by rarity
  */
 export function getStickersByRarity(rarity: StickerRarity): Sticker[] {
-  return STICKERS.filter(s => s.rarity === rarity);
+  return STICKERS.filter((s) => s.rarity === rarity);
 }
 
 /**
  * Get free sticker packs
  */
 export function getFreeStickerPacks(): StickerPack[] {
-  return STICKER_PACKS.filter(p => p.isFree);
+  return STICKER_PACKS.filter((p) => p.isFree);
 }
 
 /**
  * Get premium sticker packs
  */
 export function getPremiumStickerPacks(): StickerPack[] {
-  return STICKER_PACKS.filter(p => !p.isFree && !p.isLimited);
+  return STICKER_PACKS.filter((p) => !p.isFree && !p.isLimited);
 }
 
 /**
  * Get limited/seasonal sticker packs
  */
 export function getLimitedStickerPacks(): StickerPack[] {
-  return STICKER_PACKS.filter(p => p.isLimited);
+  return STICKER_PACKS.filter((p) => p.isLimited);
 }
 
 /**
  * Get sticker by ID
  */
 export function getStickerById(id: string): Sticker | undefined {
-  return STICKERS.find(s => s.id === id);
+  return STICKERS.find((s) => s.id === id);
 }
 
 /**

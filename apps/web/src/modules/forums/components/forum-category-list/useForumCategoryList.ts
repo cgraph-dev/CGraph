@@ -22,6 +22,7 @@ export function useForumCategoryList(categories: ForumCategory[], forums: Forum[
     });
     // This would need to be connected to actual forum-category relationships
     return grouped;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forums, categories]);
 
   const toggleCategory = (categoryId: string) => {

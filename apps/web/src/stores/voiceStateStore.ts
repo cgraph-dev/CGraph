@@ -178,9 +178,7 @@ export const useVoiceStateStore = create<VoiceStateStore>()((set, get) => ({
       return {
         channelMembers: {
           ...s.channelMembers,
-          [channelId]: existing.map((m) =>
-            m.userId === userId ? { ...m, ...state } : m
-          ),
+          [channelId]: existing.map((m) => (m.userId === userId ? { ...m, ...state } : m)),
         },
       };
     }),

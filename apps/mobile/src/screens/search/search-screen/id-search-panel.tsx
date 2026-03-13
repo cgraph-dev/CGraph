@@ -20,6 +20,8 @@ interface IdSearchPanelProps {
   colors: ThemeColors;
 }
 
+/** Description. */
+/** Id Search Panel component. */
 export function IdSearchPanel({
   idSearchType,
   setIdSearchType,

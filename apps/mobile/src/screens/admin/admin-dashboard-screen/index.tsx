@@ -35,6 +35,7 @@ import { useAdminDashboard } from './hooks';
 import { TabBar, OverviewTab, ReportsTab, AuditTab, SettingsTab } from './components';
 
 /**
+ * Admin Dashboard Screen component.
  *
  */
 export default function AdminDashboardScreen() {

@@ -71,7 +71,7 @@ describe('ConversationMenu', () => {
       <ConversationMenu
         {...defaultProps}
         conversation={{ ...defaultProps.conversation, isPinned: true }}
-      />,
+      />
     );
     const trigger = screen.getByTestId('ellipsis-icon').closest('button');
     if (trigger) fireEvent.click(trigger);
@@ -90,7 +90,7 @@ describe('ConversationMenu', () => {
       <ConversationMenu
         {...defaultProps}
         conversation={{ ...defaultProps.conversation, isMuted: true }}
-      />,
+      />
     );
     const trigger = screen.getByTestId('ellipsis-icon').closest('button');
     if (trigger) fireEvent.click(trigger);

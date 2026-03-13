@@ -1,4 +1,3 @@
-/* eslint-disable check-file/filename-naming-convention */
 /**
  * NameplatePicker — modal for selecting decorative username nameplates.
  *

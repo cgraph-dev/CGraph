@@ -43,22 +43,18 @@ export const secretChatService = {
     api.post('/api/v1/secret-chat/sessions', payload),
 
   /** Close and delete a secret chat session. */
-  deleteSession: (sessionId: string) =>
-    api.delete(`/api/v1/secret-chat/sessions/${sessionId}`),
+  deleteSession: (sessionId: string) => api.delete(`/api/v1/secret-chat/sessions/${sessionId}`),
 
   /** List active secret chat sessions for the current user. */
-  listSessions: () =>
-    api.get('/api/v1/secret-chat/sessions'),
+  listSessions: () => api.get('/api/v1/secret-chat/sessions'),
 
   // ─── Message Relay ───────────────────────────────────────────────────
 
   /** Relay an encrypted message to the recipient via the server. */
-  relayMessage: (payload: RelayMessagePayload) =>
-    api.post('/api/v1/secret-chat/messages', payload),
+  relayMessage: (payload: RelayMessagePayload) => api.post('/api/v1/secret-chat/messages', payload),
 
   /** Fetch pending encrypted messages for the current user. */
-  fetchPendingMessages: () =>
-    api.get('/api/v1/secret-chat/messages/pending'),
+  fetchPendingMessages: () => api.get('/api/v1/secret-chat/messages/pending'),
 
   /** Acknowledge receipt of messages (server can delete them). */
   acknowledgeMessages: (messageIds: string[]) =>
@@ -67,8 +63,7 @@ export const secretChatService = {
   // ─── Panic Wipe ──────────────────────────────────────────────────────
 
   /** Signal server to wipe all secret chat data for the current user. */
-  panicWipe: () =>
-    api.delete('/api/v1/secret-chat/wipe'),
+  panicWipe: () => api.delete('/api/v1/secret-chat/wipe'),
 
   // ─── Key Management ──────────────────────────────────────────────────
 

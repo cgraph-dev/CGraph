@@ -48,9 +48,7 @@ export function ProfileAbout({
       {/* Info rows */}
       <div className="space-y-2.5">
         <SectionLabel>Information</SectionLabel>
-        {location && (
-          <InfoRow icon="📍" label="Location" value={location} />
-        )}
+        {location && <InfoRow icon="📍" label="Location" value={location} />}
         {website && (
           <InfoRow
             icon="🔗"
@@ -67,12 +65,8 @@ export function ProfileAbout({
             }
           />
         )}
-        {joinedDate && (
-          <InfoRow icon="📅" label="Joined" value={joinedDate} />
-        )}
-        {lastActive && (
-          <InfoRow icon="🕐" label="Last active" value={lastActive} />
-        )}
+        {joinedDate && <InfoRow icon="📅" label="Joined" value={joinedDate} />}
+        {lastActive && <InfoRow icon="🕐" label="Last active" value={lastActive} />}
       </div>
 
       {/* Connected accounts */}
@@ -125,15 +119,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function InfoRow({
-  icon,
-  label,
-  value,
-}: {
-  icon: string;
-  label: string;
-  value: React.ReactNode;
-}) {
+function InfoRow({ icon, label, value }: { icon: string; label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 text-sm">
       <span className="w-5 text-center text-xs">{icon}</span>

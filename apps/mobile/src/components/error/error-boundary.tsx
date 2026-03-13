@@ -81,11 +81,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     // Send to error tracking service
-    addBreadcrumb(
-      'ui',
-      `Error Boundary triggered: ${name}`,
-      { componentStack: errorInfo.componentStack?.substring(0, 500) },
-    );
+    addBreadcrumb('ui', `Error Boundary triggered: ${name}`, {
+      componentStack: errorInfo.componentStack?.substring(0, 500),
+    });
     captureError(error, {
       component: name,
       action: 'error_boundary_catch',
@@ -219,6 +217,7 @@ interface ScreenErrorBoundaryProps {
 }
 
 /**
+ * Screen Error Boundary component.
  *
  */
 export function ScreenErrorBoundary({
@@ -244,6 +243,7 @@ interface ComponentErrorBoundaryProps {
 }
 
 /**
+ * Component Error Boundary component.
  *
  */
 export function ComponentErrorBoundary({

@@ -7,6 +7,11 @@
  * @since v0.7.33
  */
 
-export type { ThemeColors, ThemeMetadata, AdaptiveTheme, UserPreference } from './theme-engine/index';
+export type {
+  ThemeColors,
+  ThemeMetadata,
+  AdaptiveTheme,
+  UserPreference,
+} from './theme-engine/index';
 export { ColorTheory, AIThemeEngine, themeEngine } from './theme-engine/index';
 export { themeEngine as default } from './theme-engine/index';

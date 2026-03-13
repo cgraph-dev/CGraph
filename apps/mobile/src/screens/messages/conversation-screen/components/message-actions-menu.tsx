@@ -109,7 +109,9 @@ export function MessageActionsMenu({
         // ignore
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [visible, selectedMessage]);
 
   const handleToggleSave = useCallback(async () => {
@@ -121,7 +123,9 @@ export function MessageActionsMenu({
         setIsSaved(false);
         setSavedId(null);
       } else {
-        const { data } = await api.post('/api/v1/saved-messages', { message_id: selectedMessage.id });
+        const { data } = await api.post('/api/v1/saved-messages', {
+          message_id: selectedMessage.id,
+        });
         setIsSaved(true);
         setSavedId(data.data?.id ?? null);
       }
@@ -252,7 +256,7 @@ export function MessageActionsMenu({
         >
           <View style={[styles.modernActionIconWrap, { backgroundColor: `${item.color}18` }]}>
             <Ionicons
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               name={item.icon as keyof typeof Ionicons.glyphMap}
               size={20}
               color={item.color}

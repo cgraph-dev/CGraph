@@ -12,6 +12,8 @@ interface IntroStepProps {
   onContinue: () => void;
 }
 
+/** Description. */
+/** Intro Step component. */
 export function IntroStep({ colors, onContinue }: IntroStepProps) {
   const FEATURES = [
     { icon: '🔒', title: 'Enhanced Security', desc: 'Protect from unauthorized access' },
@@ -65,23 +67,34 @@ export function IntroStep({ colors, onContinue }: IntroStepProps) {
 const styles = StyleSheet.create({
   stepContent: { alignItems: 'center' },
   stepIcon: {
-    width: 80, height: 80, borderRadius: 20,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 24,
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
   },
   stepEmoji: { fontSize: 40 },
   stepTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 8, textAlign: 'center' },
   stepSubtitle: { fontSize: 14, textAlign: 'center', marginBottom: 32, lineHeight: 20 },
   featureList: { width: '100%', gap: 12, marginBottom: 32 },
   featureCard: {
-    flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 16, gap: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 16,
+    gap: 12,
   },
   featureIcon: { fontSize: 24 },
   featureInfo: { flex: 1 },
   featureTitle: { fontSize: 16, fontWeight: '600', marginBottom: 2 },
   featureDesc: { fontSize: 13 },
   primaryButton: {
-    width: SCREEN_WIDTH - 48, height: 52, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
+    width: SCREEN_WIDTH - 48,
+    height: 52,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });

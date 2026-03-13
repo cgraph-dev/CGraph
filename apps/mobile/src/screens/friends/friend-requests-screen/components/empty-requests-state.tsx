@@ -20,6 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { EmptyRequestsStateProps } from '../types';
 
 /**
+ * Empty Requests State component.
  *
  */
 export function EmptyRequestsState({ type }: EmptyRequestsStateProps) {
@@ -56,12 +57,7 @@ export function EmptyRequestsState({ type }: EmptyRequestsStateProps) {
 
   return (
     <View style={styles.emptyContainer}>
-      <Animated.View
-        style={[
-          styles.emptyIconContainer,
-          animatedIconStyle,
-        ]}
-      >
+      <Animated.View style={[styles.emptyIconContainer, animatedIconStyle]}>
         <LinearGradient
           colors={isIncoming ? ['#8B5CF6', '#6366F1'] : ['#06B6D4', '#3B82F6']}
           start={{ x: 0, y: 0 }}

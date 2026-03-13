@@ -47,9 +47,7 @@ jest.mock('@/stores', () => ({
 describe('Input', () => {
   describe('rendering', () => {
     it('renders without label', () => {
-      const { getByPlaceholderText } = render(
-        <Input placeholder="Enter text" />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Enter text" />);
       expect(getByPlaceholderText('Enter text')).toBeTruthy();
     });
 
@@ -71,19 +69,13 @@ describe('Input', () => {
 
   describe('error state', () => {
     it('displays error message', () => {
-      const { getByText } = render(
-        <Input error="Invalid email format" placeholder="Email" />
-      );
+      const { getByText } = render(<Input error="Invalid email format" placeholder="Email" />);
       expect(getByText('Invalid email format')).toBeTruthy();
     });
 
     it('prioritizes error over helper text', () => {
       const { getByText, queryByText } = render(
-        <Input
-          error="Error message"
-          helperText="Helper message"
-          placeholder="Input"
-        />
+        <Input error="Error message" helperText="Helper message" placeholder="Input" />
       );
       expect(getByText('Error message')).toBeTruthy();
       expect(queryByText('Helper message')).toBeNull();
@@ -94,10 +86,7 @@ describe('Input', () => {
     it('accepts text input', () => {
       const onChangeText = jest.fn();
       const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Type here"
-          onChangeText={onChangeText}
-        />
+        <Input placeholder="Type here" onChangeText={onChangeText} />
       );
 
       const input = getByPlaceholderText('Type here');
@@ -107,19 +96,12 @@ describe('Input', () => {
     });
 
     it('displays current value', () => {
-      const { getByDisplayValue } = render(
-        <Input value="Current Value" placeholder="Input" />
-      );
+      const { getByDisplayValue } = render(<Input value="Current Value" placeholder="Input" />);
       expect(getByDisplayValue('Current Value')).toBeTruthy();
     });
 
     it('handles secure text entry for passwords', () => {
-      const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Password"
-          secureTextEntry
-        />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Password" secureTextEntry />);
 
       const input = getByPlaceholderText('Password');
       expect(input.props.secureTextEntry).toBe(true);
@@ -129,9 +111,7 @@ describe('Input', () => {
   describe('focus behavior', () => {
     it('calls onFocus when focused', () => {
       const onFocus = jest.fn();
-      const { getByPlaceholderText } = render(
-        <Input placeholder="Focus me" onFocus={onFocus} />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Focus me" onFocus={onFocus} />);
 
       fireEvent(getByPlaceholderText('Focus me'), 'focus');
       expect(onFocus).toHaveBeenCalled();
@@ -139,9 +119,7 @@ describe('Input', () => {
 
     it('calls onBlur when blurred', () => {
       const onBlur = jest.fn();
-      const { getByPlaceholderText } = render(
-        <Input placeholder="Blur me" onBlur={onBlur} />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Blur me" onBlur={onBlur} />);
 
       const input = getByPlaceholderText('Blur me');
       fireEvent(input, 'focus');
@@ -153,33 +131,19 @@ describe('Input', () => {
 
   describe('icons', () => {
     it('renders with left icon', () => {
-      const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Search"
-          leftIcon="search"
-        />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Search" leftIcon="search" />);
       expect(getByPlaceholderText('Search')).toBeTruthy();
     });
 
     it('renders with right icon', () => {
-      const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Password"
-          rightIcon="eye"
-        />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Password" rightIcon="eye" />);
       expect(getByPlaceholderText('Password')).toBeTruthy();
     });
 
     it('handles right icon press', () => {
       const onRightIconPress = jest.fn();
       const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Password"
-          rightIcon="eye"
-          onRightIconPress={onRightIconPress}
-        />
+        <Input placeholder="Password" rightIcon="eye" onRightIconPress={onRightIconPress} />
       );
 
       // The icon should be rendered and pressable
@@ -190,10 +154,7 @@ describe('Input', () => {
   describe('keyboard types', () => {
     it('sets email keyboard type', () => {
       const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Email"
-          keyboardType="email-address"
-        />
+        <Input placeholder="Email" keyboardType="email-address" />
       );
 
       const input = getByPlaceholderText('Email');
@@ -202,10 +163,7 @@ describe('Input', () => {
 
     it('sets numeric keyboard type', () => {
       const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Phone"
-          keyboardType="phone-pad"
-        />
+        <Input placeholder="Phone" keyboardType="phone-pad" />
       );
 
       const input = getByPlaceholderText('Phone');
@@ -215,24 +173,14 @@ describe('Input', () => {
 
   describe('autocomplete behavior', () => {
     it('disables autocorrect when specified', () => {
-      const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Username"
-          autoCorrect={false}
-        />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Username" autoCorrect={false} />);
 
       const input = getByPlaceholderText('Username');
       expect(input.props.autoCorrect).toBe(false);
     });
 
     it('disables autocapitalize when specified', () => {
-      const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Email"
-          autoCapitalize="none"
-        />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Email" autoCapitalize="none" />);
 
       const input = getByPlaceholderText('Email');
       expect(input.props.autoCapitalize).toBe('none');
@@ -242,11 +190,7 @@ describe('Input', () => {
   describe('multiline', () => {
     it('supports multiline input', () => {
       const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Description"
-          multiline
-          numberOfLines={4}
-        />
+        <Input placeholder="Description" multiline numberOfLines={4} />
       );
 
       const input = getByPlaceholderText('Description');
@@ -257,12 +201,7 @@ describe('Input', () => {
 
   describe('max length', () => {
     it('enforces max length', () => {
-      const { getByPlaceholderText } = render(
-        <Input
-          placeholder="Username"
-          maxLength={20}
-        />
-      );
+      const { getByPlaceholderText } = render(<Input placeholder="Username" maxLength={20} />);
 
       const input = getByPlaceholderText('Username');
       expect(input.props.maxLength).toBe(20);

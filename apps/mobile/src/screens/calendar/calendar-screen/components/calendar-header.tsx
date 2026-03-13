@@ -21,6 +21,7 @@ interface CalendarHeaderProps {
 }
 
 /**
+ * Calendar Header component.
  *
  */
 export function CalendarHeader({

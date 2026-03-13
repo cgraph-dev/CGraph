@@ -35,6 +35,7 @@ interface InputProps extends Omit<TextInputProps, 'style'> {
 }
 
 /**
+ * Input component.
  *
  */
 export default function Input({

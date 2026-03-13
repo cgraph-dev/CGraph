@@ -4,6 +4,8 @@ import api from '../../../lib/api';
 import socketManager from '../../../lib/socket';
 import type { FriendItem } from './types';
 
+/** Description. */
+/** Hook for friend list. */
 export function useFriendList() {
   const [friends, setFriends] = useState<FriendItem[]>([]);
   const [filteredFriends, setFilteredFriends] = useState<FriendItem[]>([]);

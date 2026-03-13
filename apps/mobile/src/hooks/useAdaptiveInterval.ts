@@ -38,7 +38,7 @@ export interface AdaptiveIntervalOptions {
 export function useAdaptiveInterval(
   callback: () => void | Promise<void>,
   activeMs: number,
-  options: AdaptiveIntervalOptions = {},
+  options: AdaptiveIntervalOptions = {}
 ) {
   const { backgroundMultiplier = 4, enabled = true, immediate = false } = options;
 
@@ -50,7 +50,7 @@ export function useAdaptiveInterval(
 
   const getDelay = useCallback(
     () => (appStateRef.current === 'active' ? activeMs : activeMs * backgroundMultiplier),
-    [activeMs, backgroundMultiplier],
+    [activeMs, backgroundMultiplier]
   );
 
   const restart = useCallback(() => {

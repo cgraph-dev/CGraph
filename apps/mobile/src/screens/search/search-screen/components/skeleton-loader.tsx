@@ -13,6 +13,7 @@ interface SkeletonLoaderProps {
 }
 
 /**
+ * Skeleton Loader component.
  *
  */
 export function SkeletonLoader({ isDark }: SkeletonLoaderProps) {

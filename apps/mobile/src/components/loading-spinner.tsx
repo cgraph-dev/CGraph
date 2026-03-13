@@ -20,6 +20,7 @@ interface LoadingSpinnerProps {
 }
 
 /**
+ * Loading Spinner component.
  *
  */
 export default function LoadingSpinner({
@@ -34,15 +35,16 @@ export default function LoadingSpinner({
   const content = (
     <View style={[styles.container, style]} testID={fullScreen ? `${testID}-content` : testID}>
       <ActivityIndicator size={size} color={colors.primary} testID={`${testID}-indicator`} />
-      {text && (
-        <Text style={[styles.text, { color: colors.textSecondary }]}>{text}</Text>
-      )}
+      {text && <Text style={[styles.text, { color: colors.textSecondary }]}>{text}</Text>}
     </View>
   );
 
   if (fullScreen) {
     return (
-      <View style={[styles.fullScreen, { backgroundColor: colors.background }]} testID={`${testID}-fullscreen`}>
+      <View
+        style={[styles.fullScreen, { backgroundColor: colors.background }]}
+        testID={`${testID}-fullscreen`}
+      >
         {content}
       </View>
     );

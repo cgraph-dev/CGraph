@@ -20,11 +20,7 @@ export type {
 } from './types';
 
 // Constants
-export {
-  PARTICLE_EFFECTS,
-  BACKGROUND_EFFECTS,
-  ANIMATION_SETS,
-} from './constants';
+export { PARTICLE_EFFECTS, BACKGROUND_EFFECTS, ANIMATION_SETS } from './constants';
 
 // Components
 export { ParticlePreview } from './particle-preview';

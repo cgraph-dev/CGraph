@@ -19,7 +19,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
-  ScrollView,
+  _ScrollView,
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -81,6 +81,7 @@ const DEBOUNCE_MS = 350;
 // Component
 // ---------------------------------------------------------------------------
 
+/** Forum Search Screen component. */
 export default function ForumSearchScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const searchForums = useForumStore((s) => s.searchForums);
@@ -100,7 +101,10 @@ export default function ForumSearchScreen({ navigation }: Props) {
       try {
         const res = await fetch('/api/v1/forums/tags');
         if (res.ok) {
-          const json = (await res.json()) as { data?: Array<{ id: string; name: string; color?: string }> };
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          const json = (await res.json()) as {
+            data?: Array<{ id: string; name: string; color?: string }>;
+          };
           setAvailableTags(json.data || []);
         }
       } catch {
@@ -112,15 +116,14 @@ export default function ForumSearchScreen({ navigation }: Props) {
       clearSearch();
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleTagToggle = useCallback(
     (tagId: string) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       setSelectedTagIds((prev) => {
-        const next = prev.includes(tagId)
-          ? prev.filter((id) => id !== tagId)
-          : [...prev, tagId];
+        const next = prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId];
 
         // Re-run search with new tag filters
         if (query.trim()) {
@@ -134,7 +137,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
         return next;
       });
     },
-    [query, filter, searchForums],
+    [query, filter, searchForums]
   );
 
   const handleSearch = useCallback(
@@ -153,7 +156,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
         searchForums(text.trim(), filterParam ? { type: filterParam } : undefined);
       }, DEBOUNCE_MS);
     },
-    [filter, searchForums, clearSearch],
+    [filter, searchForums, clearSearch]
   );
 
   const handleFilterChange = useCallback(
@@ -166,7 +169,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
         searchForums(query.trim(), filterParam ? { type: filterParam } : undefined);
       }
     },
-    [query, searchForums],
+    [query, searchForums]
   );
 
   const handleResultPress = useCallback(
@@ -176,7 +179,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
         navigation.navigate('Post', { postId: item.id });
       }
     },
-    [navigation],
+    [navigation]
   );
 
   // ─── Renderers ──────────────────────────────────────────────────────
@@ -222,7 +225,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
         </TouchableOpacity>
       );
     },
-    [colors, handleResultPress],
+    [colors, handleResultPress]
   );
 
   const renderEmpty = useCallback(() => {
@@ -230,10 +233,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
       return (
         <View style={styles.emptyContainer}>
           {[1, 2, 3].map((i) => (
-            <View
-              key={i}
-              style={[styles.skeleton, { backgroundColor: colors.surfaceHover }]}
-            />
+            <View key={i} style={[styles.skeleton, { backgroundColor: colors.surfaceHover }]} />
           ))}
         </View>
       );
@@ -265,8 +265,13 @@ export default function ForumSearchScreen({ navigation }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Search bar */}
-      <View style={[styles.searchBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-          <View style={[styles.inputWrapper, { backgroundColor: colors.input }]}>
+      <View
+        style={[
+          styles.searchBar,
+          { backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
+        <View style={[styles.inputWrapper, { backgroundColor: colors.input }]}>
           <Ionicons name="search" size={18} color={colors.textSecondary} />
           <TextInput
             style={[styles.input, { color: colors.text }]}
@@ -316,15 +321,12 @@ export default function ForumSearchScreen({ navigation }: Props) {
 
       {/* Tag filter chips */}
       {availableTags.length > 0 && (
-        <TagChips
-          tags={availableTags}
-          selectedIds={selectedTagIds}
-          onToggle={handleTagToggle}
-        />
+        <TagChips tags={availableTags} selectedIds={selectedTagIds} onToggle={handleTagToggle} />
       )}
 
       {/* Results */}
       <FlatList
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         data={searchResults as SearchResultItem[]}
         renderItem={renderItem}
         keyExtractor={(item) => `${item.type}-${item.id}`}

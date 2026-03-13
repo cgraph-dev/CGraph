@@ -17,13 +17,13 @@ export function StatsCards({ stats, formatDate }: StatsCardsProps) {
       <div className="bg-card border-border rounded-lg border p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-primary/10 rounded-lg p-2">
-              <UserGroupIcon className="text-primary h-5 w-5" />
+            <div className="rounded-lg bg-primary/10 p-2">
+              <UserGroupIcon className="h-5 w-5 text-primary" />
             </div>
             <span className="text-muted-foreground text-sm font-medium">Total Online</span>
           </div>
         </div>
-        <div className="text-foreground mt-2 text-2xl font-bold">{stats?.totalOnline || 0}</div>
+        <div className="mt-2 text-2xl font-bold text-foreground">{stats?.totalOnline || 0}</div>
       </div>
 
       <div className="bg-card border-border rounded-lg border p-4">

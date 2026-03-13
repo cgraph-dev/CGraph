@@ -47,43 +47,30 @@ jest.mock('@/stores', () => ({
 describe('Avatar', () => {
   describe('rendering', () => {
     it('renders with image source', () => {
-      const { toJSON } = render(
-        <Avatar
-          source="https://example.com/avatar.jpg"
-          name="John Doe"
-        />
-      );
+      const { toJSON } = render(<Avatar source="https://example.com/avatar.jpg" name="John Doe" />);
       // Component should render without error
       expect(toJSON()).toBeTruthy();
     });
 
     it('renders fallback initials when no image', () => {
-      const { getByText } = render(
-        <Avatar name="John Doe" />
-      );
+      const { getByText } = render(<Avatar name="John Doe" />);
       // Should display initials "JD"
       expect(getByText('JD')).toBeTruthy();
     });
 
     it('handles single word name', () => {
-      const { getByText } = render(
-        <Avatar name="John" />
-      );
+      const { getByText } = render(<Avatar name="John" />);
       expect(getByText('J')).toBeTruthy();
     });
 
     it('handles empty name with fallback', () => {
-      const { getByText } = render(
-        <Avatar name="" />
-      );
+      const { getByText } = render(<Avatar name="" />);
       // Should display fallback character "?"
       expect(getByText('?')).toBeTruthy();
     });
 
     it('handles undefined name with fallback', () => {
-      const { getByText } = render(
-        <Avatar />
-      );
+      const { getByText } = render(<Avatar />);
       // Should display fallback character "?"
       expect(getByText('?')).toBeTruthy();
     });
@@ -91,176 +78,110 @@ describe('Avatar', () => {
 
   describe('sizes', () => {
     it('renders extra small size', () => {
-      const { getByText } = render(
-        <Avatar name="Test User" size="xs" />
-      );
+      const { getByText } = render(<Avatar name="Test User" size="xs" />);
       expect(getByText('TU')).toBeTruthy();
     });
 
     it('renders small size', () => {
-      const { getByText } = render(
-        <Avatar name="Small" size="sm" />
-      );
+      const { getByText } = render(<Avatar name="Small" size="sm" />);
       expect(getByText('S')).toBeTruthy();
     });
 
     it('renders medium size by default', () => {
-      const { getByText } = render(
-        <Avatar name="Medium" />
-      );
+      const { getByText } = render(<Avatar name="Medium" />);
       expect(getByText('M')).toBeTruthy();
     });
 
     it('renders large size', () => {
-      const { getByText } = render(
-        <Avatar name="Large" size="lg" />
-      );
+      const { getByText } = render(<Avatar name="Large" size="lg" />);
       expect(getByText('L')).toBeTruthy();
     });
 
     it('renders extra large size', () => {
-      const { getByText } = render(
-        <Avatar name="Extra Large" size="xl" />
-      );
+      const { getByText } = render(<Avatar name="Extra Large" size="xl" />);
       expect(getByText('EL')).toBeTruthy();
     });
 
     it('renders with numeric size', () => {
-      const { getByText } = render(
-        <Avatar name="Custom Size" size={100} />
-      );
+      const { getByText } = render(<Avatar name="Custom Size" size={100} />);
       expect(getByText('CS')).toBeTruthy();
     });
   });
 
   describe('status indicators', () => {
     it('shows online status when provided', () => {
-      const { getByText } = render(
-        <Avatar
-          name="Online User"
-          status="online"
-          showStatus={true}
-        />
-      );
+      const { getByText } = render(<Avatar name="Online User" status="online" showStatus={true} />);
       expect(getByText('OU')).toBeTruthy();
     });
 
     it('shows idle status when provided', () => {
-      const { getByText } = render(
-        <Avatar
-          name="Idle User"
-          status="idle"
-          showStatus={true}
-        />
-      );
+      const { getByText } = render(<Avatar name="Idle User" status="idle" showStatus={true} />);
       expect(getByText('IU')).toBeTruthy();
     });
 
     it('shows do not disturb status when provided', () => {
-      const { getByText } = render(
-        <Avatar
-          name="Busy User"
-          status="dnd"
-          showStatus={true}
-        />
-      );
+      const { getByText } = render(<Avatar name="Busy User" status="dnd" showStatus={true} />);
       expect(getByText('BU')).toBeTruthy();
     });
 
     it('shows offline status when provided', () => {
       const { getByText } = render(
-        <Avatar
-          name="Offline User"
-          status="offline"
-          showStatus={true}
-        />
+        <Avatar name="Offline User" status="offline" showStatus={true} />
       );
       expect(getByText('OU')).toBeTruthy();
     });
 
     it('hides status indicator when showStatus is false', () => {
       const { getByText } = render(
-        <Avatar
-          name="Hidden Status"
-          status="online"
-          showStatus={false}
-        />
+        <Avatar name="Hidden Status" status="online" showStatus={false} />
       );
       expect(getByText('HS')).toBeTruthy();
     });
 
     it('shows status by default when status is provided', () => {
-      const { getByText } = render(
-        <Avatar
-          name="Default Show"
-          status="online"
-        />
-      );
+      const { getByText } = render(<Avatar name="Default Show" status="online" />);
       expect(getByText('DS')).toBeTruthy();
     });
   });
 
   describe('initials generation', () => {
     it('generates correct initials for two-word name', () => {
-      const { getByText } = render(
-        <Avatar name="Jane Smith" />
-      );
+      const { getByText } = render(<Avatar name="Jane Smith" />);
       expect(getByText('JS')).toBeTruthy();
     });
 
     it('generates correct initials for three-word name', () => {
-      const { getByText } = render(
-        <Avatar name="John Robert Smith" />
-      );
+      const { getByText } = render(<Avatar name="John Robert Smith" />);
       // Should only take first two initials
       expect(getByText('JR')).toBeTruthy();
     });
 
     it('handles lowercase names', () => {
-      const { getByText } = render(
-        <Avatar name="john doe" />
-      );
+      const { getByText } = render(<Avatar name="john doe" />);
       expect(getByText('JD')).toBeTruthy();
     });
 
     it('handles mixed case names', () => {
-      const { getByText } = render(
-        <Avatar name="jOHN dOE" />
-      );
+      const { getByText } = render(<Avatar name="jOHN dOE" />);
       expect(getByText('JD')).toBeTruthy();
     });
   });
 
   describe('custom styles', () => {
     it('applies custom container style', () => {
-      const { getByText } = render(
-        <Avatar
-          name="Styled Avatar"
-          style={{ margin: 10 }}
-        />
-      );
+      const { getByText } = render(<Avatar name="Styled Avatar" style={{ margin: 10 }} />);
       expect(getByText('SA')).toBeTruthy();
     });
   });
 
   describe('with image source', () => {
     it('shows initials when source is null', () => {
-      const { getByText } = render(
-        <Avatar
-          source={null}
-          name="Fallback User"
-        />
-      );
+      const { getByText } = render(<Avatar source={null} name="Fallback User" />);
       expect(getByText('FU')).toBeTruthy();
     });
 
     it('shows initials when source is empty string', () => {
-      const { getByText } = render(
-        <Avatar
-          source=""
-          name="Empty Source"
-        />
-      );
+      const { getByText } = render(<Avatar source="" name="Empty Source" />);
       // Empty string is falsy, so should show initials
       expect(getByText('ES')).toBeTruthy();
     });

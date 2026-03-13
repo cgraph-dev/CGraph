@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import React, { useEffect, useState } from 'react';
 import { useCreatorDashboard } from '@/modules/creator/hooks/useCreatorDashboard';
 
@@ -19,7 +20,9 @@ function formatMonth(iso: string): string {
 
 type Period = '7d' | '30d' | '90d';
 
-export const AnalyticsPage: React.FC = () => {
+/** Description. */
+/** Analytics Page component. */
+export function AnalyticsPage(): React.ReactElement {
   const {
     analyticsOverview: overview,
     earningsData,
@@ -98,10 +101,7 @@ export const AnalyticsPage: React.FC = () => {
           </h2>
           <div className="flex items-end gap-2" style={{ height: 200 }}>
             {earningsData.earningsOverTime.map((m) => {
-              const maxVal = Math.max(
-                ...earningsData.earningsOverTime.map((e) => e.netCents),
-                1
-              );
+              const maxVal = Math.max(...earningsData.earningsOverTime.map((e) => e.netCents), 1);
               const height = Math.max((m.netCents / maxVal) * 100, 4);
               return (
                 <div key={m.month} className="flex flex-1 flex-col items-center gap-1">
@@ -130,9 +130,15 @@ export const AnalyticsPage: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-white/[0.04]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Forum</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Subscribers</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">MRR</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    Forum
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    Subscribers
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    MRR
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -162,7 +168,7 @@ export const AnalyticsPage: React.FC = () => {
       </p>
     </div>
   );
-};
+}
 
 // ── Sub-components ────────────────────────────────────────────────
 
@@ -172,13 +178,15 @@ interface MetricCardProps {
   description: string;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ label, value, description }) => (
-  <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
-    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</p>
-    <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
-    <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{description}</p>
-  </div>
-);
+function MetricCard({ label, value, description }: MetricCardProps): React.ReactElement {
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white p-5 dark:border-white/[0.08] dark:bg-[rgb(30,32,40)]">
+      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{label}</p>
+      <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+      <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{description}</p>
+    </div>
+  );
+}
 
 AnalyticsPage.displayName = 'AnalyticsPage';
 

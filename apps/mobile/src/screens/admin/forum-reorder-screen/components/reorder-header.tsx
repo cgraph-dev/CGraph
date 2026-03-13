@@ -16,6 +16,8 @@ interface ReorderHeaderProps {
   onSave: () => void;
 }
 
+/** Description. */
+/** Reorder Header component. */
 export function ReorderHeader({ hasChanges, isSaving, onBack, onSave }: ReorderHeaderProps) {
   return (
     <>

@@ -21,12 +21,7 @@ import { motion, AnimatePresence } from 'motion/react';
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type ChatEffectType =
-  | 'confetti'
-  | 'fireworks'
-  | 'hearts'
-  | 'snow'
-  | 'celebration';
+export type ChatEffectType = 'confetti' | 'fireworks' | 'hearts' | 'snow' | 'celebration';
 
 export interface FullScreenChatEffectProps {
   /** Currently-active effect, or null for none. */
@@ -53,14 +48,17 @@ function makeParticles(type: 'hearts' | 'snow', count: number): FloatingParticle
   const altEmojis: string[] =
     type === 'hearts' ? ['💕', '💖', '💗', '💘', '💝'] : ['❄️', '✨', '🌨️'];
 
-  return Array.from({ length: count }, (_, i): FloatingParticle => ({
-    id: i,
-    emoji: i % 3 === 0 ? (altEmojis[i % altEmojis.length] ?? emoji) : emoji,
-    x: Math.random() * 100,
-    delay: Math.random() * 2,
-    duration: 2.5 + Math.random() * 2,
-    size: 16 + Math.random() * 16,
-  }));
+  return Array.from(
+    { length: count },
+    (_, i): FloatingParticle => ({
+      id: i,
+      emoji: i % 3 === 0 ? (altEmojis[i % altEmojis.length] ?? emoji) : emoji,
+      x: Math.random() * 100,
+      delay: Math.random() * 2,
+      duration: 2.5 + Math.random() * 2,
+      size: 16 + Math.random() * 16,
+    })
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -133,10 +131,7 @@ function fireCelebration() {
 /**
  * Full Screen Chat Effect component.
  */
-export function FullScreenChatEffect({
-  effect,
-  onComplete,
-}: FullScreenChatEffectProps) {
+export function FullScreenChatEffect({ effect, onComplete }: FullScreenChatEffectProps) {
   const [particles, setParticles] = useState<FloatingParticle[]>([]);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -183,10 +178,7 @@ export function FullScreenChatEffect({
   if (particles.length === 0) return null;
 
   return (
-    <div
-      className="pointer-events-none absolute inset-0 z-50 overflow-hidden"
-      aria-hidden
-    >
+    <div className="pointer-events-none absolute inset-0 z-50 overflow-hidden" aria-hidden>
       <AnimatePresence>
         {particles.map((p) => (
           <motion.span

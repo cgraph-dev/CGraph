@@ -18,7 +18,7 @@ export function NewMessagesBar({ count, onJump, className }: NewMessagesBarProps
     <div
       className={cn(
         'sticky top-0 z-[var(--z-sticky,10)] flex items-center gap-3 px-4 py-1',
-        className,
+        className
       )}
       role="separator"
       aria-label={`${count ?? 'New'} unread messages`}
@@ -31,7 +31,7 @@ export function NewMessagesBar({ count, onJump, className }: NewMessagesBarProps
           'flex-shrink-0 rounded-full px-2.5 py-0.5',
           'text-[11px] font-semibold text-red-400',
           'bg-red-500/10 hover:bg-red-500/20',
-          'transition-colors cursor-pointer',
+          'cursor-pointer transition-colors'
         )}
       >
         {count ? `${count} new message${count > 1 ? 's' : ''}` : 'New messages'}

@@ -135,7 +135,7 @@ export function PinnedMessagesPanel({
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={springs.stiff}
-              className="hover:bg-white/[0.05] group border-b border-white/[0.06] px-4 py-3"
+              className="group border-b border-white/[0.06] px-4 py-3 hover:bg-white/[0.05]"
             >
               {pin.message ? (
                 <>

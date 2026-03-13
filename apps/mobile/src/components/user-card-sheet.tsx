@@ -3,13 +3,7 @@
  * @module components/user-card-sheet
  */
 import React, { memo, useCallback } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  Modal,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Pressable, Modal, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Avatar from './ui/avatar';
 import { space, radius } from '../theme/tokens';
@@ -56,12 +50,7 @@ export const UserCardSheet = memo(function UserCardSheet({
   if (!user) return null;
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable onPress={onClose} style={styles.backdrop}>
         <Pressable style={styles.sheet}>
           {/* Banner */}
@@ -69,12 +58,7 @@ export const UserCardSheet = memo(function UserCardSheet({
 
           {/* Avatar */}
           <View style={styles.avatarWrap}>
-            <Avatar
-              size="xl"
-              name={user.displayName}
-              src={user.avatarUrl}
-              status={user.status}
-            />
+            <Avatar size="xl" name={user.displayName} src={user.avatarUrl} status={user.status} />
           </View>
 
           {/* Info */}
@@ -89,7 +73,9 @@ export const UserCardSheet = memo(function UserCardSheet({
             )}
 
             {user.bio && (
-              <Text style={styles.bio} numberOfLines={3}>{user.bio}</Text>
+              <Text style={styles.bio} numberOfLines={3}>
+                {user.bio}
+              </Text>
             )}
 
             {user.mutualFriends !== undefined && user.mutualFriends > 0 && (

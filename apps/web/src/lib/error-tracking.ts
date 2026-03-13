@@ -17,7 +17,8 @@
  */
 
 // type assertion: Vite env vars are typed as string, but may be undefined if not set
- 
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN as string | undefined;
 const ENVIRONMENT = import.meta.env.MODE || 'development';
 const RELEASE = import.meta.env.VITE_APP_VERSION || '0.9.31';
@@ -82,7 +83,8 @@ export async function initErrorTracking(): Promise<void> {
     });
 
     isInitialized = true;
-     
+
+    // eslint-disable-next-line no-console
     console.info('[ErrorTracking] Sentry initialized');
   } catch (error) {
     console.warn('[ErrorTracking] Failed to initialize Sentry:', error);

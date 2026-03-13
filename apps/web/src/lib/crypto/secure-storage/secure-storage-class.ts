@@ -95,7 +95,8 @@ class SecureStorage {
       id: key,
       ciphertext,
       iv,
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       salt: this.deviceSalt!.buffer as ArrayBuffer, // safe downcast – buffer type
       createdAt: Date.now(),
       expiresAt: ttlSeconds ? Date.now() + ttlSeconds * 1000 : undefined,
@@ -130,7 +131,7 @@ class SecureStorage {
           return;
         }
 
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const item = request.result as EncryptedItem; // safe downcast – IDB returns untyped
 
         // Check expiration
@@ -198,7 +199,7 @@ class SecureStorage {
       request.onsuccess = () => {
         const cursor = request.result;
         if (cursor) {
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const item = cursor.value as EncryptedItem; // safe downcast – IDB returns untyped
           if (item.expiresAt && item.expiresAt < Date.now()) {
             cursor.delete();
@@ -254,7 +255,8 @@ class SecureStorage {
     return new Promise((resolve, reject) => {
       const request = store.getAllKeys();
       request.onerror = () => reject(request.error);
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       request.onsuccess = () => resolve(request.result as string[]); // type assertion: IndexedDB getAllKeys returns IDBValidKey[], keys are always strings here
     });
   }

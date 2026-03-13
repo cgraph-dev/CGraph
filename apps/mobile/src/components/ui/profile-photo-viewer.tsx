@@ -17,16 +17,12 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
-  runOnJS,
+  _withTiming,
+  _runOnJS,
   FadeIn,
   FadeOut,
 } from 'react-native-reanimated';
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -48,27 +44,23 @@ interface ProfilePhotoViewerContextValue {
 const Ctx = createContext<ProfilePhotoViewerContextValue | null>(null);
 
 /**
+ * Hook for profile photo viewer.
  *
  */
 export function useProfilePhotoViewer() {
   const ctx = use(Ctx);
   if (!ctx) {
-    throw new Error(
-      'useProfilePhotoViewer must be used within ProfilePhotoViewerProvider',
-    );
+    throw new Error('useProfilePhotoViewer must be used within ProfilePhotoViewerProvider');
   }
   return ctx;
 }
 
 // ── Provider ───────────────────────────────────────────────
 /**
+ * Profile Photo Viewer Provider component.
  *
  */
-export function ProfilePhotoViewerProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function ProfilePhotoViewerProvider({ children }: { children: React.ReactNode }) {
   const [visible, setVisible] = useState(false);
   const [photo, setPhoto] = useState<ProfilePhoto | null>(null);
 
@@ -94,22 +86,14 @@ export function ProfilePhotoViewerProvider({
         onRequestClose={close}
         statusBarTranslucent
       >
-        {photo && (
-          <FullscreenViewer photo={photo} onClose={close} />
-        )}
+        {photo && <FullscreenViewer photo={photo} onClose={close} />}
       </Modal>
     </Ctx.Provider>
   );
 }
 
 // ── Fullscreen Viewer ──────────────────────────────────────
-function FullscreenViewer({
-  photo,
-  onClose,
-}: {
-  photo: ProfilePhoto;
-  onClose: () => void;
-}) {
+function FullscreenViewer({ photo, onClose }: { photo: ProfilePhoto; onClose: () => void }) {
   // Pinch-to-zoom state
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
@@ -127,6 +111,7 @@ function FullscreenViewer({
 
   React.useEffect(() => {
     entryScale.value = withSpring(1, { damping: 15, stiffness: 150 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const pinchGesture = Gesture.Pinch()
@@ -182,11 +167,7 @@ function FullscreenViewer({
       }
     });
 
-  const composed = Gesture.Simultaneous(
-    pinchGesture,
-    panGesture,
-    doubleTapGesture,
-  );
+  const composed = Gesture.Simultaneous(pinchGesture, panGesture, doubleTapGesture);
 
   const imageAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -218,19 +199,11 @@ function FullscreenViewer({
           {photo.source ? (
             <Image
               source={photo.source}
-              style={[
-                styles.image,
-                { width: imageSize, height: imageSize },
-              ]}
+              style={[styles.image, { width: imageSize, height: imageSize }]}
               resizeMode="cover"
             />
           ) : (
-            <View
-              style={[
-                styles.fallbackContainer,
-                { width: imageSize, height: imageSize },
-              ]}
-            >
+            <View style={[styles.fallbackContainer, { width: imageSize, height: imageSize }]}>
               <Text style={styles.fallbackText}>
                 {photo.fallback ?? photo.name.charAt(0).toUpperCase()}
               </Text>
@@ -240,10 +213,7 @@ function FullscreenViewer({
       </GestureDetector>
 
       {/* Name label */}
-      <Animated.View
-        style={styles.nameContainer}
-        entering={FadeIn.delay(100).duration(200)}
-      >
+      <Animated.View style={styles.nameContainer} entering={FadeIn.delay(100).duration(200)}>
         <Text style={styles.nameText}>{photo.name}</Text>
       </Animated.View>
     </GestureHandlerRootView>

@@ -1,9 +1,9 @@
 /**
  * Conversation Components
- * 
+ *
  * Extracted from ConversationScreen for better maintainability and reusability.
  * Each component is memoized for optimal performance.
- * 
+ *
  * @module components/conversation
  * @since v0.7.29
  */

@@ -28,6 +28,7 @@ import { MemberAvatarStack } from './member-avatar-stack';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 /**
+ * Morphing Group Card component.
  *
  */
 export function MorphingGroupCard({
@@ -35,7 +36,7 @@ export function MorphingGroupCard({
   index,
   onPress,
   colors,
-  isDark,
+  _isDark,
 }: MorphingGroupCardProps) {
   // Entry animations
   const slideAnim = useRef(new Animated.Value(80)).current;

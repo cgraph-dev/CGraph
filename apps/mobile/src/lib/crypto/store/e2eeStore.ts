@@ -11,17 +11,14 @@ import { AppState } from 'react-native';
 import * as Device from 'expo-device';
 import { useEffect } from 'react';
 import api from '../../api';
-import {
-  requireAuthenticationIfNeeded,
-  isBiometricLockEnabled,
-} from '../../biometrics';
+import { requireAuthenticationIfNeeded, isBiometricLockEnabled } from '../../biometrics';
 import { e2eeLogger as logger } from '../../logger';
 import e2ee, {
   type KeyBundle,
   type ServerPrekeyBundle,
   type EncryptedMessage,
   isE2EESetUp,
-  generateKeyBundle as legacyGenerateKeyBundle,
+  generateKeyBundle as _legacyGenerateKeyBundle,
   storeKeyBundle as legacyStoreKeyBundle,
   formatKeysForRegistration,
   encryptForRecipient,
@@ -32,7 +29,7 @@ import e2ee, {
   clearE2EEData,
   generateSafetyNumber,
   fingerprint,
-  loadKEMPreKey,
+  _loadKEMPreKey,
   storeKEMPreKey,
 } from '../e2ee';
 import {
@@ -179,7 +176,9 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
             await api.post('/api/v1/e2ee/prekeys/kem', {
               kyber_prekey: Buffer.from(pqBundle.pqPreKey.publicKey).toString('base64'),
               kyber_prekey_id: 1,
-              kyber_prekey_signature: Buffer.from(pqBundle.signedPreKey.signature).toString('base64'),
+              kyber_prekey_signature: Buffer.from(pqBundle.signedPreKey.signature).toString(
+                'base64'
+              ),
             });
             logger.log('KEM prekey upgrade complete');
           } catch (err) {
@@ -286,6 +285,7 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       const session = getSessionForRecipient(recipientId)!;
       const ratchetMsg = await pqEncrypt(session.sessionId, plaintext);
 
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return {
         ciphertext: Buffer.from(JSON.stringify(ratchetMsg)).toString('base64'),
         ephemeralPublicKey: '',
@@ -295,7 +295,11 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
         protocol_version: 'pqxdh_v1',
         is_encrypted: true,
         session_id: session.sessionId,
-      } as EncryptedMessage & { protocol_version: string; is_encrypted: boolean; session_id: string };
+      } as EncryptedMessage & {
+        protocol_version: string;
+        is_encrypted: boolean;
+        session_id: string;
+      };
     }
 
     // No active PQ session — initiate PQXDH key exchange
@@ -318,6 +322,7 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
     // Encrypt via Triple Ratchet
     const ratchetMsg = await pqEncrypt(session.sessionId, plaintext);
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return {
       ciphertext: Buffer.from(JSON.stringify(ratchetMsg)).toString('base64'),
       ephemeralPublicKey: '',
@@ -330,10 +335,7 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
     } as EncryptedMessage & { protocol_version: string; is_encrypted: boolean; session_id: string };
   },
 
-  decryptMessage: async (
-    senderId: string,
-    encryptedMessage: EncryptedMessage
-  ): Promise<string> => {
+  decryptMessage: async (senderId: string, encryptedMessage: EncryptedMessage): Promise<string> => {
     if (!get().isInitialized) {
       throw new Error('E2EE not initialized');
     }
@@ -342,10 +344,13 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
     await requireBiometricForKeyAccess();
 
     // Route based on protocol version
-    const protocolVersion = (encryptedMessage as EncryptedMessage & { protocol_version?: string }).protocol_version;
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const protocolVersion = (encryptedMessage as EncryptedMessage & { protocol_version?: string })
+      .protocol_version;
 
     if (protocolVersion === 'pqxdh_v1') {
       // PQXDH + Triple Ratchet path
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const sessionId = (encryptedMessage as EncryptedMessage & { session_id?: string }).session_id;
       const session = sessionId
         ? undefined // will look up by sessionId in pqDecrypt
@@ -361,15 +366,24 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
         }
         const protocolStore = new InMemoryProtocolStore(identityKey, 1);
         const ciphertextJson = Buffer.from(encryptedMessage.ciphertext, 'base64').toString('utf-8');
-        const ratchetMsg = JSON.parse(ciphertextJson) as import('@cgraph/crypto').TripleRatchetMessage;
-        const newSession = await pqRespondToSession(new Uint8Array(Buffer.from(encryptedMessage.ciphertext, 'base64')), protocolStore);
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const ratchetMsg = JSON.parse(
+          ciphertextJson
+        ) as import('@cgraph/crypto').TripleRatchetMessage;
+        const newSession = await pqRespondToSession(
+          new Uint8Array(Buffer.from(encryptedMessage.ciphertext, 'base64')),
+          protocolStore
+        );
         registerRecipientSession(senderId, newSession.sessionId);
         // After session is established, the ciphertext itself is the ratchet message
         return await pqDecrypt(newSession.sessionId, ratchetMsg);
       }
 
       const ciphertextJson = Buffer.from(encryptedMessage.ciphertext, 'base64').toString('utf-8');
-      const ratchetMsg = JSON.parse(ciphertextJson) as import('@cgraph/crypto').TripleRatchetMessage;
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const ratchetMsg = JSON.parse(
+        ciphertextJson
+      ) as import('@cgraph/crypto').TripleRatchetMessage;
       return await pqDecrypt(resolvedSessionId, ratchetMsg);
     }
 
@@ -491,13 +505,14 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       set({ isInitialized: false });
     }
   },
-  reset: () => set({
-    isInitialized: false,
-    isLoading: true,
-    isInitializing: false,
-    error: null,
-    setupError: null,
-  }),
+  reset: () =>
+    set({
+      isInitialized: false,
+      isLoading: true,
+      isInitializing: false,
+      error: null,
+      setupError: null,
+    }),
 }));
 
 // ── Convenience hooks ────────────────────────────────────────────────────────

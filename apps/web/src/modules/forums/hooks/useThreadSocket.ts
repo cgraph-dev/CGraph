@@ -213,6 +213,7 @@ export function useThreadSocket(
     return () => {
       // Clear all typing timeouts
       typingTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       typingTimeoutsRef.current.clear();
 
       socketManager.leaveThread(threadId);

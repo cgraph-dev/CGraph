@@ -6,15 +6,20 @@
  * declarations are overridden by the real package types.
  */
 declare module 'livekit-client' {
+  /** Room class. */
   export class Room {
     constructor(options?: RoomOptions);
     name: string;
     localParticipant: LocalParticipant;
     remoteParticipants: Map<string, RemoteParticipant>;
+    /** Description. */
     connect(url: string, token: string): Promise<void>;
+    /** Description. */
     disconnect(stopTracks?: boolean): Promise<void>;
+    /** Description. */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     on(event: string, handler: (...args: any[]) => void): this;
+    /** Description. */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     off(event: string, handler: (...args: any[]) => void): this;
   }

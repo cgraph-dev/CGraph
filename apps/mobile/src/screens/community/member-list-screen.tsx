@@ -19,12 +19,20 @@ import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import api from '../../lib/api';
 
-import { generateFallbackMembers, transformApiMembers, type Member, type UserGroup, type SortField, type SortOrder } from './member-list-screen/types';
+import {
+  generateFallbackMembers,
+  transformApiMembers,
+  type Member,
+  type UserGroup,
+  type SortField,
+  type SortOrder,
+} from './member-list-screen/types';
 import { MemberItem } from './member-list-screen/components/member-item';
 import { SearchBar, FilterPanel } from './member-list-screen/components/filter-bar';
 import { styles } from './member-list-screen/styles';
 
 /**
+ * Member List Screen component.
  *
  */
 export default function MemberListScreen() {
@@ -52,7 +60,12 @@ export default function MemberListScreen() {
         if (pageNum === 1) setIsLoading(true);
         else setIsLoadingMore(true);
         setError(null);
-        const params: Record<string, unknown> = { page: pageNum, per_page: 20, sort_by: sortField, sort_order: sortOrder };
+        const params: Record<string, unknown> = {
+          page: pageNum,
+          per_page: 20,
+          sort_by: sortField,
+          sort_order: sortOrder,
+        };
         if (searchQuery) params.search = searchQuery;
         if (filterGroup) params.group_id = filterGroup;
         if (filterOnlineOnly) params.online_only = true;
@@ -67,7 +80,10 @@ export default function MemberListScreen() {
         setPage(pageNum);
       } catch (err) {
         console.error('[MemberList] API error, using fallback:', err);
-        if (!append) { setMembers(generateFallbackMembers()); setTotalMembers(5); }
+        if (!append) {
+          setMembers(generateFallbackMembers());
+          setTotalMembers(5);
+        }
       } finally {
         setIsLoading(false);
         setIsLoadingMore(false);
@@ -80,23 +96,54 @@ export default function MemberListScreen() {
     try {
       const response = await api.get('/api/v1/user-groups');
       const groups = response.data.groups || [];
-      setUserGroups(groups.map((g: Record<string, unknown>) => ({
-        id: g.id as string, name: (g.name as string) || 'Unknown', color: (g.color as string) || null, memberCount: (g.member_count as number) || 0,
-      })));
-    } catch (err) { console.error('[MemberList] Failed to fetch groups:', err); }
+      setUserGroups(
+        groups.map((g: Record<string, unknown>) => ({
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          id: g.id as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          name: (g.name as string) || 'Unknown',
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          color: (g.color as string) || null,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          memberCount: (g.member_count as number) || 0,
+        }))
+      );
+    } catch (err) {
+      console.error('[MemberList] Failed to fetch groups:', err);
+    }
   }, []);
 
-  useEffect(() => { fetchMembers(1); fetchUserGroups(); }, []);
-  useEffect(() => { const t = setTimeout(() => fetchMembers(1), 300); return () => clearTimeout(t); }, [searchQuery]);
+  useEffect(() => {
+    fetchMembers(1);
+    fetchUserGroups();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    const t = setTimeout(() => fetchMembers(1), 300);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
-  const handleRefresh = async () => { setIsRefreshing(true); HapticFeedback.light(); await fetchMembers(1); setIsRefreshing(false); };
-  const handleLoadMore = () => { if (!isLoadingMore && page < totalPages) fetchMembers(page + 1, true); };
-  const handleMemberPress = (member: Member) => { if (__DEV__) console.warn('Navigate to profile:', member.id); };
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    HapticFeedback.light();
+    await fetchMembers(1);
+    setIsRefreshing(false);
+  };
+  const handleLoadMore = () => {
+    if (!isLoadingMore && page < totalPages) fetchMembers(page + 1, true);
+  };
+  const handleMemberPress = (member: Member) => {
+    if (__DEV__) console.warn('Navigate to profile:', member.id);
+  };
 
   const handleSort = (field: SortField) => {
     HapticFeedback.light();
     if (sortField === field) setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    else { setSortField(field); setSortOrder('asc'); }
+    else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
     fetchMembers(1);
   };
 
@@ -107,18 +154,33 @@ export default function MemberListScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#111827', '#0f172a', '#111827']} style={StyleSheet.absoluteFillObject} />
+      <LinearGradient
+        colors={['#111827', '#0f172a', '#111827']}
+        style={StyleSheet.absoluteFillObject}
+      />
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => { HapticFeedback.light(); navigation.goBack(); }}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            HapticFeedback.light();
+            navigation.goBack();
+          }}
+        >
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitle}>Members</Text>
           <Text style={styles.headerSubtitle}>{totalMembers} total members</Text>
         </View>
-        <TouchableOpacity style={styles.headerButton} onPress={() => { HapticFeedback.light(); setShowFilters(!showFilters); }}>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => {
+            HapticFeedback.light();
+            setShowFilters(!showFilters);
+          }}
+        >
           <Ionicons name="filter" size={22} color={showFilters ? '#10b981' : '#fff'} />
         </TouchableOpacity>
       </View>
@@ -142,13 +204,32 @@ export default function MemberListScreen() {
         <FlatList
           data={members}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <MemberItem member={item} onPress={() => handleMemberPress(item)} />}
+          renderItem={({ item }) => (
+            <MemberItem member={item} onPress={() => handleMemberPress(item)} />
+          )}
           contentContainerStyle={styles.listContent}
-          refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#10b981" />}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor="#10b981"
+            />
+          }
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
-          ListFooterComponent={isLoadingMore ? <View style={styles.loadingMore}><ActivityIndicator size="small" color="#10b981" /></View> : null}
-          ListEmptyComponent={<View style={styles.emptyContainer}><Ionicons name="people" size={48} color="#6b7280" /><Text style={styles.emptyText}>No members found</Text></View>}
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={styles.loadingMore}>
+                <ActivityIndicator size="small" color="#10b981" />
+              </View>
+            ) : null
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="people" size={48} color="#6b7280" />
+              <Text style={styles.emptyText}>No members found</Text>
+            </View>
+          }
         />
       )}
     </View>

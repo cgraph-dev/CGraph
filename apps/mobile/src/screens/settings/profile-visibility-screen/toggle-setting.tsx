@@ -15,7 +15,15 @@ interface ToggleSettingProps {
   disabled?: boolean;
 }
 
-export function ToggleSetting({ label, description, value, onChange, disabled }: ToggleSettingProps) {
+/** Description. */
+/** Toggle Setting component. */
+export function ToggleSetting({
+  label,
+  description,
+  value,
+  onChange,
+  disabled,
+}: ToggleSettingProps) {
   return (
     <View style={[styles.settingRow, disabled && styles.settingRowDisabled]}>
       <View style={styles.settingInfo}>

@@ -148,9 +148,11 @@ export const ForumHierarchyTree = memo(function ForumHierarchyTree({
           onClick={() => {
             const name = window.prompt('Enter subforum name:');
             if (name?.trim() && rootForumId) {
-              api.post(`/api/v1/forums/${rootForumId}/create_subforum`, {
-                name: name.trim(),
-              }).catch(() => {});
+              api
+                .post(`/api/v1/forums/${rootForumId}/create_subforum`, {
+                  name: name.trim(),
+                })
+                .catch(() => {});
             }
           }}
         >

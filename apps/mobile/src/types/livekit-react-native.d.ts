@@ -6,9 +6,12 @@
 declare module '@livekit/react-native' {
   export function registerGlobals(): void;
 
+  /** Room class. */
   export class Room {
     name: string;
+    /** Description. */
     connect(url: string, token: string): Promise<void>;
+    /** Description. */
     disconnect(stopTracks?: boolean): Promise<void>;
   }
 

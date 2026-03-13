@@ -8,12 +8,7 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import {
-  useAccount,
-  useConnect,
-  useDisconnect,
-  useSignMessage,
-} from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useSignMessage } from 'wagmi';
 import { useAuthStore } from '@/modules/auth/store';
 import { createLogger } from '@/lib/logger';
 import type { WalletConnectorType } from '@cgraph/shared-types';
@@ -72,7 +67,7 @@ export function useWalletConnect(): UseWalletConnectReturn {
         type: mapConnectorType(c.type),
         ready: true,
       })),
-    [rawConnectors],
+    [rawConnectors]
   );
 
   const connectAndSign = useCallback(
@@ -116,7 +111,15 @@ export function useWalletConnect(): UseWalletConnectReturn {
         throw err;
       }
     },
-    [rawConnectors, connectAsync, signMessageAsync, getWalletChallenge, loginWithWallet, clearError, wagmiDisconnect],
+    [
+      rawConnectors,
+      connectAsync,
+      signMessageAsync,
+      getWalletChallenge,
+      loginWithWallet,
+      clearError,
+      wagmiDisconnect,
+    ]
   );
 
   const disconnect = useCallback(() => {

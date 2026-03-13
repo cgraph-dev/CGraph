@@ -10,12 +10,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  Room,
-  RoomEvent,
-  ConnectionState,
-  type RemoteParticipant,
-} from 'livekit-client';
+import { Room, RoomEvent, ConnectionState, type RemoteParticipant } from 'livekit-client';
 import { LiveKitService } from '@/lib/webrtc/livekitService';
 import type { LiveKitParticipant } from '@/lib/webrtc/livekitService';
 import { decodeRoomKey } from '@/lib/webrtc/callEncryption';
@@ -77,9 +72,9 @@ export interface UseLiveKitRoomReturn {
 // Hook
 // ---------------------------------------------------------------------------
 
-export function useLiveKitRoom(
-  options: UseLiveKitRoomOptions
-): UseLiveKitRoomReturn {
+/** Description. */
+/** Hook for live kit room. */
+export function useLiveKitRoom(options: UseLiveKitRoomOptions): UseLiveKitRoomReturn {
   const {
     roomName,
     channelId,
@@ -89,9 +84,7 @@ export function useLiveKitRoom(
     autoConnect = false,
   } = options;
 
-  const [connectionState, setConnectionState] = useState<
-    ConnectionState | 'idle'
-  >('idle');
+  const [connectionState, setConnectionState] = useState<ConnectionState | 'idle'>('idle');
   const [participants, setParticipants] = useState<LiveKitParticipant[]>([]);
   const [activeSpeakers, setActiveSpeakers] = useState<string[]>([]);
   const [isMuted, setIsMuted] = useState(!audioEnabled);
@@ -123,10 +116,7 @@ export function useLiveKitRoom(
       url: string;
       e2ee_key?: string;
       e2ee_enabled?: boolean;
-    }>(
-      '/api/v1/livekit/token',
-      body
-    );
+    }>('/api/v1/livekit/token', body);
     return response.data;
   }, [roomName, channelId, groupId]);
 
@@ -220,8 +210,7 @@ export function useLiveKitRoom(
       setConnectionState(ConnectionState.Connected);
       updateParticipants(lkRoom);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to connect to room';
+      const message = err instanceof Error ? err.message : 'Failed to connect to room';
       setError(message);
       setConnectionState(ConnectionState.Disconnected);
     }
@@ -321,9 +310,7 @@ export function useLiveKitRoom(
 // Helpers
 // ---------------------------------------------------------------------------
 
-function mapQuality(
-  quality: number
-): 'excellent' | 'good' | 'poor' | 'unknown' {
+function mapQuality(quality: number): 'excellent' | 'good' | 'poor' | 'unknown' {
   switch (quality) {
     case 3:
       return 'excellent';

@@ -246,13 +246,13 @@ describe('Matrix Characters', () => {
       const chars = ['A', 'B'];
       const weights = [100, 1]; // A should appear much more often
       const generator = createWeightedGenerator(chars, weights);
-      
+
       let aCount = 0;
       const iterations = 1000;
       for (let i = 0; i < iterations; i++) {
         if (generator() === 'A') aCount++;
       }
-      
+
       // A should appear at least 80% of the time
       expect(aCount / iterations).toBeGreaterThan(0.8);
     });
@@ -336,7 +336,16 @@ describe('Matrix Characters', () => {
     });
 
     it('should return characters for all valid presets', () => {
-      const presets = ['classic', 'cyberpunk', 'hacker', 'binary', 'minimal', 'mathematical', 'slavic', 'ancient'] as const;
+      const presets = [
+        'classic',
+        'cyberpunk',
+        'hacker',
+        'binary',
+        'minimal',
+        'mathematical',
+        'slavic',
+        'ancient',
+      ] as const;
       for (const preset of presets) {
         const chars = getPresetCharacters(preset);
         expect(Array.isArray(chars)).toBe(true);

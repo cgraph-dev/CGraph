@@ -58,9 +58,10 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
 
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const sourceValue = source[key as keyof typeof source]; // safe downcast – structural boundary
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const targetValue = target[key as keyof T]; // safe downcast – structural boundary
 
       if (
@@ -72,16 +73,19 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
         typeof targetValue === 'object' &&
         !Array.isArray(targetValue)
       ) {
-         
-        (result as Record<string, unknown>)[key] = deepMerge( // type assertion: building merged config object
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        (result as Record<string, unknown>)[key] = deepMerge(
+          // type assertion: building merged config object
           // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           targetValue as object, // safe downcast – runtime verified
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           sourceValue as DeepPartial<object> // safe downcast – runtime verified
         );
       } else if (sourceValue !== undefined) {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         (result as Record<string, unknown>)[key] = sourceValue; // safe downcast – structural boundary
       }
     }
@@ -116,7 +120,7 @@ export function getPreset(name: ConfigPresetName): MatrixConfig {
     return DEFAULT_CONFIG;
   }
 
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return createConfig(preset as DeepPartial<MatrixConfig>); // safe downcast – structural boundary
 }
 

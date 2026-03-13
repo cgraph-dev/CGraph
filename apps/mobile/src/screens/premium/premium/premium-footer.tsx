@@ -13,6 +13,8 @@ interface PremiumFooterProps {
   colors: Record<string, string>;
 }
 
+/** Description. */
+/** Premium Footer component. */
 export function PremiumFooter({ currentTier, onManageSubscription, colors }: PremiumFooterProps) {
   return (
     <>
@@ -53,15 +55,24 @@ export function PremiumFooter({ currentTier, onManageSubscription, colors }: Pre
 const styles = StyleSheet.create({
   manageButton: { marginBottom: 24 },
   manageCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 16,
   },
   manageText: { flex: 1, fontSize: 15, fontWeight: '600' },
   footer: { alignItems: 'center', gap: 12 },
   footerText: {
-    fontSize: 11, color: 'rgba(255, 255, 255, 0.5)', textAlign: 'center',
-    lineHeight: 16, paddingHorizontal: 20,
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.5)',
+    textAlign: 'center',
+    lineHeight: 16,
+    paddingHorizontal: 20,
   },
   footerLink: {
-    fontSize: 12, fontWeight: '600', color: '#8b5cf6', textDecorationLine: 'underline',
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#8b5cf6',
+    textDecorationLine: 'underline',
   },
 });

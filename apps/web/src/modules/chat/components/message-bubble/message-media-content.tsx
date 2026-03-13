@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * Message Media Content
  *
@@ -32,11 +33,9 @@ export function MessageMediaContent({
   if (message.messageType === 'image' && message.metadata?.url) {
     return (
       <img
-         
         src={message.metadata.url as string} // type assertion: message metadata field
         alt="Shared image"
         className="mb-2 max-w-xs cursor-pointer rounded-lg transition-opacity hover:opacity-90"
-         
         onClick={() => window.open(message.metadata.url as string, '_blank')} // type assertion: message metadata field
       />
     );
@@ -45,7 +44,7 @@ export function MessageMediaContent({
   if (message.messageType === 'video' && message.metadata?.url) {
     return (
       // type assertion: message metadata field is string for video messages
-       
+
       <video src={message.metadata.url as string} controls className="mb-2 max-w-xs rounded-lg" />
     );
   }
@@ -54,7 +53,6 @@ export function MessageMediaContent({
     return (
       <>
         <a
-           
           href={message.metadata.url as string} // type assertion: message metadata field
           target="_blank"
           rel="noopener noreferrer"
@@ -62,7 +60,6 @@ export function MessageMediaContent({
         >
           <FileIcon />
           <span className="truncate text-sm">
-            { }
             {(message.metadata.filename as string) || 'File'}{' '}
             {/* type assertion: message metadata field */}
           </span>
@@ -80,11 +77,11 @@ export function MessageMediaContent({
       <div className="min-w-[280px] space-y-2">
         <AdvancedVoiceVisualizer
           // type assertion: message metadata URL is string for media messages
-           
+
           audioUrl={message.metadata.url as string}
           variant="spectrum"
           // type assertion: voiceVisualizerTheme matches UIPreferences union
-           
+
           theme={mapVisualizerTheme(voiceVisualizerTheme as UIPreferences['voiceVisualizerTheme'])}
           height={120}
           width={280}
@@ -92,11 +89,8 @@ export function MessageMediaContent({
         />
         <VoiceMessagePlayer
           messageId={message.id}
-           
           audioUrl={message.metadata.url as string} // type assertion: message metadata field
-           
           duration={(message.metadata.duration as number) || 0} // type assertion: message metadata field
-           
           waveformData={message.metadata.waveform as number[] | undefined} // type assertion: message metadata field
           className={isOwn ? 'voice-player-own' : ''}
         />

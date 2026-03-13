@@ -72,6 +72,7 @@ export function VoiceMessagePlayer({
   const isPlaying = status.playing;
 
   // Create animated values for each waveform bar
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const barAnimations = useMemo(() => waveform.map(() => new Animated.Value(1)), [waveform.length]);
 
   // Configure audio mode on mount

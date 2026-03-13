@@ -40,7 +40,7 @@ export default function ForumModDashboard({ forumId }: ForumModDashboardProps) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={`border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === tab.id
                 ? 'border-blue-600 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
@@ -76,6 +76,7 @@ function ModQueueTab({ forumId }: { forumId: string }) {
       setIsLoading(true);
       try {
         const data = await fetchForumModQueue(forumId);
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         if (!cancelled) setItems(data as unknown as ModQueueItem[]);
       } catch (error) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'loadQueue');
@@ -84,11 +85,14 @@ function ModQueueTab({ forumId }: { forumId: string }) {
       }
     };
     loadQueue();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [forumId, fetchForumModQueue]);
 
   const handleAction = async (postId: string, action: string) => {
     try {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       await takeForumModAction(forumId, postId, action as 'approve' | 'remove' | 'hide');
       setItems((prev) => prev.filter((i) => i.id !== postId));
     } catch (error) {
@@ -104,7 +108,7 @@ function ModQueueTab({ forumId }: { forumId: string }) {
     return (
       <div className="p-8 text-center text-gray-500">
         <p className="text-lg">No items in moderation queue</p>
-        <p className="text-sm mt-1">All clear!</p>
+        <p className="mt-1 text-sm">All clear!</p>
       </div>
     );
   }
@@ -118,11 +122,11 @@ function ModQueueTab({ forumId }: { forumId: string }) {
         >
           <div className="flex-1">
             <p className="text-sm text-gray-900 dark:text-white">{item.content}</p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="mt-1 text-xs text-gray-500">
               Reason: {item.flag_reason || 'N/A'} · {item.flagged_at}
             </p>
           </div>
-          <div className="flex gap-2 ml-4">
+          <div className="ml-4 flex gap-2">
             <button
               onClick={() => handleAction(item.id, 'approve')}
               className="rounded bg-green-600 px-3 py-1 text-xs text-white hover:bg-green-700"
@@ -160,7 +164,9 @@ function ModStatsTab({ forumId }: { forumId: string }) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'loadStats');
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [forumId, fetchForumModStats]);
 
   if (!stats) {
@@ -194,7 +200,7 @@ function StatCard({
   return (
     <div className={`rounded-lg p-4 ${colorClasses[color]}`}>
       <p className="text-2xl font-bold">{value}</p>
-      <p className="text-sm mt-1">{label}</p>
+      <p className="mt-1 text-sm">{label}</p>
     </div>
   );
 }

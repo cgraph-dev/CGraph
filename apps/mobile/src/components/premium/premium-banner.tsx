@@ -10,14 +10,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Animated,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -35,6 +28,7 @@ export interface PremiumBannerProps {
 }
 
 /**
+ * Premium Banner component.
  *
  */
 export function PremiumBanner({
@@ -76,6 +70,7 @@ export function PremiumBanner({
         ])
       ).start();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [variant]);
 
   const handleUpgrade = () => {
@@ -131,16 +126,8 @@ export function PremiumBanner({
 
   if (variant === 'floating') {
     return (
-      <Animated.View 
-        style={[
-          styles.floatingContainer,
-          { transform: [{ translateY: floatAnim }] },
-        ]}
-      >
-        <LinearGradient
-          colors={['#8B5CF6', '#6366F1']}
-          style={styles.floatingGradient}
-        >
+      <Animated.View style={[styles.floatingContainer, { transform: [{ translateY: floatAnim }] }]}>
+        <LinearGradient colors={['#8B5CF6', '#6366F1']} style={styles.floatingGradient}>
           <View style={styles.floatingContent}>
             <MaterialCommunityIcons name="crown" size={24} color="#FFFFFF" />
             <View style={styles.floatingText}>
@@ -165,17 +152,9 @@ export function PremiumBanner({
 
   if (variant === 'hero') {
     return (
-      <LinearGradient
-        colors={['#1F1F3D', '#0F0F1F']}
-        style={styles.heroContainer}
-      >
+      <LinearGradient colors={['#1F1F3D', '#0F0F1F']} style={styles.heroContainer}>
         {/* Shimmer effect */}
-        <Animated.View
-          style={[
-            styles.shimmer,
-            { transform: [{ translateX: shimmerTranslateX }] },
-          ]}
-        >
+        <Animated.View style={[styles.shimmer, { transform: [{ translateX: shimmerTranslateX }] }]}>
           <LinearGradient
             colors={['transparent', 'rgba(139, 92, 246, 0.1)', 'transparent']}
             start={{ x: 0, y: 0 }}
@@ -191,10 +170,7 @@ export function PremiumBanner({
         )}
 
         <View style={styles.heroIcon}>
-          <LinearGradient
-            colors={['#8B5CF6', '#6366F1']}
-            style={styles.heroIconGradient}
-          >
+          <LinearGradient colors={['#8B5CF6', '#6366F1']} style={styles.heroIconGradient}>
             <MaterialCommunityIcons name="crown" size={40} color="#FFFFFF" />
           </LinearGradient>
         </View>
@@ -212,10 +188,7 @@ export function PremiumBanner({
         </View>
 
         <Pressable onPress={handleUpgrade}>
-          <LinearGradient
-            colors={['#8B5CF6', '#6366F1']}
-            style={styles.heroButton}
-          >
+          <LinearGradient colors={['#8B5CF6', '#6366F1']} style={styles.heroButton}>
             <Text style={styles.heroButtonText}>Upgrade Now</Text>
             <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />
           </LinearGradient>
@@ -259,17 +232,14 @@ export function PremiumBanner({
         </View>
 
         <Pressable onPress={handleUpgrade}>
-          <LinearGradient
-            colors={['#8B5CF6', '#6366F1']}
-            style={styles.cardButton}
-          >
+          <LinearGradient colors={['#8B5CF6', '#6366F1']} style={styles.cardButton}>
             <Text style={styles.cardButtonText}>Upgrade</Text>
           </LinearGradient>
         </Pressable>
       </LinearGradient>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   // Bar variant

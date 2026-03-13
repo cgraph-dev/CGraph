@@ -5,14 +5,7 @@
  * gradient accents, haptic feedback, and interactive info cards.
  */
 import React from 'react';
-import {
-  View,
-  Text,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
+import { View, Text, KeyboardAvoidingView, Platform, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeStore } from '@/stores';
@@ -27,6 +20,7 @@ import { styles } from './add-friend-screen/styles';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 /**
+ * Add Friend Screen component.
  *
  */
 export default function AddFriendScreen() {
@@ -51,8 +45,14 @@ export default function AddFriendScreen() {
 
       <Header title="Add Friend" showBack onBack={() => navigation.goBack()} />
 
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.content}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.content}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
           <SearchForm onSuccess={() => setTimeout(() => navigation.goBack(), 2000)} />
 
           {/* Info Card */}
@@ -61,9 +61,24 @@ export default function AddFriendScreen() {
               <Ionicons name="information-circle" size={24} color="#60A5FA" />
               <Text style={styles.infoTitle}>How to find friends</Text>
             </View>
-            <InfoStep number={1} title="By Username" description="Enter their @username (e.g., john_doe)" delay={200} />
-            <InfoStep number={2} title="By User ID" description="Enter their 10-digit ID (e.g., #4829173650)" delay={350} />
-            <InfoStep number={3} title="By Email" description="Enter their email address" delay={500} />
+            <InfoStep
+              number={1}
+              title="By Username"
+              description="Enter their @username (e.g., john_doe)"
+              delay={200}
+            />
+            <InfoStep
+              number={2}
+              title="By User ID"
+              description="Enter their 10-digit ID (e.g., #4829173650)"
+              delay={350}
+            />
+            <InfoStep
+              number={3}
+              title="By Email"
+              description="Enter their email address"
+              delay={500}
+            />
           </GlassCard>
 
           {/* Quick Tips */}

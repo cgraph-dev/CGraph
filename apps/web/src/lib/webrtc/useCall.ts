@@ -66,10 +66,7 @@ export interface UseCallReturn {
     options?: { video?: boolean; audio?: boolean }
   ) => Promise<string | null>;
   /** Answer incoming call */
-  answerCall: (
-    roomId: string,
-    options?: { video?: boolean; audio?: boolean }
-  ) => Promise<boolean>;
+  answerCall: (roomId: string, options?: { video?: boolean; audio?: boolean }) => Promise<boolean>;
   /** End current call */
   endCall: () => Promise<void>;
   /** Toggle mute state */
@@ -115,7 +112,7 @@ export function useCall(): UseCallReturn {
   useEffect(() => {
     const socket = socketManager.getSocket();
     if (!socket) return;
-    
+
     const rtcManager = getWebRTCManager(socket);
     setManager(rtcManager);
 

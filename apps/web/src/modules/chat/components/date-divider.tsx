@@ -17,16 +17,17 @@ interface DateDividerProps {
  * styled as a subtle separator between day groups.
  */
 export function DateDivider({ date, sticky = true, className }: DateDividerProps) {
-  const label = typeof date === 'string' && !date.includes('T')
-    ? date
-    : formatDayLabel(typeof date === 'string' ? new Date(date) : date);
+  const label =
+    typeof date === 'string' && !date.includes('T')
+      ? date
+      : formatDayLabel(typeof date === 'string' ? new Date(date) : date);
 
   return (
     <div
       className={cn(
         'flex items-center gap-3 px-4 py-2',
         sticky && 'sticky top-0 z-[var(--z-sticky,10)]',
-        className,
+        className
       )}
       role="separator"
       aria-label={label}

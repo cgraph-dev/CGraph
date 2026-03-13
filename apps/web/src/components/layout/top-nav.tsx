@@ -99,7 +99,10 @@ export function TopNav({
       <div className="flex h-16 items-center justify-between gap-4 px-4">
         {/* Left: menu toggle + breadcrumbs */}
         <div className="flex items-center gap-4">
-          <button onClick={onMenuToggle} className="rounded-lg p-2 hover:bg-white/[0.08] transition-colors lg:hidden">
+          <button
+            onClick={onMenuToggle}
+            className="rounded-lg p-2 transition-colors hover:bg-white/[0.08] lg:hidden"
+          >
             {isMobileMenuOpen ? (
               <XMarkIcon className="h-6 w-6 text-foreground" />
             ) : (
@@ -172,7 +175,7 @@ export function TopNav({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleDarkMode}
-            className="rounded-lg p-2 hover:bg-white/[0.08] transition-colors"
+            className="rounded-lg p-2 transition-colors hover:bg-white/[0.08]"
           >
             {isDarkMode ? (
               <SunIcon className="h-5 w-5 text-foreground-secondary" />

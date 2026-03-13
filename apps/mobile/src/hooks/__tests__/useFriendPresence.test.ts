@@ -8,11 +8,7 @@
  */
 
 import { renderHook, act, waitFor } from '@testing-library/react-native';
-import {
-  useFriendPresence,
-  useIsFriendOnline,
-  useFriendsPresence,
-} from '../useFriendPresence';
+import { useFriendPresence, useIsFriendOnline, useFriendsPresence } from '../useFriendPresence';
 import socketManager from '../../lib/socket';
 
 // Type definition for test assertions
@@ -32,7 +28,8 @@ jest.mock('../../lib/socket', () => ({
 }));
 
 describe('useFriendPresence', () => {
-  let statusChangeCallback: ((userId: string, isOnline: boolean, status?: string) => void) | null = null;
+  let statusChangeCallback: ((userId: string, isOnline: boolean, status?: string) => void) | null =
+    null;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -163,10 +160,7 @@ describe('useFriendPresence', () => {
       const { result, rerender } = renderHook<
         FriendPresenceData | null,
         { userId: string | undefined }
-      >(
-        ({ userId }) => useFriendPresence(userId),
-        { initialProps: { userId: 'user-123' } }
-      );
+      >(({ userId }) => useFriendPresence(userId), { initialProps: { userId: 'user-123' } });
 
       expect(result.current).toEqual(presence1);
 
@@ -185,10 +179,9 @@ describe('useFriendPresence', () => {
       const { result, rerender } = renderHook<
         FriendPresenceData | null,
         { userId: string | undefined }
-      >(
-        ({ userId }) => useFriendPresence(userId),
-        { initialProps: { userId: 'user-123' as string | undefined } }
-      );
+      >(({ userId }) => useFriendPresence(userId), {
+        initialProps: { userId: 'user-123' as string | undefined },
+      });
 
       expect(result.current?.online).toBe(true);
 
@@ -256,7 +249,8 @@ describe('useIsFriendOnline', () => {
 });
 
 describe('useFriendsPresence', () => {
-  let statusChangeCallback: ((userId: string, isOnline: boolean, status?: string) => void) | null = null;
+  let statusChangeCallback: ((userId: string, isOnline: boolean, status?: string) => void) | null =
+    null;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -372,10 +366,7 @@ describe('useFriendsPresence', () => {
         .mockResolvedValueOnce({ 'user-1': { online: true, status: 'online' } })
         .mockResolvedValueOnce({ 'user-3': { online: true, status: 'online' } });
 
-      const { rerender } = renderHook<
-        Map<string, FriendPresenceData>,
-        { ids: string[] }
-      >(
+      const { rerender } = renderHook<Map<string, FriendPresenceData>, { ids: string[] }>(
         ({ ids }) => useFriendsPresence(ids),
         { initialProps: { ids: ['user-1'] } }
       );

@@ -33,7 +33,7 @@ function MockVoicePlayer({
 
       {/* Waveform / progress */}
       <div className="flex-1">
-        <div className="relative h-6 flex items-end gap-[2px]">
+        <div className="relative flex h-6 items-end gap-[2px]">
           {Array.from({ length: 24 }).map((_, i) => {
             const height = 8 + Math.sin(i * 0.8) * 12 + Math.random() * 4;
             const filled = (i / 24) * 100 < progress;
@@ -50,9 +50,7 @@ function MockVoicePlayer({
 
       {/* Time + speed */}
       <div className="flex flex-col items-end">
-        <span className="text-xs text-gray-300">
-          {state === 'playing' ? elapsed : duration}
-        </span>
+        <span className="text-xs text-gray-300">{state === 'playing' ? elapsed : duration}</span>
         <span className="text-[10px] text-gray-500">{speed}×</span>
       </div>
     </div>

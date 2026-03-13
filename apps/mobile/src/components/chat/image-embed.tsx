@@ -20,7 +20,10 @@ interface ImageEmbedProps {
   onExpand: () => void;
 }
 
-const ImageEmbed = memo(function ImageEmbed({ embed, onExpand }: ImageEmbedProps): React.ReactElement | null {
+const ImageEmbed = memo(function ImageEmbed({
+  embed,
+  onExpand,
+}: ImageEmbedProps): React.ReactElement | null {
   const [isLoaded, setIsLoaded] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -60,10 +63,7 @@ const ImageEmbed = memo(function ImageEmbed({ embed, onExpand }: ImageEmbedProps
         resizeMode="cover"
         onLoad={() => setIsLoaded(true)}
       />
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.6)']}
-        style={styles.imageOverlay}
-      >
+      <LinearGradient colors={['transparent', 'rgba(0,0,0,0.6)']} style={styles.imageOverlay}>
         <Ionicons name="image-outline" size={20} color="#fff" />
         <Ionicons name="expand-outline" size={20} color="#fff" />
       </LinearGradient>

@@ -25,10 +25,9 @@ export const nodesApi = {
     limit?: number;
     offset?: number;
   }): Promise<NodeTransaction[]> {
-    const res = await api.get<{ data: NodeTransaction[] }>(
-      '/api/v1/nodes/transactions',
-      { params },
-    );
+    const res = await api.get<{ data: NodeTransaction[] }>('/api/v1/nodes/transactions', {
+      params,
+    });
     return res.data.data;
   },
 
@@ -47,10 +46,7 @@ export const nodesApi = {
   },
 
   /** Send a tip to another user. */
-  async sendTip(
-    recipientId: string,
-    amount: number,
-  ): Promise<NodeTransaction> {
+  async sendTip(recipientId: string, amount: number): Promise<NodeTransaction> {
     const res = await api.post<{ data: NodeTransaction }>('/api/v1/nodes/tip', {
       recipient_id: recipientId,
       amount,
@@ -60,19 +56,17 @@ export const nodesApi = {
 
   /** Unlock gated content (thread). */
   async unlockContent(threadId: string): Promise<NodeTransaction> {
-    const res = await api.post<{ data: NodeTransaction }>(
-      '/api/v1/nodes/unlock',
-      { thread_id: threadId },
-    );
+    const res = await api.post<{ data: NodeTransaction }>('/api/v1/nodes/unlock', {
+      thread_id: threadId,
+    });
     return res.data.data;
   },
 
   /** Request a withdrawal. */
   async requestWithdrawal(nodesAmount: number): Promise<WithdrawalRequest> {
-    const res = await api.post<{ data: WithdrawalRequest }>(
-      '/api/v1/nodes/withdraw',
-      { nodes_amount: nodesAmount },
-    );
+    const res = await api.post<{ data: WithdrawalRequest }>('/api/v1/nodes/withdraw', {
+      nodes_amount: nodesAmount,
+    });
     return res.data.data;
   },
 };

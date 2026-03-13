@@ -21,6 +21,8 @@ interface ServerBannerProps {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Server Banner component. */
 export function ServerBanner({ imageUrl, alt = 'Server banner', className }: ServerBannerProps) {
   return (
     <motion.div
@@ -28,12 +30,7 @@ export function ServerBanner({ imageUrl, alt = 'Server banner', className }: Ser
       animate={{ opacity: 1 }}
       className={cn('relative h-[105px] w-full overflow-hidden', className)}
     >
-      <img
-        src={imageUrl}
-        alt={alt}
-        className="h-full w-full object-cover"
-        loading="lazy"
-      />
+      <img src={imageUrl} alt={alt} className="h-full w-full object-cover" loading="lazy" />
 
       {/* Gradient overlay — fade to sidebar background */}
       <div

@@ -22,14 +22,10 @@ interface LegalScreenProps {
 }
 
 /**
+ * Legal Screen component.
  *
  */
-export default function LegalScreen({
-  title,
-  lastUpdated,
-  icon,
-  sections,
-}: LegalScreenProps) {
+export default function LegalScreen({ title, lastUpdated, icon, sections }: LegalScreenProps) {
   const { colors } = useThemeStore();
   const insets = useSafeAreaInsets();
 
@@ -40,10 +36,7 @@ export default function LegalScreen({
       showsVerticalScrollIndicator={false}
     >
       {/* Header */}
-      <Animated.View
-        style={styles.header}
-        entering={FadeIn.duration(300)}
-      >
+      <Animated.View style={styles.header} entering={FadeIn.duration(300)}>
         <View style={[styles.iconCircle, { backgroundColor: colors.primary + '20' }]}>
           <Ionicons name={icon} size={32} color={colors.primary} />
         </View>
@@ -60,14 +53,9 @@ export default function LegalScreen({
           style={[styles.section, { backgroundColor: colors.surface }]}
           entering={FadeIn.delay(100 + index * 50).duration(250)}
         >
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            {section.title}
-          </Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
           {section.content.map((paragraph, pIdx) => (
-            <Text
-              key={pIdx}
-              style={[styles.paragraph, { color: colors.textSecondary }]}
-            >
+            <Text key={pIdx} style={[styles.paragraph, { color: colors.textSecondary }]}>
               {paragraph}
             </Text>
           ))}

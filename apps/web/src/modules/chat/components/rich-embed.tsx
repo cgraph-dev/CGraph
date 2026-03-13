@@ -49,16 +49,13 @@ export function RichEmbed({
     <div
       className={cn(
         'mt-1 flex max-w-[432px] rounded-md',
-        'bg-[rgb(22,22,30)] border border-white/[0.04]',
+        'border border-white/[0.04] bg-[rgb(22,22,30)]',
         'overflow-hidden',
-        className,
+        className
       )}
     >
       {/* Accent bar */}
-      <div
-        className="w-1 flex-shrink-0 rounded-l"
-        style={{ backgroundColor: color }}
-      />
+      <div className="w-1 flex-shrink-0 rounded-l" style={{ backgroundColor: color }} />
 
       <div className="flex min-w-0 flex-1 gap-3 p-3">
         {/* Text column */}
@@ -74,11 +71,7 @@ export function RichEmbed({
           {author && (
             <div className="mb-1 flex items-center gap-1.5">
               {author.iconUrl && (
-                <img
-                  src={author.iconUrl}
-                  alt=""
-                  className="h-4 w-4 rounded-full"
-                />
+                <img src={author.iconUrl} alt="" className="h-4 w-4 rounded-full" />
               )}
               {author.url ? (
                 <a
@@ -90,9 +83,7 @@ export function RichEmbed({
                   {author.name}
                 </a>
               ) : (
-                <span className="text-xs font-semibold text-white/80">
-                  {author.name}
-                </span>
+                <span className="text-xs font-semibold text-white/80">{author.name}</span>
               )}
             </div>
           )}
@@ -117,7 +108,7 @@ export function RichEmbed({
 
           {/* Description */}
           {description && (
-            <p className="mb-2 text-[13px] leading-snug text-white/60 line-clamp-3">
+            <p className="mb-2 line-clamp-3 text-[13px] leading-snug text-white/60">
               {description}
             </p>
           )}
@@ -126,13 +117,8 @@ export function RichEmbed({
           {fields && fields.length > 0 && (
             <div className="mb-2 grid grid-cols-3 gap-2">
               {fields.map((f, i) => (
-                <div
-                  key={i}
-                  className={cn(!f.inline && 'col-span-3')}
-                >
-                  <p className="text-[11px] font-semibold uppercase text-white/40">
-                    {f.name}
-                  </p>
+                <div key={i} className={cn(!f.inline && 'col-span-3')}>
+                  <p className="text-[11px] font-semibold uppercase text-white/40">{f.name}</p>
                   <p className="text-[13px] text-white/70">{f.value}</p>
                 </div>
               ))}
@@ -163,11 +149,7 @@ export function RichEmbed({
           {(footer || timestamp) && (
             <div className="mt-2 flex items-center gap-1.5 text-[11px] text-white/30">
               {footer?.iconUrl && (
-                <img
-                  src={footer.iconUrl}
-                  alt=""
-                  className="h-4 w-4 rounded-full"
-                />
+                <img src={footer.iconUrl} alt="" className="h-4 w-4 rounded-full" />
               )}
               {footer?.text && <span>{footer.text}</span>}
               {footer?.text && timestamp && <span>•</span>}

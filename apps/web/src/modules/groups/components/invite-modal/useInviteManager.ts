@@ -63,23 +63,30 @@ export function useInviteManager(groupId?: string) {
   // Fetch existing invites
   useEffect(() => {
     if (!groupId) return;
-    api.get(`/api/v1/groups/${groupId}/invites`)
+    api
+      .get(`/api/v1/groups/${groupId}/invites`)
       .then((res) => {
-        const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setInvites(data.map((inv: Record<string, any>) => ({
-          id: inv.id,
-          code: inv.code,
-          url: inv.url || `${window.location.origin}/invite/${inv.code}`,
-          maxUses: inv.max_uses ?? null,
-          uses: inv.uses ?? 0,
-          expiresAt: inv.expires_at ?? null,
-          createdBy: {
-            id: inv.created_by?.id ?? inv.creator?.id ?? '',
-            username: inv.created_by?.username ?? inv.creator?.username ?? 'unknown',
-          },
-          createdAt: inv.created_at ?? inv.inserted_at ?? new Date().toISOString(),
-        })));
+        const data = Array.isArray(res.data?.data)
+          ? res.data.data
+          : Array.isArray(res.data)
+            ? res.data
+            : [];
+        setInvites(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.map((inv: Record<string, any>) => ({
+            id: inv.id,
+            code: inv.code,
+            url: inv.url || `${window.location.origin}/invite/${inv.code}`,
+            maxUses: inv.max_uses ?? null,
+            uses: inv.uses ?? 0,
+            expiresAt: inv.expires_at ?? null,
+            createdBy: {
+              id: inv.created_by?.id ?? inv.creator?.id ?? '',
+              username: inv.created_by?.username ?? inv.creator?.username ?? 'unknown',
+            },
+            createdAt: inv.created_at ?? inv.inserted_at ?? new Date().toISOString(),
+          }))
+        );
       })
       .catch(() => {});
   }, [groupId]);

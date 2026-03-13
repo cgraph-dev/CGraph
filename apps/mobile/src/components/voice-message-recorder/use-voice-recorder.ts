@@ -26,12 +26,16 @@ import type { VoiceMessageRecorderProps, RecordingState } from './types';
 
 const logger = createLogger('VoiceRecorder');
 
+/** Description. */
+/** Formats duration. */
 export function formatDuration(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
+/** Description. */
+/** Hook for voice recorder. */
 export function useVoiceRecorder({
   onComplete,
   onCancel,
@@ -60,9 +64,7 @@ export function useVoiceRecorder({
   const meteringIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pulseAnim = useSharedValue(1);
 
-  const waveformBarHeights = useRef<number[]>(
-    Array.from({ length: 30 }, () => 0.1)
-  ).current;
+  const waveformBarHeights = useRef<number[]>(Array.from({ length: 30 }, () => 0.1)).current;
   const [_waveformTick, setWaveformTick] = useState(0);
   const currentMeteringRef = useRef(0);
   const isRecordingRef = useRef(false);
@@ -83,6 +85,7 @@ export function useVoiceRecorder({
     return () => {
       cleanup();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -143,11 +146,9 @@ export function useVoiceRecorder({
       let barIndex = 0;
       let lastMeteringValue = 0.3;
       meteringIntervalRef.current = setInterval(() => {
-        const hasRealMetering =
-          meteringRef.current !== undefined && meteringRef.current !== null;
+        const hasRealMetering = meteringRef.current !== undefined && meteringRef.current !== null;
         let normalizedLevel: number;
         if (hasRealMetering && isRecordingRef.current) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           normalizedLevel = Math.max(0.15, Math.min(1, (meteringRef.current! + 60) / 60));
           lastMeteringValue = normalizedLevel;
         } else {
@@ -170,6 +171,7 @@ export function useVoiceRecorder({
       setError('Failed to start recording. Please try again.');
       cleanup();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [maxDuration, cleanup, audioRecorder, recorderState]);
 
   const stopRecording = useCallback(async () => {

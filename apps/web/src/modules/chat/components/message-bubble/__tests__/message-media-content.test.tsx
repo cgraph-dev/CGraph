@@ -5,12 +5,16 @@ import { MessageMediaContent } from '../message-media-content';
 import type { Message } from '@/modules/chat/store';
 
 vi.mock('@/components/media/voice-message-player', () => ({
-  VoiceMessagePlayer: (props: Record<string, unknown>) => <div data-testid="voice-player" data-message-id={props.messageId as string} />,
+  VoiceMessagePlayer: (props: Record<string, unknown>) => (
+    <div data-testid="voice-player" data-message-id={props.messageId as string} />
+  ),
 }));
 
 vi.mock('@/modules/chat/components/audio/advanced-voice-visualizer', () => ({
   __esModule: true,
-  default: (props: Record<string, unknown>) => <div data-testid="voice-visualizer" data-url={props.audioUrl as string} />,
+  default: (props: Record<string, unknown>) => (
+    <div data-testid="voice-visualizer" data-url={props.audioUrl as string} />
+  ),
 }));
 
 vi.mock('@/modules/chat/components/gif-message', () => ({
@@ -66,7 +70,11 @@ describe('MessageMediaContent', () => {
   });
 
   it('renders an image for image messages', () => {
-    const msg = { ...baseMessage, messageType: 'image' as const, metadata: { url: 'https://example.com/pic.jpg' } };
+    const msg = {
+      ...baseMessage,
+      messageType: 'image' as const,
+      metadata: { url: 'https://example.com/pic.jpg' },
+    };
     render(<MessageMediaContent {...defaultProps} message={msg} />);
     const img = screen.getByAltText('Shared image');
     expect(img).toBeInTheDocument();
@@ -74,7 +82,11 @@ describe('MessageMediaContent', () => {
   });
 
   it('renders a video for video messages', () => {
-    const msg = { ...baseMessage, messageType: 'video' as const, metadata: { url: 'https://example.com/vid.mp4' } };
+    const msg = {
+      ...baseMessage,
+      messageType: 'video' as const,
+      metadata: { url: 'https://example.com/vid.mp4' },
+    };
     const { container } = render(<MessageMediaContent {...defaultProps} message={msg} />);
     const video = container.querySelector('video');
     expect(video).toBeInTheDocument();
@@ -82,14 +94,22 @@ describe('MessageMediaContent', () => {
   });
 
   it('renders file link and FileMessage for file messages', () => {
-    const msg = { ...baseMessage, messageType: 'file' as const, metadata: { url: 'https://example.com/doc.pdf', filename: 'doc.pdf' } };
+    const msg = {
+      ...baseMessage,
+      messageType: 'file' as const,
+      metadata: { url: 'https://example.com/doc.pdf', filename: 'doc.pdf' },
+    };
     render(<MessageMediaContent {...defaultProps} message={msg} />);
     expect(screen.getByText('doc.pdf')).toBeInTheDocument();
     expect(screen.getByTestId('file-message')).toBeInTheDocument();
   });
 
   it('renders voice visualizer and player for voice messages', () => {
-    const msg = { ...baseMessage, messageType: 'voice' as const, metadata: { url: 'https://example.com/audio.ogg', duration: 30 } };
+    const msg = {
+      ...baseMessage,
+      messageType: 'voice' as const,
+      metadata: { url: 'https://example.com/audio.ogg', duration: 30 },
+    };
     render(<MessageMediaContent {...defaultProps} message={msg} />);
     expect(screen.getByTestId('voice-visualizer')).toBeInTheDocument();
     expect(screen.getByTestId('voice-player')).toBeInTheDocument();

@@ -69,8 +69,10 @@ export function ChannelListItem({
   onPermissions,
 }: ChannelListItemProps) {
   // type assertion: channel.type is a valid key of channelIcons map
-   
-  const Icon: React.ComponentType<React.SVGProps<SVGSVGElement>> = channelIcons[channel.type as keyof typeof channelIcons] ?? HashtagIcon;
+
+  const Icon: React.ComponentType<React.SVGProps<SVGSVGElement>> =
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    channelIcons[channel.type as keyof typeof channelIcons] ?? HashtagIcon;
 
   return (
     <motion.div
@@ -121,14 +123,10 @@ export function ChannelListItem({
             <Icon className="h-5 w-5 text-gray-400" />
             <div>
               <span className="font-medium text-white">{channel.name}</span>
-              {channel.topic && (
-                <p className="text-xs text-gray-500">{channel.topic}</p>
-              )}
+              {channel.topic && <p className="text-xs text-gray-500">{channel.topic}</p>}
             </div>
             {channel.nsfw && (
-              <span className="rounded bg-red-500/10 px-1.5 py-0.5 text-xs text-red-400">
-                NSFW
-              </span>
+              <span className="rounded bg-red-500/10 px-1.5 py-0.5 text-xs text-red-400">NSFW</span>
             )}
           </div>
           <div className="flex items-center gap-1">

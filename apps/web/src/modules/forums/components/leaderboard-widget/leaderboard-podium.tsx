@@ -57,6 +57,8 @@ const PODIUM_CONFIG = [
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Leaderboard Podium component. */
 export function LeaderboardPodium({ entries, className = '' }: LeaderboardPodiumProps) {
   const [isVisible, setIsVisible] = useState(false);
 

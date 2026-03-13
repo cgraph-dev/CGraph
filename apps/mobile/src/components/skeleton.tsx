@@ -5,7 +5,14 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolate,
+} from 'react-native-reanimated';
 import { useThemeStore } from '@/stores';
 
 interface SkeletonProps {
@@ -16,6 +23,7 @@ interface SkeletonProps {
 }
 
 /**
+ * Skeleton component.
  *
  */
 export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style }: SkeletonProps) {
@@ -39,7 +47,9 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style 
   return (
     <Animated.View
       style={[
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           width: width as number | string,
           height,
           borderRadius,
@@ -53,6 +63,7 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style 
 }
 
 /**
+ * Forum Card Skeleton component.
  *
  */
 export function ForumCardSkeleton() {
@@ -71,6 +82,7 @@ export function ForumCardSkeleton() {
 }
 
 /**
+ * Post Card Skeleton component.
  *
  */
 export function PostCardSkeleton() {
@@ -98,6 +110,7 @@ export function PostCardSkeleton() {
 }
 
 /**
+ * Comment Skeleton component.
  *
  */
 export function CommentSkeleton() {
@@ -119,6 +132,7 @@ export function CommentSkeleton() {
 }
 
 /**
+ * User Card Skeleton component.
  *
  */
 export function UserCardSkeleton() {

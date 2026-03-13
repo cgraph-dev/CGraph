@@ -7,7 +7,7 @@
  * @module screens/search/SearchScreen/components/DiscoverySection
  */
 
-import React, { } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -40,6 +40,7 @@ interface RecentSearchesSectionProps {
 }
 
 /**
+ * Recent Searches Section component.
  *
  */
 export function RecentSearchesSection({
@@ -107,6 +108,7 @@ interface TrendingSectionProps {
 }
 
 /**
+ * Trending Section component.
  *
  */
 export function TrendingSection({ onTopicSelect, isDark, colors }: TrendingSectionProps) {
@@ -157,41 +159,50 @@ const QUICK_ACTIONS = [
     icon: 'person-add' as const,
     label: 'Find Friends',
     color: '#10b981',
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     gradient: ['#10b981', '#059669'] as [string, string],
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     category: 'users' as SearchCategory,
   },
   {
     icon: 'people' as const,
     label: 'Join Groups',
     color: '#f59e0b',
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     gradient: ['#f59e0b', '#d97706'] as [string, string],
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     category: 'groups' as SearchCategory,
   },
   {
     icon: 'newspaper' as const,
     label: 'Explore Forums',
     color: '#ec4899',
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     gradient: ['#ec4899', '#db2777'] as [string, string],
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     category: 'forums' as SearchCategory,
   },
   {
     icon: 'sparkles' as const,
     label: 'Discover',
     color: '#8b5cf6',
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     gradient: ['#8b5cf6', '#7c3aed'] as [string, string],
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     category: 'all' as SearchCategory,
   },
 ];
 
 /**
+ * Quick Actions Section component.
  *
  */
 export function QuickActionsSection({
@@ -235,6 +246,7 @@ interface SearchTipsProps {
 }
 
 /**
+ * Search Tips component.
  *
  */
 export function SearchTips({ colors }: SearchTipsProps) {
@@ -271,6 +283,7 @@ interface DiscoverySectionProps {
 }
 
 /**
+ * Discovery Section component.
  *
  */
 export function DiscoverySection({

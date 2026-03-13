@@ -23,9 +23,20 @@ interface Props {
   onGoBack: () => void;
 }
 
+/** Description. */
+/** Call Controls component. */
 export function CallControls({
-  isMuted, isVideoOff, isGroupCall, layoutMode, callDuration,
-  onToggleMute, onToggleVideo, onToggleLayout, onFlipCamera, onEndCall, onGoBack,
+  isMuted,
+  isVideoOff,
+  isGroupCall,
+  layoutMode,
+  callDuration,
+  onToggleMute,
+  onToggleVideo,
+  onToggleLayout,
+  onFlipCamera,
+  onEndCall,
+  onGoBack,
 }: Props) {
   const formatDuration = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -37,7 +48,13 @@ export function CallControls({
     <>
       <SafeAreaView edges={['top']}>
         <View style={styles.topBar}>
-          <TouchableOpacity style={styles.topButton} onPress={() => { HapticFeedback.light(); onGoBack(); }}>
+          <TouchableOpacity
+            style={styles.topButton}
+            onPress={() => {
+              HapticFeedback.light();
+              onGoBack();
+            }}
+          >
             <Ionicons name="chevron-down" size={28} color="white" />
           </TouchableOpacity>
           <View style={styles.topCenter}>
@@ -60,7 +77,12 @@ export function CallControls({
               style={[styles.controlButton, isMuted && styles.controlButtonActive]}
               onPress={onToggleMute}
             >
-              <View style={[styles.controlIconBg, isMuted && { backgroundColor: Colors.semantic.error }]}>
+              <View
+                style={[
+                  styles.controlIconBg,
+                  isMuted && { backgroundColor: Colors.semantic.error },
+                ]}
+              >
                 <Ionicons name={isMuted ? 'mic-off' : 'mic'} size={24} color="white" />
               </View>
               <Text style={styles.controlText}>{isMuted ? 'Unmute' : 'Mute'}</Text>
@@ -70,7 +92,12 @@ export function CallControls({
               style={[styles.controlButton, isVideoOff && styles.controlButtonActive]}
               onPress={onToggleVideo}
             >
-              <View style={[styles.controlIconBg, isVideoOff && { backgroundColor: Colors.semantic.error }]}>
+              <View
+                style={[
+                  styles.controlIconBg,
+                  isVideoOff && { backgroundColor: Colors.semantic.error },
+                ]}
+              >
                 <Ionicons name={isVideoOff ? 'videocam-off' : 'videocam'} size={24} color="white" />
               </View>
               <Text style={styles.controlText}>{isVideoOff ? 'Start' : 'Stop'}</Text>
@@ -79,9 +106,15 @@ export function CallControls({
             {isGroupCall && (
               <TouchableOpacity style={styles.controlButton} onPress={onToggleLayout}>
                 <View style={styles.controlIconBg}>
-                  <Ionicons name={layoutMode === 'grid' ? 'grid' : 'expand'} size={24} color="white" />
+                  <Ionicons
+                    name={layoutMode === 'grid' ? 'grid' : 'expand'}
+                    size={24}
+                    color="white"
+                  />
                 </View>
-                <Text style={styles.controlText}>{layoutMode === 'grid' ? 'Grid' : 'Spotlight'}</Text>
+                <Text style={styles.controlText}>
+                  {layoutMode === 'grid' ? 'Grid' : 'Spotlight'}
+                </Text>
               </TouchableOpacity>
             )}
 
@@ -93,8 +126,16 @@ export function CallControls({
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.controlButton} onPress={onEndCall}>
-              <LinearGradient colors={[Colors.red[500], Colors.red[600]]} style={styles.endCallButton}>
-                <Ionicons name="call" size={24} color="white" style={{ transform: [{ rotate: '135deg' }] }} />
+              <LinearGradient
+                colors={[Colors.red[500], Colors.red[600]]}
+                style={styles.endCallButton}
+              >
+                <Ionicons
+                  name="call"
+                  size={24}
+                  color="white"
+                  style={{ transform: [{ rotate: '135deg' }] }}
+                />
               </LinearGradient>
               <Text style={[styles.controlText, { color: Colors.red[400] }]}>End</Text>
             </TouchableOpacity>

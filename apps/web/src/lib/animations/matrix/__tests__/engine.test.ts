@@ -1,6 +1,6 @@
 /**
  * Matrix Animation System - Engine Tests
- * 
+ *
  * @description Tests for the core animation engine (v2.0.0 with atlas)
  * @version 2.0.0
  * @since v0.6.3
@@ -17,7 +17,8 @@ import { MATRIX_GREEN, CYBER_BLUE } from '../themes';
 // Mock window object for tests
 const mockWindow = {
   devicePixelRatio: 1,
-  requestAnimationFrame: (cb: FrameRequestCallback) => setTimeout(() => cb(0), 16) as unknown as number,
+  requestAnimationFrame: (cb: FrameRequestCallback) =>
+    setTimeout(() => cb(0), 16) as unknown as number,
   cancelAnimationFrame: (id: number) => clearTimeout(id),
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
@@ -33,11 +34,11 @@ const mockDocument = {
 // Mock ResizeObserver
 class MockResizeObserver {
   callback: ResizeObserverCallback;
-  
+
   constructor(callback: ResizeObserverCallback) {
     this.callback = callback;
   }
-  
+
   observe = vi.fn();
   unobserve = vi.fn();
   disconnect = vi.fn();
@@ -47,12 +48,12 @@ class MockResizeObserver {
 class MockOffscreenCanvas {
   width: number;
   height: number;
-  
+
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
   }
-  
+
   getContext = () => createMockContext();
 }
 
@@ -174,7 +175,7 @@ describe('Matrix Engine Creation', () => {
       const engine = createMatrixEngine({
         performance: { targetFPS: 30 },
       });
-      
+
       const state = engine.getState();
       expect(state).toBeDefined();
     });
@@ -182,7 +183,7 @@ describe('Matrix Engine Creation', () => {
     it('should create multiple independent engines', () => {
       const engine1 = createMatrixEngine();
       const engine2 = createMatrixEngine();
-      
+
       expect(engine1).not.toBe(engine2);
     });
   });
@@ -191,7 +192,7 @@ describe('Matrix Engine Creation', () => {
     it('should initialize with idle state', () => {
       const engine = new MatrixEngine();
       const state = engine.getState();
-      
+
       expect(state.state).toBe('idle');
       expect(state.isPaused).toBe(false);
     });
@@ -199,7 +200,7 @@ describe('Matrix Engine Creation', () => {
     it('should have default theme', () => {
       const engine = new MatrixEngine();
       const state = engine.getState();
-      
+
       expect(state.theme).toBeDefined();
       expect(state.theme.id).toBe(MATRIX_GREEN.id);
     });
@@ -207,7 +208,7 @@ describe('Matrix Engine Creation', () => {
     it('should initialize metrics', () => {
       const engine = new MatrixEngine();
       const state = engine.getState();
-      
+
       expect(state.metrics).toBeDefined();
       expect(state.metrics.fps).toBe(0);
       expect(state.metrics.frameCount).toBe(0);
@@ -238,7 +239,7 @@ describe('Matrix Engine Initialization', () => {
     it('should initialize with canvas', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       engine.init(canvas as any);
-      
+
       // Engine calls getContext with optimization options
       expect(canvas.getContext).toHaveBeenCalledWith('2d', expect.any(Object));
     });
@@ -247,7 +248,7 @@ describe('Matrix Engine Initialization', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       engine.init(canvas as any);
       const state = engine.getState();
-      
+
       expect(state.dimensions.width).toBe(800);
       expect(state.dimensions.height).toBe(600);
     });
@@ -284,14 +285,14 @@ describe('Matrix Engine Lifecycle', () => {
     it('should change state to running', () => {
       engine.start();
       const state = engine.getState();
-      
+
       expect(state.state).toBe('running');
     });
 
     it('should trigger onStart callback', () => {
       const onStart = vi.fn();
       engine.setEventHandlers({ onStart });
-      
+
       engine.start();
       expect(onStart).toHaveBeenCalled();
     });
@@ -302,14 +303,14 @@ describe('Matrix Engine Lifecycle', () => {
       engine.start();
       engine.stop();
       const state = engine.getState();
-      
+
       expect(state.state).toBe('stopped');
     });
 
     it('should trigger onStop callback', () => {
       const onStop = vi.fn();
       engine.setEventHandlers({ onStop });
-      
+
       engine.start();
       engine.stop();
       expect(onStop).toHaveBeenCalled();
@@ -321,7 +322,7 @@ describe('Matrix Engine Lifecycle', () => {
       engine.start();
       engine.pause();
       const state = engine.getState();
-      
+
       expect(state.state).toBe('paused');
       expect(state.isPaused).toBe(true);
     });
@@ -329,7 +330,7 @@ describe('Matrix Engine Lifecycle', () => {
     it('should trigger onPause callback', () => {
       const onPause = vi.fn();
       engine.setEventHandlers({ onPause });
-      
+
       engine.start();
       engine.pause();
       expect(onPause).toHaveBeenCalled();
@@ -342,7 +343,7 @@ describe('Matrix Engine Lifecycle', () => {
       engine.pause();
       engine.resume();
       const state = engine.getState();
-      
+
       expect(state.state).toBe('running');
       expect(state.isPaused).toBe(false);
     });
@@ -350,7 +351,7 @@ describe('Matrix Engine Lifecycle', () => {
     it('should trigger onResume callback', () => {
       const onResume = vi.fn();
       engine.setEventHandlers({ onResume });
-      
+
       engine.start();
       engine.pause();
       engine.resume();
@@ -362,7 +363,7 @@ describe('Matrix Engine Lifecycle', () => {
     it('should pause when running', () => {
       engine.start();
       engine.toggle();
-      
+
       expect(engine.getState().isPaused).toBe(true);
     });
 
@@ -370,7 +371,7 @@ describe('Matrix Engine Lifecycle', () => {
       engine.start();
       engine.pause();
       engine.toggle();
-      
+
       expect(engine.getState().isPaused).toBe(false);
     });
   });
@@ -379,7 +380,7 @@ describe('Matrix Engine Lifecycle', () => {
     it('should stop the engine', () => {
       engine.start();
       engine.destroy();
-      
+
       expect(engine.getState().state).toBe('stopped');
     });
 
@@ -434,7 +435,7 @@ describe('Matrix Engine Configuration', () => {
 
     it('should update while running', () => {
       engine.start();
-      
+
       expect(() => {
         engine.updateConfig({
           columns: { density: 0.5 },
@@ -447,20 +448,20 @@ describe('Matrix Engine Configuration', () => {
     it('should change theme by object', () => {
       engine.setTheme(CYBER_BLUE);
       const state = engine.getState();
-      
+
       expect(state.theme.id).toBe(CYBER_BLUE.id);
     });
 
     it('should change theme by preset name', () => {
       engine.setTheme('blood-red');
       const state = engine.getState();
-      
+
       expect(state.theme.id).toBe('blood-red');
     });
 
     it('should update while running', () => {
       engine.start();
-      
+
       expect(() => {
         engine.setTheme(CYBER_BLUE);
       }).not.toThrow();
@@ -492,7 +493,7 @@ describe('Matrix Engine State', () => {
   describe('getState()', () => {
     it('should return current state', () => {
       const state = engine.getState();
-      
+
       expect(state).toBeDefined();
       expect(state.state).toBeDefined();
       expect(state.theme).toBeDefined();
@@ -503,20 +504,20 @@ describe('Matrix Engine State', () => {
     it('should return immutable state', () => {
       const state1 = engine.getState();
       const state2 = engine.getState();
-      
+
       // States should be equal but not the same object (if cloned)
       expect(state1.state).toBe(state2.state);
     });
 
     it('should reflect state changes', () => {
       expect(engine.getState().state).toBe('idle');
-      
+
       engine.start();
       expect(engine.getState().state).toBe('running');
-      
+
       engine.pause();
       expect(engine.getState().state).toBe('paused');
-      
+
       engine.stop();
       expect(engine.getState().state).toBe('stopped');
     });
@@ -641,12 +642,12 @@ describe('Matrix Engine Dimensions', () => {
 describe('Matrix Engine Performance', () => {
   it('should create engine quickly', () => {
     const start = performance.now();
-    
+
     for (let i = 0; i < 100; i++) {
       const engine = new MatrixEngine();
       engine.destroy();
     }
-    
+
     const elapsed = performance.now() - start;
     // Allow up to 5ms per engine creation/destruction cycle
     // This accounts for slower CI environments and virtualized systems
@@ -656,12 +657,12 @@ describe('Matrix Engine Performance', () => {
   it('should initialize quickly', () => {
     const mock = createMockCanvas();
     const engine = new MatrixEngine();
-    
+
     const start = performance.now();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     engine.init(mock.canvas as any);
     const elapsed = performance.now() - start;
-    
+
     engine.destroy();
     expect(elapsed).toBeLessThan(50); // 50ms initialization
   });

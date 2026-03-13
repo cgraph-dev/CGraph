@@ -17,6 +17,7 @@ export interface EmptyNotificationsProps {
 }
 
 /**
+ * Empty Notifications component.
  *
  */
 export function EmptyNotifications({ activeTab, colors }: EmptyNotificationsProps) {

@@ -17,6 +17,7 @@ interface EventCardProps {
 }
 
 /**
+ * Event Card component.
  *
  */
 export function EventCard({ event, onPress }: EventCardProps) {
@@ -30,7 +31,7 @@ export function EventCard({ event, onPress }: EventCardProps) {
         <View style={styles.eventContent}>
           <View style={styles.eventHeader}>
             <View style={[styles.eventIcon, { backgroundColor: color + '30' }]}>
-              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
               <Ionicons name={config.icon as any} size={16} color={color} />
             </View>
             <View style={styles.eventInfo}>

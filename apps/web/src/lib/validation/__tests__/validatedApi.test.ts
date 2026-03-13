@@ -12,12 +12,7 @@
 import { describe, it, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { server } from '@/test/setup';
-import {
-  authApi,
-  conversationsApi,
-  messagesApi,
-  notificationsApi,
-} from '../validatedApi';
+import { authApi, conversationsApi, messagesApi, notificationsApi } from '../validatedApi';
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -113,16 +108,11 @@ describe('authApi', () => {
     it('propagates API errors', async () => {
       server.use(
         http.post(`${API_BASE}/api/v1/auth/login`, () =>
-          HttpResponse.json(
-            { error: 'Invalid credentials' },
-            { status: 401 }
-          )
+          HttpResponse.json({ error: 'Invalid credentials' }, { status: 401 })
         )
       );
 
-      await expect(
-        authApi.login('invalid@example.com', 'wrong')
-      ).rejects.toThrow();
+      await expect(authApi.login('invalid@example.com', 'wrong')).rejects.toThrow();
     });
   });
 
@@ -165,11 +155,7 @@ describe('authApi', () => {
     });
 
     it('handles flat token response', async () => {
-      server.use(
-        http.post(`${API_BASE}/api/v1/auth/refresh`, () =>
-          HttpResponse.json(mockTokens)
-        )
-      );
+      server.use(http.post(`${API_BASE}/api/v1/auth/refresh`, () => HttpResponse.json(mockTokens)));
 
       const result = await authApi.refresh('old-refresh-token');
       expect(result.access_token).toBe('test-access-token');
@@ -178,22 +164,14 @@ describe('authApi', () => {
 
   describe('me', () => {
     it('normalizes { data: user } wrapper', async () => {
-      server.use(
-        http.get(`${API_BASE}/api/v1/me`, () =>
-          HttpResponse.json({ data: mockUser })
-        )
-      );
+      server.use(http.get(`${API_BASE}/api/v1/me`, () => HttpResponse.json({ data: mockUser })));
 
       const result = await authApi.me();
       expect(result.username).toBe('testuser');
     });
 
     it('normalizes { user: ... } wrapper', async () => {
-      server.use(
-        http.get(`${API_BASE}/api/v1/me`, () =>
-          HttpResponse.json({ user: mockUser })
-        )
-      );
+      server.use(http.get(`${API_BASE}/api/v1/me`, () => HttpResponse.json({ user: mockUser })));
 
       const result = await authApi.me();
       expect(result.email).toBe('test@example.com');
@@ -224,9 +202,7 @@ describe('conversationsApi', () => {
   describe('list', () => {
     it('normalizes array response', async () => {
       server.use(
-        http.get(`${API_BASE}/api/v1/conversations`, () =>
-          HttpResponse.json([mockConversation])
-        )
+        http.get(`${API_BASE}/api/v1/conversations`, () => HttpResponse.json([mockConversation]))
       );
 
       const result = await conversationsApi.list();
@@ -283,13 +259,11 @@ describe('messagesApi', () => {
   describe('list', () => {
     it('normalizes { messages: [...] } response', async () => {
       server.use(
-        http.get(
-          `${API_BASE}/api/v1/conversations/:convId/messages`,
-          () =>
-            HttpResponse.json({
-              messages: [mockMessage],
-              meta: { has_more: false },
-            })
+        http.get(`${API_BASE}/api/v1/conversations/:convId/messages`, () =>
+          HttpResponse.json({
+            messages: [mockMessage],
+            meta: { has_more: false },
+          })
         )
       );
 
@@ -305,9 +279,8 @@ describe('messagesApi', () => {
       }));
 
       server.use(
-        http.get(
-          `${API_BASE}/api/v1/conversations/:convId/messages`,
-          () => HttpResponse.json(manyMessages)
+        http.get(`${API_BASE}/api/v1/conversations/:convId/messages`, () =>
+          HttpResponse.json(manyMessages)
         )
       );
 
@@ -320,13 +293,10 @@ describe('messagesApi', () => {
     it('includes all optional fields in payload', async () => {
       let capturedBody: Record<string, unknown> | null = null;
       server.use(
-        http.post(
-          `${API_BASE}/api/v1/conversations/:convId/messages`,
-          async ({ request }) => {
-            capturedBody = (await request.json()) as Record<string, unknown>;
-            return HttpResponse.json({ message: mockMessage });
-          }
-        )
+        http.post(`${API_BASE}/api/v1/conversations/:convId/messages`, async ({ request }) => {
+          capturedBody = (await request.json()) as Record<string, unknown>;
+          return HttpResponse.json({ message: mockMessage });
+        })
       );
 
       await messagesApi.send(mockConversation.id, 'Hello', {
@@ -346,13 +316,10 @@ describe('messagesApi', () => {
     it('sends PATCH with new content', async () => {
       let method = '';
       server.use(
-        http.patch(
-          `${API_BASE}/api/v1/conversations/:convId/messages/:msgId`,
-          ({ request }) => {
-            method = request.method;
-            return HttpResponse.json({ message: { ...mockMessage, content: 'updated' } });
-          }
-        )
+        http.patch(`${API_BASE}/api/v1/conversations/:convId/messages/:msgId`, ({ request }) => {
+          method = request.method;
+          return HttpResponse.json({ message: { ...mockMessage, content: 'updated' } });
+        })
       );
 
       await messagesApi.edit(mockConversation.id, mockMessage.id, 'updated');
@@ -364,13 +331,10 @@ describe('messagesApi', () => {
     it('sends DELETE request', async () => {
       let called = false;
       server.use(
-        http.delete(
-          `${API_BASE}/api/v1/conversations/:convId/messages/:msgId`,
-          () => {
-            called = true;
-            return new HttpResponse(null, { status: 204 });
-          }
-        )
+        http.delete(`${API_BASE}/api/v1/conversations/:convId/messages/:msgId`, () => {
+          called = true;
+          return new HttpResponse(null, { status: 204 });
+        })
       );
 
       await messagesApi.delete(mockConversation.id, mockMessage.id);

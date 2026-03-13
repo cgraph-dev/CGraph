@@ -26,6 +26,7 @@ interface IdentitySection {
 }
 
 /**
+ * Identity Customization Screen component.
  *
  */
 export default function IdentityCustomizationScreen() {

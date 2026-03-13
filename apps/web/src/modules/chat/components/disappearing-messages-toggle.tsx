@@ -38,7 +38,7 @@ export function DisappearingMessagesToggle({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/60 hover:bg-white/5 hover:text-white/80 transition-colors"
+        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/60 transition-colors hover:bg-white/5 hover:text-white/80"
       >
         <ClockIcon className="h-4 w-4" />
         <span>Disappearing: {currentOption.label}</span>
@@ -48,9 +48,7 @@ export function DisappearingMessagesToggle({
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <div className="absolute bottom-full right-0 z-50 mb-2 w-48 rounded-xl border border-white/10 bg-white/[0.04] py-1 shadow-xl">
-            <p className="px-3 py-2 text-xs font-semibold uppercase text-white/30">
-              Message timer
-            </p>
+            <p className="px-3 py-2 text-xs font-semibold uppercase text-white/30">Message timer</p>
             {TTL_OPTIONS.map((option) => (
               <button
                 key={option.label}

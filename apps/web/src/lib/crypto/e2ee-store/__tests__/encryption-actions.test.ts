@@ -93,13 +93,17 @@ function makeMockStore(overrides?: Partial<Record<string, unknown>>) {
   };
 
   const get = vi.fn(() => state);
-  const set = vi.fn((partial: Record<string, unknown> | ((s: Record<string, unknown>) => Record<string, unknown>)) => {
-    if (typeof partial === 'function') {
-      Object.assign(state, partial(state));
-    } else {
-      Object.assign(state, partial);
+  const set = vi.fn(
+    (
+      partial: Record<string, unknown> | ((s: Record<string, unknown>) => Record<string, unknown>)
+    ) => {
+      if (typeof partial === 'function') {
+        Object.assign(state, partial(state));
+      } else {
+        Object.assign(state, partial);
+      }
     }
-  });
+  );
   return { get, set, state };
 }
 
@@ -170,7 +174,10 @@ describe('createEncryptWithRatchet', () => {
 
     expect(state.getRecipientBundle).toHaveBeenCalledWith('recipient1');
     expect(mockSessionManager.encryptMessage).toHaveBeenCalledWith(
-      'our-id', 'recipient1', 'secret', expect.any(Object)
+      'our-id',
+      'recipient1',
+      'secret',
+      expect.any(Object)
     );
     expect(result).toEqual({ body: 'enc' });
   });
@@ -186,7 +193,10 @@ describe('createEncryptWithRatchet', () => {
 
     expect(state.getRecipientBundle).not.toHaveBeenCalled();
     expect(mockSessionManager.encryptMessage).toHaveBeenCalledWith(
-      'our-id-2', 'recipient2', 'text', undefined
+      'our-id-2',
+      'recipient2',
+      'text',
+      undefined
     );
   });
 });
@@ -290,8 +300,10 @@ describe('createGetSafetyNumber', () => {
     expect(mockLoadIdentityKeyPair).toHaveBeenCalled();
     expect(mockExportPublicKey).toHaveBeenCalledWith(fakeKeyPair.keyPair.publicKey);
     expect(mockGenerateSafetyNumber).toHaveBeenCalledWith(
-      expect.any(ArrayBuffer), 'our-id',
-      expect.any(ArrayBuffer), 'recipient-user'
+      expect.any(ArrayBuffer),
+      'our-id',
+      expect.any(ArrayBuffer),
+      'recipient-user'
     );
     expect(result).toBe('12345-67890');
   });

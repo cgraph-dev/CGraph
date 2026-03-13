@@ -39,6 +39,7 @@ type SelectProps = {
 };
 
 /**
+ * Select component.
  *
  */
 export default function Select({
@@ -58,13 +59,14 @@ export default function Select({
 
   const selectedOption = options.find((opt) => opt.value === value);
 
-  const filteredOptions = searchable && searchQuery
-    ? options.filter(
-        (opt) =>
-          opt.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          opt.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : options;
+  const filteredOptions =
+    searchable && searchQuery
+      ? options.filter(
+          (opt) =>
+            opt.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            opt.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : options;
 
   const handleSelect = (optionValue: string) => {
     onValueChange(optionValue);
@@ -74,10 +76,8 @@ export default function Select({
 
   return (
     <View style={style}>
-      {label && (
-        <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
-      )}
-      
+      {label && <Text style={[styles.label, { color: colors.text }]}>{label}</Text>}
+
       <TouchableOpacity
         style={[
           styles.trigger,
@@ -107,16 +107,10 @@ export default function Select({
         >
           {selectedOption?.label || placeholder}
         </Text>
-        <Ionicons
-          name="chevron-down"
-          size={20}
-          color={colors.textSecondary}
-        />
+        <Ionicons name="chevron-down" size={20} color={colors.textSecondary} />
       </TouchableOpacity>
-      
-      {error && (
-        <Text style={[styles.error, { color: colors.error }]}>{error}</Text>
-      )}
+
+      {error && <Text style={[styles.error, { color: colors.error }]}>{error}</Text>}
 
       <Modal
         visible={isOpen}
@@ -124,28 +118,11 @@ export default function Select({
         animationType="fade"
         onRequestClose={() => setIsOpen(false)}
       >
-        <Pressable
-          style={styles.overlay}
-          onPress={() => setIsOpen(false)}
-        >
-          <View
-            style={[
-              styles.dropdown,
-              { backgroundColor: colors.surface },
-            ]}
-          >
+        <Pressable style={styles.overlay} onPress={() => setIsOpen(false)}>
+          <View style={[styles.dropdown, { backgroundColor: colors.surface }]}>
             {searchable && (
-              <View
-                style={[
-                  styles.searchContainer,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Ionicons
-                  name="search"
-                  size={20}
-                  color={colors.textSecondary}
-                />
+              <View style={[styles.searchContainer, { borderBottomColor: colors.border }]}>
+                <Ionicons name="search" size={20} color={colors.textSecondary} />
                 <TextInput
                   style={[styles.searchInput, { color: colors.text }]}
                   value={searchQuery}
@@ -156,7 +133,7 @@ export default function Select({
                 />
               </View>
             )}
-            
+
             <FlatList
               data={filteredOptions}
               keyExtractor={(item) => item.value}
@@ -177,11 +154,7 @@ export default function Select({
                     <Ionicons
                       name={item.icon}
                       size={20}
-                      color={
-                        item.value === value
-                          ? colors.primary
-                          : colors.textSecondary
-                      }
+                      color={item.value === value ? colors.primary : colors.textSecondary}
                       style={styles.optionIcon}
                     />
                   )}
@@ -193,38 +166,27 @@ export default function Select({
                           color: item.disabled
                             ? colors.textSecondary
                             : item.value === value
-                            ? colors.primary
-                            : colors.text,
+                              ? colors.primary
+                              : colors.text,
                         },
                       ]}
                     >
                       {item.label}
                     </Text>
                     {item.description && (
-                      <Text
-                        style={[
-                          styles.optionDescription,
-                          { color: colors.textSecondary },
-                        ]}
-                      >
+                      <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>
                         {item.description}
                       </Text>
                     )}
                   </View>
                   {item.value === value && (
-                    <Ionicons
-                      name="checkmark"
-                      size={20}
-                      color={colors.primary}
-                    />
+                    <Ionicons name="checkmark" size={20} color={colors.primary} />
                   )}
                 </TouchableOpacity>
               )}
               ListEmptyComponent={
                 <View style={styles.empty}>
-                  <Text style={{ color: colors.textSecondary }}>
-                    No options found
-                  </Text>
+                  <Text style={{ color: colors.textSecondary }}>No options found</Text>
                 </View>
               }
             />

@@ -37,7 +37,8 @@ export interface MatrixTextProps {
 // =============================================================================
 
 export const CHARSETS = {
-  katakana: 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン',
+  katakana:
+    'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン',
   binary: '01',
   hex: '0123456789ABCDEF',
   symbols: '!@#$%^&*()[]{}|;:,.<>?/\\~`+-=_',
@@ -61,6 +62,6 @@ export function getRandomChar(charset: string): string {
 export function encryptText(text: string, charset: string): string {
   return text
     .split('')
-    .map(char => (char === ' ' ? ' ' : getRandomChar(charset)))
+    .map((char) => (char === ' ' ? ' ' : getRandomChar(charset)))
     .join('');
 }

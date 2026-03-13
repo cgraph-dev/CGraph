@@ -55,6 +55,7 @@ const BADGE_ICON_MAP: Record<string, keyof typeof Ionicons.glyphMap> = {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Identity Card component. */
 export default function IdentityCard({ snapshot, compact = true }: IdentityCardProps) {
   const displayName = snapshot.display_name || snapshot.username || 'Anonymous';
   const badges = (snapshot.badges || []).slice(0, MAX_BADGES);
@@ -77,9 +78,7 @@ export default function IdentityCard({ snapshot, compact = true }: IdentityCardP
           <Image source={{ uri: snapshot.avatar_url }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatar, styles.avatarFallback]}>
-            <Text style={styles.avatarFallbackText}>
-              {displayName.charAt(0).toUpperCase()}
-            </Text>
+            <Text style={styles.avatarFallbackText}>{displayName.charAt(0).toUpperCase()}</Text>
           </View>
         )}
       </View>
@@ -111,9 +110,7 @@ export default function IdentityCard({ snapshot, compact = true }: IdentityCardP
                 >
                   <Ionicons name={iconName} size={10} color={badge.color} />
                   {!compact && (
-                    <Text style={[styles.badgeText, { color: badge.color }]}>
-                      {badge.name}
-                    </Text>
+                    <Text style={[styles.badgeText, { color: badge.color }]}>{badge.name}</Text>
                   )}
                 </View>
               );

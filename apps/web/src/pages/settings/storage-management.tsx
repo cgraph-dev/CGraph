@@ -124,7 +124,8 @@ export function StorageManagement() {
       <div className="mb-8 space-y-3">
         {CATEGORIES.map((cat) => {
           // type assertion: cat.key maps to a known StorageBreakdown field
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const value = storage[cat.key as keyof StorageBreakdown];
           const pct = maxCategory > 0 ? (value / maxCategory) * 100 : 0;
 
@@ -178,7 +179,8 @@ export function StorageManagement() {
                 onChange={(e) =>
                   setAutoDownload((prev) => ({
                     ...prev,
-                     
+
+                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                     [type]: e.target.value as AutoDownloadOption, // safe downcast – select event value
                   }))
                 }

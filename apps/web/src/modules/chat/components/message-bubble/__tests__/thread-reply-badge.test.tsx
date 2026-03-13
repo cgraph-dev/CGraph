@@ -8,8 +8,9 @@ const mockOpenThread = vi.fn();
 let mockReplyCounts: Record<string, number> = {};
 
 vi.mock('@/modules/chat/store/threadStore', () => ({
-  useThreadStore: (selector: (s: { replyCounts: Record<string, number>; openThread: () => void }) => unknown) =>
-    selector({ replyCounts: mockReplyCounts, openThread: mockOpenThread }),
+  useThreadStore: (
+    selector: (s: { replyCounts: Record<string, number>; openThread: () => void }) => unknown
+  ) => selector({ replyCounts: mockReplyCounts, openThread: mockOpenThread }),
 }));
 
 describe('ThreadReplyBadge', () => {

@@ -5,4 +5,3 @@
  *
  * @module pages/customize/theme-customization
  */
-

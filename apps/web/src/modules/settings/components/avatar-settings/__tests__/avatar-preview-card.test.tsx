@@ -7,11 +7,21 @@ vi.mock('@heroicons/react/24/outline', () => ({
 }));
 
 vi.mock('@/shared/components/ui', () => ({
-  AnimatedAvatar: ({ alt, size, showStatus }: { alt: string; size: string; showStatus?: boolean }) => (
+  AnimatedAvatar: ({
+    alt,
+    size,
+    showStatus,
+  }: {
+    alt: string;
+    size: string;
+    showStatus?: boolean;
+  }) => (
     <div data-testid="animated-avatar" data-alt={alt} data-size={size} data-status={showStatus} />
   ),
   GlassCard: ({ children, className }: React.PropsWithChildren<{ className?: string }>) => (
-    <div className={className} data-testid="glass-card">{children}</div>
+    <div className={className} data-testid="glass-card">
+      {children}
+    </div>
   ),
 }));
 

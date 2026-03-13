@@ -56,9 +56,9 @@ export default function MemberList() {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <UserGroupIcon className="text-primary h-8 w-8" />
+          <UserGroupIcon className="h-8 w-8 text-primary" />
           <div>
-            <h1 className="text-foreground text-2xl font-bold">Member List</h1>
+            <h1 className="text-2xl font-bold text-foreground">Member List</h1>
             <p className="text-muted-foreground text-sm">
               {(totalMembers ?? 0).toLocaleString()} registered members
             </p>

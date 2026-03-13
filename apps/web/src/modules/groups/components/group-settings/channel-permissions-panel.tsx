@@ -67,7 +67,7 @@ export function ChannelPermissionsPanel({
         Array.isArray(permsData)
           ? permsData.map((o: Record<string, unknown>) => ({
               id: asString(o.id),
-              type: asString(o.type, 'role') === 'member' ? 'member' as const : 'role' as const,
+              type: asString(o.type, 'role') === 'member' ? ('member' as const) : ('role' as const),
               roleId: asOptionalString(o.role_id) ?? asOptionalString(o.roleId) ?? null,
               memberId: asOptionalString(o.member_id) ?? asOptionalString(o.memberId) ?? null,
               roleName: asOptionalString(o.role_name) ?? asOptionalString(o.roleName),

@@ -229,7 +229,13 @@ export function useIdentityCustomization() {
       if (avatarBorderType) applyBorderToStore(avatarBorderType);
       if (equippedTitle) applyTitleToStore(equippedTitle);
     }
-  }, [previewingLockedItem, avatarBorderType, equippedTitle, applyBorderToStore, applyTitleToStore]);
+  }, [
+    previewingLockedItem,
+    avatarBorderType,
+    equippedTitle,
+    applyBorderToStore,
+    applyTitleToStore,
+  ]);
 
   // --- Section handlers ---
 

@@ -403,14 +403,20 @@ export const ALL_BADGES: BadgeDefinition[] = [
 
 // ==================== HELPER FUNCTIONS ====================
 
+/** Description. */
+/** Gets badge by id. */
 export function getBadgeById(id: string): BadgeDefinition | undefined {
   return ALL_BADGES.find((b) => b.id === id);
 }
 
+/** Description. */
+/** Gets badges by rarity. */
 export function getBadgesByRarity(rarity: BadgeRarity): BadgeDefinition[] {
   return ALL_BADGES.filter((b) => b.rarity === rarity);
 }
 
+/** Description. */
+/** Gets unlocked badges. */
 export function getUnlockedBadges(): BadgeDefinition[] {
   return ALL_BADGES.filter((b) => b.unlocked);
 }

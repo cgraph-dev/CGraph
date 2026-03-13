@@ -1,10 +1,6 @@
 /** FileUpload — file upload component with drag-and-drop, preview, tier limits, and E2EE support. */
 import { useState, useRef, ChangeEvent } from 'react';
-import {
-  PhotoIcon,
-  XMarkIcon,
-  DocumentIcon,
-} from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import { encryptFileForUpload } from '@/lib/crypto/file-encryption';
 
 interface TierLimits {
@@ -67,9 +63,7 @@ export default function FileUpload({
           `File "${file.name}" exceeds your plan's ${limitMB}MB limit. Upgrade for larger uploads.`
         );
       } else {
-        setError(
-          `File ${file.name} is too large. Max size is ${limitMB}MB`
-        );
+        setError(`File ${file.name} is too large. Max size is ${limitMB}MB`);
       }
       return false;
     }
@@ -121,7 +115,7 @@ export default function FileUpload({
             })
           );
           filesToUpload = encryptedFiles;
-        } catch (err) {
+        } catch (_err) {
           setError('Failed to encrypt file. Please try again.');
           setUploadProgress(null);
           return;
@@ -245,9 +239,7 @@ export default function FileUpload({
                     <p className="truncate text-xs font-medium text-gray-700 dark:text-gray-300">
                       {preview.file.name}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {formatFileSize(preview.file.size)}
-                    </p>
+                    <p className="text-xs text-gray-500">{formatFileSize(preview.file.size)}</p>
                   </div>
                 </div>
               )}

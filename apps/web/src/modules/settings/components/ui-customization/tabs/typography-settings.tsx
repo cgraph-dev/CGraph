@@ -22,7 +22,7 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
           <Select
             label="Font Size"
             value={preferences.fontSize}
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             onChange={(value) => updatePreference('fontSize', value as UIPreferences['fontSize'])} // safe downcast – value constrained by Select options
             options={[
               { value: 'small', label: 'Small (14px)' },
@@ -35,7 +35,7 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
             label="Font Family"
             value={preferences.fontFamily}
             onChange={
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               (value) => updatePreference('fontFamily', value as UIPreferences['fontFamily']) // safe downcast – value constrained by Select options
             }
             options={[
@@ -49,7 +49,7 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
             label="Font Weight"
             value={preferences.fontWeight}
             onChange={
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               (value) => updatePreference('fontWeight', value as UIPreferences['fontWeight']) // safe downcast – value constrained by Select options
             }
             options={[
@@ -70,7 +70,7 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
             label="Line Height"
             value={preferences.lineHeight}
             onChange={
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               (value) => updatePreference('lineHeight', value as UIPreferences['lineHeight']) // safe downcast – value constrained by Select options
             }
             options={[
@@ -84,7 +84,7 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
             label="Letter Spacing"
             value={preferences.letterSpacing}
             onChange={
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               (value) => updatePreference('letterSpacing', value as UIPreferences['letterSpacing']) // safe downcast – value constrained by Select options
             }
             options={[

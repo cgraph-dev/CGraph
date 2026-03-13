@@ -39,7 +39,10 @@ interface AuditLogTabProps {
   groupId: string;
 }
 
-const ACTION_CATEGORIES: Record<string, { label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; color: string }> = {
+const ACTION_CATEGORIES: Record<
+  string,
+  { label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; color: string }
+> = {
   group_update: { label: 'Group Updated', icon: Cog6ToothIcon, color: 'text-blue-400' },
   group_delete: { label: 'Group Deleted', icon: Cog6ToothIcon, color: 'text-red-400' },
   channel_create: { label: 'Channel Created', icon: HashtagIcon, color: 'text-green-400' },
@@ -221,7 +224,9 @@ export function AuditLogTab({ groupId }: AuditLogTabProps) {
           </div>
         ) : filteredEntries.length === 0 ? (
           <div className="py-12 text-center text-gray-500">
-            {searchQuery || filterCategory ? 'No matching entries found' : 'No audit log entries yet'}
+            {searchQuery || filterCategory
+              ? 'No matching entries found'
+              : 'No audit log entries yet'}
           </div>
         ) : (
           filteredEntries.map((entry, index) => {
@@ -263,7 +268,9 @@ export function AuditLogTab({ groupId }: AuditLogTabProps) {
                   )}
                   {renderChanges(entry.changes)}
                 </div>
-                <span className="shrink-0 text-xs text-gray-500">{formatDate(entry.created_at)}</span>
+                <span className="shrink-0 text-xs text-gray-500">
+                  {formatDate(entry.created_at)}
+                </span>
               </motion.div>
             );
           })

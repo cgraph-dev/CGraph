@@ -1,6 +1,6 @@
 /**
  * Animation utilities for React Native
- * 
+ *
  * Provides consistent timing, easing, and animation configurations
  * for use with React Native Animated API.
  */
@@ -26,15 +26,15 @@ export const timings = {
 export const easings = {
   // Standard easing
   default: Easing.bezier(0.4, 0, 0.2, 1),
-  
+
   // Enter/exit easings
   easeOut: Easing.bezier(0, 0, 0.2, 1),
   easeIn: Easing.bezier(0.4, 0, 1, 1),
-  
+
   // Spring-like
   spring: Easing.bezier(0.68, -0.55, 0.27, 1.55),
   bounce: Easing.bounce,
-  
+
   // Smooth
   smooth: Easing.bezier(0.25, 0.1, 0.25, 1),
 } as const;
@@ -109,10 +109,7 @@ export const scaleSpring = (
 /**
  * Create a press animation (scale down and back)
  */
-export const pressAnimation = (
-  animatedValue: Animated.Value,
-  useNativeDriver: boolean = true
-) => ({
+export const pressAnimation = (animatedValue: Animated.Value, useNativeDriver: boolean = true) => ({
   pressIn: () => {
     Animated.spring(animatedValue, {
       toValue: 0.95,
@@ -266,7 +263,9 @@ export const interpolateRotation = (
 /**
  * Get appropriate native driver setting for the animation type
  */
-export const canUseNativeDriver = (animatingProperty: 'transform' | 'opacity' | 'other'): boolean => {
+export const canUseNativeDriver = (
+  animatingProperty: 'transform' | 'opacity' | 'other'
+): boolean => {
   if (animatingProperty === 'other') return false;
   return true;
 };

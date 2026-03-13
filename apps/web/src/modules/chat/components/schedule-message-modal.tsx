@@ -173,7 +173,7 @@ export function ScheduleMessageModal({
                     className={`flex-1 rounded-xl px-4 py-3 font-medium transition-all ${
                       scheduledAt && !isScheduling
                         ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white hover:from-primary-600 hover:to-purple-600'
-                        : 'cursor-not-allowed bg-white/[0.06]/50 text-gray-500'
+                        : 'bg-white/[0.06]/50 cursor-not-allowed text-gray-500'
                     }`}
                     whileHover={scheduledAt && !isScheduling ? { scale: 1.02 } : {}}
                     whileTap={scheduledAt && !isScheduling ? { scale: 0.98 } : {}}

@@ -292,8 +292,8 @@ export const useForumThemeStore = useThemeStore;
 export const useActiveForumTheme = () => {
   const themeId = useThemeStore((s) => s.activeForumThemeId);
   return themeId
-     
-    ? FORUM_THEME_PRESETS[themeId as keyof typeof FORUM_THEME_PRESETS]
+    ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      FORUM_THEME_PRESETS[themeId as keyof typeof FORUM_THEME_PRESETS]
     : FORUM_THEME_PRESETS['dark-elite'];
 };
 
@@ -315,7 +315,11 @@ interface CustomizationState {
 
   // Actions
   fetchCustomization: (forumId: string) => Promise<void>;
-  updateCustomization: (forumId: string, category: CustomizationCategory, changes: Record<string, unknown>) => Promise<void>;
+  updateCustomization: (
+    forumId: string,
+    category: CustomizationCategory,
+    changes: Record<string, unknown>
+  ) => Promise<void>;
   previewCustomization: (category: CustomizationCategory, changes: Record<string, unknown>) => void;
   resetCategory: (forumId: string, category: CustomizationCategory) => Promise<void>;
   clearPreview: () => void;
@@ -334,12 +338,16 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
       const res = await fetch(`/api/v1/forums/${forumId}/customization`);
       const json = await res.json();
       set({ options: json.data, loading: false });
-    } catch (err) {
+    } catch (_err) {
       set({ error: 'Failed to fetch customization', loading: false });
     }
   },
 
-  updateCustomization: async (forumId: string, category: CustomizationCategory, changes: Record<string, unknown>) => {
+  updateCustomization: async (
+    forumId: string,
+    category: CustomizationCategory,
+    changes: Record<string, unknown>
+  ) => {
     set({ saving: true, error: null });
     try {
       const res = await fetch(`/api/v1/forums/${forumId}/customization/${category}`, {
@@ -349,7 +357,7 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
       });
       const json = await res.json();
       set({ options: json.data, saving: false, previewDraft: null });
-    } catch (err) {
+    } catch (_err) {
       set({ error: 'Failed to save', saving: false });
     }
   },
@@ -361,6 +369,7 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
       ...current,
       [category]: { ...(current[category] ?? {}), ...changes },
     };
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     set({ previewDraft: merged as ForumCustomizationOptions });
   },
 
@@ -372,7 +381,7 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
       });
       const json = await res.json();
       set({ options: json.data, saving: false, previewDraft: null });
-    } catch (err) {
+    } catch (_err) {
       set({ error: 'Failed to reset', saving: false });
     }
   },

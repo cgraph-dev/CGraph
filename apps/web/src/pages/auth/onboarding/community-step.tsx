@@ -26,12 +26,48 @@ interface SuggestedCommunity {
 }
 
 const SUGGESTED_COMMUNITIES: SuggestedCommunity[] = [
-  { id: 'general', name: 'General Chat', icon: '💬', memberCount: 1240, description: 'Hang out and chat about anything' },
-  { id: 'gaming', name: 'Gaming', icon: '🎮', memberCount: 890, description: 'PC, console, and mobile gaming' },
-  { id: 'music', name: 'Music Lovers', icon: '🎵', memberCount: 675, description: 'Share and discover music' },
-  { id: 'tech', name: 'Tech & Dev', icon: '💻', memberCount: 520, description: 'Programming, hardware, and tech news' },
-  { id: 'art', name: 'Art & Design', icon: '🎨', memberCount: 410, description: 'Creative works and design discussion' },
-  { id: 'fitness', name: 'Fitness', icon: '💪', memberCount: 340, description: 'Workouts, nutrition, and wellness' },
+  {
+    id: 'general',
+    name: 'General Chat',
+    icon: '💬',
+    memberCount: 1240,
+    description: 'Hang out and chat about anything',
+  },
+  {
+    id: 'gaming',
+    name: 'Gaming',
+    icon: '🎮',
+    memberCount: 890,
+    description: 'PC, console, and mobile gaming',
+  },
+  {
+    id: 'music',
+    name: 'Music Lovers',
+    icon: '🎵',
+    memberCount: 675,
+    description: 'Share and discover music',
+  },
+  {
+    id: 'tech',
+    name: 'Tech & Dev',
+    icon: '💻',
+    memberCount: 520,
+    description: 'Programming, hardware, and tech news',
+  },
+  {
+    id: 'art',
+    name: 'Art & Design',
+    icon: '🎨',
+    memberCount: 410,
+    description: 'Creative works and design discussion',
+  },
+  {
+    id: 'fitness',
+    name: 'Fitness',
+    icon: '💪',
+    memberCount: 340,
+    description: 'Workouts, nutrition, and wellness',
+  },
 ];
 
 /**
@@ -59,11 +95,16 @@ export function CommunityStep() {
         setJoiningId(null);
       }
     },
-    [joinedIds, joiningId],
+    [joinedIds, joiningId]
   );
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
       <motion.p variants={itemVariants} className="text-center text-foreground-secondary">
         Find communities that interest you
       </motion.p>
@@ -85,7 +126,9 @@ export function CommunityStep() {
               </h4>
               <p className="mt-1 flex-1 text-xs text-foreground-muted">{community.description}</p>
               <div className="mt-3 flex items-center justify-between">
-                <span className="text-xs text-gray-500">{community.memberCount.toLocaleString()} members</span>
+                <span className="text-xs text-gray-500">
+                  {community.memberCount.toLocaleString()} members
+                </span>
                 <button
                   type="button"
                   disabled={isJoined || isJoining}

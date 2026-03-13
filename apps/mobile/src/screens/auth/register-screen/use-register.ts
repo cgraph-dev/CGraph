@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 import { useAuthStore } from '@/stores';
 
+/** Description. */
+/** Hook for register. */
 export function useRegister() {
   const { register } = useAuthStore();
 
@@ -55,6 +57,7 @@ export function useRegister() {
     try {
       await register(email, username.trim() || null, password);
     } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const err = error as {
         response?: {
           data?: {
@@ -106,13 +109,19 @@ export function useRegister() {
   };
 
   return {
-    email, setEmail,
-    username, setUsername: (text: string) => setUsername(text.toLowerCase().replace(/[^a-z0-9_]/g, '')),
-    password, setPassword,
-    confirmPassword, setConfirmPassword,
-    agreedToTerms, setAgreedToTerms,
+    email,
+    setEmail,
+    username,
+    setUsername: (text: string) => setUsername(text.toLowerCase().replace(/[^a-z0-9_]/g, '')),
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    agreedToTerms,
+    setAgreedToTerms,
     isLoading,
-    focusedField, setFocusedField,
+    focusedField,
+    setFocusedField,
     handleRegister,
   };
 }

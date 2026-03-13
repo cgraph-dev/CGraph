@@ -22,11 +22,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 
 import type { EmojiPickerProps, EmojiCategory } from './types';
-import {
-  useRecentEmojis,
-  useFilteredEmojis,
-  useAnimatedEmojiCatalog,
-} from './useEmojiPicker';
+import { useRecentEmojis, useFilteredEmojis, useAnimatedEmojiCatalog } from './useEmojiPicker';
 import { EmojiSearch } from './emoji-search';
 import { CategoryTabs } from './category-tabs';
 import { EmojiGrid } from './emoji-grid';
@@ -35,7 +31,12 @@ import { springs } from '@/lib/animation-presets';
 /**
  * Emoji Picker with Lottie animated emoji support.
  */
-export function EmojiPicker({ isOpen, onClose, onSelect, className: _className = '' }: EmojiPickerProps) {
+export function EmojiPicker({
+  isOpen,
+  onClose,
+  onSelect,
+  className: _className = '',
+}: EmojiPickerProps) {
   const [activeCategory, setActiveCategory] = useState<EmojiCategory>('Frequently Used');
   const [searchQuery, setSearchQuery] = useState('');
   const [animatedOnly, setAnimatedOnly] = useState(false);
@@ -88,7 +89,10 @@ export function EmojiPicker({ isOpen, onClose, onSelect, className: _className =
           {/* Backdrop — closes picker on click outside */}
           <div
             className="fixed inset-0 z-[9998]"
-            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
             onMouseDown={(e) => e.stopPropagation()}
             aria-hidden="true"
           />
@@ -100,9 +104,13 @@ export function EmojiPicker({ isOpen, onClose, onSelect, className: _className =
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
             transition={springs.stiff}
             className="fixed z-[9999]"
-            style={pickerPos ? { bottom: pickerPos.bottom, left: pickerPos.left } : { bottom: 96, left: 280 }}
+            style={
+              pickerPos
+                ? { bottom: pickerPos.bottom, left: pickerPos.left }
+                : { bottom: 96, left: 280 }
+            }
           >
-          <GlassCard className="w-80 p-0">
+            <GlassCard className="w-80 p-0">
               <EmojiSearch searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
               {/* Animated filter toggle */}
@@ -137,7 +145,7 @@ export function EmojiPicker({ isOpen, onClose, onSelect, className: _className =
                 animatedCatalog={catalog}
                 animatedOnly={animatedOnly}
               />
-          </GlassCard>
+            </GlassCard>
           </motion.div>
         </>
       )}

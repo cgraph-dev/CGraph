@@ -66,7 +66,7 @@ export const useAdminStore = create<AdminStore>()(
             const { api } = await import('@/lib/api');
             const response = await api.get('/api/v1/admin/stats');
             set({
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               stats: response.data as AdminStats, // type assertion: API response data shape
               statsLastUpdated: new Date(),
               isLoading: false,
@@ -88,10 +88,11 @@ export const useAdminStore = create<AdminStore>()(
         ...createEventActions(set, get),
         ...createUserActions(set, get),
         ...createSettingsActions(set),
-  reset: () => set({
-    ...initialState,
-  }),
-}),
+        reset: () =>
+          set({
+            ...initialState,
+          }),
+      }),
       {
         name: 'admin-store',
         partialize: (state) => ({

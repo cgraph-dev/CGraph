@@ -74,9 +74,7 @@ describe('LoadingSpinner', () => {
     });
 
     it('renders custom loading messages', () => {
-      const { getByText } = render(
-        <LoadingSpinner text="Fetching data, please wait..." />
-      );
+      const { getByText } = render(<LoadingSpinner text="Fetching data, please wait..." />);
       expect(getByText('Fetching data, please wait...')).toBeTruthy();
     });
 
@@ -113,7 +111,9 @@ describe('LoadingSpinner', () => {
       const customStyle = { marginTop: 20, padding: 10 };
       const { getByTestId } = render(<LoadingSpinner style={customStyle} />);
       const container = getByTestId('loading-spinner');
-      expect(container.props.style).toEqual(expect.arrayContaining([expect.objectContaining(customStyle)]));
+      expect(container.props.style).toEqual(
+        expect.arrayContaining([expect.objectContaining(customStyle)])
+      );
     });
 
     it('renders with undefined style', () => {
@@ -133,20 +133,14 @@ describe('LoadingSpinner', () => {
 
   describe('combinations', () => {
     it('renders small spinner with text', () => {
-      const { getByText, getByTestId } = render(
-        <LoadingSpinner size="small" text="Please wait" />
-      );
+      const { getByText, getByTestId } = render(<LoadingSpinner size="small" text="Please wait" />);
       expect(getByTestId('loading-spinner-indicator').props.size).toBe('small');
       expect(getByText('Please wait')).toBeTruthy();
     });
 
     it('renders fullscreen with text and large size', () => {
       const { getByText, getByTestId } = render(
-        <LoadingSpinner
-          fullScreen={true}
-          text="Loading your content..."
-          size="large"
-        />
+        <LoadingSpinner fullScreen={true} text="Loading your content..." size="large" />
       );
       expect(getByTestId('loading-spinner-indicator').props.size).toBe('large');
       expect(getByText('Loading your content...')).toBeTruthy();
@@ -157,12 +151,7 @@ describe('LoadingSpinner', () => {
     it('renders all props together', () => {
       const customStyle = { margin: 10 };
       const { getByText, getByTestId } = render(
-        <LoadingSpinner
-          size="small"
-          text="Almost done..."
-          fullScreen={true}
-          style={customStyle}
-        />
+        <LoadingSpinner size="small" text="Almost done..." fullScreen={true} style={customStyle} />
       );
       expect(getByTestId('loading-spinner-indicator').props.size).toBe('small');
       expect(getByText('Almost done...')).toBeTruthy();
@@ -185,7 +174,8 @@ describe('LoadingSpinner', () => {
     });
 
     it('handles long loading text', () => {
-      const longText = 'This is a very long loading message that might wrap to multiple lines on smaller screens';
+      const longText =
+        'This is a very long loading message that might wrap to multiple lines on smaller screens';
       const { getByText } = render(<LoadingSpinner text={longText} />);
       expect(getByText(longText)).toBeTruthy();
     });
@@ -205,9 +195,7 @@ describe('LoadingSpinner', () => {
     });
 
     it('loading text provides context', () => {
-      const { getByText } = render(
-        <LoadingSpinner text="Loading user profile" />
-      );
+      const { getByText } = render(<LoadingSpinner text="Loading user profile" />);
       // Text provides context for screen readers
       expect(getByText('Loading user profile')).toBeTruthy();
     });

@@ -13,12 +13,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { VADProcessor } from '../voiceActivityDetection';
 
 // ── Mock AnalyserNode ────────────────────────────────────────────────────
-function createMockAnalyser(options: {
-  fftSize?: number;
-  frequencyBinCount?: number;
-  waveformData?: number[];
-  frequencyData?: number[];
-} = {}): AnalyserNode {
+function createMockAnalyser(
+  options: {
+    fftSize?: number;
+    frequencyBinCount?: number;
+    waveformData?: number[];
+    frequencyData?: number[];
+  } = {}
+): AnalyserNode {
   const fftSize = options.fftSize ?? 256;
   const frequencyBinCount = options.frequencyBinCount ?? fftSize / 2;
   const waveformData = options.waveformData ?? new Array(fftSize).fill(0);
@@ -141,8 +143,8 @@ describe('VADProcessor', () => {
 
     it('should detect voice in human frequency range with energy', () => {
       // Create waveform with strong signal (RMS > 0.01)
-      const waveform = new Array(256).fill(0).map((_, i) =>
-        0.1 * Math.sin(2 * Math.PI * 200 * i / 48000) // 200 Hz tone
+      const waveform = new Array(256).fill(0).map(
+        (_, i) => 0.1 * Math.sin((2 * Math.PI * 200 * i) / 48000) // 200 Hz tone
       );
 
       // Create frequency data where 200 Hz bin has highest magnitude
@@ -167,9 +169,9 @@ describe('VADProcessor', () => {
 
     it('should not detect voice for high frequency signal', () => {
       // Strong signal at 5000 Hz (non-voice)
-      const waveform = new Array(256).fill(0).map((_, i) =>
-        0.1 * Math.sin(2 * Math.PI * 5000 * i / 48000)
-      );
+      const waveform = new Array(256)
+        .fill(0)
+        .map((_, i) => 0.1 * Math.sin((2 * Math.PI * 5000 * i) / 48000));
 
       // Dominant frequency at 5000 Hz bin
       const freqData = new Array(128).fill(-100);
@@ -316,14 +318,20 @@ describe('VADProcessor', () => {
       const silentFreq = new Array(128).fill(-100);
 
       processor.setAudioContext({ sampleRate: 48000 } as AudioContext);
-      processor.registerAnalyser('speaking', createMockAnalyser({
-        waveformData: speakingWaveform,
-        frequencyData: speakingFreq,
-      }));
-      processor.registerAnalyser('silent', createMockAnalyser({
-        waveformData: silentWaveform,
-        frequencyData: silentFreq,
-      }));
+      processor.registerAnalyser(
+        'speaking',
+        createMockAnalyser({
+          waveformData: speakingWaveform,
+          frequencyData: speakingFreq,
+        })
+      );
+      processor.registerAnalyser(
+        'silent',
+        createMockAnalyser({
+          waveformData: silentWaveform,
+          frequencyData: silentFreq,
+        })
+      );
 
       processor.processVAD();
 

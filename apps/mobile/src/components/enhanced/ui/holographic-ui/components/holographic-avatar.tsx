@@ -5,7 +5,14 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ViewStyle, Platform } from 'react-native';
-import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withRepeat,
+  withSequence,
+  useAnimatedStyle,
+  Easing,
+} from 'react-native-reanimated';
 import { HolographicConfig, getTheme } from '../types';
 
 interface HolographicAvatarProps {
@@ -18,6 +25,7 @@ interface HolographicAvatarProps {
 }
 
 /**
+ * Holographic Avatar component.
  *
  */
 export function HolographicAvatar({
@@ -66,6 +74,7 @@ export function HolographicAvatar({
       -1,
       false
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Status pulse
@@ -78,6 +87,7 @@ export function HolographicAvatar({
       ),
       -1
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
   const ringAnimStyle = useAnimatedStyle(() => ({

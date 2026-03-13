@@ -53,12 +53,8 @@ export function MessageContextMenu({
         <ContextMenuItem onSelect={onReply} shortcut="R">
           Reply
         </ContextMenuItem>
-        <ContextMenuItem onSelect={onCreateThread}>
-          Create Thread
-        </ContextMenuItem>
-        <ContextMenuItem onSelect={onMarkUnread}>
-          Mark Unread
-        </ContextMenuItem>
+        <ContextMenuItem onSelect={onCreateThread}>Create Thread</ContextMenuItem>
+        <ContextMenuItem onSelect={onMarkUnread}>Mark Unread</ContextMenuItem>
 
         <ContextMenuSeparator />
 
@@ -66,9 +62,7 @@ export function MessageContextMenu({
         <ContextMenuItem onSelect={onCopyText} shortcut="⌘C">
           Copy Text
         </ContextMenuItem>
-        <ContextMenuItem onSelect={onCopyLink}>
-          Copy Message Link
-        </ContextMenuItem>
+        <ContextMenuItem onSelect={onCopyLink}>Copy Message Link</ContextMenuItem>
 
         {/* ── Moderation ─────────────────────────── */}
         {canPin && (

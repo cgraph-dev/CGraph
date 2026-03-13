@@ -59,7 +59,7 @@ export function MemberList({
             'w-full rounded-md px-2.5 py-1.5 text-xs',
             'bg-white/[0.04] text-white/80 placeholder-white/30',
             'border border-white/[0.06] outline-none',
-            'focus:border-[var(--color-brand-purple)]/40',
+            'focus:border-[var(--color-brand-purple)]/40'
           )}
         />
       </div>
@@ -139,19 +139,12 @@ function MemberSection({
             className={cn(
               'flex w-full items-center gap-2 rounded-md px-2 py-1.5',
               'transition-colors hover:bg-white/[0.04]',
-              member.status === 'offline' && 'opacity-40',
+              member.status === 'offline' && 'opacity-40'
             )}
           >
-            <Avatar
-              size="sm"
-              name={member.name}
-              src={member.avatarUrl}
-              status={member.status}
-            />
+            <Avatar size="sm" name={member.name} src={member.avatarUrl} status={member.status} />
             <div className="min-w-0 flex-1 text-left">
-              <span className="block truncate text-xs text-white/80">
-                {member.name}
-              </span>
+              <span className="block truncate text-xs text-white/80">{member.name}</span>
             </div>
             {member.role && (
               <Tooltip content={member.role} side="left">

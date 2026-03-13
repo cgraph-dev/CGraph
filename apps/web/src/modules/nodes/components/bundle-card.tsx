@@ -10,6 +10,8 @@ interface BundleCardProps {
   isLoading?: boolean;
 }
 
+/** Description. */
+/** Bundle Card component. */
 export function BundleCard({ bundle, onBuy, isLoading }: BundleCardProps) {
   return (
     <div
@@ -17,7 +19,7 @@ export function BundleCard({ bundle, onBuy, isLoading }: BundleCardProps) {
         'relative flex flex-col items-center rounded-xl border p-6 transition-all',
         bundle.popular
           ? 'border-purple-500 bg-purple-950/20 shadow-lg shadow-purple-500/10'
-          : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700',
+          : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700'
       )}
     >
       {bundle.popular && (
@@ -38,9 +40,7 @@ export function BundleCard({ bundle, onBuy, isLoading }: BundleCardProps) {
         </span>
       )}
 
-      <p className="mt-3 text-xl font-semibold text-zinc-300">
-        €{bundle.price.toFixed(2)}
-      </p>
+      <p className="mt-3 text-xl font-semibold text-zinc-300">€{bundle.price.toFixed(2)}</p>
 
       <button
         type="button"
@@ -51,7 +51,7 @@ export function BundleCard({ bundle, onBuy, isLoading }: BundleCardProps) {
           bundle.popular
             ? 'bg-purple-600 text-white hover:bg-purple-500 disabled:bg-purple-800'
             : 'bg-zinc-700 text-zinc-100 hover:bg-zinc-600 disabled:bg-zinc-800',
-          'disabled:cursor-not-allowed disabled:opacity-50',
+          'disabled:cursor-not-allowed disabled:opacity-50'
         )}
       >
         {isLoading ? 'Redirecting…' : 'Buy'}

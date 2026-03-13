@@ -20,10 +20,16 @@ function MockChannelItem({
 }) {
   const icons: Record<string, string> = { text: '#', voice: '🔊', announcement: '📢' };
   const bg = isActive ? 'bg-white/[0.08]' : 'hover:bg-white/[0.08]';
-  const textColor = isMuted ? 'text-gray-600' : unreadCount > 0 ? 'text-white font-medium' : 'text-gray-400';
+  const textColor = isMuted
+    ? 'text-gray-600'
+    : unreadCount > 0
+      ? 'text-white font-medium'
+      : 'text-gray-400';
 
   return (
-    <div className={`flex w-[240px] cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 ${bg}`}>
+    <div
+      className={`flex w-[240px] cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 ${bg}`}
+    >
       <span className={`text-sm ${isMuted ? 'text-gray-600' : 'text-gray-400'}`}>
         {icons[type]}
       </span>

@@ -12,4 +12,3 @@ export {
   useIsSpecialTheme,
   useReducedMotion,
 } from './theme-enhanced';
-

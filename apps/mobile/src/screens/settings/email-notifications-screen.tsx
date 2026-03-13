@@ -142,6 +142,7 @@ const DEFAULT_CATEGORIES: NotificationCategory[] = [
 ];
 
 /**
+ * Email Notifications Screen component.
  *
  */
 export default function EmailNotificationsScreen() {
@@ -253,7 +254,10 @@ export default function EmailNotificationsScreen() {
               style={[
                 styles.prefRow,
                 index === 0 && { borderTopLeftRadius: 12, borderTopRightRadius: 12 },
-                index === section.prefs.length - 1 && { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 },
+                index === section.prefs.length - 1 && {
+                  borderBottomLeftRadius: 12,
+                  borderBottomRightRadius: 12,
+                },
                 { backgroundColor: colors.surface },
                 index < section.prefs.length - 1 && {
                   borderBottomWidth: StyleSheet.hairlineWidth,

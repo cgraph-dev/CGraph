@@ -75,11 +75,7 @@ describe('concatArrays', () => {
   });
 
   it('concatenates three arrays', () => {
-    const result = concatArrays(
-      new Uint8Array([1]),
-      new Uint8Array([2]),
-      new Uint8Array([3])
-    );
+    const result = concatArrays(new Uint8Array([1]), new Uint8Array([2]), new Uint8Array([3]));
     expect(Array.from(result)).toEqual([1, 2, 3]);
   });
 

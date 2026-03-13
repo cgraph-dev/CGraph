@@ -76,9 +76,7 @@ describe('exportSessionState + importSessionState', () => {
     const restored = await importSessionState(json);
 
     // DH public key should match
-    expect(Array.from(restored.DHs!.rawPublicKey)).toEqual(
-      Array.from(state.DHs!.rawPublicKey)
-    );
+    expect(Array.from(restored.DHs!.rawPublicKey)).toEqual(Array.from(state.DHs!.rawPublicKey));
     // DHr should match
     expect(Array.from(restored.DHr!)).toEqual(Array.from(state.DHr!));
     // Chain keys should match

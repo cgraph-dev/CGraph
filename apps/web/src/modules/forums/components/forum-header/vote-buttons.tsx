@@ -50,9 +50,7 @@ export const VoteButtons = memo(function VoteButtons({
           userVote === 1 ? 'bg-green-500/20 text-green-500' : 'text-gray-400 hover:bg-white/[0.10]'
         }`}
         animate={
-          userVote === 1
-            ? { scale: [1, 1.3, 1], rotate: [0, -15, 0] }
-            : { scale: 1, rotate: 0 }
+          userVote === 1 ? { scale: [1, 1.3, 1], rotate: [0, -15, 0] } : { scale: 1, rotate: 0 }
         }
         transition={springs.snappy}
       >
@@ -82,9 +80,7 @@ export const VoteButtons = memo(function VoteButtons({
           userVote === -1 ? 'bg-red-500/20 text-red-500' : 'text-gray-400 hover:bg-white/[0.10]'
         }`}
         animate={
-          userVote === -1
-            ? { scale: [1, 1.3, 1], rotate: [0, 15, 0] }
-            : { scale: 1, rotate: 0 }
+          userVote === -1 ? { scale: [1, 1.3, 1], rotate: [0, 15, 0] } : { scale: 1, rotate: 0 }
         }
         transition={springs.snappy}
       >

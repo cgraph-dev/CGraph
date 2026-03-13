@@ -70,6 +70,7 @@ export const syncMetadataCollection = database.get<SyncMetadata>('sync_metadata'
 
 // ─── Reset (for logout) ────────────────────────────────────────
 /**
+ * Reset database.
  *
  */
 export async function resetDatabase(): Promise<void> {

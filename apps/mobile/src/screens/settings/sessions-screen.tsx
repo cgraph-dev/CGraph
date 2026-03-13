@@ -68,6 +68,7 @@ function getDeviceIcon(ua: string): keyof typeof Ionicons.glyphMap {
 }
 
 /**
+ * Sessions Screen component.
  *
  */
 export default function SessionsScreen({ navigation }: Props) {
@@ -100,28 +101,24 @@ export default function SessionsScreen({ navigation }: Props) {
   }, [fetchSessions]);
 
   const handleRevoke = useCallback((session: Session) => {
-    Alert.alert(
-      'Revoke Session',
-      `End the session on ${parseBrowser(session.user_agent)}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Revoke',
-          style: 'destructive',
-          onPress: async () => {
-            setRevokingId(session.id);
-            try {
-              await api.delete(`/api/v1/me/sessions/${session.id}`);
-              setSessions((prev) => prev.filter((s) => s.id !== session.id));
-            } catch {
-              Alert.alert('Error', 'Failed to revoke session');
-            } finally {
-              setRevokingId(null);
-            }
-          },
+    Alert.alert('Revoke Session', `End the session on ${parseBrowser(session.user_agent)}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Revoke',
+        style: 'destructive',
+        onPress: async () => {
+          setRevokingId(session.id);
+          try {
+            await api.delete(`/api/v1/me/sessions/${session.id}`);
+            setSessions((prev) => prev.filter((s) => s.id !== session.id));
+          } catch {
+            Alert.alert('Error', 'Failed to revoke session');
+          } finally {
+            setRevokingId(null);
+          }
         },
-      ]
-    );
+      },
+    ]);
   }, []);
 
   const handleRevokeAll = useCallback(() => {
@@ -183,7 +180,11 @@ export default function SessionsScreen({ navigation }: Props) {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+          />
         }
         ListHeaderComponent={
           <>
@@ -234,7 +235,21 @@ export default function SessionsScreen({ navigation }: Props) {
           </>
         }
         renderItem={({ item: session, index: idx }) => (
-          <View style={[styles.sectionContent, idx === 0 ? { backgroundColor: colors.surface, borderTopLeftRadius: 12, borderTopRightRadius: 12 } : { backgroundColor: colors.surface }, idx === otherSessions.length - 1 ? { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 } : {}]}>
+          <View
+            style={[
+              styles.sectionContent,
+              idx === 0
+                ? {
+                    backgroundColor: colors.surface,
+                    borderTopLeftRadius: 12,
+                    borderTopRightRadius: 12,
+                  }
+                : { backgroundColor: colors.surface },
+              idx === otherSessions.length - 1
+                ? { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 }
+                : {},
+            ]}
+          >
             <View style={styles.sessionItem}>
               <View style={[styles.iconCircle, { backgroundColor: colors.surfaceHover }]}>
                 <Ionicons

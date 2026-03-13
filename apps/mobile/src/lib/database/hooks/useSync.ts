@@ -26,6 +26,7 @@ export interface UseSyncState {
 }
 
 /**
+ * Hook for sync.
  *
  */
 export function useSync(): UseSyncState {

@@ -14,6 +14,7 @@ export interface LeaderboardSectionProps {
 }
 
 /**
+ * Leaderboard Section component.
  *
  */
 export function LeaderboardSection({ leaderboard, onSeeAll }: LeaderboardSectionProps) {

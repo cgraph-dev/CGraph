@@ -19,6 +19,7 @@ interface VoiceSearchButtonProps {
 }
 
 /**
+ * Voice Search Button component.
  *
  */
 export function VoiceSearchButton({ onPress, isListening, colors }: VoiceSearchButtonProps) {
@@ -31,8 +32,16 @@ export function VoiceSearchButton({ onPress, isListening, colors }: VoiceSearchB
     if (isListening) {
       Animated.loop(
         Animated.sequence([
-          Animated.timing(scaleAnim, { toValue: 1.1, duration: durations.slow.ms, useNativeDriver: true }),
-          Animated.timing(scaleAnim, { toValue: 1, duration: durations.slow.ms, useNativeDriver: true }),
+          Animated.timing(scaleAnim, {
+            toValue: 1.1,
+            duration: durations.slow.ms,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: durations.slow.ms,
+            useNativeDriver: true,
+          }),
         ])
       ).start();
 
@@ -40,8 +49,16 @@ export function VoiceSearchButton({ onPress, isListening, colors }: VoiceSearchB
         Animated.loop(
           Animated.sequence([
             Animated.delay(delay),
-            Animated.timing(anim, { toValue: 1, duration: durations.smooth.ms, useNativeDriver: true }),
-            Animated.timing(anim, { toValue: 0.3, duration: durations.smooth.ms, useNativeDriver: true }),
+            Animated.timing(anim, {
+              toValue: 1,
+              duration: durations.smooth.ms,
+              useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+              toValue: 0.3,
+              duration: durations.smooth.ms,
+              useNativeDriver: true,
+            }),
           ])
         );
 

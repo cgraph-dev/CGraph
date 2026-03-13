@@ -30,13 +30,12 @@ const DEFAULT_SETTINGS: PaidDmSettings = {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Paid Dm Settings Page component. */
 export default function PaidDmSettingsPage() {
   const [settings, setSettings] = useState<PaidDmSettings>(DEFAULT_SETTINGS);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
-    null,
-  );
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -94,10 +93,10 @@ export default function PaidDmSettingsPage() {
       <h1 className="text-2xl font-bold">Paid DM Settings</h1>
 
       {/* Enable / Disable */}
-      <label className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+      <label className="border-border bg-card flex items-center justify-between rounded-lg border p-4">
         <div>
           <p className="font-medium">Enable Paid DMs</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Non-friends must pay Nodes to send you DMs
           </p>
         </div>
@@ -110,16 +109,16 @@ export default function PaidDmSettingsPage() {
       </label>
 
       {/* Price */}
-      <div className="rounded-lg border border-border bg-card p-4">
+      <div className="border-border bg-card rounded-lg border p-4">
         <label className="block font-medium" htmlFor="price-input">
           Price per DM (Nodes)
         </label>
-        <p className="mb-2 text-sm text-muted-foreground">Minimum 10 Nodes</p>
+        <p className="text-muted-foreground mb-2 text-sm">Minimum 10 Nodes</p>
         <input
           id="price-input"
           type="number"
           min={10}
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          className="border-input bg-background focus:ring-ring w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2"
           value={settings.priceNodes}
           onChange={(e) =>
             setSettings((s) => ({ ...s, priceNodes: Math.max(10, Number(e.target.value)) }))
@@ -128,9 +127,9 @@ export default function PaidDmSettingsPage() {
       </div>
 
       {/* Accepted file types */}
-      <fieldset className="rounded-lg border border-border bg-card p-4">
+      <fieldset className="border-border bg-card rounded-lg border p-4">
         <legend className="font-medium">Accepted File Types</legend>
-        <p className="mb-3 text-sm text-muted-foreground">
+        <p className="text-muted-foreground mb-3 text-sm">
           Select which file types paid senders can attach
         </p>
         <div className="flex flex-wrap gap-4">
@@ -149,10 +148,10 @@ export default function PaidDmSettingsPage() {
       </fieldset>
 
       {/* Auto-accept friends */}
-      <label className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+      <label className="border-border bg-card flex items-center justify-between rounded-lg border p-4">
         <div>
           <p className="font-medium">Auto-accept Friends</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Friends can DM you for free without approval
           </p>
         </div>
@@ -170,7 +169,7 @@ export default function PaidDmSettingsPage() {
           type="button"
           disabled={isSaving}
           onClick={handleSave}
-          className="rounded-md bg-primary px-6 py-2 font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          className="text-primary-foreground rounded-md bg-primary px-6 py-2 font-medium hover:bg-primary/90 disabled:opacity-50"
         >
           {isSaving ? 'Saving…' : 'Save Settings'}
         </button>
@@ -178,7 +177,7 @@ export default function PaidDmSettingsPage() {
         {message && (
           <span
             className={
-              message.type === 'success' ? 'text-sm text-green-500' : 'text-sm text-destructive'
+              message.type === 'success' ? 'text-sm text-green-500' : 'text-destructive text-sm'
             }
           >
             {message.text}

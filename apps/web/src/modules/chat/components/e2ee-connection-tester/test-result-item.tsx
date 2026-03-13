@@ -36,10 +36,7 @@ export function TestResultItem({ test, index }: TestResultItemProps) {
         return <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" />;
       case 'running':
         return (
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={loop(tweens.slow)}
-          >
+          <motion.div animate={{ rotate: 360 }} transition={loop(tweens.slow)}>
             <ArrowPathIcon className="h-5 w-5 text-primary-400" />
           </motion.div>
         );

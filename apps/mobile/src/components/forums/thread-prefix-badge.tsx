@@ -14,12 +14,13 @@ interface ThreadPrefixBadgeProps {
 }
 
 /**
+ * Thread Prefix Badge component.
  *
  */
 export default function ThreadPrefixBadge({
   prefix,
   size = 'md',
-  onPress
+  onPress,
 }: ThreadPrefixBadgeProps) {
   if (!prefix) return null;
 
@@ -40,9 +41,7 @@ export default function ThreadPrefixBadge({
     ? prefix.color + '66' // Add 40% opacity
     : `#${prefix.color}66`;
 
-  const textColor = prefix.color.startsWith('#')
-    ? prefix.color
-    : `#${prefix.color}`;
+  const textColor = prefix.color.startsWith('#') ? prefix.color : `#${prefix.color}`;
 
   const Component = onPress ? TouchableOpacity : View;
 

@@ -376,7 +376,11 @@ describe('SocketManager', () => {
   describe('sendTyping', () => {
     it('delegates to sendTyping implementation', () => {
       manager.sendTyping('conversation:conv-1', true);
-      expect(sendTypingDebounced).toHaveBeenCalledWith('conversation:conv-1', true, expect.any(Map));
+      expect(sendTypingDebounced).toHaveBeenCalledWith(
+        'conversation:conv-1',
+        true,
+        expect.any(Map)
+      );
     });
   });
 

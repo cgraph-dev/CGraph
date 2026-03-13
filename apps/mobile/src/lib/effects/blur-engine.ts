@@ -86,6 +86,7 @@ export interface BlurLayerConfig {
 let cachedCapabilities: BlurCapabilities | null = null;
 
 /**
+ * Gets blur capabilities.
  *
  */
 export function getBlurCapabilities(): BlurCapabilities {
@@ -95,7 +96,7 @@ export function getBlurCapabilities(): BlurCapabilities {
   const screenSize = width * height;
 
   if (Platform.OS === 'ios') {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const iosVersion = parseInt(Platform.Version as string, 10);
 
     cachedCapabilities = {
@@ -108,7 +109,7 @@ export function getBlurCapabilities(): BlurCapabilities {
       useFallback: iosVersion < 13,
     };
   } else if (Platform.OS === 'android') {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const androidVersion = Platform.Version as number;
 
     // Android 12+ (API 31+) supports RenderEffect blur
@@ -151,6 +152,7 @@ export function getBlurCapabilities(): BlurCapabilities {
 }
 
 /**
+ * Clear capabilities cache.
  *
  */
 export function clearCapabilitiesCache(): void {
@@ -170,6 +172,7 @@ const INTENSITY_MAP: Record<BlurIntensity, number> = {
 };
 
 /**
+ * Gets intensity value.
  *
  */
 export function getIntensityValue(intensity: BlurIntensity | number): number {
@@ -180,6 +183,7 @@ export function getIntensityValue(intensity: BlurIntensity | number): number {
 }
 
 /**
+ * Scale intensity for device.
  *
  */
 export function scaleIntensityForDevice(intensity: number): number {
@@ -379,6 +383,7 @@ const BLUR_STYLE_COLORS: Record<
 };
 
 /**
+ * Gets blur style colors.
  *
  */
 export function getBlurStyleColors(style: BlurStyle, tint: BlurTint): BlurFallbackColors {
@@ -391,6 +396,7 @@ export function getBlurStyleColors(style: BlurStyle, tint: BlurTint): BlurFallba
 // ============================================================================
 
 /**
+ * Creates blur config.
  *
  */
 export function createBlurConfig(options: Partial<BlurConfig> = {}): BlurLayerConfig {
@@ -451,6 +457,7 @@ type ExpoBlurTint =
   | 'regular';
 
 /**
+ * Map tint to expo blur.
  *
  */
 export function mapTintToExpoBlur(tint: BlurTint): ExpoBlurTint {
@@ -480,6 +487,7 @@ export interface FallbackGradientConfig {
 }
 
 /**
+ * Generate fallback gradient.
  *
  */
 export function generateFallbackGradient(
@@ -518,6 +526,7 @@ function adjustOpacity(color: string, opacity: number): string {
 // ============================================================================
 
 /**
+ * Should reduce blur.
  *
  */
 export function shouldReduceBlur(): boolean {
@@ -526,6 +535,7 @@ export function shouldReduceBlur(): boolean {
 }
 
 /**
+ * Gets optimal blur layers.
  *
  */
 export function getOptimalBlurLayers(intensity: number): number {

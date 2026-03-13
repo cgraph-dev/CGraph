@@ -17,6 +17,7 @@ export interface RewardTierCardProps {
 }
 
 /**
+ * Reward Tier Card component.
  *
  */
 export function RewardTierCard({ tier, currentReferrals, onClaim }: RewardTierCardProps) {
@@ -90,7 +91,7 @@ export function RewardTierCard({ tier, currentReferrals, onClaim }: RewardTierCa
         {tier.rewards.map((reward, index) => (
           <View key={index} style={styles.rewardTag}>
             <Ionicons
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               name={getRewardIcon(reward.type) as keyof typeof Ionicons.glyphMap}
               size={12}
               color={tier.achieved ? AnimationColors.primary : '#9ca3af'}

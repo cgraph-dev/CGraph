@@ -4,7 +4,14 @@
  */
 import React, { useMemo, useEffect } from 'react';
 import { View, ViewStyle, StyleSheet } from 'react-native';
-import Animated, { useSharedValue, withTiming, withRepeat, useAnimatedStyle, Easing, interpolate } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withRepeat,
+  useAnimatedStyle,
+  Easing,
+  interpolate,
+} from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 // =============================================================================
@@ -17,6 +24,7 @@ interface CornerDecorationProps {
 }
 
 /**
+ * Corner Decoration component.
  *
  */
 export function CornerDecoration({ color, position }: CornerDecorationProps) {
@@ -61,6 +69,7 @@ interface ScanlinesProps {
 }
 
 /**
+ * Scanlines component.
  *
  */
 export function Scanlines({
@@ -117,6 +126,7 @@ export function Scanlines({
       -1,
       false
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animated]);
 
   const scanlineAnimStyle = useAnimatedStyle(() => ({
@@ -128,10 +138,7 @@ export function Scanlines({
   }));
 
   return (
-    <Animated.View
-      style={[styles.scanlinesContainer, scanlineAnimStyle]}
-      pointerEvents="none"
-    >
+    <Animated.View style={[styles.scanlinesContainer, scanlineAnimStyle]} pointerEvents="none">
       {lines}
     </Animated.View>
   );

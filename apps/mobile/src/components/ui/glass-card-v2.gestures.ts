@@ -48,6 +48,7 @@ export function useGlassGestures({
       pressedShadow.value = withTiming(1, { duration: durations.fast.ms });
     }
     runOnJS(triggerHaptic)();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pressAnimation, triggerHaptic]);
 
   const handlePressOut = useCallback(() => {
@@ -60,6 +61,7 @@ export function useGlassGestures({
     if (pressAnimation === 'shadow' || pressAnimation === 'all') {
       pressedShadow.value = withTiming(0, { duration: durations.normal.ms });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pressAnimation]);
 
   const longPressGesture = Gesture.LongPress()

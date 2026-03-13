@@ -31,6 +31,7 @@ export interface UsePushNotificationsResult {
 let hasAttemptedInSession = false;
 
 /**
+ * Hook for push notifications.
  *
  */
 export function usePushNotifications(): UsePushNotificationsResult {
@@ -52,7 +53,7 @@ export function usePushNotifications(): UsePushNotificationsResult {
 
       if (!type || !id) return;
 
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const nav = navigation as NavigationProp<ParamListBase>;
 
       switch (type) {
@@ -150,9 +151,10 @@ export function usePushNotifications(): UsePushNotificationsResult {
   useEffect(() => {
     // Listener for notifications received while app is foregrounded
     notificationListener.current = pushService.addNotificationReceivedListener((notification) => {
-      if (__DEV__)
+      if (__DEV__) {
         // eslint-disable-next-line no-console
-        {console.log('[Push Hook] Notification received:', notification.request.content.title);}
+        console.log('[Push Hook] Notification received:', notification.request.content.title);
+      }
       // Could trigger a toast or badge update here
     });
 

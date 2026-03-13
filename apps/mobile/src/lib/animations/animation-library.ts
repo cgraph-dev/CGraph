@@ -38,7 +38,8 @@ export interface SpringConfig {
  */
 export function getSpringConfig(config: SpringConfig): WithSpringConfig {
   const { name: _name, description: _description, ...springConfig } = config;
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return springConfig as WithSpringConfig;
 }
 
@@ -109,7 +110,11 @@ export const TIMING_PRESETS: Record<string, TimingConfig> = {
   default: { duration: durations.slow.ms, easing: Easing.inOut(Easing.ease), name: 'Default' },
   smooth: { duration: durations.smooth.ms, easing: Easing.inOut(Easing.ease), name: 'Smooth' },
   slow: { duration: durations.dramatic.ms, easing: Easing.inOut(Easing.ease), name: 'Slow' },
-  verySlow: { duration: durations.verySlow.ms, easing: Easing.inOut(Easing.ease), name: 'Very Slow' },
+  verySlow: {
+    duration: durations.verySlow.ms,
+    easing: Easing.inOut(Easing.ease),
+    name: 'Very Slow',
+  },
 };
 
 // ============================================================================
@@ -628,6 +633,7 @@ export const LOOP_ANIMATIONS = {
 // ============================================================================
 
 /**
+ * Gets stagger delay.
  *
  */
 export function getStaggerDelay(index: number, baseDelay: number = 50): number {
@@ -635,6 +641,7 @@ export function getStaggerDelay(index: number, baseDelay: number = 50): number {
 }
 
 /**
+ * Gets stagger delays.
  *
  */
 export function getStaggerDelays(count: number, baseDelay: number = 50): number[] {
@@ -642,6 +649,7 @@ export function getStaggerDelays(count: number, baseDelay: number = 50): number[
 }
 
 /**
+ * Combine animations.
  *
  */
 export function combineAnimations(...animations: AnimationPreset[]): AnimationPreset {
@@ -659,6 +667,7 @@ export function combineAnimations(...animations: AnimationPreset[]): AnimationPr
 }
 
 /**
+ * Creates delayed animation.
  *
  */
 export function createDelayedAnimation(animation: AnimationPreset, delay: number): AnimationPreset {
@@ -669,6 +678,7 @@ export function createDelayedAnimation(animation: AnimationPreset, delay: number
 }
 
 /**
+ * Creates sequenced animations.
  *
  */
 export function createSequencedAnimations(

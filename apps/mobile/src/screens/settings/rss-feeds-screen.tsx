@@ -2,7 +2,7 @@
  * RSS feeds settings screen for managing feed subscriptions.
  * @module screens/settings/rss-feeds-screen
  */
-import React, { } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -164,6 +164,7 @@ function FeedItem({ feed, onCopy, onShare, onOpen }: FeedItemProps) {
 // ============================================================================
 
 /**
+ * R S S Feeds Screen component.
  *
  */
 export default function RSSFeedsScreen() {

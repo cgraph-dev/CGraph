@@ -95,6 +95,7 @@ export default function GroupChannel() {
     if (!channelId || messages.length === 0) return;
     const messageIds = messages.map((m) => m.id);
     fetchReplyCounts(channelId, messageIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelId, messages.length, fetchReplyCounts]);
 
   // Handle typing indicator
@@ -191,7 +192,7 @@ export default function GroupChannel() {
           isLoadingMessages={isLoadingMessages}
           channelName={channel.name}
           typing={typing}
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>} // safe downcast – DOM element
           onLoadMore={handleLoadMore}
           onReply={setReplyTo}
@@ -218,9 +219,7 @@ export default function GroupChannel() {
       )}
 
       {/* Thread panel */}
-      <AnimatePresence>
-        {threadOpen && channelId && <ChannelThreadPanel />}
-      </AnimatePresence>
+      <AnimatePresence>{threadOpen && channelId && <ChannelThreadPanel />}</AnimatePresence>
 
       {/* Pinned messages panel */}
       <AnimatePresence>

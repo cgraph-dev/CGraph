@@ -5,4 +5,9 @@
  */
 
 export { ServerCard, type ServerCardProps, type Server } from './server-card';
-export { ChannelList, type ChannelListProps, type Channel, type ChannelCategory } from './channel-list';
+export {
+  ChannelList,
+  type ChannelListProps,
+  type Channel,
+  type ChannelCategory,
+} from './channel-list';

@@ -46,6 +46,7 @@ export interface AnimatedGradientProps {
 }
 
 /**
+ * Animated Gradient View component.
  *
  */
 export function AnimatedGradientView({
@@ -102,6 +103,7 @@ export function AnimatedGradientView({
       default:
         break;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gradientConfig]);
 
   const gradientData = useMemo(
@@ -136,9 +138,9 @@ export function AnimatedGradientView({
     <View style={[styles.container, style, { borderRadius }]}>
       <Animated.View style={combinedStyle}>
         <LinearGradient
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           colors={gradientData.colors as [string, string, ...string[]]}
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           locations={gradientData.locations as [number, number, ...number[]]}
           start={gradientData.start}
           end={gradientData.end}
@@ -201,6 +203,7 @@ export interface AnimatedBorderGradientProps {
 }
 
 /**
+ * Animated Border Gradient component.
  *
  */
 export function AnimatedBorderGradient({
@@ -222,6 +225,7 @@ export function AnimatedBorderGradient({
         false
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animated, animationDuration]);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -233,7 +237,7 @@ export function AnimatedBorderGradient({
       {/* Gradient border (enlarged and clipped) */}
       <Animated.View style={[styles.gradientBorderWrapper, animatedStyle]}>
         <LinearGradient
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           colors={colors as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -270,6 +274,7 @@ export interface GlowViewProps {
 }
 
 /**
+ * Glow View component.
  *
  */
 export function GlowView({ preset = 'soft', config, style, children, layers = 3 }: GlowViewProps) {
@@ -297,6 +302,7 @@ export function GlowView({ preset = 'soft', config, style, children, layers = 3 
         false
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [glowConfig]);
 
   const glowStyles = useMemo(
@@ -336,6 +342,7 @@ export interface MeshGradientProps {
 }
 
 /**
+ * Mesh Gradient Background component.
  *
  */
 export function MeshGradientBackground({
@@ -360,6 +367,7 @@ export function MeshGradientBackground({
         true
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animated]);
 
   const layer1Style = useAnimatedStyle(() => {
@@ -386,7 +394,7 @@ export function MeshGradientBackground({
     <View style={[styles.meshContainer, style]}>
       {/* Base layer */}
       <LinearGradient
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         colors={[color1, color2] as [string, string]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -396,7 +404,7 @@ export function MeshGradientBackground({
       {/* Animated overlay layers */}
       <Animated.View style={[styles.meshLayer, layer1Style]}>
         <LinearGradient
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           colors={[`${color2}80`, 'transparent'] as [string, string]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -406,7 +414,7 @@ export function MeshGradientBackground({
 
       <Animated.View style={[styles.meshLayer, layer2Style]}>
         <LinearGradient
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           colors={[`${color3}60`, 'transparent'] as [string, string]}
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 1 }}
@@ -425,6 +433,7 @@ export function MeshGradientBackground({
 // ============================================================================
 
 /**
+ * Aurora Gradient component.
  *
  */
 export function AuroraGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
@@ -432,6 +441,7 @@ export function AuroraGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
 }
 
 /**
+ * Neon Gradient component.
  *
  */
 export function NeonGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
@@ -439,6 +449,7 @@ export function NeonGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
 }
 
 /**
+ * Holographic Gradient component.
  *
  */
 export function HolographicGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
@@ -446,6 +457,7 @@ export function HolographicGradient(props: Omit<AnimatedGradientProps, 'preset'>
 }
 
 /**
+ * Sunset Gradient component.
  *
  */
 export function SunsetGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
@@ -453,6 +465,7 @@ export function SunsetGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
 }
 
 /**
+ * Ocean Gradient component.
  *
  */
 export function OceanGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
@@ -460,6 +473,7 @@ export function OceanGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
 }
 
 /**
+ * Ember Gradient component.
  *
  */
 export function EmberGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
@@ -467,6 +481,7 @@ export function EmberGradient(props: Omit<AnimatedGradientProps, 'preset'>) {
 }
 
 /**
+ * Matrix Gradient component.
  *
  */
 export function MatrixGradient(props: Omit<AnimatedGradientProps, 'preset'>) {

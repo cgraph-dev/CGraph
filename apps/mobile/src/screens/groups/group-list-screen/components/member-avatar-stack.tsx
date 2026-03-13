@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { MemberAvatarStackProps } from '../types';
 
 /**
+ * Member Avatar Stack component.
  *
  */
 export function MemberAvatarStack({ memberCount, colors }: MemberAvatarStackProps) {
@@ -33,29 +34,21 @@ export function MemberAvatarStack({ memberCount, colors }: MemberAvatarStackProp
         withSpring(index < displayCount ? 1 : 0, { damping: 8, stiffness: 50 })
       );
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayCount]);
 
   const style0 = useAnimatedStyle(() => ({
-    transform: [
-      { scale: anim0.value },
-      { translateX: interpolate(anim0.value, [0, 1], [10, 0]) },
-    ],
+    transform: [{ scale: anim0.value }, { translateX: interpolate(anim0.value, [0, 1], [10, 0]) }],
     opacity: anim0.value,
   }));
 
   const style1 = useAnimatedStyle(() => ({
-    transform: [
-      { scale: anim1.value },
-      { translateX: interpolate(anim1.value, [0, 1], [10, 0]) },
-    ],
+    transform: [{ scale: anim1.value }, { translateX: interpolate(anim1.value, [0, 1], [10, 0]) }],
     opacity: anim1.value,
   }));
 
   const style2 = useAnimatedStyle(() => ({
-    transform: [
-      { scale: anim2.value },
-      { translateX: interpolate(anim2.value, [0, 1], [10, 0]) },
-    ],
+    transform: [{ scale: anim2.value }, { translateX: interpolate(anim2.value, [0, 1], [10, 0]) }],
     opacity: anim2.value,
   }));
 

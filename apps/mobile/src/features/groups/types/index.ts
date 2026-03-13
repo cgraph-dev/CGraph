@@ -2,12 +2,7 @@
  * Groups Types (Mobile)
  */
 
-export type {
-  Group,
-  Channel,
-  Role,
-  Member,
-} from '@cgraph/shared-types';
+export type { Group, Channel, Role, Member } from '@cgraph/shared-types';
 
 export interface GroupWithDetails {
   id: string;

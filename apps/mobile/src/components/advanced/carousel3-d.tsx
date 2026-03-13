@@ -97,6 +97,7 @@ const DEFAULT_VISIBLE_ITEMS = 3;
 // ============================================================================
 
 /**
+ * Carousel3 D component.
  *
  */
 export function Carousel3D<T>({
@@ -181,6 +182,7 @@ export function Carousel3D<T>({
       runOnJS(triggerHaptic)();
       runOnJS(notifyIndexChange)(clampedIndex);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [itemCount, itemWidth, spacing, loop, springConfig]
   );
 
@@ -194,6 +196,7 @@ export function Carousel3D<T>({
     }, autoPlayInterval);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoPlay, autoPlayInterval, itemCount]);
 
   // Context for gesture tracking
@@ -261,6 +264,7 @@ export function Carousel3D<T>({
         {renderItem(item, index, index === Math.round(position.value))}
       </CarouselItem>
     ));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     data,
     layout,
@@ -434,6 +438,7 @@ function Pagination({ count, position, style }: PaginationProps) {
     return Array.from({ length: count }, (_, i) => (
       <PaginationDot key={i} index={i} position={position} />
     ));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count]);
 
   return <View style={[styles.paginationContainer, style]}>{dots}</View>;
@@ -450,7 +455,9 @@ function PaginationDot({ index, position }: PaginationDotProps) {
 
     return {
       width: withTiming(isActive ? 24 : 8, { duration: durations.normal.ms }),
-      backgroundColor: withTiming(isActive ? '#10b981' : '#4b5563', { duration: durations.normal.ms }),
+      backgroundColor: withTiming(isActive ? '#10b981' : '#4b5563', {
+        duration: durations.normal.ms,
+      }),
     };
   });
 
@@ -468,6 +475,7 @@ export interface ImageCarouselProps {
 }
 
 /**
+ * Image Carousel component.
  *
  */
 export function ImageCarousel({ images, onImagePress, style }: ImageCarouselProps) {
@@ -492,6 +500,7 @@ export interface CardCarouselProps<T> {
 }
 
 /**
+ * Card Carousel component.
  *
  */
 export function CardCarousel<T>({ cards, renderCard, onCardPress, style }: CardCarouselProps<T>) {

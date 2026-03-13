@@ -42,11 +42,15 @@ vi.mock('@/shared/components/ui', () => ({
 }));
 
 vi.mock('@/modules/settings/components/user-id-badge', () => ({
-  UserIdBadge: ({ user: _user }: { user: unknown }) => <div data-testid="user-id-badge">User ID Badge</div>,
+  UserIdBadge: ({ user: _user }: { user: unknown }) => (
+    <div data-testid="user-id-badge">User ID Badge</div>
+  ),
 }));
 
 vi.mock('@/modules/settings/components/avatar-section', () => ({
-  AvatarSection: ({ user: _user }: { user: unknown }) => <div data-testid="avatar-section">Avatar Section</div>,
+  AvatarSection: ({ user: _user }: { user: unknown }) => (
+    <div data-testid="avatar-section">Avatar Section</div>
+  ),
 }));
 
 vi.mock('@/modules/settings/components/profile-form-fields', () => ({

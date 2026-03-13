@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * Forum subscription management component.
  * @module
@@ -62,8 +63,9 @@ export function SubscriptionManager({ className }: SubscriptionManagerProps): Re
             <CardDescription>Manage your forum, board, and thread subscriptions</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            { }
-            <Select onValueChange={(value: string) => bulkUpdateMode(value as NotificationMode)}> // safe downcast – select event value
+            <Select onValueChange={(value: string) => bulkUpdateMode(value as NotificationMode)}>
+              {' '}
+              // safe downcast – select event value
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Bulk update..." />
               </SelectTrigger>
@@ -83,7 +85,6 @@ export function SubscriptionManager({ className }: SubscriptionManagerProps): Re
             <Loader2 className="h-6 w-6 animate-spin" />
           </div>
         ) : (
-           
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
             <TabsList className="w-full">
               <TabsTrigger value="all" className="flex-1">
@@ -127,6 +128,6 @@ export function SubscriptionManager({ className }: SubscriptionManagerProps): Re
       </CardContent>
     </Card>
   );
-};
+}
 
 export default SubscriptionManager;

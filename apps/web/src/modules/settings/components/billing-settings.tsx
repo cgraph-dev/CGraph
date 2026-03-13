@@ -41,6 +41,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
   useEffect(() => {
     loadBillingStatus();
     loadInvoices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function loadBillingStatus() {

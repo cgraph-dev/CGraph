@@ -198,9 +198,7 @@ describe('createSetupE2EE', () => {
     const fakeBundle = {
       identityKey: { keyPair: { publicKey: {} } },
       deviceId: 'new-dev',
-      oneTimePreKeys: [
-        { keyId: 1, keyPair: { publicKey: {}, privateKey: {} } },
-      ],
+      oneTimePreKeys: [{ keyId: 1, keyPair: { publicKey: {}, privateKey: {} } }],
       signedPreKey: { keyPair: { publicKey: {}, privateKey: {} }, signature: new ArrayBuffer(64) },
     };
     mockGenerateDeviceId.mockReturnValue('new-dev');

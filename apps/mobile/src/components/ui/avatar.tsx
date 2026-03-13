@@ -13,7 +13,6 @@ import Animated, {
   withDelay,
   withSequence,
 } from 'react-native-reanimated';
-import { space } from '@/theme/tokens';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 export type AvatarStatus = 'online' | 'offline' | 'idle' | 'dnd' | 'invisible';
@@ -90,13 +89,10 @@ function TypingDot({ size, delay: delayMs }: { size: number; delay: number }) {
     translateY.value = withRepeat(
       withDelay(
         delayMs,
-        withSequence(
-          withTiming(-3, { duration: 300 }),
-          withTiming(0, { duration: 300 }),
-        ),
+        withSequence(withTiming(-3, { duration: 300 }), withTiming(0, { duration: 300 }))
       ),
       -1,
-      false,
+      false
     );
   }, [delayMs, translateY]);
 
@@ -119,6 +115,7 @@ function TypingDot({ size, delay: delayMs }: { size: number; delay: number }) {
   );
 }
 
+/** Avatar component. */
 export default function Avatar({
   src,
   name = '',
@@ -163,21 +160,10 @@ export default function Avatar({
         }}
       >
         {src ? (
-          <Image
-            source={{ uri: src }}
-            style={{ width: px, height: px }}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: src }} style={{ width: px, height: px }} resizeMode="cover" />
         ) : (
           <View style={[styles.initialsBox, { backgroundColor: gradient[0] }]}>
-            <Text
-              style={[
-                styles.initials,
-                { fontSize: px * 0.38 },
-              ]}
-            >
-              {getInitials(name)}
-            </Text>
+            <Text style={[styles.initials, { fontSize: px * 0.38 }]}>{getInitials(name)}</Text>
           </View>
         )}
 

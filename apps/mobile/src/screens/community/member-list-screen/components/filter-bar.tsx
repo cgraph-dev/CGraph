@@ -22,6 +22,8 @@ interface SearchBarProps {
   onSearchChange: (query: string) => void;
 }
 
+/** Description. */
+/** Search Bar component. */
 export function SearchBar({ searchQuery, onSearchChange }: SearchBarProps) {
   return (
     <View style={styles.searchContainer}>
@@ -51,6 +53,8 @@ interface FilterPanelProps {
   onToggleOnline: () => void;
 }
 
+/** Description. */
+/** Filter Panel component. */
 export function FilterPanel({
   visible,
   sortField,
@@ -73,7 +77,10 @@ export function FilterPanel({
               onPress={() => onSort(opt.field)}
             >
               <Text
-                style={[styles.sortButtonText, sortField === opt.field && styles.sortButtonTextActive]}
+                style={[
+                  styles.sortButtonText,
+                  sortField === opt.field && styles.sortButtonTextActive,
+                ]}
               >
                 {opt.label}
               </Text>

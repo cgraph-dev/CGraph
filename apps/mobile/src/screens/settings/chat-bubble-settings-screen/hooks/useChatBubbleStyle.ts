@@ -10,6 +10,7 @@ import { ChatBubbleStyle, defaultStyle, presets, STORAGE_KEY } from '../types';
 import { invalidateBubbleCache } from '@/hooks/useBubbleCustomization';
 
 /**
+ * Hook for chat bubble style.
  *
  */
 export function useChatBubbleStyle() {

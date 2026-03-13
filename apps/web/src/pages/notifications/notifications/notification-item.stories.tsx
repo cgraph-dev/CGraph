@@ -37,12 +37,12 @@ function MockNotificationItem({
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className={`truncate text-sm ${isRead ? 'text-gray-400' : 'font-medium text-white'}`}>
             {title}
           </p>
-          {!isRead && <div className="h-2 w-2 rounded-full bg-primary-500 flex-shrink-0" />}
+          {!isRead && <div className="h-2 w-2 flex-shrink-0 rounded-full bg-primary-500" />}
         </div>
         <p className="mt-0.5 truncate text-xs text-gray-500">{description}</p>
         <p className="mt-1 text-[10px] text-gray-600">{time}</p>

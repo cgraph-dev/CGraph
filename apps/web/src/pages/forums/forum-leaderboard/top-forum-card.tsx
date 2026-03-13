@@ -18,7 +18,7 @@ export function TopForumCard({ forum, rank }: TopForumCardProps) {
   return (
     <Link
       to={`/forums/${forum.slug}`}
-      className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-white/[0.10]/50"
+      className="hover:bg-white/[0.10]/50 flex items-center gap-3 rounded-lg p-2 transition-colors"
     >
       <span className={`w-6 text-lg font-bold ${getRankColor(rank)}`}>#{rank}</span>
 

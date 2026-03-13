@@ -51,9 +51,7 @@ export function BackgroundEffectsSection({
                 className="mb-3 h-24 overflow-hidden rounded-lg"
                 style={{ background: bg.preview }}
                 animate={
-                  bg.animated
-                    ? { backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }
-                    : {}
+                  bg.animated ? { backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] } : {}
                 }
                 transition={bg.animated ? { duration: 10, repeat: Infinity } : {}}
               />

@@ -25,7 +25,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useThemeStore } from '@/stores';
 import { useE2EE } from '../../lib/crypto/e2-ee-context';
 import api from '../../lib/api';
-import { QRCodeScanner } from '../../components/chat/QRCodeScanner';
+import { QRCodeScanner } from '../../components/chat/qr-code-scanner';
 import type { MessagesStackParamList } from '../../types';
 
 // ---------------------------------------------------------------------------
@@ -66,6 +66,7 @@ function buildQRPayload(userId: string, safetyNumber: string): string {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Safety Number Screen component. */
 export default function SafetyNumberScreen({ route, navigation }: Props) {
   const { recipientId, recipientName } = route.params;
   const { colors } = useThemeStore();
@@ -89,9 +90,7 @@ export default function SafetyNumberScreen({ route, navigation }: Props) {
       // Check if already verified
       let isVerified = false;
       try {
-        const verifyRes = await api.get(
-          `/api/v1/e2ee/keys/${recipientId}/verification-status`,
-        );
+        const verifyRes = await api.get(`/api/v1/e2ee/keys/${recipientId}/verification-status`);
         isVerified = verifyRes.data?.data?.verified ?? false;
       } catch {
         // Endpoint may not exist yet — treat as unverified
@@ -105,8 +104,7 @@ export default function SafetyNumberScreen({ route, navigation }: Props) {
         error: null,
       });
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to load safety number';
+      const message = err instanceof Error ? err.message : 'Failed to load safety number';
       setState((s) => ({ ...s, loading: false, error: message }));
     }
   }, [recipientId, getSafetyNumber]);
@@ -144,8 +142,7 @@ export default function SafetyNumberScreen({ route, navigation }: Props) {
       await api.post(`/api/v1/e2ee/keys/${recipientId}/verify`);
       setState((s) => ({ ...s, isVerified: true, verifying: false }));
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to mark as verified';
+      const message = err instanceof Error ? err.message : 'Failed to mark as verified';
       setState((s) => ({ ...s, verifying: false, error: message }));
     }
   };
@@ -154,13 +151,10 @@ export default function SafetyNumberScreen({ route, navigation }: Props) {
   const handleScanResult = useCallback(
     ({ matched }: { matched: boolean; scannedValue: string }) => {
       if (matched) {
-        Alert.alert(
-          'Verified ✓',
-          'The safety numbers match. This contact\'s identity is verified.',
-        );
+        Alert.alert('Verified ✓', "The safety numbers match. This contact's identity is verified.");
       }
     },
-    [],
+    []
   );
 
   // ── Scanner mode ─────────────────────────────────────────────────
@@ -193,16 +187,12 @@ export default function SafetyNumberScreen({ route, navigation }: Props) {
     return (
       <View style={[styles.centered, { backgroundColor: colors.background }]}>
         <Ionicons name="warning-outline" size={48} color="#eab308" />
-        <Text style={[styles.errorText, { color: colors.text }]}>
-          {state.error}
-        </Text>
+        <Text style={[styles.errorText, { color: colors.text }]}>{state.error}</Text>
         <TouchableOpacity
           style={[styles.retryButton, { backgroundColor: colors.surface }]}
           onPress={fetchSafetyNumber}
         >
-          <Text style={[styles.retryButtonText, { color: colors.text }]}>
-            Retry
-          </Text>
+          <Text style={[styles.retryButtonText, { color: colors.text }]}>Retry</Text>
         </TouchableOpacity>
       </View>
     );
@@ -224,22 +214,24 @@ export default function SafetyNumberScreen({ route, navigation }: Props) {
 
       {/* Description */}
       <Text style={[styles.description, { color: colors.textSecondary }]}>
-        Compare the safety number below with {recipientName}&apos;s screen to
-        verify end-to-end encryption.
+        Compare the safety number below with {recipientName}&apos;s screen to verify end-to-end
+        encryption.
       </Text>
 
       {/* Safety number grid — 4 rows × 3 columns */}
-      <View style={[styles.numberCard, { backgroundColor: colors.surface, borderColor: colors.border ?? 'rgba(255,255,255,0.1)' }]}>
-        <Text style={[styles.numberLabel, { color: colors.textSecondary }]}>
-          SAFETY NUMBER
-        </Text>
+      <View
+        style={[
+          styles.numberCard,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border ?? 'rgba(255,255,255,0.1)',
+          },
+        ]}
+      >
+        <Text style={[styles.numberLabel, { color: colors.textSecondary }]}>SAFETY NUMBER</Text>
         <View style={styles.numberGrid}>
           {groups.map((group, i) => (
-            <Text
-              key={i}
-              style={[styles.numberGroup, { color: colors.text }]}
-              selectable
-            >
+            <Text key={i} style={[styles.numberGroup, { color: colors.text }]} selectable>
               {group}
             </Text>
           ))}

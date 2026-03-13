@@ -258,7 +258,16 @@ const makePlan = (overrides?: Record<string, unknown>) => ({
   priceMonthly: 9.99,
   priceYearly: 99.99,
   features: ['Feature A', 'Feature B', 'Feature C'],
-  limits: { maxGroups: 50, maxForums: 10, maxStorageGB: 100, maxFileSize: 50, customEmojis: 200, customThemes: true, prioritySupport: true, noAds: true },
+  limits: {
+    maxGroups: 50,
+    maxForums: 10,
+    maxStorageGB: 100,
+    maxFileSize: 50,
+    customEmojis: 200,
+    customThemes: true,
+    prioritySupport: true,
+    noAds: true,
+  },
   ...overrides,
 });
 

@@ -54,9 +54,7 @@ export function PostVoteSidebar({ score, myVote, onVote }: PostVoteSidebarProps)
           myVote === 1 ? 'text-green-500' : 'text-gray-400 hover:text-green-400'
         }`}
         animate={
-          myVote === 1
-            ? { scale: [1, 1.3, 1], rotate: [0, -15, 0] }
-            : { scale: 1, rotate: 0 }
+          myVote === 1 ? { scale: [1, 1.3, 1], rotate: [0, -15, 0] } : { scale: 1, rotate: 0 }
         }
         transition={springs.snappy}
       >
@@ -84,9 +82,7 @@ export function PostVoteSidebar({ score, myVote, onVote }: PostVoteSidebarProps)
           myVote === -1 ? 'text-red-500' : 'text-gray-400 hover:text-red-400'
         }`}
         animate={
-          myVote === -1
-            ? { scale: [1, 1.3, 1], rotate: [0, 15, 0] }
-            : { scale: 1, rotate: 0 }
+          myVote === -1 ? { scale: [1, 1.3, 1], rotate: [0, 15, 0] } : { scale: 1, rotate: 0 }
         }
         transition={springs.snappy}
       >

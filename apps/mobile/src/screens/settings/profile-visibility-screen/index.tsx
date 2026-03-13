@@ -18,7 +18,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import api from '../../../lib/api';
-import { type VisibilitySettings, DEFAULT_SETTINGS, VISIBILITY_OPTIONS, MESSAGING_OPTIONS } from './types';
+import {
+  type VisibilitySettings,
+  DEFAULT_SETTINGS,
+  VISIBILITY_OPTIONS,
+  MESSAGING_OPTIONS,
+} from './types';
 import { styles } from './styles';
 import { VisibilityOption } from './visibility-option';
 import { ToggleSetting } from './toggle-setting';
@@ -62,6 +67,7 @@ export default function ProfileVisibilityScreen() {
 
   useEffect(() => {
     fetchSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateSetting = <K extends keyof VisibilitySettings>(
@@ -125,7 +131,10 @@ export default function ProfileVisibilityScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => { HapticFeedback.light(); handleBack(); }}
+          onPress={() => {
+            HapticFeedback.light();
+            handleBack();
+          }}
         >
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
@@ -195,11 +204,36 @@ export default function ProfileVisibilityScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Profile Details</Text>
             <View style={styles.settingsCard}>
-              <ToggleSetting label="Show Post Count" value={settings.showPostCount} onChange={(v) => updateSetting('showPostCount', v)} disabled={isPrivate} />
-              <ToggleSetting label="Show Join Date" value={settings.showJoinDate} onChange={(v) => updateSetting('showJoinDate', v)} disabled={isPrivate} />
-              <ToggleSetting label="Show Bio" value={settings.showBio} onChange={(v) => updateSetting('showBio', v)} disabled={isPrivate} />
-              <ToggleSetting label="Show Social Links" value={settings.showSocialLinks} onChange={(v) => updateSetting('showSocialLinks', v)} disabled={isPrivate} />
-              <ToggleSetting label="Show Recent Activity" value={settings.showActivity} onChange={(v) => updateSetting('showActivity', v)} disabled={isPrivate} />
+              <ToggleSetting
+                label="Show Post Count"
+                value={settings.showPostCount}
+                onChange={(v) => updateSetting('showPostCount', v)}
+                disabled={isPrivate}
+              />
+              <ToggleSetting
+                label="Show Join Date"
+                value={settings.showJoinDate}
+                onChange={(v) => updateSetting('showJoinDate', v)}
+                disabled={isPrivate}
+              />
+              <ToggleSetting
+                label="Show Bio"
+                value={settings.showBio}
+                onChange={(v) => updateSetting('showBio', v)}
+                disabled={isPrivate}
+              />
+              <ToggleSetting
+                label="Show Social Links"
+                value={settings.showSocialLinks}
+                onChange={(v) => updateSetting('showSocialLinks', v)}
+                disabled={isPrivate}
+              />
+              <ToggleSetting
+                label="Show Recent Activity"
+                value={settings.showActivity}
+                onChange={(v) => updateSetting('showActivity', v)}
+                disabled={isPrivate}
+              />
             </View>
           </View>
 
@@ -210,7 +244,10 @@ export default function ProfileVisibilityScreen() {
                 label="Who can message you"
                 value={settings.allowMessaging}
                 options={MESSAGING_OPTIONS}
-                onChange={(v) => updateSetting('allowMessaging', v as 'everyone' | 'friends' | 'nobody')}
+                onChange={(v) =>
+                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                  updateSetting('allowMessaging', v as 'everyone' | 'friends' | 'nobody')
+                }
               />
             </View>
           </View>

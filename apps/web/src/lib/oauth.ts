@@ -46,7 +46,9 @@ export interface OAuthTokenResponse {
  * Get list of configured OAuth providers
  */
 export async function getOAuthProviders(): Promise<OAuthProviderInfo[]> {
-  const response = await api.get<{ providers: OAuthProviderInfo[] }>('/api/v1/auth/oauth/providers');
+  const response = await api.get<{ providers: OAuthProviderInfo[] }>(
+    '/api/v1/auth/oauth/providers'
+  );
   return response.data.providers;
 }
 
@@ -67,10 +69,9 @@ export async function handleOAuthCallback(
   code: string,
   state: string
 ): Promise<OAuthTokenResponse> {
-  const response = await api.get<OAuthTokenResponse>(
-    `/api/v1/auth/oauth/${provider}/callback`,
-    { params: { code, state } }
-  );
+  const response = await api.get<OAuthTokenResponse>(`/api/v1/auth/oauth/${provider}/callback`, {
+    params: { code, state },
+  });
   return response.data;
 }
 
@@ -109,33 +110,33 @@ export function openOAuthPopup(provider: OAuthProvider): Promise<OAuthTokenRespo
         // Store state for verification
         sessionStorage.setItem('oauth_state', state);
         sessionStorage.setItem('oauth_provider', provider);
-        
+
         // Calculate popup position (center of screen)
         const width = 500;
         const height = 600;
         const left = window.screenX + (window.outerWidth - width) / 2;
         const top = window.screenY + (window.outerHeight - height) / 2;
-        
+
         // Open popup
         const popup = window.open(
           authorization_url,
           `oauth_${provider}`,
           `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no`
         );
-        
+
         if (!popup) {
           reject(new Error('Popup blocked. Please allow popups for this site.'));
           return;
         }
-        
+
         // Listen for OAuth callback message from popup
         const handleMessage = (event: MessageEvent) => {
           if (event.origin !== window.location.origin) return;
-          
+
           if (event.data.type === 'oauth_callback') {
             window.removeEventListener('message', handleMessage);
             clearInterval(checkClosed);
-            
+
             if (event.data.error) {
               reject(new Error(event.data.error));
             } else {
@@ -143,9 +144,9 @@ export function openOAuthPopup(provider: OAuthProvider): Promise<OAuthTokenRespo
             }
           }
         };
-        
+
         window.addEventListener('message', handleMessage);
-        
+
         // Check if popup was closed without completing
         const checkClosed = setInterval(() => {
           if (popup.closed) {

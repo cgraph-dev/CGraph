@@ -19,6 +19,7 @@ interface EmptyGroupStateProps {
 }
 
 /**
+ * Empty Group State component.
  *
  */
 export function EmptyGroupState({ colors, onCreatePress, onExplorePress }: EmptyGroupStateProps) {

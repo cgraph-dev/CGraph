@@ -70,7 +70,7 @@ export function BordersSection({
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
             selectedTheme === 'all'
               ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white shadow-lg shadow-primary-500/25'
-              : 'border border-white/10 bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]/50 hover:text-white'
+              : 'hover:bg-white/[0.10]/50 border border-white/10 bg-white/[0.06] text-gray-400 hover:text-white'
           } `}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -87,7 +87,7 @@ export function BordersSection({
             className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
               selectedTheme === theme.id
                 ? 'text-white shadow-lg'
-                : 'border border-white/10 bg-white/[0.06] text-gray-400 hover:bg-white/[0.10]/50 hover:text-white'
+                : 'hover:bg-white/[0.10]/50 border border-white/10 bg-white/[0.06] text-gray-400 hover:text-white'
             } `}
             style={{
               background:
@@ -150,7 +150,8 @@ export function BordersSection({
                     const oldBorder: Border = {
                       id: border.id,
                       name: border.name,
-                       
+
+                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                       rarity: border.rarity === 'free' ? 'common' : (border.rarity as Rarity), // safe downcast – compatible rarity union
                       animation: border.animationType,
                       colors: border.colors,

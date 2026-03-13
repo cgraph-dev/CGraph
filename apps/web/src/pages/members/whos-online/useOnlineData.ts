@@ -38,31 +38,43 @@ export function useOnlineData(autoRefresh: boolean) {
       const users = ensureArray<Record<string, unknown>>(data, 'users');
       setOnlineUsers(
         users.map((u) => ({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: u.id as string, // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           username: (u.username as string) || 'Guest', // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           displayName: (u.display_name as string) || null, // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           avatarUrl: (u.avatar_url as string) || null, // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           avatarBorderId: (u.avatar_border_id as string) || (u.avatarBorderId as string) || null, // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           userGroup: (u.user_group as string) || 'Member', // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           userGroupColor: (u.user_group_color as string) || null, // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           currentLocation: (u.current_location as string) || 'Unknown', // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           currentLocationUrl: (u.current_location_url as string) || null, // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           device: (u.device as OnlineUser['device']) || 'unknown', // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           ipHash: u.ip_hash as string | undefined, // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           lastActivity: (u.last_activity as string) || new Date().toISOString(), // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           invisible: (u.invisible as boolean) || false, // safe downcast – structural boundary
         }))
       );
@@ -82,11 +94,13 @@ export function useOnlineData(autoRefresh: boolean) {
       const breakdown = ensureArray<Record<string, unknown>>(data, 'activity_breakdown');
       setActivityBreakdown(
         breakdown.map((b) => ({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           location: (b.location as string) || 'Unknown', // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           count: (b.count as number) || 0, // safe downcast – structural boundary
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           percentage: (b.percentage as number) || 0, // safe downcast – structural boundary
         }))
       );

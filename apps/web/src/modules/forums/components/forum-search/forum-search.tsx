@@ -77,6 +77,7 @@ export function ForumSearch({
       setResults([]);
       setSuggestions(getSuggestions(debouncedQuery));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedQuery, filters, getSuggestions]);
 
   const performSearch = async (searchQuery: string) => {
@@ -101,6 +102,7 @@ export function ForumSearch({
       addToHistory(query.trim());
       performSearch(query.trim());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, addToHistory]);
 
   const handleResultClick = (result: SearchResult) => {

@@ -46,7 +46,11 @@ interface NodesActions {
     type?: string;
   }) => Promise<void>;
   readonly fetchBundles: () => Promise<void>;
-  readonly tip: (recipientId: string, amount: number, context?: Record<string, unknown>) => Promise<void>;
+  readonly tip: (
+    recipientId: string,
+    amount: number,
+    context?: Record<string, unknown>
+  ) => Promise<void>;
   readonly unlock: (postId: string) => Promise<void>;
   readonly withdraw: (amount: number, payoutMethod: string) => Promise<void>;
   readonly hydrate: () => Promise<void>;
@@ -78,7 +82,7 @@ async function persistState(state: Partial<NodesState>): Promise<void> {
     };
     await AsyncStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ balance, eurBalance, pendingBalance, lifetimeEarned }),
+      JSON.stringify({ balance, eurBalance, pendingBalance, lifetimeEarned })
     );
   } catch {
     // Silently fail — local cache is non-critical
@@ -97,6 +101,7 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
     try {
       const raw = await AsyncStorage.getItem(STORAGE_KEY);
       if (raw) {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const cached = JSON.parse(raw) as Partial<NodesState>;
         set({
           balance: cached.balance ?? 0,
@@ -115,6 +120,7 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const { data } = await nodesService.getWallet();
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const wallet = data as NodeWallet;
       const newState = {
         balance: wallet.available_balance,
@@ -136,6 +142,7 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const { data } = await nodesService.getTransactions(params);
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const items = (data as { transactions: NodeTransaction[] }).transactions ?? [];
       set({ transactions: items, isLoading: false });
     } catch (err: unknown) {
@@ -149,6 +156,7 @@ export const useNodesStore = create<NodesStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const { data } = await nodesService.getBundles();
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const items = (data as { bundles: NodeBundle[] }).bundles ?? [];
       set({ bundles: items, isLoading: false });
     } catch (err: unknown) {

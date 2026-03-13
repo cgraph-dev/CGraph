@@ -14,6 +14,8 @@ interface ScrollContainerProps extends Omit<ScrollViewProps, 'children'> {
   contentStyle?: ViewStyle;
 }
 
+/** Description. */
+/** Scroll Container component. */
 export function ScrollContainer({
   children,
   refreshing = false,

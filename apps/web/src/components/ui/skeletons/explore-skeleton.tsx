@@ -43,10 +43,7 @@ function CommunityCardSkeleton() {
 /**
  * Skeleton for the explore/discover page.
  */
-export function ExploreSkeleton({
-  cardCount = 6,
-  className = '',
-}: ExploreSkeletonProps) {
+export function ExploreSkeleton({ cardCount = 6, className = '' }: ExploreSkeletonProps) {
   return (
     <div className={className}>
       {/* Header + search */}

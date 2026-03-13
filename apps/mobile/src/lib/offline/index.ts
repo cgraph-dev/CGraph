@@ -21,9 +21,6 @@ export {
   QueuePriority,
 } from './offline-queue';
 
-export type {
-  QueueItem,
-  QueueItemType,
-} from './offline-queue';
+export type { QueueItem, QueueItemType } from './offline-queue';
 
 export { default as OfflineQueue } from './offline-queue';

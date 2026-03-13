@@ -178,7 +178,14 @@ describe('getPremiumPerks', () => {
     mockApi.get.mockResolvedValue({
       data: {
         data: [
-          { id: 'p1', name: 'Custom Badge', description: 'A badge', icon: '🏆', required_tier: 'premium', enabled: true },
+          {
+            id: 'p1',
+            name: 'Custom Badge',
+            description: 'A badge',
+            icon: '🏆',
+            required_tier: 'premium',
+            enabled: true,
+          },
         ],
       },
     });
@@ -289,10 +296,19 @@ describe('getShopItems', () => {
       data: {
         data: [
           {
-            id: 'item1', name: 'Gold Badge', description: 'Shiny',
-            image_url: '/img.png', category: 'badges', price: 100,
-            price_type: 'coins', rarity: 'rare', owned: false,
-            equipped: false, limited_time: false, expires_at: null, stock: null,
+            id: 'item1',
+            name: 'Gold Badge',
+            description: 'Shiny',
+            image_url: '/img.png',
+            category: 'badges',
+            price: 100,
+            price_type: 'coins',
+            rarity: 'rare',
+            owned: false,
+            equipped: false,
+            limited_time: false,
+            expires_at: null,
+            stock: null,
           },
         ],
       },

@@ -13,9 +13,9 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withSequence,
-  withTiming,
+  _withTiming,
   runOnJS,
-  FadeIn,
+  _FadeIn,
   FadeOut,
   SlideInUp,
 } from 'react-native-reanimated';
@@ -58,6 +58,7 @@ const DEFAULT_COLORS = {
 // Component
 // ---------------------------------------------------------------------------
 /**
+ * Vote Buttons component.
  *
  */
 export function VoteButtons({
@@ -87,7 +88,7 @@ export function VoteButtons({
       const scale = direction === 1 ? upScale : downScale;
       scale.value = withSequence(
         withSpring(1.35, SPRING_PRESETS.bouncy),
-        withSpring(1, SPRING_PRESETS.bouncy),
+        withSpring(1, SPRING_PRESETS.bouncy)
       );
 
       setFloatingLabel(direction === 1 ? '+1' : '-1');
@@ -95,7 +96,7 @@ export function VoteButtons({
 
       onVote(direction);
     },
-    [onVote, upScale, downScale, clearFloating],
+    [onVote, upScale, downScale, clearFloating]
   );
 
   // Animated styles
@@ -126,9 +127,7 @@ export function VoteButtons({
 
       {/* Score */}
       <View style={styles.scoreWrapper}>
-        <Text style={[styles.score, { color: countColor }]}>
-          {voteCount}
-        </Text>
+        <Text style={[styles.score, { color: countColor }]}>{voteCount}</Text>
 
         {/* Floating indicator */}
         {floatingLabel && (

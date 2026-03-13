@@ -14,9 +14,7 @@ import Button from '../button';
  * Wrapper providing layout for stories
  */
 function ThemeWrapper({ children }: { children: React.ReactNode }): React.ReactElement {
-  return (
-  <View style={{ gap: 12 }}>{children}</View>
-);
+  return <View style={{ gap: 12 }}>{children}</View>;
 }
 
 const meta: Meta<typeof Button> = {

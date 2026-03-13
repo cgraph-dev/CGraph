@@ -206,6 +206,7 @@ export default function ErrorState({
       fadeIn.setValue(1);
       slideUp.setValue(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showAnimation, type]);
 
   const handleRetry = () => {
@@ -247,7 +248,7 @@ export default function ErrorState({
           variant === 'minimal' && styles.iconContainerMinimal,
         ]}
       >
-        { }
+        {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
         <IconComponent name={preset.icon as any} size={iconSize} color={preset.color} />
       </Animated.View>
     );
@@ -321,6 +322,7 @@ function adjustColor(color: string, amount: number): string {
 
 // Pre-built error variants
 /**
+ * Network Error component.
  *
  */
 export function NetworkError({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
@@ -328,6 +330,7 @@ export function NetworkError({ onRetry, style }: { onRetry?: () => void; style?:
 }
 
 /**
+ * Not Found Error component.
  *
  */
 export function NotFoundError({ type = 'Content', style }: { type?: string; style?: ViewStyle }) {
@@ -342,6 +345,7 @@ export function NotFoundError({ type = 'Content', style }: { type?: string; styl
 }
 
 /**
+ * Permission Error component.
  *
  */
 export function PermissionError({ style }: { style?: ViewStyle }) {
@@ -349,6 +353,7 @@ export function PermissionError({ style }: { style?: ViewStyle }) {
 }
 
 /**
+ * Rate Limit Error component.
  *
  */
 export function RateLimitError({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
@@ -358,6 +363,7 @@ export function RateLimitError({ onRetry, style }: { onRetry?: () => void; style
 }
 
 /**
+ * Server Error component.
  *
  */
 export function ServerError({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
@@ -365,6 +371,7 @@ export function ServerError({ onRetry, style }: { onRetry?: () => void; style?: 
 }
 
 /**
+ * Empty State component.
  *
  */
 export function EmptyState({
@@ -396,6 +403,7 @@ export function EmptyState({
 }
 
 /**
+ * Offline Error component.
  *
  */
 export function OfflineError({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
@@ -404,6 +412,7 @@ export function OfflineError({ onRetry, style }: { onRetry?: () => void; style?:
 
 // Card variant shortcuts
 /**
+ * Network Error Card component.
  *
  */
 export function NetworkErrorCard({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
@@ -411,6 +420,7 @@ export function NetworkErrorCard({ onRetry, style }: { onRetry?: () => void; sty
 }
 
 /**
+ * Server Error Card component.
  *
  */
 export function ServerErrorCard({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {

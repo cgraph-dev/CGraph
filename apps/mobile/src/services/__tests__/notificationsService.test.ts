@@ -350,9 +350,7 @@ describe('notificationsService', () => {
     it('fetches preferences', async () => {
       mockApi.get.mockResolvedValueOnce({
         data: {
-          data: [
-            { type: 'message', enabled: true, push: true, email: false, in_app: true },
-          ],
+          data: [{ type: 'message', enabled: true, push: true, email: false, in_app: true }],
         },
       });
 

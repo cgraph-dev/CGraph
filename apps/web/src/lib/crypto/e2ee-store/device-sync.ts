@@ -417,19 +417,13 @@ async function encryptForDevice(data: string, _targetDeviceId: string): Promise<
   const plaintext = encoder.encode(data);
 
   // Generate a random AES-256-GCM key for this sync
-  const aesKey = await crypto.subtle.generateKey(
-    { name: 'AES-GCM', length: 256 },
-    true,
-    ['encrypt']
-  );
+  const aesKey = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, [
+    'encrypt',
+  ]);
 
   // Encrypt the session data
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    aesKey,
-    plaintext
-  );
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, aesKey, plaintext);
 
   // Export the AES key for wrapping
   const rawKey = await crypto.subtle.exportKey('raw', aesKey);
@@ -469,19 +463,13 @@ async function decryptWithIdentityKey(
   );
 
   // Decrypt
-  return crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv },
-    aesKey,
-    ciphertext
-  );
+  return crypto.subtle.decrypt({ name: 'AES-GCM', iv }, aesKey, ciphertext);
 }
 
 /**
  * Import decrypted session data into the local session manager.
  */
-async function importSessionData(
-  sessionData: Record<string, unknown>
-): Promise<void> {
+async function importSessionData(sessionData: Record<string, unknown>): Promise<void> {
   if (sessionData.type !== 'cgraph-key-sync' || sessionData.version !== 1) {
     throw new Error(`Unknown sync data format: ${sessionData.type} v${sessionData.version}`);
   }

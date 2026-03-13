@@ -37,6 +37,8 @@ function formatTime(timestamp: number): string {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Description. */
+/** Secret Chat Message component. */
 export function SecretChatMessage({ message, themeColors }: SecretChatMessageProps) {
   const timeStr = useMemo(() => formatTime(message.timestamp), [message.timestamp]);
   const { isOwn } = message;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * Calendar Header
  *
@@ -47,14 +48,14 @@ export function CalendarHeader({
       {/* Page title */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <CalendarIcon className="text-primary h-8 w-8" />
-          <h1 className="text-foreground text-2xl font-bold">Calendar</h1>
+          <CalendarIcon className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl font-bold text-foreground">Calendar</h1>
         </div>
 
         {onCreateEvent && (
           <button
             onClick={onCreateEvent}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 mt-4 flex items-center gap-2 rounded-lg px-4 py-2 transition-colors sm:mt-0"
+            className="text-primary-foreground mt-4 flex items-center gap-2 rounded-lg bg-primary px-4 py-2 transition-colors hover:bg-primary/90 sm:mt-0"
           >
             <PlusIcon className="h-5 w-5" />
             New Event
@@ -79,7 +80,7 @@ export function CalendarHeader({
           >
             <ChevronRightIcon className="h-5 w-5" />
           </button>
-          <h2 className="text-foreground ml-2 text-lg font-semibold">{monthName}</h2>
+          <h2 className="ml-2 text-lg font-semibold text-foreground">{monthName}</h2>
         </div>
 
         <div className="flex items-center gap-2">
@@ -92,7 +93,6 @@ export function CalendarHeader({
 
           <div className="bg-muted flex items-center rounded-lg p-1">
             // type assertion: array literal matches ViewMode union type
-            { }
             {(['month', 'week', 'day'] as ViewMode[]).map((mode) => (
               <button
                 key={mode}

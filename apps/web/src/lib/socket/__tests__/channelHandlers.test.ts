@@ -277,7 +277,11 @@ describe('setupThreadHandlers', () => {
     threadCallbacks.set('t1', { onThreadStatusChanged });
     setupThreadHandlers(channel as never, 'thread:t1', 't1', maps, () => threadCallbacks);
 
-    channel._trigger('thread_status_changed', { thread_id: 't1', is_locked: true, is_pinned: false });
+    channel._trigger('thread_status_changed', {
+      thread_id: 't1',
+      is_locked: true,
+      is_pinned: false,
+    });
     expect(onThreadStatusChanged).toHaveBeenCalledWith({
       thread_id: 't1',
       is_locked: true,

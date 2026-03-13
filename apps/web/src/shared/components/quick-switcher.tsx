@@ -43,17 +43,68 @@ const ICON_MAP: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>
 };
 
 const SETTINGS_PAGES: QuickSwitcherItem[] = [
-  { id: 'settings-account', type: 'settings', name: 'Account Settings', path: '/settings/account', icon: Cog6ToothIcon },
-  { id: 'settings-appearance', type: 'settings', name: 'Appearance', path: '/settings/appearance', icon: Cog6ToothIcon },
-  { id: 'settings-notifications', type: 'settings', name: 'Notifications', path: '/settings/notifications', icon: Cog6ToothIcon },
-  { id: 'settings-privacy', type: 'settings', name: 'Privacy & Security', path: '/settings/privacy', icon: Cog6ToothIcon },
-  { id: 'settings-customization', type: 'settings', name: 'Customization', path: '/settings/customization', icon: Cog6ToothIcon },
+  {
+    id: 'settings-account',
+    type: 'settings',
+    name: 'Account Settings',
+    path: '/settings/account',
+    icon: Cog6ToothIcon,
+  },
+  {
+    id: 'settings-appearance',
+    type: 'settings',
+    name: 'Appearance',
+    path: '/settings/appearance',
+    icon: Cog6ToothIcon,
+  },
+  {
+    id: 'settings-notifications',
+    type: 'settings',
+    name: 'Notifications',
+    path: '/settings/notifications',
+    icon: Cog6ToothIcon,
+  },
+  {
+    id: 'settings-privacy',
+    type: 'settings',
+    name: 'Privacy & Security',
+    path: '/settings/privacy',
+    icon: Cog6ToothIcon,
+  },
+  {
+    id: 'settings-customization',
+    type: 'settings',
+    name: 'Customization',
+    path: '/settings/customization',
+    icon: Cog6ToothIcon,
+  },
 ];
 
 const QUICK_ACTIONS: QuickSwitcherItem[] = [
-  { id: 'action-new-dm', type: 'action', name: 'New Message', subtitle: 'Start a conversation', path: '/messages?new=true', icon: ChatBubbleLeftRightIcon },
-  { id: 'action-new-group', type: 'action', name: 'Create Group', subtitle: 'Start a new group', path: '/groups/create', icon: UserGroupIcon },
-  { id: 'action-explore', type: 'action', name: 'Explore Communities', subtitle: 'Discover groups & forums', path: '/explore', icon: GlobeAltIcon },
+  {
+    id: 'action-new-dm',
+    type: 'action',
+    name: 'New Message',
+    subtitle: 'Start a conversation',
+    path: '/messages?new=true',
+    icon: ChatBubbleLeftRightIcon,
+  },
+  {
+    id: 'action-new-group',
+    type: 'action',
+    name: 'Create Group',
+    subtitle: 'Start a new group',
+    path: '/groups/create',
+    icon: UserGroupIcon,
+  },
+  {
+    id: 'action-explore',
+    type: 'action',
+    name: 'Explore Communities',
+    subtitle: 'Discover groups & forums',
+    path: '/explore',
+    icon: GlobeAltIcon,
+  },
 ];
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -94,10 +145,11 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
     }
     const q = query.toLowerCase();
     return allItems
-      .filter((item) =>
-        item.name.toLowerCase().includes(q) ||
-        item.subtitle?.toLowerCase().includes(q) ||
-        item.type.includes(q)
+      .filter(
+        (item) =>
+          item.name.toLowerCase().includes(q) ||
+          item.subtitle?.toLowerCase().includes(q) ||
+          item.type.includes(q)
       )
       .slice(0, 12);
   }, [query, allItems]);
@@ -118,37 +170,43 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
 
   // Scroll selected item into view
   useEffect(() => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const el = listRef.current?.children[selectedIndex] as HTMLElement | undefined; // safe downcast – DOM element
     el?.scrollIntoView?.({ block: 'nearest' });
   }, [selectedIndex]);
 
-  const handleSelect = useCallback((item: QuickSwitcherItem) => {
-    navigate(item.path);
-    onClose();
-  }, [navigate, onClose]);
+  const handleSelect = useCallback(
+    (item: QuickSwitcherItem) => {
+      navigate(item.path);
+      onClose();
+    },
+    [navigate, onClose]
+  );
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setSelectedIndex((i) => Math.min(i + 1, filtered.length - 1));
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setSelectedIndex((i) => Math.max(i - 1, 0));
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (filtered[selectedIndex]) {
-          handleSelect(filtered[selectedIndex]);
-        }
-        break;
-      case 'Escape':
-        onClose();
-        break;
-    }
-  }, [filtered, selectedIndex, handleSelect, onClose]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setSelectedIndex((i) => Math.min(i + 1, filtered.length - 1));
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setSelectedIndex((i) => Math.max(i - 1, 0));
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (filtered[selectedIndex]) {
+            handleSelect(filtered[selectedIndex]);
+          }
+          break;
+        case 'Escape':
+          onClose();
+          break;
+      }
+    },
+    [filtered, selectedIndex, handleSelect, onClose]
+  );
 
   // Global Cmd+K / Ctrl+K handler
   useEffect(() => {
@@ -195,7 +253,9 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
               placeholder="Where would you like to go?"
               className="flex-1 bg-transparent text-white placeholder-gray-500 outline-none"
             />
-            <kbd className="rounded bg-white/[0.08] px-2 py-0.5 text-xs text-gray-500 border border-white/[0.06]">ESC</kbd>
+            <kbd className="rounded border border-white/[0.06] bg-white/[0.08] px-2 py-0.5 text-xs text-gray-500">
+              ESC
+            </kbd>
           </div>
 
           {/* Results with category headers */}
@@ -235,14 +295,18 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
                             : 'text-gray-300 hover:bg-white/[0.06]'
                         }`}
                       >
-                        <Icon className={`h-5 w-5 shrink-0 ${isSelected ? 'text-primary-400' : 'text-gray-500'}`} />
+                        <Icon
+                          className={`h-5 w-5 shrink-0 ${isSelected ? 'text-primary-400' : 'text-gray-500'}`}
+                        />
                         <div className="min-w-0 flex-1">
-                          <div className="truncate text-sm font-medium">{highlightMatch(item.name, query)}</div>
+                          <div className="truncate text-sm font-medium">
+                            {highlightMatch(item.name, query)}
+                          </div>
                           {item.subtitle && (
                             <div className="truncate text-xs text-gray-500">{item.subtitle}</div>
                           )}
                         </div>
-                        <span className="shrink-0 rounded bg-white/[0.08] px-1.5 py-0.5 text-[10px] uppercase text-gray-500 border border-white/[0.06]">
+                        <span className="shrink-0 rounded border border-white/[0.06] bg-white/[0.08] px-1.5 py-0.5 text-[10px] uppercase text-gray-500">
                           {item.type}
                         </span>
                       </motion.button>
@@ -256,13 +320,22 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
           {/* Footer */}
           <div className="flex items-center gap-4 border-t border-white/[0.06] px-4 py-2 text-xs text-gray-500">
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-white/[0.08] px-1.5 py-0.5 border border-white/[0.06]">↑↓</kbd> Navigate
+              <kbd className="rounded border border-white/[0.06] bg-white/[0.08] px-1.5 py-0.5">
+                ↑↓
+              </kbd>{' '}
+              Navigate
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-white/[0.08] px-1.5 py-0.5 border border-white/[0.06]">↵</kbd> Open
+              <kbd className="rounded border border-white/[0.06] bg-white/[0.08] px-1.5 py-0.5">
+                ↵
+              </kbd>{' '}
+              Open
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded bg-white/[0.08] px-1.5 py-0.5 border border-white/[0.06]">Esc</kbd> Close
+              <kbd className="rounded border border-white/[0.06] bg-white/[0.08] px-1.5 py-0.5">
+                Esc
+              </kbd>{' '}
+              Close
             </span>
           </div>
         </motion.div>

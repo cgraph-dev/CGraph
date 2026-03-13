@@ -59,7 +59,7 @@ export function SkeletonLoader({
     const dur = rnTransitions.fadeIn.duration;
     pulse.value = withRepeat(
       withSequence(withTiming(1, { duration: dur * 2 }), withTiming(0, { duration: dur * 2 })),
-      -1,
+      -1
     );
   }, [pulse]);
 
@@ -69,7 +69,14 @@ export function SkeletonLoader({
 
   // Derive border radius from variant
   const resolvedRadius =
-    borderRadius ?? (variant === 'circle' ? (typeof height === 'number' ? height / 2 : 24) : variant === 'text' ? 4 : 8);
+    borderRadius ??
+    (variant === 'circle'
+      ? typeof height === 'number'
+        ? height / 2
+        : 24
+      : variant === 'text'
+        ? 4
+        : 8);
 
   // Circle forces equal width/height
   const resolvedWidth = variant === 'circle' ? height : width;
@@ -77,7 +84,9 @@ export function SkeletonLoader({
   return (
     <Animated.View
       style={[
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           width: resolvedWidth as number | string,
           height,
           borderRadius: resolvedRadius,

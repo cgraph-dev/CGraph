@@ -32,6 +32,7 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
     if (isOpen && postId) {
       loadHistory();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, postId]);
 
   const loadHistory = async () => {

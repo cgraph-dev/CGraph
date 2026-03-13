@@ -1,8 +1,8 @@
 /**
  * Messaging Feature Module (Mobile)
- * 
+ *
  * Domain-Driven Design module for real-time messaging functionality.
- * 
+ *
  * @module @features/messaging
  * @since v0.8.3
  */

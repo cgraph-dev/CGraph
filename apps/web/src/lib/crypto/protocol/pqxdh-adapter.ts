@@ -115,9 +115,10 @@ export async function createPQXDHSession(
     engine,
     initialMessage,
     signedPreKeyPair: {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       publicKey: null as unknown as CryptoKey, // safe downcast – placeholder, not needed after init
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       privateKey: null as unknown as CryptoKey, // safe downcast – placeholder, not needed after init
       rawPublicKey: bobSignedPreKey,
     },

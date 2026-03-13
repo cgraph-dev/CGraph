@@ -26,14 +26,24 @@ interface SkeletonProps {
   style?: ViewStyle;
 }
 
-function ShimmerBox({ w, h, borderRadius = 6, style }: { w: number | string; h: number; borderRadius?: number; style?: ViewStyle }) {
+function ShimmerBox({
+  w,
+  h,
+  borderRadius = 6,
+  style,
+}: {
+  w: number | string;
+  h: number;
+  borderRadius?: number;
+  style?: ViewStyle;
+}) {
   const translateX = useSharedValue(-1);
 
   useEffect(() => {
     translateX.value = withRepeat(
       withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
       -1,
-      false,
+      false
     );
   }, [translateX]);
 
@@ -45,6 +55,7 @@ function ShimmerBox({ w, h, borderRadius = 6, style }: { w: number | string; h: 
     <View
       style={[
         {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           width: w as number,
           height: h,
           borderRadius,
@@ -66,7 +77,14 @@ function ShimmerBox({ w, h, borderRadius = 6, style }: { w: number | string; h: 
   );
 }
 
-export default function Skeleton({ shape = 'card', width, height, count = 1, style }: SkeletonProps) {
+/** Skeleton component. */
+export default function Skeleton({
+  shape = 'card',
+  width,
+  height,
+  count = 1,
+  style,
+}: SkeletonProps) {
   const items = Array.from({ length: count });
 
   return (
@@ -78,7 +96,15 @@ export default function Skeleton({ shape = 'card', width, height, count = 1, sty
   );
 }
 
-function SkeletonShape({ shape, width, height }: { shape: SkeletonShape; width?: number | string; height?: number }) {
+function SkeletonShape({
+  shape,
+  width,
+  height,
+}: {
+  shape: SkeletonShape;
+  width?: number | string;
+  height?: number;
+}) {
   switch (shape) {
     case 'text':
       return (

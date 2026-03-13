@@ -164,12 +164,10 @@ export const TITLE_DISPLAY_NAMES: Record<string, TitleDisplay> = Object.fromEntr
 /**
  * Legendary and mythic title IDs for special rendering.
  */
-export const LEGENDARY_TITLE_IDS = ALL_TITLES
-  .filter((t) => t.rarity === 'legendary' || t.rarity === 'mythic')
-  .map((t) => t.id);
-export const MYTHIC_TITLE_IDS = ALL_TITLES
-  .filter((t) => t.rarity === 'mythic')
-  .map((t) => t.id);
+export const LEGENDARY_TITLE_IDS = ALL_TITLES.filter(
+  (t) => t.rarity === 'legendary' || t.rarity === 'mythic'
+).map((t) => t.id);
+export const MYTHIC_TITLE_IDS = ALL_TITLES.filter((t) => t.rarity === 'mythic').map((t) => t.id);
 export const RARE_TITLE_IDS = [...LEGENDARY_TITLE_IDS] as const;
 
 // =============================================================================

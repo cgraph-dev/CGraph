@@ -78,7 +78,7 @@ export function QuickReply({
 
   const insertBBCode = useCallback(
     (tag: string, value?: string) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const textarea = document.querySelector(`#quick-reply-${threadId}`) as HTMLTextAreaElement; // safe downcast – DOM element
       if (!textarea) return;
 
@@ -127,7 +127,7 @@ export function QuickReply({
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.06]/50"
+        className="dark:hover:bg-white/[0.06]/50 flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50"
       >
         <span className="font-medium text-gray-900 dark:text-white">Quick Reply</span>
         {isExpanded ? (
@@ -162,7 +162,7 @@ export function QuickReply({
 
           {/* BBCode Toolbar */}
           {showToolbar && (
-            <div className="mb-2 flex flex-wrap gap-1 rounded bg-gray-50 p-2 dark:bg-white/[0.06]/50">
+            <div className="dark:bg-white/[0.06]/50 mb-2 flex flex-wrap gap-1 rounded bg-gray-50 p-2">
               <ToolbarButton title="Bold" onClick={() => insertBBCode('b')}>
                 <span className="font-bold">B</span>
               </ToolbarButton>

@@ -1,6 +1,6 @@
 /**
  * URL Validation Utilities
- * 
+ *
  * Provides security-focused URL validation to prevent:
  * - javascript: protocol attacks
  * - data: protocol attacks (for images)
@@ -35,25 +35,25 @@ const ALLOWED_DATA_IMAGE_TYPES = [
  */
 export function isValidLinkUrl(url: string | undefined | null): boolean {
   if (!url) return false;
-  
+
   // Trim and lowercase for checking
   const trimmedUrl = url.trim().toLowerCase();
-  
+
   // Check for empty string
   if (!trimmedUrl) return false;
-  
+
   // Check for javascript: protocol (case insensitive, including obfuscation attempts)
   if (trimmedUrl.startsWith('javascript:')) return false;
   if (trimmedUrl.startsWith('vbscript:')) return false;
   if (trimmedUrl.startsWith('data:') && !trimmedUrl.startsWith('data:image/')) return false;
-  
+
   // Try to parse as URL to check protocol
   try {
     // Handle relative URLs (they're generally safe)
     if (url.startsWith('/') || url.startsWith('#') || url.startsWith('.')) {
       return true;
     }
-    
+
     const parsedUrl = new URL(url, window.location.origin);
     return ALLOWED_LINK_PROTOCOLS.includes(parsedUrl.protocol);
   } catch {
@@ -68,28 +68,28 @@ export function isValidLinkUrl(url: string | undefined | null): boolean {
  */
 export function isValidImageUrl(url: string | undefined | null): boolean {
   if (!url) return false;
-  
+
   const trimmedUrl = url.trim().toLowerCase();
-  
+
   // Check for empty string
   if (!trimmedUrl) return false;
-  
+
   // Check for javascript: protocol
   if (trimmedUrl.startsWith('javascript:')) return false;
   if (trimmedUrl.startsWith('vbscript:')) return false;
-  
+
   // Allow data: URLs only for specific image types
   if (trimmedUrl.startsWith('data:')) {
-    return ALLOWED_DATA_IMAGE_TYPES.some(type => trimmedUrl.startsWith(type));
+    return ALLOWED_DATA_IMAGE_TYPES.some((type) => trimmedUrl.startsWith(type));
   }
-  
+
   // Try to parse as URL to check protocol
   try {
     // Handle relative URLs
     if (url.startsWith('/')) {
       return true;
     }
-    
+
     const parsedUrl = new URL(url, window.location.origin);
     return ALLOWED_IMAGE_PROTOCOLS.includes(parsedUrl.protocol);
   } catch {
@@ -132,7 +132,7 @@ export function escapeHtml(str: string): string {
     "'": '&#x27;',
     '/': '&#x2F;',
   };
-  
+
   return str.replace(/[&<>"'/]/g, (match) => htmlEscapes[match] || match);
 }
 
@@ -142,7 +142,7 @@ export function escapeHtml(str: string): string {
  */
 export function isValidExternalUrl(url: string | undefined | null): boolean {
   if (!url) return false;
-  
+
   try {
     const parsedUrl = new URL(url);
     return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';

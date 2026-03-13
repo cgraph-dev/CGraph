@@ -27,6 +27,7 @@ const TIER_COLORS = {
 };
 
 /**
+ * Subscription Card component.
  *
  */
 export default function SubscriptionCard({

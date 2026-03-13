@@ -98,6 +98,7 @@ export const usePremiumStore = create<PremiumState>()(
         set({ isLoading: true });
         try {
           const billing = await billingService.getStatus();
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const tier = (billing.tier === 'free' ? null : billing.tier) as SubscriptionTier | null;
           set({
             isSubscribed: billing.status === 'active' || billing.status === 'trialing',
@@ -124,6 +125,7 @@ export const usePremiumStore = create<PremiumState>()(
 
       // Subscribe to a tier via Stripe Checkout redirect
       subscribe: async (tier: SubscriptionTier) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
         await billingService.redirectToCheckout(tier as any);
       },
 
@@ -187,22 +189,23 @@ export const usePremiumStore = create<PremiumState>()(
       canAfford: (price) => {
         return get().coinBalance >= price;
       },
-  reset: () => set({
-    isSubscribed: false,
-    currentTier: null,
-    subscribedAt: null,
-    expiresAt: null,
-    status: 'none',
-    cancelAtPeriodEnd: false,
-    graceUntil: null,
-    features: null,
-    coinBalance: 0,
-    purchaseHistory: [],
-    invoices: [],
-    portalUrl: null,
-    isLoading: false,
-  }),
-}),
+      reset: () =>
+        set({
+          isSubscribed: false,
+          currentTier: null,
+          subscribedAt: null,
+          expiresAt: null,
+          status: 'none',
+          cancelAtPeriodEnd: false,
+          graceUntil: null,
+          features: null,
+          coinBalance: 0,
+          purchaseHistory: [],
+          invoices: [],
+          portalUrl: null,
+          isLoading: false,
+        }),
+    }),
     {
       name: 'cgraph-premium',
       storage: createJSONStorage(() => safeLocalStorage),

@@ -82,7 +82,7 @@ export function ModerationLog() {
       {isLoadingLog && <div className="py-8 text-center text-gray-500">Loading log…</div>}
 
       {!isLoadingLog && moderationLog.length === 0 && (
-        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04]/30 py-8 text-center text-gray-500">
+        <div className="bg-white/[0.04]/30 rounded-lg border border-white/[0.08] py-8 text-center text-gray-500">
           No moderation actions recorded
         </div>
       )}

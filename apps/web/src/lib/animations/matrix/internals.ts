@@ -80,13 +80,14 @@ export function createCharacterAtlas(
         : document.createElement('canvas');
 
       if (!supportsOffscreen) {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         (canvas as HTMLCanvasElement).width = glyphSize; // safe downcast – DOM element
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         (canvas as HTMLCanvasElement).height = glyphSize; // safe downcast – DOM element
       }
 
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const ctx = canvas.getContext('2d', { alpha: true }) as
         | CanvasRenderingContext2D
         | OffscreenCanvasRenderingContext2D;

@@ -1,6 +1,6 @@
 /**
  * Admin Screens Index
- * 
+ *
  * Export all admin-related screens
  */
 

@@ -1,7 +1,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { ForumStats, ModerationItem, BannedUser, Moderator, ModerationLogEntry, IdentityCardEntry } from '../types';
+import type {
+  ForumStats,
+  ModerationItem,
+  BannedUser,
+  Moderator,
+  ModerationLogEntry,
+  IdentityCardEntry,
+} from '../types';
 import { styles } from '../styles';
 
 interface ColorsType {
@@ -15,6 +22,8 @@ interface ColorsType {
   error: string;
 }
 
+/** Description. */
+/** Overview Grid component. */
 export function OverviewGrid({ stats, colors }: { stats: ForumStats | null; colors: ColorsType }) {
   return (
     <View style={styles.statsGrid}>
@@ -58,24 +67,37 @@ export function OverviewGrid({ stats, colors }: { stats: ForumStats | null; colo
   );
 }
 
+/** Description. */
+/** Mod Queue Item component. */
 export function ModQueueItem({
-  item, colors, onApprove, onRemove,
+  item,
+  colors,
+  onApprove,
+  onRemove,
 }: {
-  item: ModerationItem; colors: ColorsType;
+  item: ModerationItem;
+  colors: ColorsType;
   onApprove: (item: ModerationItem) => void;
   onRemove: (item: ModerationItem) => void;
 }) {
   return (
     <View style={[styles.modItem, { backgroundColor: colors.surface }]}>
       <View style={styles.modItemHeader}>
-        <View style={[styles.typeBadge, { backgroundColor: item.type === 'post' ? colors.primary : colors.secondary }]}>
+        <View
+          style={[
+            styles.typeBadge,
+            { backgroundColor: item.type === 'post' ? colors.primary : colors.secondary },
+          ]}
+        >
           <Text style={styles.typeBadgeText}>{item.type}</Text>
         </View>
         <Text style={[styles.modItemDate, { color: colors.textSecondary }]}>
           {new Date(item.created_at).toLocaleDateString()}
         </Text>
       </View>
-      <Text style={[styles.modItemContent, { color: colors.text }]} numberOfLines={3}>{item.content}</Text>
+      <Text style={[styles.modItemContent, { color: colors.text }]} numberOfLines={3}>
+        {item.content}
+      </Text>
       <View style={styles.modItemMeta}>
         <Text style={[styles.modItemAuthor, { color: colors.textSecondary }]}>
           By u/{item.author?.username || 'unknown'}
@@ -102,39 +124,60 @@ export function ModQueueItem({
   );
 }
 
+/** Description. */
+/** Banned User Item component. */
 export function BannedUserItem({
-  item, colors, onUnban,
-}: { item: BannedUser; colors: ColorsType; onUnban: (userId: string) => void }) {
+  item,
+  colors,
+  onUnban,
+}: {
+  item: BannedUser;
+  colors: ColorsType;
+  onUnban: (userId: string) => void;
+}) {
   return (
     <View style={[styles.userItem, { backgroundColor: colors.surface }]}>
       <View style={styles.userInfo}>
         <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-          <Text style={styles.avatarText}>{item.user?.username?.charAt(0).toUpperCase() || '?'}</Text>
+          <Text style={styles.avatarText}>
+            {item.user?.username?.charAt(0).toUpperCase() || '?'}
+          </Text>
         </View>
         <View style={styles.userDetails}>
-          <Text style={[styles.username, { color: colors.text }]}>u/{item.user?.username || 'unknown'}</Text>
+          <Text style={[styles.username, { color: colors.text }]}>
+            u/{item.user?.username || 'unknown'}
+          </Text>
           <Text style={[styles.banReason, { color: colors.textSecondary }]}>{item.reason}</Text>
           <Text style={[styles.banDate, { color: colors.textSecondary }]}>
             Banned {new Date(item.banned_at).toLocaleDateString()}
           </Text>
         </View>
       </View>
-      <TouchableOpacity style={[styles.unbanButton, { borderColor: colors.success }]} onPress={() => onUnban(item.user.id)}>
+      <TouchableOpacity
+        style={[styles.unbanButton, { borderColor: colors.success }]}
+        onPress={() => onUnban(item.user.id)}
+      >
         <Text style={[styles.unbanButtonText, { color: colors.success }]}>Unban</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
+/** Description. */
+/** Moderator Item component. */
 export function ModeratorItem({ item, colors }: { item: Moderator; colors: ColorsType }) {
   return (
     <View style={[styles.userItem, { backgroundColor: colors.surface }]}>
       <View style={styles.userInfo}>
         <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-          <Text style={styles.avatarText}>{item.user?.username?.charAt(0).toUpperCase() || '?'}</Text>
+          <Text style={styles.avatarText}>
+            {item.user?.username?.charAt(0).toUpperCase() || '?'}
+          </Text>
         </View>
         <View style={styles.userDetails}>
-          <Text style={[styles.username, { color: colors.text }]}>u/{item.user?.username || 'unknown'}</Text>
+          <Text style={[styles.username, { color: colors.text }]}>
+            u/{item.user?.username || 'unknown'}
+          </Text>
           <Text style={[styles.modPermissions, { color: colors.textSecondary }]}>
             {item.permissions?.join(', ') || 'Full permissions'}
           </Text>
@@ -166,7 +209,15 @@ const ACTION_COLORS: Record<string, string> = {
   lock: '#F59E0B',
 };
 
-export function ModerationLogItem({ item, colors }: { item: ModerationLogEntry; colors: ColorsType }) {
+/** Description. */
+/** Moderation Log Item component. */
+export function ModerationLogItem({
+  item,
+  colors,
+}: {
+  item: ModerationLogEntry;
+  colors: ColorsType;
+}) {
   const icon = ACTION_ICONS[item.action] || ACTION_ICONS.default;
   const actionColor = ACTION_COLORS[item.action] || colors.textSecondary;
 
@@ -175,7 +226,12 @@ export function ModerationLogItem({ item, colors }: { item: ModerationLogEntry; 
       <View style={styles.modItemHeader}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Ionicons name={icon} size={18} color={actionColor} />
-          <Text style={[styles.typeBadgeText, { color: actionColor, textTransform: 'uppercase', fontSize: 12, fontWeight: '600' }]}>
+          <Text
+            style={[
+              styles.typeBadgeText,
+              { color: actionColor, textTransform: 'uppercase', fontSize: 12, fontWeight: '600' },
+            ]}
+          >
             {item.action.replace(/_/g, ' ')}
           </Text>
         </View>
@@ -187,9 +243,7 @@ export function ModerationLogItem({ item, colors }: { item: ModerationLogEntry; 
         By: {item.moderator?.username || 'System'}
       </Text>
       {item.reason && (
-        <Text style={[styles.modItemReason, { color: colors.warning }]}>
-          Reason: {item.reason}
-        </Text>
+        <Text style={[styles.modItemReason, { color: colors.warning }]}>Reason: {item.reason}</Text>
       )}
       <Text style={[{ fontSize: 12, color: colors.textSecondary, marginTop: 4 }]}>
         Target: {item.target_type} #{item.target_id?.slice(0, 8)}
@@ -198,7 +252,15 @@ export function ModerationLogItem({ item, colors }: { item: ModerationLogEntry; 
   );
 }
 
-export function IdentityManagementItem({ item, colors }: { item: IdentityCardEntry; colors: ColorsType }) {
+/** Description. */
+/** Identity Management Item component. */
+export function IdentityManagementItem({
+  item,
+  colors,
+}: {
+  item: IdentityCardEntry;
+  colors: ColorsType;
+}) {
   return (
     <View style={[styles.userItem, { backgroundColor: colors.surface }]}>
       <View style={styles.userInfo}>
@@ -212,16 +274,16 @@ export function IdentityManagementItem({ item, colors }: { item: IdentityCardEnt
             },
           ]}
         >
-          <Text style={styles.avatarText}>
-            {(item.username || '?').charAt(0).toUpperCase()}
-          </Text>
+          <Text style={styles.avatarText}>{(item.username || '?').charAt(0).toUpperCase()}</Text>
         </View>
         <View style={styles.userDetails}>
           <Text style={[styles.username, { color: colors.text }]}>
             {item.display_name || item.username}
           </Text>
           {item.title && (
-            <Text style={[styles.modPermissions, { color: colors.textSecondary, fontStyle: 'italic' }]}>
+            <Text
+              style={[styles.modPermissions, { color: colors.textSecondary, fontStyle: 'italic' }]}
+            >
               {item.title}
             </Text>
           )}

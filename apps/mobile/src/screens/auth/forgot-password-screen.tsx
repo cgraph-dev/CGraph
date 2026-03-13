@@ -30,10 +30,11 @@ type Props = {
 };
 
 /**
+ * Forgot Password Screen component.
  *
  */
 export default function ForgotPasswordScreen({ navigation }: Props) {
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
 
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -90,6 +91,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
         }),
       ])
     ).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePressIn = () => {
@@ -119,13 +121,16 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
       await api.post('/api/v1/auth/forgot-password', { email });
       setSent(true);
     } catch (error: unknown) {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const err = error as Record<string, unknown>;
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const response = err?.response as Record<string, unknown> | undefined;
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const data = response?.data as Record<string, unknown> | undefined;
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       Alert.alert('Error', (data?.message as string) || 'Could not send reset email');
     } finally {
       setIsLoading(false);

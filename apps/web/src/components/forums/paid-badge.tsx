@@ -30,11 +30,13 @@ function formatPrice(cents: number, currency: string): string {
   }
 }
 
-export const PaidBadge: React.FC<PaidBadgeProps> = ({
+/** Description. */
+/** Paid Badge component. */
+export function PaidBadge({
   priceCents,
   currency = 'usd',
   className,
-}) => {
+}: PaidBadgeProps): React.ReactElement {
   const price = formatPrice(priceCents, currency);
 
   return (
@@ -53,7 +55,7 @@ export const PaidBadge: React.FC<PaidBadgeProps> = ({
       {price}/mo
     </span>
   );
-};
+}
 
 PaidBadge.displayName = 'PaidBadge';
 

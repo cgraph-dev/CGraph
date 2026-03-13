@@ -24,7 +24,15 @@ interface ConversationModalsProps {
   // Attachment picker
   showAttachMenu: boolean;
   closeAttachMenu: () => void;
-  onSelectAssets: (assets: Array<{ uri: string; type: 'image' | 'video' | 'file'; name?: string; mimeType?: string; duration?: number }>) => void;
+  onSelectAssets: (
+    assets: Array<{
+      uri: string;
+      type: 'image' | 'video' | 'file';
+      name?: string;
+      mimeType?: string;
+      duration?: number;
+    }>
+  ) => void;
   // Message actions
   showMessageActions: boolean;
   selectedMessage: Message | null;
@@ -63,7 +71,13 @@ interface ConversationModalsProps {
   conversationId: string;
   // Attachment preview
   showAttachmentPreview: boolean;
-  pendingAttachments: Array<{ uri: string; type: 'image' | 'file' | 'video'; name?: string; mimeType?: string; duration?: number }>;
+  pendingAttachments: Array<{
+    uri: string;
+    type: 'image' | 'file' | 'video';
+    name?: string;
+    mimeType?: string;
+    duration?: number;
+  }>;
   attachmentCaption: string;
   attachmentPreviewAnim: Animated.Value;
   closeAttachmentPreview: () => void;
@@ -93,6 +107,8 @@ interface ConversationModalsProps {
   handleGifSelect: (gif: GifResult) => void;
 }
 
+/** Description. */
+/** Conversation Modals component. */
 export function ConversationModals(props: ConversationModalsProps) {
   return (
     <>

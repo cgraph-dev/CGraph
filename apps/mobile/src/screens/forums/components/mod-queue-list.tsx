@@ -1,12 +1,5 @@
 import React, { useCallback } from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 
 import { useThemeStore } from '@/stores';
@@ -33,7 +26,7 @@ interface ModQueueListProps {
 
 // ── Content Type Badge ─────────────────────────────────────────────
 function ContentTypeBadge({ type }: { type: ModQueueItem['content_type'] }) {
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
 
   const config = {
     thread: { label: 'Thread', color: '#6366f1' },
@@ -87,7 +80,7 @@ function QueueItem({
         onReject(item.id);
       }
     },
-    [item.id, onApprove, onReject],
+    [item.id, onApprove, onReject]
   );
 
   return (
@@ -106,17 +99,13 @@ function QueueItem({
           </Text>
         </View>
 
-        <Text
-          style={[styles.contentPreview, { color: colors.text }]}
-          numberOfLines={3}
-        >
+        <Text style={[styles.contentPreview, { color: colors.text }]} numberOfLines={3}>
           {item.content_preview}
         </Text>
 
         <View style={styles.reportInfo}>
           <Text style={[styles.reporterText, { color: colors.textSecondary }]}>
-            Reported by{' '}
-            <Text style={{ fontWeight: '600' }}>{item.reporter.username}</Text>
+            Reported by <Text style={{ fontWeight: '600' }}>{item.reporter.username}</Text>
           </Text>
           <Text style={[styles.reasonText, { color: colors.textSecondary }]}>
             Reason: {item.reason}
@@ -124,9 +113,7 @@ function QueueItem({
         </View>
 
         <View style={styles.reportedUser}>
-          <Text style={[styles.reportedLabel, { color: colors.textTertiary }]}>
-            User:{' '}
-          </Text>
+          <Text style={[styles.reportedLabel, { color: colors.textTertiary }]}>User: </Text>
           <Text style={[styles.reportedUsername, { color: colors.text }]}>
             {item.reported_user.username}
           </Text>
@@ -166,6 +153,8 @@ function EmptyQueue() {
 }
 
 // ── Main Component ─────────────────────────────────────────────────
+/** Description. */
+/** Mod Queue List component. */
 export function ModQueueList({
   items,
   onApprove,
@@ -179,7 +168,7 @@ export function ModQueueList({
     ({ item }: { item: ModQueueItem }) => (
       <QueueItem item={item} onApprove={onApprove} onReject={onReject} />
     ),
-    [onApprove, onReject],
+    [onApprove, onReject]
   );
 
   const keyExtractor = useCallback((item: ModQueueItem) => item.id, []);
@@ -189,17 +178,10 @@ export function ModQueueList({
       data={items}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      contentContainerStyle={[
-        styles.listContent,
-        items.length === 0 && styles.emptyListContent,
-      ]}
+      contentContainerStyle={[styles.listContent, items.length === 0 && styles.emptyListContent]}
       ListEmptyComponent={<EmptyQueue />}
       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={colors.primary}
-        />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
       }
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       showsVerticalScrollIndicator={false}

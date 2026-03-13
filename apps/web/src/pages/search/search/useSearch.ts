@@ -91,6 +91,7 @@ export function useSearch(): SearchState {
     clearResults,
   } = useSearchStore();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce((q: string) => {
       if (q.trim()) {
@@ -103,7 +104,8 @@ export function useSearch(): SearchState {
 
   useEffect(() => {
     const q = searchParams.get('q');
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const cat = searchParams.get('category') as SearchCategory; // safe downcast – API response field
     if (q) {
       setInputValue(q);

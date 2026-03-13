@@ -52,7 +52,11 @@ function AnimatedTitleText({
               '0 0 4px currentColor',
             ],
           },
-          transition: { duration: durations.ambient.ms / 1000, repeat: Infinity, ease: 'easeInOut' },
+          transition: {
+            duration: durations.ambient.ms / 1000,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          },
         };
       case 'pulse':
         return {
@@ -101,7 +105,11 @@ function AnimatedTitleText({
       case 'wave':
         return {
           animate: { y: [0, -4, 0, 4, 0] },
-          transition: { duration: durations.ambient.ms / 1000, repeat: Infinity, ease: 'easeInOut' },
+          transition: {
+            duration: durations.ambient.ms / 1000,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          },
         };
       case 'bounce':
         return {
@@ -118,7 +126,11 @@ function AnimatedTitleText({
               '0 0 7px currentColor, 0 0 10px currentColor, 0 0 21px currentColor',
             ],
           },
-          transition: { duration: durations.loop.ms / 1000, repeat: Infinity, times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1] },
+          transition: {
+            duration: durations.loop.ms / 1000,
+            repeat: Infinity,
+            times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1],
+          },
         };
       case 'none':
       default:
@@ -129,7 +141,7 @@ function AnimatedTitleText({
   const animProps = getAnimationVariants();
 
   return (
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     <motion.h4 className={baseClass} {...(animProps as object)}>
       {name}
     </motion.h4>

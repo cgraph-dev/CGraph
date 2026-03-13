@@ -38,14 +38,11 @@ export function ScrollToBottomButton({
           exit={{ y: 20, opacity: 0, scale: 0.9 }}
           transition={springs.snappy}
           onClick={onClick}
-          className="absolute bottom-24 right-6 z-30 flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.04]/90 px-3 py-2 text-sm text-white shadow-xl backdrop-blur-sm transition-colors hover:bg-white/[0.08]"
+          className="bg-white/[0.04]/90 absolute bottom-24 right-6 z-30 flex items-center gap-1.5 rounded-full border border-white/[0.08] px-3 py-2 text-sm text-white shadow-xl backdrop-blur-sm transition-colors hover:bg-white/[0.08]"
           aria-label="Scroll to latest messages"
         >
           {/* Bouncing arrow */}
-          <motion.span
-            animate={{ y: [0, 3, 0] }}
-            transition={loop(tweens.slow)}
-          >
+          <motion.span animate={{ y: [0, 3, 0] }} transition={loop(tweens.slow)}>
             <ChevronDownIcon className="h-4 w-4" />
           </motion.span>
 

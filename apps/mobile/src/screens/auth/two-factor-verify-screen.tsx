@@ -47,7 +47,7 @@ type Props = {
  * Two-factor verification screen for login.
  */
 export default function TwoFactorVerifyScreen({ navigation, route }: Props) {
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
   const { verifyLoginTwoFactor } = useAuthStore();
   const twoFactorToken = route.params?.twoFactorToken;
 

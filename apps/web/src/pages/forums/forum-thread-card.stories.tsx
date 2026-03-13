@@ -28,11 +28,11 @@ function MockForumThreadCard({
     <div className="w-[500px] rounded-lg border border-white/[0.06] bg-white/[0.04] p-4 transition-colors hover:border-white/[0.08]">
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        <div className="h-8 w-8 rounded-full bg-primary-600 flex-shrink-0" />
+        <div className="h-8 w-8 flex-shrink-0 rounded-full bg-primary-600" />
 
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {/* Status badges */}
-          <div className="flex items-center gap-2 mb-1">
+          <div className="mb-1 flex items-center gap-2">
             {isPinned && (
               <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">
                 📌 Pinned
@@ -46,12 +46,15 @@ function MockForumThreadCard({
           </div>
 
           {/* Title */}
-          <h3 className="text-sm font-medium text-white truncate">{title}</h3>
+          <h3 className="truncate text-sm font-medium text-white">{title}</h3>
 
           {/* Tags */}
           <div className="mt-1 flex gap-1.5">
             {tags.map((tag) => (
-              <span key={tag} className="rounded bg-white/[0.08] px-2 py-0.5 text-[10px] text-gray-400">
+              <span
+                key={tag}
+                className="rounded bg-white/[0.08] px-2 py-0.5 text-[10px] text-gray-400"
+              >
                 {tag}
               </span>
             ))}

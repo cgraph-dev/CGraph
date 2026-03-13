@@ -42,8 +42,8 @@ export function MemberRow({ member }: MemberRowProps) {
                 avatarBorderId={member.avatarBorderId}
               />
             ) : (
-              <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                <UserIcon className="text-primary h-5 w-5" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                <UserIcon className="h-5 w-5 text-primary" />
               </div>
             )}
             <OnlineStatusIndicator
@@ -54,7 +54,7 @@ export function MemberRow({ member }: MemberRowProps) {
           </div>
           <div>
             <span
-              className="group-hover:text-primary font-medium transition-colors"
+              className="font-medium transition-colors group-hover:text-primary"
               style={{ color: member.userGroupColor || undefined }}
             >
               {member.displayName || member.username}

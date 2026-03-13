@@ -45,6 +45,7 @@ export interface AnimatedListProps<T> {
 }
 
 /**
+ * Animated List component.
  *
  */
 export function AnimatedList<T>({
@@ -87,6 +88,7 @@ export interface AnimatedImageProps {
 }
 
 /**
+ * Animated Image component.
  *
  */
 export function AnimatedImage({
@@ -104,8 +106,13 @@ export function AnimatedImage({
     loadProgress.value = withTiming(1, { duration: durations.slower.ms });
 
     if (loadingEffect === 'shimmer') {
-      shimmerPosition.value = withRepeat(withTiming(1, { duration: durations.verySlow.ms }), -1, false);
+      shimmerPosition.value = withRepeat(
+        withTiming(1, { duration: durations.verySlow.ms }),
+        -1,
+        false
+      );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadingEffect]);
 
   const loadingStyle = useAnimatedStyle(() => {
@@ -144,6 +151,7 @@ export interface AnimatedCounterProps {
 }
 
 /**
+ * Animated Counter component.
  *
  */
 export function AnimatedCounter({
@@ -159,6 +167,7 @@ export function AnimatedCounter({
 
   useEffect(() => {
     animatedValue.value = withTiming(value, { duration });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, duration]);
 
   useEffect(() => {
@@ -168,6 +177,7 @@ export function AnimatedCounter({
     }, 16);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const formattedValue =
@@ -197,6 +207,7 @@ export interface AnimatedProgressProps {
 }
 
 /**
+ * Animated Progress component.
  *
  */
 export function AnimatedProgress({
@@ -217,6 +228,7 @@ export function AnimatedProgress({
     } else {
       progressWidth.value = clampedProgress * width;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress, width, animated]);
 
   const animatedProgressStyle = useAnimatedStyle(() => ({

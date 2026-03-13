@@ -37,10 +37,15 @@ export interface PostIconSelectorProps {
 
 function mapIcon(raw: Record<string, unknown>): PostIcon {
   return {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     id: raw.id as string,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     name: raw.name as string,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     iconUrl: raw.icon_url as string,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     emoji: (raw.emoji as string) || null,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     displayOrder: (raw.display_order as number) || 0,
   };
 }
@@ -63,9 +68,8 @@ export const PostIconSelector = memo(function PostIconSelector({
     async function fetchIcons() {
       setLoading(true);
       try {
-        const res = await api.get(
-          `/api/v1/forums/${forumId}/boards/${boardId}/post-icons`
-        );
+        const res = await api.get(`/api/v1/forums/${forumId}/boards/${boardId}/post-icons`);
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const data = (res.data as { data: Record<string, unknown>[] }).data || [];
         if (!cancelled) setIcons(data.map(mapIcon));
       } catch {
@@ -76,7 +80,9 @@ export const PostIconSelector = memo(function PostIconSelector({
     }
 
     fetchIcons();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [forumId, boardId]);
 
   const handleSelect = useCallback(
@@ -100,9 +106,7 @@ export const PostIconSelector = memo(function PostIconSelector({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        Post Icon
-      </label>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Post Icon</label>
 
       <div className="flex flex-wrap gap-2">
         {/* None option */}
@@ -140,16 +144,10 @@ export const PostIconSelector = memo(function PostIconSelector({
               {icon.emoji ? (
                 <span className="text-lg">{icon.emoji}</span>
               ) : (
-                <img
-                  src={icon.iconUrl}
-                  alt={icon.name}
-                  className="h-5 w-5 object-contain"
-                />
+                <img src={icon.iconUrl} alt={icon.name} className="h-5 w-5 object-contain" />
               )}
               <span>{icon.name}</span>
-              {isDefault && (
-                <span className="text-[10px] text-gray-400">(default)</span>
-              )}
+              {isDefault && <span className="text-[10px] text-gray-400">(default)</span>}
               {isSelected && (
                 <CheckIcon className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
               )}

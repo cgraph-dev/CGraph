@@ -10,6 +10,8 @@ interface TipButtonProps {
   className?: string;
 }
 
+/** Description. */
+/** Tip Button component. */
 export function TipButton({ recipientId, recipientName, className }: TipButtonProps) {
   const [showTip, setShowTip] = useState(false);
 
@@ -18,7 +20,10 @@ export function TipButton({ recipientId, recipientName, className }: TipButtonPr
       <button
         type="button"
         onClick={() => setShowTip(true)}
-        className={className ?? 'rounded-md px-2 py-1 text-xs font-medium text-purple-400 transition-colors hover:bg-purple-500/10 hover:text-purple-300'}
+        className={
+          className ??
+          'rounded-md px-2 py-1 text-xs font-medium text-purple-400 transition-colors hover:bg-purple-500/10 hover:text-purple-300'
+        }
         title={`Tip @${recipientName}`}
       >
         {'\u2115'} Tip

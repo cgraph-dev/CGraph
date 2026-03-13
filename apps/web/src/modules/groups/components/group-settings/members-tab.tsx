@@ -54,27 +54,30 @@ export function MembersTab({ groupId }: MembersTabProps) {
           // safe downcast – runtime-verified object for nested user property
           const mUser =
             typeof m.user === 'object' && m.user !== null
-               
-              ? (m.user as Record<string, unknown>) // safe downcast – runtime verified
+              ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                (m.user as Record<string, unknown>) // safe downcast – runtime verified
               : {};
           return {
             id: String(m.id ?? ''),
             userId: String(m.user_id ?? m.userId ?? m.id ?? ''),
             username: String(m.username ?? mUser.username ?? 'unknown'),
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             displayName: (m.display_name ?? m.displayName ?? mUser.display_name ?? null) as
               | string
               | null, // safe downcast – API response field
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             avatarUrl: (m.avatar_url ?? m.avatarUrl ?? mUser.avatar_url ?? null) as string | null, // safe downcast – API response field
             role: String(m.role ?? 'member'),
             roles: Array.isArray(m.roles)
-               
-              ? (m.roles as Array<{ id: string; name: string; color: string }>) // safe downcast – runtime verified
+              ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                (m.roles as Array<{ id: string; name: string; color: string }>) // safe downcast – runtime verified
               : [], // safe downcast – array verified by Array.isArray
             joinedAt: String(m.joined_at ?? m.joinedAt ?? m.inserted_at ?? ''),
             isMuted: !!(m.is_muted ?? m.isMuted),
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             mutedUntil: (m.muted_until ?? m.mutedUntil ?? null) as string | null, // safe downcast – API response field
           };
         })

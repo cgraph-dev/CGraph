@@ -131,7 +131,7 @@ export const AnimatedForumTitle = memo(function AnimatedForumTitle({
     <motion.span
       className={cn('inline-block', className)}
       style={getAnimationStyles()}
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       {...(getMotionProps() as Record<string, unknown>)} // safe downcast – structural boundary
     >
       <Component className="m-0">{title}</Component>

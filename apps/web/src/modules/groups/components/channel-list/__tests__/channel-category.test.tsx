@@ -26,8 +26,30 @@ describe('CategorySection', () => {
     name: 'TEXT CHANNELS',
     position: 0,
     channels: [
-      { id: 'ch1', name: 'general', type: 'text' as const, position: 0, topic: null, categoryId: 'cat1', isNsfw: false, slowModeSeconds: 0, unreadCount: 0, lastMessageAt: null },
-      { id: 'ch2', name: 'random', type: 'text' as const, position: 1, topic: null, categoryId: 'cat1', isNsfw: false, slowModeSeconds: 0, unreadCount: 0, lastMessageAt: null },
+      {
+        id: 'ch1',
+        name: 'general',
+        type: 'text' as const,
+        position: 0,
+        topic: null,
+        categoryId: 'cat1',
+        isNsfw: false,
+        slowModeSeconds: 0,
+        unreadCount: 0,
+        lastMessageAt: null,
+      },
+      {
+        id: 'ch2',
+        name: 'random',
+        type: 'text' as const,
+        position: 1,
+        topic: null,
+        categoryId: 'cat1',
+        isNsfw: false,
+        slowModeSeconds: 0,
+        unreadCount: 0,
+        lastMessageAt: null,
+      },
     ],
   };
 

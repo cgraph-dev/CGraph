@@ -2,8 +2,18 @@ import { useState, useCallback } from 'react';
 import { Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import api from '../../../lib/api';
-import type { ModerationItem, BannedUser, Moderator, ForumStats, UserBasic, ModerationLogEntry, IdentityCardEntry } from './types';
+import type {
+  ModerationItem,
+  BannedUser,
+  Moderator,
+  ForumStats,
+  UserBasic,
+  ModerationLogEntry,
+  IdentityCardEntry,
+} from './types';
 
+/** Description. */
+/** Hook for forum admin. */
 export function useForumAdmin(forumId: string) {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -24,14 +34,22 @@ export function useForumAdmin(forumId: string) {
         api.get(`/api/v1/forums/${forumId}/modqueue`).catch(() => ({ data: { data: [] } })),
         api.get(`/api/v1/forums/${forumId}/admin/banned`).catch(() => ({ data: { data: [] } })),
         api.get(`/api/v1/forums/${forumId}/admin/moderators`).catch(() => ({ data: { data: [] } })),
-        api.get(`/api/v1/forums/${forumId}/admin/moderation-logs`).catch(() => ({ data: { data: [] } })),
-        api.get(`/api/v1/forums/${forumId}/admin/identity-cards`).catch(() => ({ data: { data: [] } })),
+        api
+          .get(`/api/v1/forums/${forumId}/admin/moderation-logs`)
+          .catch(() => ({ data: { data: [] } })),
+        api
+          .get(`/api/v1/forums/${forumId}/admin/identity-cards`)
+          .catch(() => ({ data: { data: [] } })),
       ]);
 
       setStats(
         statsRes.data?.data || {
-          total_posts: 0, total_comments: 0, total_members: 0,
-          pending_reports: 0, posts_today: 0, active_users_24h: 0,
+          total_posts: 0,
+          total_comments: 0,
+          total_members: 0,
+          pending_reports: 0,
+          posts_today: 0,
+          active_users_24h: 0,
         }
       );
       setModQueue(modQueueRes.data?.data || []);
@@ -50,6 +68,7 @@ export function useForumAdmin(forumId: string) {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchAdminData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forumId]);
 
   const handleApprove = async (item: ModerationItem) => {
@@ -115,11 +134,25 @@ export function useForumAdmin(forumId: string) {
   };
 
   return {
-    isLoading, refreshing, stats, modQueue, bannedUsers, moderators,
-    moderationLogs, identityCards,
-    showBanModal, setShowBanModal, banReason, setBanReason,
-    selectedUser, setSelectedUser,
-    fetchAdminData, onRefresh,
-    handleApprove, handleRemove, handleUnban, handleBanUser,
+    isLoading,
+    refreshing,
+    stats,
+    modQueue,
+    bannedUsers,
+    moderators,
+    moderationLogs,
+    identityCards,
+    showBanModal,
+    setShowBanModal,
+    banReason,
+    setBanReason,
+    selectedUser,
+    setSelectedUser,
+    fetchAdminData,
+    onRefresh,
+    handleApprove,
+    handleRemove,
+    handleUnban,
+    handleBanUser,
   };
 }

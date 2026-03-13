@@ -41,13 +41,9 @@ const sizeStyles = {
 
 // ── Component ──────────────────────────────────────────────────────────
 
-export function RoleBadge({
-  name,
-  color,
-  size = 'sm',
-  permissions,
-  className,
-}: RoleBadgeProps) {
+/** Description. */
+/** Role Badge component. */
+export function RoleBadge({ name, color, size = 'sm', permissions, className }: RoleBadgeProps) {
   const styles = sizeStyles[size];
 
   const badge = (
@@ -56,7 +52,7 @@ export function RoleBadge({
       className={cn(
         'inline-flex items-center rounded-full font-medium',
         styles.container,
-        className,
+        className
       )}
       style={{
         backgroundColor: `${color}20`,
@@ -65,10 +61,7 @@ export function RoleBadge({
       }}
     >
       {/* Color dot */}
-      <div
-        className={cn('rounded-full', styles.dot)}
-        style={{ backgroundColor: color }}
-      />
+      <div className={cn('rounded-full', styles.dot)} style={{ backgroundColor: color }} />
       <span>{name}</span>
     </motion.div>
   );

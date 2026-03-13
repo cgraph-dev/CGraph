@@ -74,11 +74,7 @@ export function PageContainer({
   return (
     <Container
       {...animationProps}
-      className={`
-        w-full ${maxWidthClasses[maxWidth]} mx-auto
-        ${paddingClasses[padding]}
-        ${className}
-      `}
+      className={`w-full ${maxWidthClasses[maxWidth]} mx-auto ${paddingClasses[padding]} ${className} `}
     >
       {/* Header section */}
       {(title || subtitle || header || actions) && (
@@ -86,18 +82,10 @@ export function PageContainer({
           {header || (
             <div className="flex items-start justify-between gap-4">
               <div>
-                {title && (
-                  <h1 className="text-2xl font-bold text-white">{title}</h1>
-                )}
-                {subtitle && (
-                  <p className="mt-1 text-white/60">{subtitle}</p>
-                )}
+                {title && <h1 className="text-2xl font-bold text-white">{title}</h1>}
+                {subtitle && <p className="mt-1 text-white/60">{subtitle}</p>}
               </div>
-              {actions && (
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {actions}
-                </div>
-              )}
+              {actions && <div className="flex flex-shrink-0 items-center gap-2">{actions}</div>}
             </div>
           )}
         </div>
@@ -110,6 +98,6 @@ export function PageContainer({
       {footer && <div className="mt-6">{footer}</div>}
     </Container>
   );
-};
+}
 
 export default PageContainer;

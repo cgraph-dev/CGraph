@@ -12,11 +12,7 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  ChevronDownIcon,
-  XMarkIcon,
-  TagIcon,
-} from '@heroicons/react/24/outline';
+import { ChevronDownIcon, XMarkIcon, TagIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -47,6 +43,7 @@ interface TagSelectorProps {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Tag Selector component. */
 export default function TagSelector({
   forumId: _forumId,
   selectedTags,
@@ -64,6 +61,7 @@ export default function TagSelector({
   // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
@@ -82,7 +80,7 @@ export default function TagSelector({
       const count = selectedTags.filter((t) => t.categoryId === categoryId).length;
       return count >= maxTags;
     },
-    [selectedTags],
+    [selectedTags]
   );
 
   const handleToggleTag = useCallback(
@@ -103,22 +101,20 @@ export default function TagSelector({
         onChange([...selectedTags, enrichedTag]);
       }
     },
-    [selectedIds, selectedTags, onChange, isMaxReached, isCategoryMaxReached],
+    [selectedIds, selectedTags, onChange, isMaxReached, isCategoryMaxReached]
   );
 
   const handleRemoveTag = useCallback(
     (tagId: string) => {
       onChange(selectedTags.filter((t) => t.id !== tagId));
     },
-    [selectedTags, onChange],
+    [selectedTags, onChange]
   );
 
   const filteredCategories = categories
     .map((cat) => ({
       ...cat,
-      tags: cat.tags.filter((t) =>
-        t.name.toLowerCase().includes(search.toLowerCase()),
-      ),
+      tags: cat.tags.filter((t) => t.name.toLowerCase().includes(search.toLowerCase())),
     }))
     .filter((cat) => cat.tags.length > 0);
 
@@ -128,13 +124,11 @@ export default function TagSelector({
       <button
         type="button"
         onClick={() => setIsOpen((o) => !o)}
-        className="flex w-full min-h-[40px] flex-wrap items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-left transition-colors hover:border-white/[0.16] focus:outline-none focus:ring-1 focus:ring-primary-500/50"
+        className="flex min-h-[40px] w-full flex-wrap items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-left transition-colors hover:border-white/[0.16] focus:outline-none focus:ring-1 focus:ring-primary-500/50"
       >
         <TagIcon className="h-4 w-4 flex-shrink-0 text-gray-500" />
 
-        {selectedTags.length === 0 && (
-          <span className="text-sm text-gray-500">Select tags…</span>
-        )}
+        {selectedTags.length === 0 && <span className="text-sm text-gray-500">Select tags…</span>}
 
         {selectedTags.map((tag) => (
           <span
@@ -142,10 +136,7 @@ export default function TagSelector({
             className="flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium text-white"
             style={{ backgroundColor: `${tag.color}40`, borderColor: tag.color, borderWidth: 1 }}
           >
-            <span
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: tag.color }}
-            />
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: tag.color }} />
             {tag.name}
             <button
               type="button"
@@ -163,7 +154,7 @@ export default function TagSelector({
         <ChevronDownIcon
           className={cn(
             'ml-auto h-4 w-4 flex-shrink-0 text-gray-500 transition-transform',
-            isOpen && 'rotate-180',
+            isOpen && 'rotate-180'
           )}
         />
       </button>
@@ -228,11 +219,15 @@ export default function TagSelector({
                               isSelected
                                 ? 'font-semibold text-white'
                                 : 'text-gray-400 hover:text-white',
-                              disabled && !isSelected && 'cursor-not-allowed opacity-40',
+                              disabled && !isSelected && 'cursor-not-allowed opacity-40'
                             )}
                             style={
                               isSelected
-                                ? { backgroundColor: `${tag.color}30`, borderColor: tag.color, borderWidth: 1 }
+                                ? {
+                                    backgroundColor: `${tag.color}30`,
+                                    borderColor: tag.color,
+                                    borderWidth: 1,
+                                  }
                                 : { backgroundColor: 'rgba(255,255,255,0.04)' }
                             }
                           >

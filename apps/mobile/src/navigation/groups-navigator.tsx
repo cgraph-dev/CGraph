@@ -25,11 +25,12 @@ import AutomodSettingsScreen from '../screens/groups/automod-settings-screen';
 const Stack = createNativeStackNavigator<GroupsStackParamList>();
 
 /**
+ * Groups Navigator component.
  *
  */
 export default function GroupsNavigator() {
   const { colors } = useThemeStore();
-  
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -43,11 +44,7 @@ export default function GroupsNavigator() {
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen
-        name="GroupList"
-        component={GroupListScreen}
-        options={{ title: 'Groups' }}
-      />
+      <Stack.Screen name="GroupList" component={GroupListScreen} options={{ title: 'Groups' }} />
       <Stack.Screen
         name="ExploreGroups"
         component={ExploreGroupsScreen}
@@ -58,26 +55,14 @@ export default function GroupsNavigator() {
         component={CreateGroupScreen}
         options={{ title: 'Create Group', presentation: 'modal' }}
       />
-      <Stack.Screen
-        name="Group"
-        component={GroupScreen}
-        options={{ title: '' }}
-      />
-      <Stack.Screen
-        name="Channel"
-        component={ChannelScreen}
-        options={{ title: '' }}
-      />
+      <Stack.Screen name="Group" component={GroupScreen} options={{ title: '' }} />
+      <Stack.Screen name="Channel" component={ChannelScreen} options={{ title: '' }} />
       <Stack.Screen
         name="GroupSettings"
         component={GroupSettingsScreen}
         options={{ title: 'Group Settings', presentation: 'modal' }}
       />
-      <Stack.Screen
-        name="GroupRoles"
-        component={GroupRolesScreen}
-        options={{ title: 'Roles' }}
-      />
+      <Stack.Screen name="GroupRoles" component={GroupRolesScreen} options={{ title: 'Roles' }} />
       <Stack.Screen
         name="GroupMembers"
         component={GroupMembersScreen}
@@ -108,11 +93,7 @@ export default function GroupsNavigator() {
         component={ReportContentScreen}
         options={{ title: 'Report', presentation: 'modal' }}
       />
-      <Stack.Screen
-        name="BanList"
-        component={BanListScreen}
-        options={{ title: 'Ban List' }}
-      />
+      <Stack.Screen name="BanList" component={BanListScreen} options={{ title: 'Ban List' }} />
       <Stack.Screen
         name="AutomodSettings"
         component={AutomodSettingsScreen}

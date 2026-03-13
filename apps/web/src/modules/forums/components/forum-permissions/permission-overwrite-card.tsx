@@ -5,10 +5,7 @@
  * @module modules/forums/components/forum-permissions
  */
 
-import {
-  XMarkIcon,
-  UserGroupIcon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { PermissionDef, PermissionOverwrite } from './types';
 import { PermToggle } from './perm-toggle';

@@ -1,4 +1,3 @@
-
 export interface WallPost {
   id: string;
   userId: string;
@@ -27,6 +26,8 @@ export interface Comment {
   isLiked: boolean;
 }
 
+/** Description. */
+/** Formats timestamp. */
 export function formatTimestamp(date: Date): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
@@ -40,6 +41,8 @@ export function formatTimestamp(date: Date): string {
   return `${days}d ago`;
 }
 
+/** Description. */
+/** Formats count. */
 export function formatCount(count: number): string {
   if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
   if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;

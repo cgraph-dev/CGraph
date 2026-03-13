@@ -63,7 +63,11 @@ interface ThreadListProps {
 
 // ── Sort Options ───────────────────────────────────────────────────────
 
-const sortOptions: { value: SortMode; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+const sortOptions: {
+  value: SortMode;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
   { value: 'latest', label: 'Latest', icon: ClockIcon },
   { value: 'hot', label: 'Hot', icon: FireIcon },
   { value: 'top', label: 'Top', icon: ArrowTrendingUpIcon },
@@ -104,6 +108,8 @@ function ThreadSkeleton({ compact }: { compact: boolean }) {
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Description. */
+/** Thread List component. */
 export function ThreadList({
   threads = [],
   tags = [],
@@ -128,9 +134,10 @@ export function ThreadList({
   }, []);
 
   // Filter threads by selected tags
-  const filteredThreads = selectedTags.size > 0
-    ? threads.filter((t) => t.tags?.some((tag) => selectedTags.has(tag.id)))
-    : threads;
+  const filteredThreads =
+    selectedTags.size > 0
+      ? threads.filter((t) => t.tags?.some((tag) => selectedTags.has(tag.id)))
+      : threads;
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -146,7 +153,7 @@ export function ThreadList({
                 'flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
                 sortBy === opt.value
                   ? 'bg-white/[0.08] text-white'
-                  : 'text-gray-500 hover:text-gray-300',
+                  : 'text-gray-500 hover:text-gray-300'
               )}
             >
               <opt.icon className="h-3.5 w-3.5" />
@@ -177,7 +184,7 @@ export function ThreadList({
             onClick={() => setViewMode('grid')}
             className={cn(
               'rounded-md p-1.5 transition-colors',
-              viewMode === 'grid' ? 'bg-white/[0.08] text-white' : 'text-gray-500',
+              viewMode === 'grid' ? 'bg-white/[0.08] text-white' : 'text-gray-500'
             )}
           >
             <Squares2X2Icon className="h-4 w-4" />
@@ -186,7 +193,7 @@ export function ThreadList({
             onClick={() => setViewMode('list')}
             className={cn(
               'rounded-md p-1.5 transition-colors',
-              viewMode === 'list' ? 'bg-white/[0.08] text-white' : 'text-gray-500',
+              viewMode === 'list' ? 'bg-white/[0.08] text-white' : 'text-gray-500'
             )}
           >
             <Bars3Icon className="h-4 w-4" />
@@ -203,9 +210,7 @@ export function ThreadList({
               onClick={() => toggleTag(tag.id)}
               className={cn(
                 'flex-shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all',
-                selectedTags.has(tag.id)
-                  ? 'ring-1 ring-white/20'
-                  : 'opacity-60 hover:opacity-100',
+                selectedTags.has(tag.id) ? 'ring-1 ring-white/20' : 'opacity-60 hover:opacity-100'
               )}
               style={{
                 backgroundColor: `${tag.color}20`,
@@ -235,9 +240,7 @@ export function ThreadList({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className={cn(
-              viewMode === 'grid'
-                ? 'grid grid-cols-1 gap-4 lg:grid-cols-2'
-                : 'space-y-1',
+              viewMode === 'grid' ? 'grid grid-cols-1 gap-4 lg:grid-cols-2' : 'space-y-1'
             )}
           >
             {Array.from({ length: 6 }).map((_, i) => (
@@ -269,17 +272,11 @@ export function ThreadList({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className={cn(
-              viewMode === 'grid'
-                ? 'grid grid-cols-1 gap-4 lg:grid-cols-2'
-                : 'space-y-1',
+              viewMode === 'grid' ? 'grid grid-cols-1 gap-4 lg:grid-cols-2' : 'space-y-1'
             )}
           >
             {filteredThreads.map((thread) => (
-              <ThreadCard
-                key={thread.id}
-                thread={thread}
-                compact={viewMode === 'list'}
-              />
+              <ThreadCard key={thread.id} thread={thread} compact={viewMode === 'list'} />
             ))}
           </motion.div>
         )}

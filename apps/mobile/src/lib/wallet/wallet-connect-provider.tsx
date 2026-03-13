@@ -9,7 +9,7 @@
  * @module lib/wallet/wallet-connect-provider
  */
 
-import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import React, { createContext, use, useState, useCallback, type ReactNode } from 'react';
 import { Linking, Alert, Platform } from 'react-native';
 import { authApi as authService } from '@/services/api';
 
@@ -57,7 +57,7 @@ export function MobileWalletProvider({ children }: WalletProviderProps) {
 
   const requestChallenge = useCallback(
     (address: string) => authService.walletChallenge({ wallet_address: address }),
-    [],
+    []
   );
 
   const verifySignature = useCallback(
@@ -67,7 +67,7 @@ export function MobileWalletProvider({ children }: WalletProviderProps) {
         signature,
         message,
       }),
-    [],
+    []
   );
 
   const openWalletApp = useCallback((uri?: string) => {
@@ -91,7 +91,7 @@ export function MobileWalletProvider({ children }: WalletProviderProps) {
                 Linking.openURL(storeUrl);
               },
             },
-          ],
+          ]
         );
       }
     });
@@ -117,7 +117,7 @@ export function MobileWalletProvider({ children }: WalletProviderProps) {
  * Access mobile wallet context.
  */
 export function useMobileWallet() {
-  const context = useContext(WalletContext);
+  const context = use(WalletContext);
   if (!context) {
     throw new Error('useMobileWallet must be used within MobileWalletProvider');
   }

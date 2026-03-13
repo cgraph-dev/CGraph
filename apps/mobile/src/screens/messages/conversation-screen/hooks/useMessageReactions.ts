@@ -79,7 +79,8 @@ export function useMessageReactions({
             const currentUserId = user?.id;
 
             // First, remove user's previous reaction if any (1 reaction per user limit)
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             reactions = reactions
               .map((r) => {
                 if (r.hasReacted && r.emoji !== emoji) {
@@ -140,7 +141,7 @@ export function useMessageReactions({
           })
         );
       } catch (error: unknown) {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const err = error as { response?: { status?: number }; message?: string };
         // 409 means user already has this exact reaction - silently ignore
         if (err.response?.status !== 409) {

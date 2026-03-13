@@ -48,6 +48,8 @@ const CHANNEL_ICONS: Record<string, keyof typeof MaterialCommunityIcons.glyphMap
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Channel List Item component. */
 export function ChannelListItem({
   channel,
   isActive = false,
@@ -69,16 +71,12 @@ export function ChannelListItem({
       onLongPress(channel);
     } else {
       // Default context menu
-      Alert.alert(
-        `#${channel.name}`,
-        undefined,
-        [
-          { text: channel.isMuted ? 'Unmute' : 'Mute Channel', onPress: () => {} },
-          { text: 'Notification Settings', onPress: () => {} },
-          { text: 'Copy Link', onPress: () => {} },
-          { text: 'Cancel', style: 'cancel' },
-        ],
-      );
+      Alert.alert(`#${channel.name}`, undefined, [
+        { text: channel.isMuted ? 'Unmute' : 'Mute Channel', onPress: () => {} },
+        { text: 'Notification Settings', onPress: () => {} },
+        { text: 'Copy Link', onPress: () => {} },
+        { text: 'Cancel', style: 'cancel' },
+      ]);
     }
   }, [channel, onLongPress]);
 
@@ -98,7 +96,7 @@ export function ChannelListItem({
 
         {/* Channel icon */}
         <MaterialCommunityIcons
-          name={channel.isPrivate ? 'lock' : CHANNEL_ICONS[channel.type] ?? 'pound'}
+          name={channel.isPrivate ? 'lock' : (CHANNEL_ICONS[channel.type] ?? 'pound')}
           size={18}
           color={isActive || hasUnread ? '#FFFFFF' : 'rgba(255, 255, 255, 0.4)'}
           style={channel.isMuted ? styles.mutedIcon : undefined}
@@ -137,11 +135,7 @@ export function ChannelListItem({
 
         {/* Muted icon */}
         {channel.isMuted && (
-          <MaterialCommunityIcons
-            name="volume-off"
-            size={14}
-            color="rgba(255, 255, 255, 0.25)"
-          />
+          <MaterialCommunityIcons name="volume-off" size={14} color="rgba(255, 255, 255, 0.25)" />
         )}
       </Pressable>
     </Animated.View>

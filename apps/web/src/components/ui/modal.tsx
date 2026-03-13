@@ -47,9 +47,11 @@ export function Modal({
         const focusableElements = modalRef.current.querySelectorAll(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const firstElement = focusableElements[0] as HTMLElement; // safe downcast – DOM element
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement; // safe downcast – DOM element
 
         if (event.shiftKey && document.activeElement === firstElement) {
@@ -66,13 +68,14 @@ export function Modal({
 
   useEffect(() => {
     if (isOpen) {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       previousActiveElement.current = document.activeElement as HTMLElement; // safe downcast – DOM element
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
 
       // Focus the modal
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const firstFocusable = modalRef.current?.querySelector(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       ) as HTMLElement; // safe downcast – DOM element
@@ -211,7 +214,7 @@ export function ConfirmDialog({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="rounded-lg border bg-white/[0.06] border-white/[0.08] px-4 py-2 text-sm font-medium text-gray-300 hover:bg-white/[0.10] focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50"
+            className="rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-sm font-medium text-gray-300 hover:bg-white/[0.10] focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50"
           >
             {cancelLabel}
           </button>

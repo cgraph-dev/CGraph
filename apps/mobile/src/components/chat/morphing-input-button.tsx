@@ -1,22 +1,16 @@
 /**
  * MorphingInputButton Component
- * 
+ *
  * Animated button that morphs between send and mic icons based on input state.
  * Matches web parity with AnimatePresence-like transitions.
- * 
+ *
  * @module components/chat/MorphingInputButton
  * @since v0.8.2
  */
 
 import { durations } from '@cgraph/animation-constants';
 import React, { memo, useEffect, useRef } from 'react';
-import {
-  TouchableOpacity,
-  Animated,
-  StyleSheet,
-  ActivityIndicator,
-  Easing,
-} from 'react-native';
+import { TouchableOpacity, Animated, StyleSheet, ActivityIndicator, Easing } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -41,13 +35,13 @@ export interface MorphingInputButtonProps {
 
 /**
  * MorphingInputButton - Animated send/mic toggle with morphing effect
- * 
+ *
  * Features:
  * - Smooth scale + rotation transition between icons
  * - Gradient background on send button
  * - Pulse animation on hover state
  * - Loading spinner during send
- * 
+ *
  * @example
  * ```tsx
  * <MorphingInputButton
@@ -244,10 +238,7 @@ export const MorphingInputButton = memo(function MorphingInputButton({
         ) : (
           // Mic button
           <Animated.View
-            style={[
-              styles.micButton,
-              { backgroundColor: surfaceColor, opacity: opacityMicAnim },
-            ]}
+            style={[styles.micButton, { backgroundColor: surfaceColor, opacity: opacityMicAnim }]}
           >
             <Ionicons name="mic" size={22} color={textColor} />
           </Animated.View>

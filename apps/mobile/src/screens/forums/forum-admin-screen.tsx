@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
-  TextInput,
-  Modal,
+  _TextInput,
+  _Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -23,8 +23,12 @@ import type { AdminTab } from './forum-admin-screen/types';
 import { styles } from './forum-admin-screen/styles';
 import { useForumAdmin } from './forum-admin-screen/use-forum-admin';
 import {
-  OverviewGrid, ModQueueItem, BannedUserItem, ModeratorItem,
-  ModerationLogItem, IdentityManagementItem,
+  OverviewGrid,
+  ModQueueItem,
+  BannedUserItem,
+  ModeratorItem,
+  ModerationLogItem,
+  IdentityManagementItem,
 } from './forum-admin-screen/components/admin-tab-views';
 import { BanUserModal } from './forum-admin-screen/components/ban-user-modal';
 
@@ -34,6 +38,7 @@ type Props = {
 };
 
 /**
+ * Forum Admin Screen component.
  *
  */
 export default function ForumAdminScreen({ navigation, route }: Props) {
@@ -45,6 +50,7 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
   useEffect(() => {
     navigation.setOptions({ title: 'Admin Dashboard' });
     admin.fetchAdminData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forumId]);
 
   const tabs: { key: AdminTab; label: string; icon: string }[] = [
@@ -67,16 +73,36 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Tab Bar */}
-      <View style={[styles.tabBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View
+        style={[
+          styles.tabBar,
+          { backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.key}
-            style={[styles.tab, activeTab === tab.key && { borderBottomColor: colors.primary, borderBottomWidth: 2 }]}
-            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setActiveTab(tab.key); }}
+            style={[
+              styles.tab,
+              activeTab === tab.key && { borderBottomColor: colors.primary, borderBottomWidth: 2 },
+            ]}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setActiveTab(tab.key);
+            }}
           >
-            <Ionicons name={tab.icon as any} size={20}
-              color={activeTab === tab.key ? colors.primary : colors.textSecondary} />
-            <Text style={[styles.tabLabel, { color: activeTab === tab.key ? colors.primary : colors.textSecondary }]}>
+            <Ionicons
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+              name={tab.icon as any}
+              size={20}
+              color={activeTab === tab.key ? colors.primary : colors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.tabLabel,
+                { color: activeTab === tab.key ? colors.primary : colors.textSecondary },
+              ]}
+            >
               {tab.label}
             </Text>
           </TouchableOpacity>
@@ -88,7 +114,13 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
         <FlatList
           data={[{ key: 'overview' }]}
           renderItem={() => <OverviewGrid stats={admin.stats} colors={colors} />}
-          refreshControl={<RefreshControl refreshing={admin.refreshing} onRefresh={admin.onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={admin.refreshing}
+              onRefresh={admin.onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
         />
       )}
@@ -96,14 +128,29 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
       {activeTab === 'modqueue' && (
         <FlatList
           data={admin.modQueue}
-          renderItem={({ item }) => <ModQueueItem item={item} colors={colors} onApprove={admin.handleApprove} onRemove={admin.handleRemove} />}
+          renderItem={({ item }) => (
+            <ModQueueItem
+              item={item}
+              colors={colors}
+              onApprove={admin.handleApprove}
+              onRemove={admin.handleRemove}
+            />
+          )}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={admin.refreshing} onRefresh={admin.onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={admin.refreshing}
+              onRefresh={admin.onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Ionicons name="checkmark-circle-outline" size={64} color={colors.success} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No items in mod queue</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No items in mod queue
+              </Text>
             </View>
           }
         />
@@ -112,14 +159,24 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
       {activeTab === 'banned' && (
         <FlatList
           data={admin.bannedUsers}
-          renderItem={({ item }) => <BannedUserItem item={item} colors={colors} onUnban={admin.handleUnban} />}
+          renderItem={({ item }) => (
+            <BannedUserItem item={item} colors={colors} onUnban={admin.handleUnban} />
+          )}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={admin.refreshing} onRefresh={admin.onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={admin.refreshing}
+              onRefresh={admin.onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Ionicons name="happy-outline" size={64} color={colors.textSecondary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No banned users</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No banned users
+              </Text>
             </View>
           }
         />
@@ -130,12 +187,20 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
           data={admin.moderators}
           renderItem={({ item }) => <ModeratorItem item={item} colors={colors} />}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={admin.refreshing} onRefresh={admin.onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={admin.refreshing}
+              onRefresh={admin.onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Ionicons name="people-outline" size={64} color={colors.textSecondary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No moderators yet</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No moderators yet
+              </Text>
             </View>
           }
         />
@@ -146,12 +211,20 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
           data={admin.moderationLogs}
           renderItem={({ item }) => <ModerationLogItem item={item} colors={colors} />}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={admin.refreshing} onRefresh={admin.onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={admin.refreshing}
+              onRefresh={admin.onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Ionicons name="document-text-outline" size={64} color={colors.textSecondary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No moderation logs yet</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No moderation logs yet
+              </Text>
             </View>
           }
         />
@@ -162,12 +235,20 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
           data={admin.identityCards}
           renderItem={({ item }) => <IdentityManagementItem item={item} colors={colors} />}
           keyExtractor={(item) => item.user_id}
-          refreshControl={<RefreshControl refreshing={admin.refreshing} onRefresh={admin.onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={admin.refreshing}
+              onRefresh={admin.onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Ionicons name="person-circle-outline" size={64} color={colors.textSecondary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No identity cards configured</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No identity cards configured
+              </Text>
             </View>
           }
         />
@@ -180,7 +261,11 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
         banReason={admin.banReason}
         onBanReasonChange={admin.setBanReason}
         onConfirm={admin.handleBanUser}
-        onCancel={() => { admin.setShowBanModal(false); admin.setBanReason(''); admin.setSelectedUser(null); }}
+        onCancel={() => {
+          admin.setShowBanModal(false);
+          admin.setBanReason('');
+          admin.setSelectedUser(null);
+        }}
         colors={colors}
       />
     </View>

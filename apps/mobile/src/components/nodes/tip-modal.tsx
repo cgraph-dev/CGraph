@@ -47,6 +47,7 @@ interface TipModalProps {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Tip Modal component. */
 export default function TipModal({
   visible,
   recipientId,
@@ -112,12 +113,7 @@ export default function TipModal({
 
   // ─── Render ───────────────────────────────────────────────────────
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={handleClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={handleClose}>
       <KeyboardAvoidingView
         style={styles.overlay}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -156,9 +152,7 @@ export default function TipModal({
           ) : (
             /* ── Tip form ───────────────────────────────────────── */
             <>
-              <Text style={[styles.title, { color: colors.text }]}>
-                Tip {recipientName}
-              </Text>
+              <Text style={[styles.title, { color: colors.text }]}>Tip {recipientName}</Text>
               <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
                 Balance: {balance.toLocaleString()} Nodes
               </Text>
@@ -182,12 +176,7 @@ export default function TipModal({
                         setSelectedAmount(amount);
                       }}
                     >
-                      <Text
-                        style={[
-                          styles.presetText,
-                          { color: isActive ? '#fff' : colors.text },
-                        ]}
-                      >
+                      <Text style={[styles.presetText, { color: isActive ? '#fff' : colors.text }]}>
                         {amount}
                       </Text>
                     </TouchableOpacity>

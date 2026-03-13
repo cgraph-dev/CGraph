@@ -9,7 +9,12 @@ import { GestureDetector } from 'react-native-gesture-handler';
 import BlurViewCross from '@/lib/effects/blur-view-cross';
 import ParticleView from '@/lib/effects/particle-view';
 
-export type { GlassVariant, BorderAnimationMode, PressAnimation, GlassCardV2Props } from './glass-card-v2.types';
+export type {
+  GlassVariant,
+  BorderAnimationMode,
+  PressAnimation,
+  GlassCardV2Props,
+} from './glass-card-v2.types';
 import type { GlassCardV2Props } from './glass-card-v2.types';
 
 import { VARIANT_CONFIGS, DEPTH_SHADOWS } from './glass-card-v2.config';
@@ -17,9 +22,20 @@ import { useGlassAnimations } from './glass-card-v2.animations';
 import { useGlassGestures } from './glass-card-v2.gestures';
 import { styles } from './glass-card-v2.styles';
 
-export { FrostedCard, CrystalCard, NeonCard, HolographicCard, AuroraCard, MidnightCard, DawnCard, EmberCard, OceanCard } from './glass-card-v2.variants';
+export {
+  FrostedCard,
+  CrystalCard,
+  NeonCard,
+  HolographicCard,
+  AuroraCard,
+  MidnightCard,
+  DawnCard,
+  EmberCard,
+  OceanCard,
+} from './glass-card-v2.variants';
 
 /**
+ * Glass Card V2 component.
  *
  */
 export default function GlassCardV2({
@@ -175,7 +191,7 @@ export default function GlassCardV2({
           pointerEvents="none"
         >
           <LinearGradient
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             colors={finalBorderColors as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}

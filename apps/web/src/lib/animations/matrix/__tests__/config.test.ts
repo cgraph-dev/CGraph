@@ -170,7 +170,9 @@ describe('Matrix Config', () => {
 
       it('should have reduced performance settings if defined', () => {
         if (PRESET_POWER_SAVER.performance?.targetFPS) {
-          expect(PRESET_POWER_SAVER.performance.targetFPS).toBeLessThanOrEqual(DEFAULT_PERFORMANCE.targetFPS);
+          expect(PRESET_POWER_SAVER.performance.targetFPS).toBeLessThanOrEqual(
+            DEFAULT_PERFORMANCE.targetFPS
+          );
         }
       });
     });
@@ -405,10 +407,10 @@ describe('Matrix Config', () => {
     it('should create a deep copy', () => {
       const original = createConfig();
       const cloned = cloneConfig(original);
-      
+
       // Modify cloned
       cloned.performance.targetFPS = 999;
-      
+
       // Original should be unchanged
       expect(original.performance.targetFPS).not.toBe(999);
     });
@@ -419,7 +421,7 @@ describe('Matrix Config', () => {
         columns: { density: 0.7 },
       });
       const cloned = cloneConfig(original);
-      
+
       expect(cloned.performance.targetFPS).toBe(45);
       expect(cloned.columns.density).toBe(0.7);
     });
@@ -427,9 +429,9 @@ describe('Matrix Config', () => {
     it('should clone nested objects', () => {
       const original = createConfig();
       const cloned = cloneConfig(original);
-      
+
       cloned.effects.enableBloom = !original.effects.enableBloom;
-      
+
       expect(original.effects.enableBloom).not.toBe(cloned.effects.enableBloom);
     });
   });
@@ -450,25 +452,25 @@ describe('Matrix Config', () => {
     it('should handle full configuration workflow', () => {
       // 1. Start with default
       const base = createConfig();
-      
+
       // 2. Apply preset
       const withPreset = mergeConfigs(base, PRESET_POWER_SAVER);
-      
+
       // 3. Customize
       const customized = createConfig({
         ...withPreset,
         columns: { density: 0.3 },
       });
-      
+
       // 4. Make responsive
       const responsive = getResponsiveConfig(customized, 768);
-      
+
       // 5. Clone for safe use
       const final = cloneConfig(responsive);
-      
+
       // 6. Validate
       const errors = validateConfig(final);
-      
+
       expect(Array.isArray(errors)).toBe(true);
       expect(final.columns.density).toBeDefined();
     });

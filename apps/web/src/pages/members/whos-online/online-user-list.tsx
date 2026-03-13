@@ -46,7 +46,7 @@ export function OnlineUserList({
     <div className="bg-card border-border overflow-hidden rounded-lg border">
       {/* Online Members Header */}
       <div className="border-border border-b p-4">
-        <h2 className="text-foreground flex items-center gap-2 text-lg font-semibold">
+        <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
           <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
           Online Members ({memberUsers.length})
         </h2>
@@ -54,7 +54,7 @@ export function OnlineUserList({
 
       {isLoading ? (
         <div className="p-8 text-center">
-          <ArrowPathIcon className="text-primary mx-auto mb-4 h-8 w-8 animate-spin" />
+          <ArrowPathIcon className="mx-auto mb-4 h-8 w-8 animate-spin text-primary" />
           <p className="text-muted-foreground">Loading online users...</p>
         </div>
       ) : memberUsers.length === 0 ? (
@@ -80,8 +80,8 @@ export function OnlineUserList({
                       avatarBorderId={user.avatarBorderId}
                     />
                   ) : (
-                    <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                      <UserIcon className="text-primary h-5 w-5" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                      <UserIcon className="h-5 w-5 text-primary" />
                     </div>
                   )}
                   <OnlineStatusIndicator
@@ -106,7 +106,7 @@ export function OnlineUserList({
               </div>
 
               <div className="text-right">
-                <div className="text-foreground text-sm">
+                <div className="text-sm text-foreground">
                   {user.currentLocationUrl ? (
                     <Link
                       to={user.currentLocationUrl}

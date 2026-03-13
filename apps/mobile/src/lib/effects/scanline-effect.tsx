@@ -12,11 +12,7 @@ import Animated, {
   Easing,
   interpolate,
 } from 'react-native-reanimated';
-import {
-  ScanlineConfig,
-  DEFAULT_SCANLINE_CONFIG,
-  sharedStyles,
-} from './shared-effects-types';
+import { ScanlineConfig, DEFAULT_SCANLINE_CONFIG, sharedStyles } from './shared-effects-types';
 
 // ============================================================================
 // Types
@@ -32,6 +28,7 @@ export interface ScanlineEffectProps {
 // ============================================================================
 
 /**
+ * Scanline Effect component.
  *
  */
 export function ScanlineEffect({ config, style }: ScanlineEffectProps) {
@@ -46,6 +43,7 @@ export function ScanlineEffect({ config, style }: ScanlineEffectProps) {
         false
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mergedConfig.animated, mergedConfig.speed]);
 
   const animatedStyle = useAnimatedStyle(() => {

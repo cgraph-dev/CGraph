@@ -70,7 +70,7 @@ export const creatorService = {
   /** Start Stripe Connect onboarding */
   async onboard() {
     const response = await api.post<{ data: { url: string; onboarding_url: string } }>(
-      '/api/v1/creator/onboard',
+      '/api/v1/creator/onboard'
     );
     return response.data.data;
   },
@@ -84,7 +84,7 @@ export const creatorService = {
   /** Generate a new onboarding link */
   async refreshOnboard() {
     const response = await api.post<{ data: { url: string; onboarding_url: string } }>(
-      '/api/v1/creator/onboard/refresh',
+      '/api/v1/creator/onboard/refresh'
     );
     return response.data.data;
   },
@@ -115,33 +115,30 @@ export const creatorService = {
   async getAnalyticsOverview(params?: { period?: string; start?: string; end?: string }) {
     const response = await api.get<{ data: AnalyticsOverview }>(
       '/api/v1/creator/analytics/overview',
-      { params },
+      { params }
     );
     return response.data.data;
   },
 
   /** Get earnings analytics */
   async getAnalyticsEarnings(params?: { period?: string; start?: string; end?: string }) {
-    const response = await api.get<{ data: EarningsData }>(
-      '/api/v1/creator/analytics/earnings',
-      { params },
-    );
+    const response = await api.get<{ data: EarningsData }>('/api/v1/creator/analytics/earnings', {
+      params,
+    });
     return response.data.data;
   },
 
   /** Get subscriber analytics */
   async getAnalyticsSubscribers() {
     const response = await api.get<{ data: SubscriberAnalytics }>(
-      '/api/v1/creator/analytics/subscribers',
+      '/api/v1/creator/analytics/subscribers'
     );
     return response.data.data;
   },
 
   /** Get content analytics */
   async getAnalyticsContent() {
-    const response = await api.get<{ data: ContentAnalytics }>(
-      '/api/v1/creator/analytics/content',
-    );
+    const response = await api.get<{ data: ContentAnalytics }>('/api/v1/creator/analytics/content');
     return response.data.data;
   },
 
@@ -165,22 +162,38 @@ export const creatorService = {
 
   // ── Premium Content ──────────────────────────────────────────
   async listPremiumThreads() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response = await api.get<{ data: any[] }>('/api/v1/creator/premium-threads');
     return response.data.data;
   },
-  async createPremiumThread(attrs: { threadId: string; priceNodes: number; subscriberOnly?: boolean; previewLength?: number }) {
+  async createPremiumThread(attrs: {
+    threadId: string;
+    priceNodes: number;
+    subscriberOnly?: boolean;
+    previewLength?: number;
+  }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response = await api.post<{ data: any }>('/api/v1/creator/premium-threads', attrs);
     return response.data.data;
   },
   async listTiers() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response = await api.get<{ data: any[] }>('/api/v1/creator/tiers');
     return response.data.data;
   },
-  async createTier(attrs: { forumId: string; name: string; priceMonthlyNodes: number; benefits?: Record<string, boolean>; maxSubscribers?: number }) {
+  async createTier(attrs: {
+    forumId: string;
+    name: string;
+    priceMonthlyNodes: number;
+    benefits?: Record<string, boolean>;
+    maxSubscribers?: number;
+  }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response = await api.post<{ data: any }>('/api/v1/creator/tiers', attrs);
     return response.data.data;
   },
   async purchaseThreadAccess(threadId: string) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response = await api.put<{ data: any }>(`/api/v1/threads/${threadId}/purchase`);
     return response.data.data;
   },

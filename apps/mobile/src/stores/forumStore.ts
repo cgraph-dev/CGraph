@@ -124,16 +124,25 @@ interface ForumStoreState {
 // ---------------------------------------------------------------------------
 
 const initialState = {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   forums: [] as Forum[],
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   currentForum: null as Forum | null,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   boards: [] as Board[],
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   threads: [] as Thread[],
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   currentThread: null as Thread | null,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   posts: [] as Thread[],
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   comments: [] as Comment[],
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   searchResults: [] as SearchResult[],
   searchQuery: '',
   loading: false,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   error: null as string | null,
 };
 
@@ -141,7 +150,7 @@ const initialState = {
 // Store
 // ---------------------------------------------------------------------------
 
-export const useForumStore = create<ForumStoreState>((set, get) => ({
+export const useForumStore = create<ForumStoreState>((set, _get) => ({
   ...initialState,
 
   // ─── Forum actions ───────────────────────────────────────────────────
@@ -152,7 +161,7 @@ export const useForumStore = create<ForumStoreState>((set, get) => ({
       const res = await forumService.listForums();
       set({ forums: res.data?.data ?? res.data ?? [], loading: false });
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'Failed to fetch forums';
+      const msg = err instanceof Error ? err.message : 'Failed to fetch forums';
       set({ error: msg, loading: false });
     }
   },
@@ -163,7 +172,7 @@ export const useForumStore = create<ForumStoreState>((set, get) => ({
       const res = await forumService.getForum(id);
       set({ currentForum: res.data?.data ?? res.data, loading: false });
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'Failed to fetch forum';
+      const msg = err instanceof Error ? err.message : 'Failed to fetch forum';
       set({ error: msg, loading: false });
     }
   },
@@ -178,7 +187,7 @@ export const useForumStore = create<ForumStoreState>((set, get) => ({
       const res = await forumService.listBoards(forumId);
       set({ boards: res.data?.data ?? res.data ?? [], loading: false });
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'Failed to fetch boards';
+      const msg = err instanceof Error ? err.message : 'Failed to fetch boards';
       set({ error: msg, loading: false });
     }
   },
@@ -192,7 +201,7 @@ export const useForumStore = create<ForumStoreState>((set, get) => ({
       const data = res.data?.data ?? res.data ?? [];
       set({ threads: data, posts: data, loading: false });
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'Failed to fetch threads';
+      const msg = err instanceof Error ? err.message : 'Failed to fetch threads';
       set({ error: msg, loading: false });
     }
   },
@@ -203,7 +212,7 @@ export const useForumStore = create<ForumStoreState>((set, get) => ({
       const res = await forumService.getPost(postId);
       set({ currentThread: res.data?.data ?? res.data, loading: false });
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'Failed to fetch post';
+      const msg = err instanceof Error ? err.message : 'Failed to fetch post';
       set({ error: msg, loading: false });
     }
   },
@@ -216,7 +225,7 @@ export const useForumStore = create<ForumStoreState>((set, get) => ({
         posts: state.posts.filter((p) => p.id !== postId),
       }));
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'Failed to delete post';
+      const msg = err instanceof Error ? err.message : 'Failed to delete post';
       set({ error: msg });
       throw err;
     }
@@ -241,7 +250,7 @@ export const useForumStore = create<ForumStoreState>((set, get) => ({
       const newComment = res.data?.data ?? res.data;
       set((state) => ({ comments: [newComment, ...state.comments] }));
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'Failed to add comment';
+      const msg = err instanceof Error ? err.message : 'Failed to add comment';
       set({ error: msg });
       throw err;
     }
@@ -254,7 +263,7 @@ export const useForumStore = create<ForumStoreState>((set, get) => ({
         comments: state.comments.filter((c) => c.id !== commentId),
       }));
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'Failed to delete comment';
+      const msg = err instanceof Error ? err.message : 'Failed to delete comment';
       set({ error: msg });
       throw err;
     }
@@ -268,7 +277,7 @@ export const useForumStore = create<ForumStoreState>((set, get) => ({
       const res = await forumService.searchForums(query, filters);
       set({ searchResults: res.data?.data ?? res.data ?? [], loading: false });
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'Search failed';
+      const msg = err instanceof Error ? err.message : 'Search failed';
       set({ error: msg, loading: false });
     }
   },

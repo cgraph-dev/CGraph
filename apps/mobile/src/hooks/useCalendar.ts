@@ -74,6 +74,7 @@ interface UseCalendarReturn extends CalendarState {
 }
 
 /**
+ * Hook for calendar.
  *
  */
 export function useCalendar(options: UseCalendarOptions = {}): UseCalendarReturn {

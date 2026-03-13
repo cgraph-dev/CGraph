@@ -4,14 +4,7 @@
  */
 import { durations } from '@cgraph/animation-constants';
 import React, { useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ViewStyle,
-  Animated,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ViewStyle, Animated } from 'react-native';
 import { useThemeStore } from '@/stores';
 import Avatar from './avatar';
 import { UserBasic } from '../types';
@@ -36,6 +29,7 @@ interface UserListItemProps {
 }
 
 /**
+ * User List Item component.
  *
  */
 export default function UserListItem({
@@ -68,6 +62,7 @@ export default function UserListItem({
         useNativeDriver: true,
       }),
     ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animationDelay]);
 
   const handlePressIn = () => {
@@ -101,28 +96,25 @@ export default function UserListItem({
         activeOpacity={0.9}
         style={[styles.container, { backgroundColor: colors.surface }, style]}
       >
-      <Avatar
-        source={user.avatar_url}
-        name={user.display_name || user.username || 'Unknown'}
-        size="md"
-         
-        status={showStatus ? (user.status as 'online' | 'idle' | 'dnd' | 'offline') : undefined}
-        showStatus={showStatus}
-      />
-      <View style={styles.content}>
-        <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
-          {user.display_name || user.username || 'Unknown'}
-        </Text>
-        {subtitle && (
-          <Text
-            style={[styles.subtitle, { color: colors.textSecondary }]}
-            numberOfLines={1}
-          >
-            {subtitle}
+        <Avatar
+          source={user.avatar_url}
+          name={user.display_name || user.username || 'Unknown'}
+          size="md"
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          status={showStatus ? (user.status as 'online' | 'idle' | 'dnd' | 'offline') : undefined}
+          showStatus={showStatus}
+        />
+        <View style={styles.content}>
+          <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
+            {user.display_name || user.username || 'Unknown'}
           </Text>
-        )}
-      </View>
-      {rightContent && <View style={styles.rightContent}>{rightContent}</View>}
+          {subtitle && (
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]} numberOfLines={1}>
+              {subtitle}
+            </Text>
+          )}
+        </View>
+        {rightContent && <View style={styles.rightContent}>{rightContent}</View>}
       </TouchableOpacity>
     </Animated.View>
   );

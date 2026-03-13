@@ -38,6 +38,7 @@ interface ModalProps {
 }
 
 /**
+ * Modal component.
  *
  */
 export default function Modal({
@@ -102,6 +103,7 @@ interface ConfirmDialogProps {
 }
 
 /**
+ * Confirm Dialog component.
  *
  */
 export function ConfirmDialog({

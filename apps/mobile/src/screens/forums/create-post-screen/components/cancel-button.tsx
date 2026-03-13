@@ -15,6 +15,7 @@ interface CancelButtonProps {
 }
 
 /**
+ * Cancel Button component.
  *
  */
 export function CancelButton({ onPress }: CancelButtonProps) {

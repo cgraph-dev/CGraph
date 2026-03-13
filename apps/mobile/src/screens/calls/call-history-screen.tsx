@@ -17,7 +17,7 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
-  FlatList,
+  _FlatList,
   RefreshControl,
   SectionList,
 } from 'react-native';
@@ -33,7 +33,21 @@ import { Colors, Typography, Spacing, BorderRadius } from '@/lib/design/design-s
 import { HapticFeedback, getStaggerDelay } from '@/lib/animations/animation-engine';
 import { useCallStore } from '@/stores/callStore';
 import { useAuthStore } from '@/stores';
-import type { CallHistoryRecord } from '@/services/callService';
+
+interface CallHistoryRecord {
+  id: string;
+  room_id: string;
+  type: 'audio' | 'video' | 'screen_share';
+  creator_id: string;
+  group_id: string | null;
+  state: string;
+  participant_ids: string[];
+  max_participants: number;
+  started_at: string;
+  ended_at: string;
+  duration_seconds: number | null;
+  inserted_at: string;
+}
 
 type CallType = 'voice' | 'video';
 type CallDirection = 'incoming' | 'outgoing' | 'missed';
@@ -77,6 +91,7 @@ function mapApiToCallRecord(record: CallHistoryRecord, currentUserId: string): C
 }
 
 /**
+ * Call History Screen component.
  *
  */
 export default function CallHistoryScreen() {
@@ -94,6 +109,7 @@ export default function CallHistoryScreen() {
   // Fetch call history on mount
   useEffect(() => {
     fetchCallHistory(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -110,6 +126,7 @@ export default function CallHistoryScreen() {
         useNativeDriver: true,
       }),
     ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onRefresh = useCallback(async () => {
@@ -264,8 +281,8 @@ export default function CallHistoryScreen() {
               source={
                 item.recipientAvatar
                   ? { uri: item.recipientAvatar }
-                   
-                  : require('@/assets/default-avatar.png')
+                  : // eslint-disable-next-line @typescript-eslint/no-require-imports
+                    require('@/assets/default-avatar.png')
               }
               size={52}
               borderAnimation={item.direction === 'missed' ? 'none' : 'gradient'}

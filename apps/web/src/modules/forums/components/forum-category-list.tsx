@@ -84,7 +84,8 @@ interface _ForumPreview {
   isNew?: boolean;
   isHot?: boolean;
 }
- 
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 void (0 as unknown as _ForumPreview); // Silence unused interface warning
 
 /**
@@ -167,7 +168,7 @@ export function ForumCategoryList({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onCategoryClick?.(category)}
-      className="flex w-full items-center gap-3 rounded-lg bg-white/[0.06] p-3 text-left transition-colors hover:bg-white/[0.10]/50"
+      className="hover:bg-white/[0.10]/50 flex w-full items-center gap-3 rounded-lg bg-white/[0.06] p-3 text-left transition-colors"
     >
       <div
         className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
@@ -264,7 +265,7 @@ export function ForumCategoryList({
                           />
                         ))
                       ) : (
-                        <div className="border-t border-white/[0.06]/50 p-4 pl-14 text-sm text-gray-500">
+                        <div className="border-white/[0.06]/50 border-t p-4 pl-14 text-sm text-gray-500">
                           No forums in this category yet
                         </div>
                       )}

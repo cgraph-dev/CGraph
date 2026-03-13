@@ -45,7 +45,7 @@ export function ThreadPreview({
         'text-xs text-[#00AFF4] hover:text-white',
         'bg-transparent hover:bg-white/[0.04]',
         'cursor-pointer transition-colors',
-        className,
+        className
       )}
     >
       {/* Thread icon */}
@@ -81,9 +81,7 @@ export function ThreadPreview({
 
       {/* Last activity */}
       {formattedTime && (
-        <span className="text-white/30 group-hover:text-white/50">
-          {formattedTime}
-        </span>
+        <span className="text-white/30 group-hover:text-white/50">{formattedTime}</span>
       )}
 
       {/* Hover arrow */}

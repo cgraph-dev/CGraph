@@ -38,9 +38,9 @@ export default function EquipScreen() {
   const { colors } = useThemeStore();
   const navigation = useNavigation();
   const route = useRoute();
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- route params require cast
   const params: RouteParams | undefined = route.params
-    ? (route.params as unknown as RouteParams)
+    ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      (route.params as unknown as RouteParams)
     : undefined;
 
   const entry = params?.item;

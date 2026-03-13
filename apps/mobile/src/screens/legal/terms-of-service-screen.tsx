@@ -23,7 +23,7 @@ const sections: LegalSection[] = [
   {
     title: '3. Acceptable Use',
     content: [
-      'You agree not to: post illegal content, harass other users, spam or send unsolicited messages, impersonate others, attempt to access other users\' accounts, reverse engineer the service, or use the service for any unlawful purpose.',
+      "You agree not to: post illegal content, harass other users, spam or send unsolicited messages, impersonate others, attempt to access other users' accounts, reverse engineer the service, or use the service for any unlawful purpose.",
       'Violation of these rules may result in account suspension or permanent ban.',
     ],
   },
@@ -38,7 +38,7 @@ const sections: LegalSection[] = [
   {
     title: '5. Intellectual Property',
     content: [
-      'CGraph\'s name, logos, and service design are protected intellectual property.',
+      "CGraph's name, logos, and service design are protected intellectual property.",
       'You may not use CGraph branding without written permission.',
     ],
   },
@@ -67,6 +67,7 @@ const sections: LegalSection[] = [
 ];
 
 /**
+ * Terms Of Service Screen component.
  *
  */
 export default function TermsOfServiceScreen() {

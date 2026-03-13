@@ -7,13 +7,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
  * Hook that syncs state with AsyncStorage (React Native equivalent of localStorage).
- * 
+ *
  * Handles serialization/deserialization automatically.
- * 
+ *
  * @param key - AsyncStorage key
  * @param initialValue - default value if key doesn't exist
  * @returns tuple of [value, setValue, removeValue]
- * 
+ *
  * @example
  * const [theme, setTheme] = useAsyncStorage('theme', 'light');
  * const [settings, setSettings, clearSettings] = useAsyncStorage('settings', {});
@@ -31,7 +31,7 @@ export function useAsyncStorage<T>(
       try {
         const item = await AsyncStorage.getItem(key);
         if (item !== null) {
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           setStoredValue(JSON.parse(item) as T);
         }
       } catch (error) {
@@ -45,21 +45,24 @@ export function useAsyncStorage<T>(
   }, [key]);
 
   // Update AsyncStorage when state changes
-  const setValue = useCallback(async (value: T | ((prev: T) => T)) => {
-    try {
-      // Handle function updates
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      
-      // Save to state
-      setStoredValue(valueToStore);
-      
-      // Save to AsyncStorage
-      await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.warn(`Error setting AsyncStorage key "${key}":`, error);
-      throw error;
-    }
-  }, [key, storedValue]);
+  const setValue = useCallback(
+    async (value: T | ((prev: T) => T)) => {
+      try {
+        // Handle function updates
+        const valueToStore = value instanceof Function ? value(storedValue) : value;
+
+        // Save to state
+        setStoredValue(valueToStore);
+
+        // Save to AsyncStorage
+        await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
+      } catch (error) {
+        console.warn(`Error setting AsyncStorage key "${key}":`, error);
+        throw error;
+      }
+    },
+    [key, storedValue]
+  );
 
   // Remove from AsyncStorage
   const removeValue = useCallback(async () => {

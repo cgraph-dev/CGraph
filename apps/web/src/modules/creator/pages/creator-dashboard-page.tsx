@@ -20,8 +20,8 @@ function formatCents(cents: number): string {
 
 function SummaryCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <p className="text-sm text-muted-foreground">{label}</p>
+    <div className="border-border bg-card rounded-lg border p-4">
+      <p className="text-muted-foreground text-sm">{label}</p>
       <p className="mt-1 text-2xl font-bold">{value}</p>
     </div>
   );
@@ -29,6 +29,7 @@ function SummaryCard({ label, value }: { label: string; value: string | number }
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Creator Dashboard Page component. */
 export default function CreatorDashboardPage() {
   const {
     balance,
@@ -72,10 +73,7 @@ export default function CreatorDashboardPage() {
           label="Total Earnings"
           value={balance ? formatCents(balance.totalEarnedCents) : '—'}
         />
-        <SummaryCard
-          label="Active Subscribers"
-          value={analyticsOverview?.subscriberCount ?? 0}
-        />
+        <SummaryCard label="Active Subscribers" value={analyticsOverview?.subscriberCount ?? 0} />
         <SummaryCard
           label="Monthly Revenue"
           value={analyticsOverview ? formatCents(analyticsOverview.mrrCents) : '—'}

@@ -86,14 +86,11 @@ function Orb({ data, index }: { data: OrbData; index: number }) {
         true
       )
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: x.value },
-      { translateY: y.value },
-      { scale: scale.value },
-    ],
+    transform: [{ translateX: x.value }, { translateY: y.value }, { scale: scale.value }],
     opacity: opacity.value,
   }));
 

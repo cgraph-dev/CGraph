@@ -4,14 +4,7 @@
 
 import type { TitleRarity } from '@/data/titles';
 
-export const RARITY_LIST: TitleRarity[] = [
-  'free',
-  'common',
-  'rare',
-  'epic',
-  'legendary',
-  'mythic',
-];
+export const RARITY_LIST: TitleRarity[] = ['free', 'common', 'rare', 'epic', 'legendary', 'mythic'];
 
 const RARITY_COLORS: Record<TitleRarity, string> = {
   free: 'text-gray-500 border-gray-700',

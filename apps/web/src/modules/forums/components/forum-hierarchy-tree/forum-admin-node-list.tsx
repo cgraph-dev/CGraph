@@ -3,11 +3,7 @@
  * @module modules/forums/components/forum-hierarchy-tree
  */
 
-import {
-  ArrowsUpDownIcon,
-  FolderPlusIcon,
-  ArrowUturnUpIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowsUpDownIcon, FolderPlusIcon, ArrowUturnUpIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { ForumNode } from './types';
 

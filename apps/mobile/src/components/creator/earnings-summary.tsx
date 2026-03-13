@@ -31,6 +31,7 @@ function formatNodes(amount: number): string {
   return `${amount.toLocaleString()} nodes`;
 }
 
+/** Earnings Summary component. */
 export default function EarningsSummary({ earnings }: EarningsSummaryProps): React.ReactElement {
   const { colors } = useThemeStore();
 
@@ -56,9 +57,7 @@ export default function EarningsSummary({ earnings }: EarningsSummaryProps): Rea
               <Text style={styles.emoji}>{meta.emoji}</Text>
               <Text style={[styles.catLabel, { color: colors.text }]}>{meta.label}</Text>
             </View>
-            <Text style={[styles.amount, { color: colors.primary }]}>
-              {formatNodes(amount)}
-            </Text>
+            <Text style={[styles.amount, { color: colors.primary }]}>{formatNodes(amount)}</Text>
           </View>
         );
       })}
@@ -66,9 +65,7 @@ export default function EarningsSummary({ earnings }: EarningsSummaryProps): Rea
       {/* Total */}
       <View style={[styles.totalRow, { borderColor: colors.border }]}>
         <Text style={[styles.totalLabel, { color: colors.text }]}>Total</Text>
-        <Text style={[styles.totalAmount, { color: colors.primary }]}>
-          {formatNodes(total)}
-        </Text>
+        <Text style={[styles.totalAmount, { color: colors.primary }]}>{formatNodes(total)}</Text>
       </View>
     </View>
   );

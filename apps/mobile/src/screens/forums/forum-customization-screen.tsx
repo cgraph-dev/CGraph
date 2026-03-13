@@ -52,6 +52,7 @@ const FONT_SIZE_OPTIONS = [
   { value: '18px', label: 'Large' },
 ];
 
+/** Forum Customization Screen component. */
 export default function ForumCustomizationScreen({ navigation, route }: Props) {
   const colors = useThemeStore((s) => s.colors);
   const forumId = route.params?.forumId;
@@ -76,31 +77,40 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
     fetchOptions();
   }, [fetchOptions]);
 
-  const handleSave = useCallback(async (category: string, changes: Record<string, unknown>) => {
-    try {
-      setSaving(true);
-      const res = await api.put(`/api/v1/forums/${forumId}/customization/${category}`, changes);
-      setOptions(res.data.data);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch {
-      Alert.alert('Error', 'Failed to save changes');
-    } finally {
-      setSaving(false);
-    }
-  }, [forumId]);
+  const handleSave = useCallback(
+    async (category: string, changes: Record<string, unknown>) => {
+      try {
+        setSaving(true);
+        const res = await api.put(`/api/v1/forums/${forumId}/customization/${category}`, changes);
+        setOptions(res.data.data);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch {
+        Alert.alert('Error', 'Failed to save changes');
+      } finally {
+        setSaving(false);
+      }
+    },
+    [forumId]
+  );
 
-  const handlePresetSelect = useCallback((presetKey: string, colors: Record<string, string>) => {
-    setActivePreset(presetKey);
-    handleSave('appearance', colors);
-  }, [handleSave]);
+  const handlePresetSelect = useCallback(
+    (presetKey: string, colors: Record<string, string>) => {
+      setActivePreset(presetKey);
+      handleSave('appearance', colors);
+    },
+    [handleSave]
+  );
 
-  const updateAppearance = useCallback((key: string, value: unknown) => {
-    if (!options) return;
-    setOptions({
-      ...options,
-      appearance: { ...options.appearance, [key]: value },
-    });
-  }, [options]);
+  const updateAppearance = useCallback(
+    (key: string, value: unknown) => {
+      if (!options) return;
+      setOptions({
+        ...options,
+        appearance: { ...options.appearance, [key]: value },
+      });
+    },
+    [options]
+  );
 
   if (loading) {
     return (
@@ -125,10 +135,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={[styles.title, { color: colors.text }]}>Customize Forum</Text>
-        <TouchableOpacity
-          onPress={() => handleSave('appearance', appearance)}
-          disabled={saving}
-        >
+        <TouchableOpacity onPress={() => handleSave('appearance', appearance)} disabled={saving}>
           <Text style={[styles.saveButton, { color: colors.primary }]}>
             {saving ? 'Saving...' : 'Save'}
           </Text>
@@ -138,10 +145,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
       {/* Theme Presets */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Theme Presets</Text>
-        <ThemePicker
-          activePreset={activePreset}
-          onSelect={handlePresetSelect}
-        />
+        <ThemePicker activePreset={activePreset} onSelect={handlePresetSelect} />
       </View>
 
       {/* Colors */}
@@ -154,10 +158,12 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
               <View
                 style={[
                   styles.colorSwatch,
+                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                   { backgroundColor: (appearance[key] as string) ?? '#3B82F6' },
                 ]}
               />
               <TextInput
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 value={(appearance[key] as string) ?? ''}
                 onChangeText={(v) => updateAppearance(key, v)}
                 style={[styles.colorInput, { color: colors.text, borderColor: colors.border }]}
@@ -181,9 +187,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
                 styles.fontSizeButton,
                 {
                   backgroundColor:
-                    appearance.font_size_base === value
-                      ? colors.primary
-                      : colors.card,
+                    appearance.font_size_base === value ? colors.primary : colors.card,
                 },
               ]}
               onPress={() => updateAppearance('font_size_base', value)}
@@ -192,8 +196,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
                 style={[
                   styles.fontSizeLabel,
                   {
-                    color:
-                      appearance.font_size_base === value ? '#fff' : colors.text,
+                    color: appearance.font_size_base === value ? '#fff' : colors.text,
                   },
                 ]}
               >
@@ -238,6 +241,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
         <View style={styles.inputRow}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>Karma Name</Text>
           <TextInput
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             value={(reputation.karma_name as string) ?? 'Karma'}
             onChangeText={(v) =>
               setOptions(
@@ -254,6 +258,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
         <View style={styles.inputRow}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>Upvote Label</Text>
           <TextInput
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             value={(reputation.upvote_label as string) ?? 'Upvote'}
             onChangeText={(v) =>
               setOptions(

@@ -62,9 +62,13 @@ export function MessageListLoading() {
               <Sk style={{ height: 14, width: 80, borderRadius: 4 }} />
               <Sk style={{ height: 10, width: 40, borderRadius: 4 }} />
             </View>
-            <Sk style={{ height: 16, width: SCREEN_WIDTH * w * 0.7, borderRadius: 4, marginTop: 8 }} />
+            <Sk
+              style={{ height: 16, width: SCREEN_WIDTH * w * 0.7, borderRadius: 4, marginTop: 8 }}
+            />
             {i % 2 === 0 && (
-              <Sk style={{ height: 16, width: SCREEN_WIDTH * 0.35, borderRadius: 4, marginTop: 4 }} />
+              <Sk
+                style={{ height: 16, width: SCREEN_WIDTH * 0.35, borderRadius: 4, marginTop: 4 }}
+              />
             )}
           </View>
         </View>
@@ -98,7 +102,12 @@ export function ProfileLoading() {
     <Animated.View entering={FadeIn.duration(200)}>
       <Sk style={{ height: 150, width: '100%', borderRadius: 0 }} />
       <View style={{ paddingHorizontal: 16, marginTop: -40 }}>
-        <View style={[styles.avatarCircle, { width: 80, height: 80, borderWidth: 3, borderColor: '#111214' }]} />
+        <View
+          style={[
+            styles.avatarCircle,
+            { width: 80, height: 80, borderWidth: 3, borderColor: '#111214' },
+          ]}
+        />
         <View style={{ marginTop: 12, gap: 8 }}>
           <Sk style={{ height: 20, width: 160, borderRadius: 4 }} />
           <Sk style={{ height: 14, width: 100, borderRadius: 4 }} />
@@ -148,7 +157,7 @@ type LoadingVariant =
   | 'profile'
   | 'forum-list';
 
-const variantMap: Record<LoadingVariant, React.FC> = {
+const variantMap: Record<LoadingVariant, () => React.ReactElement> = {
   'conversation-list': ConversationListLoading,
   'message-list': MessageListLoading,
   'channel-list': ChannelListLoading,
@@ -156,6 +165,8 @@ const variantMap: Record<LoadingVariant, React.FC> = {
   'forum-list': ForumListLoading,
 };
 
+/** Description. */
+/** Loading State component. */
 export function LoadingState({ variant }: { variant: LoadingVariant }) {
   const Component = variantMap[variant];
   return <Component />;

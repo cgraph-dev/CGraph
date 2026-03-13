@@ -1,10 +1,10 @@
 /**
  * AnimatedReactionBubble Component
- * 
+ *
  * Interactive reaction bubble with animated feedback on tap.
  * Provides haptic and visual feedback for emoji reactions.
  * Features particle explosion effect matching web parity.
- * 
+ *
  * @module components/conversation/AnimatedReactionBubble
  * @since v0.7.29
  * @updated v0.8.2 - Added particle explosion effect for web parity
@@ -13,7 +13,17 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { memo, useCallback, useState } from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSequence, withSpring, withTiming, interpolate, runOnJS, Easing as ReanimatedEasing, type SharedValue } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSequence,
+  withSpring,
+  withTiming,
+  interpolate,
+  runOnJS,
+  Easing as ReanimatedEasing,
+  type SharedValue,
+} from 'react-native-reanimated';
 import { LottieRenderer, emojiToCodepoint, getWebPFallbackUrl } from '@/lib/lottie';
 
 // Number of particles in the explosion effect
@@ -72,7 +82,7 @@ const ReactionParticle = memo(function ReactionParticle({
   color: string;
 }) {
   const position = PARTICLE_POSITIONS[index];
-  
+
   const particleAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: interpolate(animValue.value, [0, 1], [0, position.x]) },
@@ -97,20 +107,20 @@ const ReactionParticle = memo(function ReactionParticle({
 
 /**
  * Animated reaction bubble that displays emoji reactions on messages.
- * 
+ *
  * Features:
  * - Bounce animation on tap for satisfying feedback
  * - Visual distinction for user's own reactions
  * - Count display for multiple reactions
  * - 8-particle radial explosion effect (matching web)
  * - Optimized with memoization
- * 
+ *
  * Animation behavior:
  * - Scale pulse from 1 → 1.3 → 1 on press
  * - Emoji "jump" with translateY animation
  * - Spring physics for natural movement
  * - Particle burst with radial distribution
- * 
+ *
  * @example
  * ```tsx
  * <AnimatedReactionBubble
@@ -143,7 +153,10 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
 
     // Emoji "jump" animation
     bounceAnim.value = withSequence(
-      withTiming(-8, { duration: durations.instant.ms, easing: ReanimatedEasing.out(ReanimatedEasing.quad) }),
+      withTiming(-8, {
+        duration: durations.instant.ms,
+        easing: ReanimatedEasing.out(ReanimatedEasing.quad),
+      }),
       withSpring(0, { stiffness: 300, damping: 8 })
     );
 
@@ -151,21 +164,31 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
     if (!disableParticles) {
       setShowParticles(true);
       particleAnim.value = 0;
-      
-      particleAnim.value = withTiming(1, {
-        duration: durations.smooth.ms,
-        easing: ReanimatedEasing.out(ReanimatedEasing.cubic),
-      }, (finished) => {
-        if (finished) {
-          runOnJS(setShowParticles)(false);
+
+      particleAnim.value = withTiming(
+        1,
+        {
+          duration: durations.smooth.ms,
+          easing: ReanimatedEasing.out(ReanimatedEasing.cubic),
+        },
+        (finished) => {
+          if (finished) {
+            runOnJS(setShowParticles)(false);
+          }
         }
-      });
+      );
     }
 
     // Glow pulse effect
     glowAnim.value = withSequence(
-      withTiming(1, { duration: durations.fast.ms, easing: ReanimatedEasing.out(ReanimatedEasing.quad) }),
-      withTiming(0, { duration: durations.slow.ms, easing: ReanimatedEasing.in(ReanimatedEasing.quad) })
+      withTiming(1, {
+        duration: durations.fast.ms,
+        easing: ReanimatedEasing.out(ReanimatedEasing.quad),
+      }),
+      withTiming(0, {
+        duration: durations.slow.ms,
+        easing: ReanimatedEasing.in(ReanimatedEasing.quad),
+      })
     );
 
     onPress();
@@ -207,7 +230,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
           glowAnimatedStyle,
         ]}
       />
-      
+
       {/* Particle explosion */}
       {showParticles && !disableParticles && (
         <View style={styles.particleContainer}>
@@ -221,7 +244,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
           ))}
         </View>
       )}
-      
+
       <TouchableOpacity
         style={[styles.reactionBubble, bubbleStyle]}
         onPress={handlePress}
@@ -230,6 +253,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
         <Animated.View
           style={[
             styles.reactionEmoji,
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             emojiAnimatedStyle as Record<string, unknown>,
           ]}
         >

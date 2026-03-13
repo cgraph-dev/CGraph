@@ -10,6 +10,7 @@ import type { MatrixHeatmapProps } from './types';
 import { styles } from './styles';
 
 /**
+ * Matrix Heatmap component.
  *
  */
 export function MatrixHeatmap({

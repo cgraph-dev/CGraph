@@ -27,6 +27,7 @@ const FILE_ICONS: Record<string, string> = {
   document: '📄',
 };
 
+/** Paid File Card component. */
 export default function PaidFileCard({
   fileUrl,
   fileName,
@@ -43,11 +44,7 @@ export default function PaidFileCard({
       {/* Preview area */}
       <View style={styles.previewWrap}>
         {fileType === 'image' && fileUrl ? (
-          <Image
-            source={{ uri: fileUrl }}
-            style={styles.preview}
-            blurRadius={isLocked ? 20 : 0}
-          />
+          <Image source={{ uri: fileUrl }} style={styles.preview} blurRadius={isLocked ? 20 : 0} />
         ) : (
           <View style={[styles.iconPreview, { backgroundColor: colors.background }]}>
             <Text style={styles.iconEmoji}>{FILE_ICONS[fileType] ?? '📎'}</Text>
@@ -78,9 +75,7 @@ export default function PaidFileCard({
           style={[styles.unlockButton, { backgroundColor: colors.primary }]}
           onPress={onUnlock}
         >
-          <Text style={styles.unlockText}>
-            {status === 'pending' ? 'Pending…' : 'Unlock'}
-          </Text>
+          <Text style={styles.unlockText}>{status === 'pending' ? 'Pending…' : 'Unlock'}</Text>
         </Pressable>
       )}
     </View>

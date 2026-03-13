@@ -66,7 +66,7 @@ function usePrefersReducedMotion(): boolean {
 /** Resolve border CSS for the given border style. */
 function resolveBorderStyle(
   style: NameplateBorderStyle,
-  color: string | null,
+  color: string | null
 ): React.CSSProperties {
   const c = color ?? 'transparent';
   switch (style) {
@@ -104,7 +104,7 @@ function resolveBorderStyle(
 function resolveTextEffectStyle(
   effect: NameplateTextEffect,
   color: string,
-  secondary: string | null,
+  secondary: string | null
 ): React.CSSProperties {
   const sec = secondary ?? color;
   switch (effect) {
@@ -250,11 +250,7 @@ function LottieBackground({ animationData, disabled }: LottieBackgroundProps) {
 // ── Gradient fallback layer ────────────────────────────────────────────
 
 /** Renders a CSS gradient background when Lottie is unavailable or as underlayer. */
-function GradientBackground({
-  gradient,
-}: {
-  gradient: readonly [string, string] | null;
-}) {
+function GradientBackground({ gradient }: { gradient: readonly [string, string] | null }) {
   if (!gradient) return null;
   return (
     <div
@@ -285,6 +281,7 @@ function NameplateParticles({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef(0);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const particleColors = colors
     ? [colors[0], colors[1], `${colors[0]}80`]
     : ['#f59e0b', '#fbbf24', '#fcd34d'];
@@ -402,9 +399,7 @@ export const NameplateBar = memo(function NameplateBar({
   const prefersReducedMotion = usePrefersReducedMotion();
 
   // Resolve entry from shared registry
-  const entry: NameplateEntry | undefined = nameplateId
-    ? getNameplateById(nameplateId)
-    : undefined;
+  const entry: NameplateEntry | undefined = nameplateId ? getNameplateById(nameplateId) : undefined;
 
   // Resolve Lottie animation data from asset map
   const lottieData = nameplateId ? getNameplateLottieSource(nameplateId) : undefined;
@@ -418,7 +413,7 @@ export const NameplateBar = memo(function NameplateBar({
   const textStyles = resolveTextEffectStyle(
     entry.textEffect,
     entry.textColor,
-    entry.textColorSecondary,
+    entry.textColorSecondary
   );
 
   // Animated border rotation for 'animated' border style
@@ -483,10 +478,7 @@ export const NameplateBar = memo(function NameplateBar({
           )}
 
           {/* Text effect preview */}
-          <span
-            className="truncate text-sm font-bold"
-            style={textStyles}
-          >
+          <span className="truncate text-sm font-bold" style={textStyles}>
             Username
           </span>
 

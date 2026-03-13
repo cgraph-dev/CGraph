@@ -46,8 +46,14 @@ const RULE_TEMPLATES: { name: string; data: Partial<CreateAutoRuleData> }[] = [
 ];
 
 const RULE_TYPE_LABELS: Record<string, { label: string; description: string }> = {
-  milestone: { label: 'Milestone', description: 'Triggered when user reaches a threshold (posts, reputation, etc.)' },
-  time_based: { label: 'Time Based', description: 'Triggered after a duration of membership (in days)' },
+  milestone: {
+    label: 'Milestone',
+    description: 'Triggered when user reaches a threshold (posts, reputation, etc.)',
+  },
+  time_based: {
+    label: 'Time Based',
+    description: 'Triggered after a duration of membership (in days)',
+  },
   subscription: { label: 'Subscription', description: 'Triggered by active subscription status' },
   custom: { label: 'Custom', description: 'Custom criteria-based rule' },
 };
@@ -56,6 +62,8 @@ interface AutoRuleEditorProps {
   forumId: string;
 }
 
+/** Description. */
+/** Auto Rule Editor component. */
 export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
   const {
     groups,
@@ -96,14 +104,14 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
       if (!window.confirm('Delete this auto-rule?')) return;
       await deleteAutoRule(forumId, ruleId);
     },
-    [forumId, deleteAutoRule],
+    [forumId, deleteAutoRule]
   );
 
   const handleToggleActive = useCallback(
     async (rule: AutoRule) => {
       await updateAutoRule(forumId, rule.id, { isActive: !rule.isActive });
     },
-    [forumId, updateAutoRule],
+    [forumId, updateAutoRule]
   );
 
   return (
@@ -119,14 +127,17 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
           <button
             onClick={handleEvaluate}
             disabled={evaluating}
-            className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-white transition-colors hover:bg-amber-700 disabled:opacity-50"
           >
             <PlayIcon className={`h-4 w-4 ${evaluating ? 'animate-pulse' : ''}`} />
             Evaluate Now
           </button>
           <button
-            onClick={() => { setEditingRule(null); setShowForm(true); }}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            onClick={() => {
+              setEditingRule(null);
+              setShowForm(true);
+            }}
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
           >
             <PlusIcon className="h-4 w-4" />
             Create Rule
@@ -141,19 +152,20 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-green-900/50 border border-green-700 rounded-lg p-3 flex items-center gap-2"
+            className="flex items-center gap-2 rounded-lg border border-green-700 bg-green-900/50 p-3"
           >
             <CheckCircleIcon className="h-5 w-5 text-green-400" />
-            <span className="text-green-300 text-sm">
-              Evaluation complete. {evaluateResult.usersAssigned} user{evaluateResult.usersAssigned !== 1 ? 's' : ''} assigned to groups.
+            <span className="text-sm text-green-300">
+              Evaluation complete. {evaluateResult.usersAssigned} user
+              {evaluateResult.usersAssigned !== 1 ? 's' : ''} assigned to groups.
             </span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Rule Templates */}
-      <div className="bg-white/[0.04] rounded-lg p-4 border border-white/[0.08]">
-        <h3 className="text-sm font-semibold text-gray-300 mb-2">Quick Templates</h3>
+      <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-4">
+        <h3 className="mb-2 text-sm font-semibold text-gray-300">Quick Templates</h3>
         <div className="flex flex-wrap gap-2">
           {RULE_TEMPLATES.map((tmpl) => (
             <button
@@ -163,7 +175,7 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
                 setShowForm(true);
                 // Template data will be applied via the form
               }}
-              className="px-3 py-1.5 text-xs bg-white/[0.06] hover:bg-white/[0.10] text-gray-300 rounded-lg transition-colors"
+              className="rounded-lg bg-white/[0.06] px-3 py-1.5 text-xs text-gray-300 transition-colors hover:bg-white/[0.10]"
             >
               {tmpl.name}
             </button>
@@ -174,7 +186,7 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
       {/* Rules List */}
       {isLoadingRules && autoRules.length === 0 ? (
         <div className="flex items-center justify-center p-8">
-          <div className="animate-spin h-6 w-6 border-2 border-amber-500 border-t-transparent rounded-full" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
         </div>
       ) : (
         <div className="space-y-2">
@@ -182,31 +194,37 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
             <motion.div
               key={rule.id}
               layout
-              className="bg-white/[0.04] rounded-lg border border-white/[0.08] p-4"
+              className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-4"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {/* Active indicator */}
                   <button
                     onClick={() => handleToggleActive(rule)}
-                    className={`w-3 h-3 rounded-full flex-shrink-0 transition-colors ${
+                    className={`h-3 w-3 flex-shrink-0 rounded-full transition-colors ${
                       rule.isActive ? 'bg-green-500' : 'bg-gray-500'
                     }`}
-                    title={rule.isActive ? 'Active — click to disable' : 'Inactive — click to enable'}
+                    title={
+                      rule.isActive ? 'Active — click to disable' : 'Inactive — click to enable'
+                    }
                   />
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-white">{rule.name}</span>
-                      <span className={`px-1.5 py-0.5 text-xs rounded ${
-                        rule.isActive ? 'bg-green-900 text-green-300' : 'bg-white/[0.06] text-gray-400'
-                      }`}>
+                      <span
+                        className={`rounded px-1.5 py-0.5 text-xs ${
+                          rule.isActive
+                            ? 'bg-green-900 text-green-300'
+                            : 'bg-white/[0.06] text-gray-400'
+                        }`}
+                      >
                         {rule.isActive ? 'Active' : 'Inactive'}
                       </span>
-                      <span className="px-1.5 py-0.5 text-xs bg-white/[0.06] text-gray-300 rounded">
+                      <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-xs text-gray-300">
                         {RULE_TYPE_LABELS[rule.ruleType]?.label || rule.ruleType}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 mt-1 text-xs text-gray-400">
+                    <div className="mt-1 flex items-center gap-4 text-xs text-gray-400">
                       <span>Threshold: {rule.threshold}</span>
                       <span>→ {rule.targetGroupName}</span>
                       <span>{rule.usersAssigned} assigned</span>
@@ -221,15 +239,18 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => { setEditingRule(rule); setShowForm(true); }}
-                    className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/[0.06] transition-colors"
+                    onClick={() => {
+                      setEditingRule(rule);
+                      setShowForm(true);
+                    }}
+                    className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white"
                     title="Edit"
                   >
                     <PencilIcon className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(rule.id)}
-                    className="p-2 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/[0.06] transition-colors"
+                    className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-red-400"
                     title="Delete"
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -242,8 +263,8 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
       )}
 
       {autoRules.length === 0 && !isLoadingRules && (
-        <div className="text-center py-8 text-gray-400">
-          <BoltIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+        <div className="py-8 text-center text-gray-400">
+          <BoltIcon className="mx-auto mb-4 h-12 w-12 opacity-50" />
           <p>No auto-rules configured. Create rules to automatically assign users to groups.</p>
         </div>
       )}
@@ -264,7 +285,10 @@ export function AutoRuleEditor({ forumId }: AutoRuleEditorProps) {
               setShowForm(false);
               setEditingRule(null);
             }}
-            onClose={() => { setShowForm(false); setEditingRule(null); }}
+            onClose={() => {
+              setShowForm(false);
+              setEditingRule(null);
+            }}
           />
         )}
       </AnimatePresence>
@@ -285,7 +309,9 @@ interface RuleFormProps {
 function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
   const [name, setName] = useState(rule?.name || '');
   const [description, setDescription] = useState(rule?.description || '');
-  const [ruleType, setRuleType] = useState<CreateAutoRuleData['ruleType']>(rule?.ruleType || 'milestone');
+  const [ruleType, setRuleType] = useState<CreateAutoRuleData['ruleType']>(
+    rule?.ruleType || 'milestone'
+  );
   const [threshold, setThreshold] = useState(rule?.threshold || 0);
   const [targetGroupId, setTargetGroupId] = useState(rule?.targetGroupId || groups[0]?.id || '');
   const [isActive, setIsActive] = useState(rule?.isActive ?? true);
@@ -314,76 +340,81 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-white/[0.04] rounded-xl border border-white/[0.08] w-full max-w-lg p-6"
+        className="w-full max-w-lg rounded-xl border border-white/[0.08] bg-white/[0.04] p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-lg font-bold mb-4">{rule ? 'Edit Rule' : 'Create Auto-Rule'}</h3>
+        <h3 className="mb-4 text-lg font-bold">{rule ? 'Edit Rule' : 'Create Auto-Rule'}</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Rule Name</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">Rule Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">Description</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
               placeholder="Optional description"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Rule Type</label>
+              <label className="mb-1 block text-sm font-medium text-gray-300">Rule Type</label>
               <select
                 value={ruleType}
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 onChange={(e) => setRuleType(e.target.value as CreateAutoRuleData['ruleType'])}
-                className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+                className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
               >
                 {Object.entries(RULE_TYPE_LABELS).map(([k, v]) => (
-                  <option key={k} value={k}>{v.label}</option>
+                  <option key={k} value={k}>
+                    {v.label}
+                  </option>
                 ))}
               </select>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="mt-1 text-xs text-gray-500">
                 {RULE_TYPE_LABELS[ruleType]?.description}
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Threshold</label>
+              <label className="mb-1 block text-sm font-medium text-gray-300">Threshold</label>
               <input
                 type="number"
                 value={threshold}
                 onChange={(e) => setThreshold(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+                className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
                 min={0}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Target Group</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">Target Group</label>
             <select
               value={targetGroupId}
               onChange={(e) => setTargetGroupId(e.target.value)}
-              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
             >
               {groups.map((g) => (
-                <option key={g.id} value={g.id}>{g.name}</option>
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
               ))}
             </select>
           </div>
@@ -398,14 +429,18 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
             <span className="text-sm text-gray-300">Active</span>
           </label>
 
-          <div className="flex justify-end gap-3 pt-2 border-t border-white/[0.08]">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-gray-400 hover:text-white transition-colors">
+          <div className="flex justify-end gap-3 border-t border-white/[0.08] pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-400 transition-colors hover:text-white"
+            >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving || !name.trim() || !targetGroupId}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
             >
               {saving ? 'Saving...' : rule ? 'Update' : 'Create'}
             </button>

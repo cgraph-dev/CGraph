@@ -41,14 +41,11 @@ export function PollMessage({
   const { user } = useAuthStore();
   const userId = user?.id;
 
-  const totalVotes = useMemo(
-    () => options.reduce((sum, o) => sum + o.votes.length, 0),
-    [options],
-  );
+  const totalVotes = useMemo(() => options.reduce((sum, o) => sum + o.votes.length, 0), [options]);
 
   const hasVoted = useMemo(
     () => options.some((o) => o.votes.includes(userId || '')),
-    [options, userId],
+    [options, userId]
   );
 
   return (
@@ -98,9 +95,7 @@ export function PollMessage({
 
               <div className="relative z-10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  {isSelected && (
-                    <CheckCircleIcon className="h-4 w-4 text-primary-400" />
-                  )}
+                  {isSelected && <CheckCircleIcon className="h-4 w-4 text-primary-400" />}
                   <span>{option.text}</span>
                 </div>
                 {hasVoted && (

@@ -31,13 +31,16 @@ import {
 } from './components';
 
 /**
+ * Notifications Inbox Screen component.
  *
  */
 export default function NotificationsInboxScreen() {
   const { colors, isDark } = useThemeStore();
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const notifications = useNotificationStore((s) => s.notifications) as unknown as Notification[];
   const isLoading = useNotificationStore((s) => s.isLoading);
-  const { fetchNotifications, markAsRead, markAllAsRead, deleteNotification } = useNotificationStore();
+  const { fetchNotifications, markAsRead, markAllAsRead, deleteNotification } =
+    useNotificationStore();
 
   // State
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -72,6 +75,7 @@ export default function NotificationsInboxScreen() {
       headerOpacity.value = withTiming(1, { duration: durations.smooth.ms });
       headerTranslateY.value = withSpring(0, { stiffness: 80, damping: 10 });
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Handlers
@@ -82,18 +86,24 @@ export default function NotificationsInboxScreen() {
     setIsRefreshing(false);
   }, [fetchNotifications]);
 
-  const handleMarkRead = useCallback((id: string) => {
-    markAsRead(id);
-  }, [markAsRead]);
+  const handleMarkRead = useCallback(
+    (id: string) => {
+      markAsRead(id);
+    },
+    [markAsRead]
+  );
 
   const handleMarkAllRead = useCallback(() => {
     markAllAsRead();
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, [markAllAsRead]);
 
-  const handleDelete = useCallback((id: string) => {
-    deleteNotification(id);
-  }, [deleteNotification]);
+  const handleDelete = useCallback(
+    (id: string) => {
+      deleteNotification(id);
+    },
+    [deleteNotification]
+  );
 
   const handleNotificationPress = useCallback(
     (notification: Notification) => {

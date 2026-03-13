@@ -43,10 +43,7 @@ export function OverallStatusBanner({ status, totalDuration }: OverallStatusBann
     >
       <div className="flex items-center gap-3">
         {status === 'testing' && (
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={loop(tweens.ambient)}
-          >
+          <motion.div animate={{ rotate: 360 }} transition={loop(tweens.ambient)}>
             <ShieldCheckIcon className="h-6 w-6 text-primary-400" />
           </motion.div>
         )}

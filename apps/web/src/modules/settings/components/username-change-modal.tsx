@@ -189,6 +189,6 @@ export function UsernameChangeModal({
       </DialogContent>
     </Dialog>
   );
-};
+}
 
 export default UsernameChangeModal;

@@ -85,7 +85,7 @@ export function RSSFeedLinks({
         {feeds.map((feed) => (
           <div
             key={feed.id}
-            className="p-4 transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.06]/50"
+            className="dark:hover:bg-white/[0.06]/50 p-4 transition-colors hover:bg-gray-50"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">

@@ -10,11 +10,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { usePluginStore, type InstalledPlugin } from '@/modules/settings/store';
 import { createLogger } from '@/lib/logger';
-import {
-  CogIcon,
-  TrashIcon,
-  ArrowPathIcon,
-} from '@heroicons/react/24/outline';
+import { CogIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
 const logger = createLogger('PluginConfigPanel');
@@ -90,20 +86,20 @@ export default function PluginConfigPanel({
   const settingKeys = Object.keys(settings).filter((k) => k !== 'hooks');
 
   return (
-    <div className="bg-white dark:bg-white/[0.04] rounded-lg shadow p-6 space-y-6">
+    <div className="space-y-6 rounded-lg bg-white p-6 shadow dark:bg-white/[0.04]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <CogIcon className="h-6 w-6 text-gray-500" />
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {plugin.name}
-            </h3>
-            <p className="text-sm text-gray-500">v{plugin.version} by {plugin.author}</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{plugin.name}</h3>
+            <p className="text-sm text-gray-500">
+              v{plugin.version} by {plugin.author}
+            </p>
           </div>
         </div>
         {onClose && (
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-sm">
+          <button onClick={onClose} className="text-sm text-gray-400 hover:text-gray-600">
             Close
           </button>
         )}
@@ -137,10 +133,8 @@ export default function PluginConfigPanel({
       </div>
 
       {/* Enable/Disable Toggle */}
-      <div className="flex items-center justify-between py-3 border-t border-b dark:border-white/[0.08]">
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Enable Plugin
-        </span>
+      <div className="flex items-center justify-between border-b border-t py-3 dark:border-white/[0.08]">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Plugin</span>
         <button
           onClick={handleToggle}
           disabled={isToggling}
@@ -164,7 +158,7 @@ export default function PluginConfigPanel({
             const value = settings[key];
             return (
               <div key={key} className="flex flex-col gap-1">
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400 capitalize">
+                <label className="text-sm font-medium capitalize text-gray-600 dark:text-gray-400">
                   {key.replace(/_/g, ' ')}
                 </label>
                 {typeof value === 'boolean' ? (
@@ -179,14 +173,14 @@ export default function PluginConfigPanel({
                     type="number"
                     value={value}
                     onChange={(e) => handleSettingChange(key, Number(e.target.value))}
-                    className="rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
+                    className="rounded border p-2 text-sm dark:border-white/[0.08] dark:bg-white/[0.06]"
                   />
                 ) : (
                   <input
                     type="text"
                     value={String(value ?? '')}
                     onChange={(e) => handleSettingChange(key, e.target.value)}
-                    className="rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
+                    className="rounded border p-2 text-sm dark:border-white/[0.08] dark:bg-white/[0.06]"
                   />
                 )}
               </div>
@@ -205,7 +199,7 @@ export default function PluginConfigPanel({
 
       {/* Uninstall */}
       {!plugin.is_core && (
-        <div className="pt-4 border-t dark:border-white/[0.08]">
+        <div className="border-t pt-4 dark:border-white/[0.08]">
           {showUninstallConfirm ? (
             <div className="space-y-2">
               <p className="text-sm text-red-600">

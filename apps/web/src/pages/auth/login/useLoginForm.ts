@@ -27,19 +27,9 @@ export type LoginStep = 'credentials' | '2fa';
  */
 export function useLoginForm() {
   const navigate = useNavigate();
-  const {
-    login,
-    verifyLoginTwoFactor,
-    isLoading,
-    error,
-    clearError,
-  } = useAuthStore();
+  const { login, verifyLoginTwoFactor, isLoading, error, clearError } = useAuthStore();
 
-  const {
-    connectAndSign,
-    connectors,
-    isConnecting,
-  } = useWalletConnect();
+  const { connectAndSign, connectors, isConnecting } = useWalletConnect();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -110,7 +100,7 @@ export function useLoginForm() {
         logger.error('Wallet login error:', err);
       }
     },
-    [connectAndSign, navigate, clearError],
+    [connectAndSign, navigate, clearError]
   );
 
   return {

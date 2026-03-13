@@ -91,14 +91,24 @@ export default function AutomodSettingsScreen({ route }: Props) {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/groups/${groupId}/automod_rules`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setRules(
         data.map((r: Record<string, unknown>) => ({
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: (r.id ?? '') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           name: (r.name ?? '') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           ruleType: (r.rule_type ?? r.ruleType ?? '') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           pattern: (r.pattern ?? '') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           action: (r.action ?? 'delete') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           isEnabled: (r.is_enabled ?? r.isEnabled ?? true) as boolean,
         }))
       );
@@ -118,7 +128,9 @@ export default function AutomodSettingsScreen({ route }: Props) {
       await api.patch(`/api/v1/groups/${groupId}/automod_rules/${rule.id}`, {
         is_enabled: !rule.isEnabled,
       });
-      setRules((prev) => prev.map((r) => (r.id === rule.id ? { ...r, isEnabled: !r.isEnabled } : r)));
+      setRules((prev) =>
+        prev.map((r) => (r.id === rule.id ? { ...r, isEnabled: !r.isEnabled } : r))
+      );
     } catch {
       Alert.alert('Error', 'Failed to toggle rule');
     }
@@ -194,11 +206,16 @@ export default function AutomodSettingsScreen({ route }: Props) {
 
   const getPatternHint = (type: string) => {
     switch (type) {
-      case 'word_filter': return 'Comma-separated words to block (e.g., spam,scam,phishing)';
-      case 'link_filter': return 'Comma-separated domains to block (e.g., bit.ly,tinyurl.com)';
-      case 'spam_detection': return 'Message threshold count (e.g., 5)';
-      case 'caps_filter': return 'Uppercase percentage threshold (e.g., 70)';
-      default: return 'Pattern for this rule type';
+      case 'word_filter':
+        return 'Comma-separated words to block (e.g., spam,scam,phishing)';
+      case 'link_filter':
+        return 'Comma-separated domains to block (e.g., bit.ly,tinyurl.com)';
+      case 'spam_detection':
+        return 'Message threshold count (e.g., 5)';
+      case 'caps_filter':
+        return 'Uppercase percentage threshold (e.g., 70)';
+      default:
+        return 'Pattern for this rule type';
     }
   };
 
@@ -213,9 +230,18 @@ export default function AutomodSettingsScreen({ route }: Props) {
         onLongPress={() => handleDelete(item)}
       >
         <View style={styles.ruleHeader}>
-          <View style={[styles.typeIcon, { backgroundColor: (ACTION_COLORS[item.action] || colors.primary) + '20' }]}>
+          <View
+            style={[
+              styles.typeIcon,
+              { backgroundColor: (ACTION_COLORS[item.action] || colors.primary) + '20' },
+            ]}
+          >
             <Ionicons
-              name={(RULE_TYPE_ICONS[item.ruleType] || 'shield-outline') as keyof typeof Ionicons.glyphMap}
+              name={
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                (RULE_TYPE_ICONS[item.ruleType] ||
+                  'shield-outline') as keyof typeof Ionicons.glyphMap
+              }
               size={20}
               color={ACTION_COLORS[item.action] || colors.primary}
             />
@@ -228,8 +254,18 @@ export default function AutomodSettingsScreen({ route }: Props) {
                   {RULE_TYPE_LABELS[item.ruleType] || item.ruleType}
                 </Text>
               </View>
-              <View style={[styles.badge, { backgroundColor: (ACTION_COLORS[item.action] || colors.primary) + '15' }]}>
-                <Text style={[styles.badgeText, { color: ACTION_COLORS[item.action] || colors.primary }]}>
+              <View
+                style={[
+                  styles.badge,
+                  { backgroundColor: (ACTION_COLORS[item.action] || colors.primary) + '15' },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.badgeText,
+                    { color: ACTION_COLORS[item.action] || colors.primary },
+                  ]}
+                >
                   {ACTION_LABELS[item.action] || item.action}
                 </Text>
               </View>
@@ -294,7 +330,14 @@ export default function AutomodSettingsScreen({ route }: Props) {
 
               <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Name</Text>
               <TextInput
-                style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text }]}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    color: colors.text,
+                  },
+                ]}
                 value={formName}
                 onChangeText={setFormName}
                 placeholder="Rule name"
@@ -315,7 +358,12 @@ export default function AutomodSettingsScreen({ route }: Props) {
                     ]}
                     onPress={() => setFormType(t)}
                   >
-                    <Text style={[styles.optionText, { color: formType === t ? colors.primary : colors.text }]}>
+                    <Text
+                      style={[
+                        styles.optionText,
+                        { color: formType === t ? colors.primary : colors.text },
+                      ]}
+                    >
                       {RULE_TYPE_LABELS[t]}
                     </Text>
                   </TouchableOpacity>
@@ -324,7 +372,15 @@ export default function AutomodSettingsScreen({ route }: Props) {
 
               <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Pattern</Text>
               <TextInput
-                style={[styles.input, styles.multilineInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text }]}
+                style={[
+                  styles.input,
+                  styles.multilineInput,
+                  {
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    color: colors.text,
+                  },
+                ]}
                 value={formPattern}
                 onChangeText={setFormPattern}
                 placeholder={getPatternHint(formType)}
@@ -340,13 +396,25 @@ export default function AutomodSettingsScreen({ route }: Props) {
                     style={[
                       styles.optionPill,
                       {
-                        backgroundColor: formAction === a ? (ACTION_COLORS[a] || colors.primary) + '20' : colors.background,
-                        borderColor: formAction === a ? ACTION_COLORS[a] || colors.primary : colors.border,
+                        backgroundColor:
+                          formAction === a
+                            ? (ACTION_COLORS[a] || colors.primary) + '20'
+                            : colors.background,
+                        borderColor:
+                          formAction === a ? ACTION_COLORS[a] || colors.primary : colors.border,
                       },
                     ]}
                     onPress={() => setFormAction(a)}
                   >
-                    <Text style={[styles.optionText, { color: formAction === a ? ACTION_COLORS[a] || colors.primary : colors.text }]}>
+                    <Text
+                      style={[
+                        styles.optionText,
+                        {
+                          color:
+                            formAction === a ? ACTION_COLORS[a] || colors.primary : colors.text,
+                        },
+                      ]}
+                    >
                       {ACTION_LABELS[a]}
                     </Text>
                   </TouchableOpacity>
@@ -358,10 +426,15 @@ export default function AutomodSettingsScreen({ route }: Props) {
                   style={[styles.cancelBtn, { borderColor: colors.border }]}
                   onPress={() => setShowCreateModal(false)}
                 >
-                  <Text style={[styles.cancelBtnText, { color: colors.textSecondary }]}>Cancel</Text>
+                  <Text style={[styles.cancelBtnText, { color: colors.textSecondary }]}>
+                    Cancel
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.saveBtn, { backgroundColor: colors.primary, opacity: saving ? 0.7 : 1 }]}
+                  style={[
+                    styles.saveBtn,
+                    { backgroundColor: colors.primary, opacity: saving ? 0.7 : 1 },
+                  ]}
                   onPress={handleSave}
                   disabled={saving}
                 >
@@ -386,7 +459,13 @@ const styles = StyleSheet.create({
   list: { padding: 16, paddingBottom: 80, gap: 10 },
   ruleCard: { borderRadius: 14, padding: 14, gap: 8 },
   ruleHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  typeIcon: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  typeIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   ruleInfo: { flex: 1, gap: 4 },
   ruleName: { fontSize: 15, fontWeight: '600' },
   badges: { flexDirection: 'row', gap: 6 },
@@ -412,7 +491,12 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 18, fontWeight: '600' },
   emptySubtitle: { fontSize: 14 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContent: { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, maxHeight: '80%' },
+  modalContent: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    maxHeight: '80%',
+  },
   modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 20 },
   fieldLabel: { fontSize: 13, fontWeight: '500', marginBottom: 6, marginTop: 12 },
   input: { borderWidth: 1, borderRadius: 10, padding: 12, fontSize: 14 },
@@ -421,7 +505,13 @@ const styles = StyleSheet.create({
   optionPill: { borderWidth: 1, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
   optionText: { fontSize: 13, fontWeight: '500' },
   modalButtons: { flexDirection: 'row', gap: 12, marginTop: 24 },
-  cancelBtn: { flex: 1, borderWidth: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
+  cancelBtn: {
+    flex: 1,
+    borderWidth: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
   cancelBtnText: { fontSize: 15, fontWeight: '600' },
   saveBtn: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
   saveBtnText: { color: 'white', fontSize: 15, fontWeight: '600' },

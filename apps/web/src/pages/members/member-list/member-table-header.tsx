@@ -38,49 +38,49 @@ export function MemberTableHeader({ sortField, sortOrder, onSort }: MemberTableH
   return (
     <thead>
       <tr className="bg-muted/50 border-border border-b">
-        <th className="text-foreground px-4 py-3 text-left font-medium">
+        <th className="px-4 py-3 text-left font-medium text-foreground">
           <button
             onClick={() => onSort('username')}
-            className="hover:text-primary flex items-center transition-colors"
+            className="flex items-center transition-colors hover:text-primary"
           >
             Member
             <SortIcon field="username" sortField={sortField} sortOrder={sortOrder} />
           </button>
         </th>
-        <th className="text-foreground hidden px-4 py-3 text-left font-medium sm:table-cell">
+        <th className="hidden px-4 py-3 text-left font-medium text-foreground sm:table-cell">
           Group
         </th>
-        <th className="text-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
+        <th className="hidden px-4 py-3 text-left font-medium text-foreground md:table-cell">
           <button
             onClick={() => onSort('joined_at')}
-            className="hover:text-primary flex items-center transition-colors"
+            className="flex items-center transition-colors hover:text-primary"
           >
             Joined
             <SortIcon field="joined_at" sortField={sortField} sortOrder={sortOrder} />
           </button>
         </th>
-        <th className="text-foreground hidden px-4 py-3 text-center font-medium lg:table-cell">
+        <th className="hidden px-4 py-3 text-center font-medium text-foreground lg:table-cell">
           <button
             onClick={() => onSort('post_count')}
-            className="hover:text-primary flex items-center justify-center transition-colors"
+            className="flex items-center justify-center transition-colors hover:text-primary"
           >
             Posts
             <SortIcon field="post_count" sortField={sortField} sortOrder={sortOrder} />
           </button>
         </th>
-        <th className="text-foreground hidden px-4 py-3 text-center font-medium lg:table-cell">
+        <th className="hidden px-4 py-3 text-center font-medium text-foreground lg:table-cell">
           <button
             onClick={() => onSort('reputation')}
-            className="hover:text-primary flex items-center justify-center transition-colors"
+            className="flex items-center justify-center transition-colors hover:text-primary"
           >
             Rep
             <SortIcon field="reputation" sortField={sortField} sortOrder={sortOrder} />
           </button>
         </th>
-        <th className="text-foreground hidden px-4 py-3 text-left font-medium xl:table-cell">
+        <th className="hidden px-4 py-3 text-left font-medium text-foreground xl:table-cell">
           <button
             onClick={() => onSort('last_active')}
-            className="hover:text-primary flex items-center transition-colors"
+            className="flex items-center transition-colors hover:text-primary"
           >
             Last Active
             <SortIcon field="last_active" sortField={sortField} sortOrder={sortOrder} />

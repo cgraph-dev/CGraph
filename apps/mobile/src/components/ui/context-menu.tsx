@@ -2,7 +2,7 @@
  * ContextMenu — long-press activated menu with haptic feedback for mobile.
  * @module components/ui/context-menu
  */
-import React, { type ReactNode, useCallback, useState, useRef } from 'react';
+import React, { type ReactNode, useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -39,6 +39,8 @@ export interface ContextMenuItem {
   type?: 'item' | 'separator';
 }
 
+/** Description. */
+/** Context Menu component. */
 export function ContextMenu({ children, items, style }: ContextMenuProps) {
   const [visible, setVisible] = useState(false);
   const [menuPos, setMenuPos] = useState({ x: 0, y: 0 });
@@ -58,7 +60,7 @@ export function ContextMenu({ children, items, style }: ContextMenuProps) {
       scale.value = withSpring(1, { damping: 15, stiffness: 300 });
       opacity.value = withTiming(1, { duration: 150 });
     },
-    [items.length, scale, opacity],
+    [items.length, scale, opacity]
   );
 
   const closeMenu = useCallback(() => {
@@ -81,13 +83,7 @@ export function ContextMenu({ children, items, style }: ContextMenuProps) {
 
       <Modal visible={visible} transparent animationType="none" onRequestClose={closeMenu}>
         <Pressable style={styles.backdrop} onPress={closeMenu}>
-          <Animated.View
-            style={[
-              styles.menu,
-              { left: menuPos.x, top: menuPos.y },
-              menuStyle,
-            ]}
-          >
+          <Animated.View style={[styles.menu, { left: menuPos.x, top: menuPos.y }, menuStyle]}>
             {items.map((item, i) => {
               if (item.type === 'separator') {
                 return <View key={i} style={styles.separator} />;

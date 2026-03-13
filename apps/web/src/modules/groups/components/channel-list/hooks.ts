@@ -26,6 +26,7 @@ export function useChannelListState() {
     if (activeGroup?.categories) {
       setExpandedCategories(new Set(activeGroup.categories.map((c) => c.id)));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeGroup?.id]);
 
   const toggleCategory = useCallback((categoryId: string) => {

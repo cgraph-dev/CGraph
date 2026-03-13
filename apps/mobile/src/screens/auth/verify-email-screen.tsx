@@ -47,6 +47,7 @@ type VerificationState = 'verifying' | 'success' | 'expired' | 'error' | 'alread
 // =============================================================================
 
 /**
+ * Verify Email Screen component.
  *
  */
 export default function VerifyEmailScreen({ navigation, route }: Props) {
@@ -100,7 +101,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
           await refreshUser?.();
         }
       } catch (error: unknown) {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const apiError = error as { response?: { status?: number } };
         if (apiError.response?.status === 410) {
           setState('expired');
@@ -136,7 +137,8 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     navigation.reset({
       index: 0,
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       routes: [{ name: 'Main' as never }],
     });
   }, [navigation]);
@@ -144,7 +146,8 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
   const handleBackToLogin = useCallback(() => {
     navigation.reset({
       index: 0,
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       routes: [{ name: 'Login' as never }],
     });
   }, [navigation]);
@@ -274,9 +277,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
             )}
 
             <TouchableOpacity onPress={handleBackToLogin} style={styles.linkButton}>
-              <Text style={[styles.linkText, { color: colors.textSecondary }]}>
-                Back to Login
-              </Text>
+              <Text style={[styles.linkText, { color: colors.textSecondary }]}>Back to Login</Text>
             </TouchableOpacity>
           </Animated.View>
         );
@@ -321,10 +322,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
       <SafeAreaView style={styles.safeArea}>
         {/* Logo */}
         <View style={styles.logoContainer}>
-          <LinearGradient
-            colors={[colors.primary, colors.secondary]}
-            style={styles.logo}
-          >
+          <LinearGradient colors={[colors.primary, colors.secondary]} style={styles.logo}>
             <Text style={styles.logoText}>C</Text>
           </LinearGradient>
           <Text style={[styles.logoTitle, { color: colors.text }]}>CGraph</Text>

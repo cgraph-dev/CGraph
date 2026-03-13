@@ -49,6 +49,7 @@ interface ThreadTemplatePickerProps {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Thread Template Picker component. */
 export default function ThreadTemplatePicker({
   forumId: _forumId,
   templates,
@@ -72,7 +73,12 @@ export default function ThreadTemplatePicker({
 
   if (templates.length === 0) {
     return (
-      <div className={cn('rounded-xl border border-white/[0.06] bg-white/[0.03] p-6 text-center', className)}>
+      <div
+        className={cn(
+          'rounded-xl border border-white/[0.06] bg-white/[0.03] p-6 text-center',
+          className
+        )}
+      >
         <DocumentTextIcon className="mx-auto h-8 w-8 text-gray-600" />
         <p className="mt-2 text-sm text-gray-500">No templates available for this forum</p>
       </div>
@@ -98,7 +104,9 @@ export default function ThreadTemplatePicker({
             onClick={() => setViewMode('grid')}
             className={cn(
               'rounded-md p-1.5 transition-colors',
-              viewMode === 'grid' ? 'bg-white/[0.1] text-white' : 'text-gray-500 hover:text-gray-300',
+              viewMode === 'grid'
+                ? 'bg-white/[0.1] text-white'
+                : 'text-gray-500 hover:text-gray-300'
             )}
           >
             <Squares2X2Icon className="h-4 w-4" />
@@ -108,7 +116,9 @@ export default function ThreadTemplatePicker({
             onClick={() => setViewMode('list')}
             className={cn(
               'rounded-md p-1.5 transition-colors',
-              viewMode === 'list' ? 'bg-white/[0.1] text-white' : 'text-gray-500 hover:text-gray-300',
+              viewMode === 'list'
+                ? 'bg-white/[0.1] text-white'
+                : 'text-gray-500 hover:text-gray-300'
             )}
           >
             <ListBulletIcon className="h-4 w-4" />
@@ -118,11 +128,7 @@ export default function ThreadTemplatePicker({
 
       {/* Template Grid / List */}
       <div
-        className={cn(
-          viewMode === 'grid'
-            ? 'grid grid-cols-2 gap-2 sm:grid-cols-3'
-            : 'space-y-2',
-        )}
+        className={cn(viewMode === 'grid' ? 'grid grid-cols-2 gap-2 sm:grid-cols-3' : 'space-y-2')}
       >
         {templates.map((template) => {
           const isApplied = appliedId === template.id;
@@ -136,14 +142,12 @@ export default function ThreadTemplatePicker({
                 'group relative rounded-lg border p-3 transition-all',
                 isPreviewing
                   ? 'border-primary-500/40 bg-primary-600/10'
-                  : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]',
+                  : 'border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]'
               )}
             >
               <div className={cn(viewMode === 'list' ? 'flex items-center gap-3' : '')}>
                 <div className="min-w-0 flex-1">
-                  <h4 className="truncate text-sm font-semibold text-white">
-                    {template.name}
-                  </h4>
+                  <h4 className="truncate text-sm font-semibold text-white">{template.name}</h4>
                   {template.description && (
                     <p className="mt-0.5 line-clamp-2 text-xs text-gray-500">
                       {template.description}
@@ -154,10 +158,7 @@ export default function ThreadTemplatePicker({
                   </div>
                 </div>
 
-                <div className={cn(
-                  'flex gap-1.5',
-                  viewMode === 'grid' ? 'mt-2' : 'flex-shrink-0',
-                )}>
+                <div className={cn('flex gap-1.5', viewMode === 'grid' ? 'mt-2' : 'flex-shrink-0')}>
                   <button
                     type="button"
                     onClick={() => setPreviewId(isPreviewing ? null : template.id)}
@@ -174,7 +175,7 @@ export default function ThreadTemplatePicker({
                       'rounded-md px-2.5 py-1 text-[11px] font-semibold transition-all',
                       isApplied
                         ? 'bg-green-600 text-white'
-                        : 'bg-primary-600 text-white hover:bg-primary-500',
+                        : 'bg-primary-600 text-white hover:bg-primary-500'
                     )}
                   >
                     {isApplied ? (
@@ -210,10 +211,8 @@ export default function ThreadTemplatePicker({
             <div className="space-y-3 p-4">
               {previewTemplate.sections.map((section, i) => (
                 <div key={i}>
-                  <h5 className="mb-1 text-xs font-bold text-primary-400">
-                    {section.heading}
-                  </h5>
-                  <div className="rounded border border-dashed border-white/[0.08] bg-white/[0.02] px-3 py-2 text-xs text-gray-500 italic">
+                  <h5 className="mb-1 text-xs font-bold text-primary-400">{section.heading}</h5>
+                  <div className="rounded border border-dashed border-white/[0.08] bg-white/[0.02] px-3 py-2 text-xs italic text-gray-500">
                     {section.placeholder ?? 'Enter content here…'}
                   </div>
                 </div>

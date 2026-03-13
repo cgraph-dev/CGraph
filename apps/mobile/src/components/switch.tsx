@@ -16,6 +16,7 @@ type SwitchProps = {
 };
 
 /**
+ * Switch component.
  *
  */
 export default function Switch({

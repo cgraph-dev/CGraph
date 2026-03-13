@@ -23,6 +23,7 @@ const STATUS_COLORS = {
 };
 
 /**
+ * Status Badge component.
  *
  */
 export default function StatusBadge({

@@ -44,10 +44,7 @@ interface KeyVerificationScreenProps {
  * Generate a 60-digit safety number from two public keys.
  * Uses SHA-256 of concatenated keys, truncated and expanded to digits.
  */
-async function generateSafetyNumber(
-  localKey: Uint8Array,
-  remoteKey: Uint8Array
-): Promise<string> {
+async function generateSafetyNumber(localKey: Uint8Array, remoteKey: Uint8Array): Promise<string> {
   // Sort keys to ensure both parties compute the same number
   const concat = new Uint8Array(localKey.length + remoteKey.length);
   const [first, second] =
@@ -83,6 +80,8 @@ function buildQRPayload(userId: string, safetyNumber: string): string {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Description. */
+/** Key Verification Screen component. */
 export function KeyVerificationScreen({
   recipientId,
   recipientName,
@@ -104,12 +103,8 @@ export function KeyVerificationScreen({
           return;
         }
 
-        const localKeyBytes = new Uint8Array(
-          Buffer.from(String(identity.publicKey), 'base64')
-        );
-        const remoteKeyBytes = new Uint8Array(
-          Buffer.from(String(recipientPublicKey), 'base64')
-        );
+        const localKeyBytes = new Uint8Array(Buffer.from(String(identity.publicKey), 'base64'));
+        const remoteKeyBytes = new Uint8Array(Buffer.from(String(recipientPublicKey), 'base64'));
 
         const number = await generateSafetyNumber(localKeyBytes, remoteKeyBytes);
         if (!cancelled) {
@@ -194,7 +189,12 @@ export function KeyVerificationScreen({
       </View>
 
       {/* Verification Status */}
-      <View style={[styles.statusBadge, { backgroundColor: isVerified ? '#05966920' : `${themeColors.accent}18` }]}>
+      <View
+        style={[
+          styles.statusBadge,
+          { backgroundColor: isVerified ? '#05966920' : `${themeColors.accent}18` },
+        ]}
+      >
         <Ionicons
           name={isVerified ? 'shield-checkmark' : 'shield-outline'}
           size={16}
@@ -206,18 +206,21 @@ export function KeyVerificationScreen({
       </View>
 
       {/* QR Code */}
-      <View style={[styles.qrContainer, { backgroundColor: '#ffffff', borderColor: themeColors.border }]}>
+      <View
+        style={[
+          styles.qrContainer,
+          { backgroundColor: '#ffffff', borderColor: themeColors.border },
+        ]}
+      >
         <View style={styles.qrPlaceholder}>
           <Text style={styles.qrPlaceholderText}>QR</Text>
-          <Text style={styles.qrNote}>
-            {qrPayload.slice(0, 20)}...
-          </Text>
+          <Text style={styles.qrNote}>{qrPayload.slice(0, 20)}...</Text>
         </View>
       </View>
 
       <Text style={[styles.instructions, { color: themeColors.textSecondary }]}>
-        Compare this safety number with {recipientName} to verify end-to-end encryption.
-        You can scan each other's QR code or compare the numbers below.
+        Compare this safety number with {recipientName} to verify end-to-end encryption. You can
+        scan each other's QR code or compare the numbers below.
       </Text>
 
       {/* Numeric Safety Number — 4×3 grid like Signal */}

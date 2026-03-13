@@ -57,9 +57,7 @@ function StatCard({ title, value, unit, color = 'text-white' }: StatCardProps) {
       <CardContent>
         <p className="mb-1 text-xs font-medium uppercase tracking-wider text-gray-400">{title}</p>
         <div className="flex items-baseline gap-1">
-          <p className={`text-2xl font-bold ${color}`}>
-            {value ?? '—'}
-          </p>
+          <p className={`text-2xl font-bold ${color}`}>{value ?? '—'}</p>
           {unit && <span className="text-sm text-gray-400">{unit}</span>}
         </div>
       </CardContent>
@@ -120,10 +118,11 @@ export function ModerationDashboard() {
   }
 
   // Check if stats are effectively empty (no activity)
-  const hasActivity = stats.reports_today > 0
-    || stats.active_restrictions > 0
-    || (stats.reports_trend && stats.reports_trend.length > 0)
-    || (stats.moderator_leaderboard && stats.moderator_leaderboard.length > 0);
+  const hasActivity =
+    stats.reports_today > 0 ||
+    stats.active_restrictions > 0 ||
+    (stats.reports_trend && stats.reports_trend.length > 0) ||
+    (stats.moderator_leaderboard && stats.moderator_leaderboard.length > 0);
 
   if (!hasActivity) {
     return (

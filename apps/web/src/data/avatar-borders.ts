@@ -29,13 +29,46 @@ export type { AvatarBorderConfig, BorderRarity, BorderTheme };
  * Tailwind CSS class-based rarity colors for border cards.
  * Replaces the equivalent constant from the deprecated borderCollections.
  */
-export const RARITY_COLORS: Record<BorderRarity, { bg: string; border: string; text: string; glow: string }> = {
-  free: { bg: 'bg-gray-500/20', border: 'border-gray-500/50', text: 'text-gray-400', glow: 'rgba(156,163,175,0.3)' },
-  common: { bg: 'bg-gray-400/20', border: 'border-gray-400/50', text: 'text-gray-300', glow: 'rgba(209,213,219,0.3)' },
-  rare: { bg: 'bg-blue-500/20', border: 'border-blue-500/50', text: 'text-blue-400', glow: 'rgba(59,130,246,0.5)' },
-  epic: { bg: 'bg-purple-500/20', border: 'border-purple-500/50', text: 'text-purple-400', glow: 'rgba(139,92,246,0.5)' },
-  legendary: { bg: 'bg-orange-500/20', border: 'border-orange-500/50', text: 'text-orange-400', glow: 'rgba(249,115,22,0.6)' },
-  mythic: { bg: 'bg-pink-500/20', border: 'border-pink-500/50', text: 'text-pink-400', glow: 'rgba(236,72,153,0.7)' },
+export const RARITY_COLORS: Record<
+  BorderRarity,
+  { bg: string; border: string; text: string; glow: string }
+> = {
+  free: {
+    bg: 'bg-gray-500/20',
+    border: 'border-gray-500/50',
+    text: 'text-gray-400',
+    glow: 'rgba(156,163,175,0.3)',
+  },
+  common: {
+    bg: 'bg-gray-400/20',
+    border: 'border-gray-400/50',
+    text: 'text-gray-300',
+    glow: 'rgba(209,213,219,0.3)',
+  },
+  rare: {
+    bg: 'bg-blue-500/20',
+    border: 'border-blue-500/50',
+    text: 'text-blue-400',
+    glow: 'rgba(59,130,246,0.5)',
+  },
+  epic: {
+    bg: 'bg-purple-500/20',
+    border: 'border-purple-500/50',
+    text: 'text-purple-400',
+    glow: 'rgba(139,92,246,0.5)',
+  },
+  legendary: {
+    bg: 'bg-orange-500/20',
+    border: 'border-orange-500/50',
+    text: 'text-orange-400',
+    glow: 'rgba(249,115,22,0.6)',
+  },
+  mythic: {
+    bg: 'bg-pink-500/20',
+    border: 'border-pink-500/50',
+    text: 'text-pink-400',
+    glow: 'rgba(236,72,153,0.7)',
+  },
 };
 
 // ==================== 42 LOTTIE BORDERS ====================
@@ -418,7 +451,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: '8bit',
     rarity: 'epic',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'retro_master', description: 'Unlock the Retro Master achievement' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'retro_master',
+      description: 'Unlock the Retro Master achievement',
+    },
     primaryColor: '#00ff41',
     secondaryColor: '#ff00ff',
     accentColor: '#ffff00',
@@ -435,7 +472,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'anime',
     rarity: 'epic',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'anime_fan', description: 'Unlock the Anime Fan achievement' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'anime_fan',
+      description: 'Unlock the Anime Fan achievement',
+    },
     primaryColor: '#ff6b9d',
     secondaryColor: '#c44dff',
     accentColor: '#fffb87',
@@ -452,7 +493,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'cyberpunk',
     rarity: 'epic',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'cyber_explorer', description: 'Unlock the Cyber Explorer achievement' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'cyber_explorer',
+      description: 'Unlock the Cyber Explorer achievement',
+    },
     primaryColor: '#00f5ff',
     secondaryColor: '#7b2fff',
     accentColor: '#ff0055',
@@ -469,7 +514,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'japanese',
     rarity: 'epic',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'dragon_warrior', description: 'Unlock the Dragon Warrior achievement' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'dragon_warrior',
+      description: 'Unlock the Dragon Warrior achievement',
+    },
     primaryColor: '#e8105f',
     secondaryColor: '#f0a500',
     accentColor: '#1a1a2e',
@@ -486,7 +535,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'kawaii',
     rarity: 'epic',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'sweet_tooth', description: 'Unlock the Sweet Tooth achievement' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'sweet_tooth',
+      description: 'Unlock the Sweet Tooth achievement',
+    },
     primaryColor: '#ffb3d9',
     secondaryColor: '#ffe4b5',
     accentColor: '#c8f7c5',
@@ -503,7 +556,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'elemental',
     rarity: 'epic',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'fire_master', description: 'Master the Elemental Fire challenges' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'fire_master',
+      description: 'Master the Elemental Fire challenges',
+    },
     primaryColor: '#ff4500',
     secondaryColor: '#ffd700',
     accentColor: '#ff8c00',
@@ -520,7 +577,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'elemental',
     rarity: 'epic',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'storm_chaser', description: 'Chase 10 elemental storms' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'storm_chaser',
+      description: 'Chase 10 elemental storms',
+    },
     primaryColor: '#e0f7ff',
     secondaryColor: '#b0e0e6',
     accentColor: '#ffffff',
@@ -537,7 +598,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'cosmic',
     rarity: 'epic',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'void_walker', description: 'Walk through the cosmic void' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'void_walker',
+      description: 'Walk through the cosmic void',
+    },
     primaryColor: '#0d0d2b',
     secondaryColor: '#7b2fff',
     accentColor: '#c0f0ff',
@@ -556,7 +621,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: '8bit',
     rarity: 'legendary',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'arcade_champion', description: 'Become the Arcade Champion' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'arcade_champion',
+      description: 'Become the Arcade Champion',
+    },
     primaryColor: '#00ff41',
     secondaryColor: '#ffff00',
     accentColor: '#00ffff',
@@ -574,7 +643,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'anime',
     rarity: 'legendary',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'power_unleashed', description: 'Unleash your true power' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'power_unleashed',
+      description: 'Unleash your true power',
+    },
     primaryColor: '#ff6b9d',
     secondaryColor: '#fffb87',
     accentColor: '#c44dff',
@@ -592,7 +665,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'cyberpunk',
     rarity: 'legendary',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'netrunner_elite', description: 'Reach Netrunner Elite status' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'netrunner_elite',
+      description: 'Reach Netrunner Elite status',
+    },
     primaryColor: '#00f5ff',
     secondaryColor: '#ff0055',
     accentColor: '#7b2fff',
@@ -610,7 +687,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'japanese',
     rarity: 'legendary',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'shogun_rank', description: 'Attain Shogun rank' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'shogun_rank',
+      description: 'Attain Shogun rank',
+    },
     primaryColor: '#e8105f',
     secondaryColor: '#f0a500',
     accentColor: '#c0392b',
@@ -628,7 +709,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'gothic',
     rarity: 'legendary',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'blood_moon', description: 'Witness the Blood Moon event' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'blood_moon',
+      description: 'Witness the Blood Moon event',
+    },
     primaryColor: '#dc143c',
     secondaryColor: '#6b21a8',
     accentColor: '#c0c0c0',
@@ -646,7 +731,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'elemental',
     rarity: 'legendary',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'ocean_master', description: 'Master the Ocean depths' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'ocean_master',
+      description: 'Master the Ocean depths',
+    },
     primaryColor: '#006994',
     secondaryColor: '#00bfff',
     accentColor: '#7fffd4',
@@ -664,7 +753,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'elemental',
     rarity: 'legendary',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'world_tree', description: 'Grow the World Tree' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'world_tree',
+      description: 'Grow the World Tree',
+    },
     primaryColor: '#3d2b1f',
     secondaryColor: '#228b22',
     accentColor: '#8b4513',
@@ -682,7 +775,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'cosmic',
     rarity: 'legendary',
     unlockType: 'achievement',
-    unlockRequirement: { type: 'achievement', value: 'supernova', description: 'Trigger a Supernova event' },
+    unlockRequirement: {
+      type: 'achievement',
+      value: 'supernova',
+      description: 'Trigger a Supernova event',
+    },
     primaryColor: '#4b0082',
     secondaryColor: '#c0f0ff',
     accentColor: '#ffffff',
@@ -702,7 +799,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'cyberpunk',
     rarity: 'mythic',
     unlockType: 'event',
-    unlockRequirement: { type: 'event', value: 'digital_ascension', description: 'Complete the Digital Ascension event' },
+    unlockRequirement: {
+      type: 'event',
+      value: 'digital_ascension',
+      description: 'Complete the Digital Ascension event',
+    },
     primaryColor: '#00f5ff',
     secondaryColor: '#ff0055',
     accentColor: '#7b2fff',
@@ -720,7 +821,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'cosmic',
     rarity: 'mythic',
     unlockType: 'event',
-    unlockRequirement: { type: 'event', value: 'event_horizon', description: 'Survive the Event Horizon' },
+    unlockRequirement: {
+      type: 'event',
+      value: 'event_horizon',
+      description: 'Survive the Event Horizon',
+    },
     primaryColor: '#0d0d2b',
     secondaryColor: '#7b2fff',
     accentColor: '#ffffff',
@@ -738,7 +843,11 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     theme: 'elemental',
     rarity: 'mythic',
     unlockType: 'event',
-    unlockRequirement: { type: 'event', value: 'phoenix_rebirth', description: 'Witness the Phoenix Rebirth' },
+    unlockRequirement: {
+      type: 'event',
+      value: 'phoenix_rebirth',
+      description: 'Witness the Phoenix Rebirth',
+    },
     primaryColor: '#ff4500',
     secondaryColor: '#ffd700',
     accentColor: '#ff8c00',
@@ -812,10 +921,27 @@ export function getPremiumBorders(): AvatarBorderConfig[] {
 
 /** Legacy animation type union expected by themed-border-card animations.ts */
 export type BorderAnimationType =
-  | 'none' | 'pulse' | 'glow' | 'rotate' | 'shimmer' | 'rainbow'
-  | 'fire' | 'ice' | 'electric' | 'void' | 'aurora' | 'galaxy'
-  | 'pixel-pulse' | 'scan-line' | 'glitch' | 'sakura-fall' | 'wave'
-  | 'energy-surge' | 'smoke' | 'neon-flicker' | 'holographic'
+  | 'none'
+  | 'pulse'
+  | 'glow'
+  | 'rotate'
+  | 'shimmer'
+  | 'rainbow'
+  | 'fire'
+  | 'ice'
+  | 'electric'
+  | 'void'
+  | 'aurora'
+  | 'galaxy'
+  | 'pixel-pulse'
+  | 'scan-line'
+  | 'glitch'
+  | 'sakura-fall'
+  | 'wave'
+  | 'energy-surge'
+  | 'smoke'
+  | 'neon-flicker'
+  | 'holographic'
   | 'lottie';
 
 /** Legacy BorderDefinition shape consumed by themed-border-card + sections */
@@ -849,6 +975,7 @@ export interface BorderThemeCategory {
 
 /** Convert AvatarBorderConfig → BorderDefinition */
 function toBorderDefinition(b: AvatarBorderConfig): BorderDefinition {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const colors = [b.primaryColor, b.secondaryColor, b.accentColor].filter(Boolean) as string[];
   const isUnlocked = b.unlockType === 'default' || !b.isPremium;
   return {
@@ -856,6 +983,7 @@ function toBorderDefinition(b: AvatarBorderConfig): BorderDefinition {
     name: b.name,
     theme: b.theme,
     rarity: b.rarity,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     animationType: b.type === 'lottie' ? 'lottie' : (b.type as BorderAnimationType),
     colors,
     isPremium: b.isPremium,
@@ -871,25 +999,56 @@ function toBorderDefinition(b: AvatarBorderConfig): BorderDefinition {
 export const ALL_BORDERS: BorderDefinition[] = AVATAR_BORDERS.map(toBorderDefinition);
 
 /** Deduplicated theme list derived from the actual 42 borders */
-const themeConfig: Record<string, { name: string; icon: string; accentColor: string; description: string }> = {
-  '8bit':       { name: '8-Bit',      icon: '🎮', accentColor: '#39ff14', description: 'Retro pixel art nostalgia' },
-  japanese:     { name: 'Japanese',   icon: '🌸', accentColor: '#ff6b9d', description: 'Traditional & elegant' },
-  anime:        { name: 'Anime',      icon: '⚡', accentColor: '#ffcc00', description: 'Dynamic power effects' },
-  cyberpunk:    { name: 'Cyberpunk',  icon: '🤖', accentColor: '#00ffff', description: 'Neon-drenched future' },
-  gothic:       { name: 'Gothic',     icon: '🦇', accentColor: '#8b00ff', description: 'Dark & mysterious' },
-  kawaii:        { name: 'Kawaii',     icon: '🌈', accentColor: '#ff69b4', description: 'Cute & colorful' },
-  elemental:    { name: 'Elemental',  icon: '🔥', accentColor: '#ff4500', description: 'Forces of nature' },
-  cosmic:       { name: 'Cosmic',     icon: '✨', accentColor: '#9b30ff', description: 'Stellar phenomena' },
+const themeConfig: Record<
+  string,
+  { name: string; icon: string; accentColor: string; description: string }
+> = {
+  '8bit': {
+    name: '8-Bit',
+    icon: '🎮',
+    accentColor: '#39ff14',
+    description: 'Retro pixel art nostalgia',
+  },
+  japanese: {
+    name: 'Japanese',
+    icon: '🌸',
+    accentColor: '#ff6b9d',
+    description: 'Traditional & elegant',
+  },
+  anime: {
+    name: 'Anime',
+    icon: '⚡',
+    accentColor: '#ffcc00',
+    description: 'Dynamic power effects',
+  },
+  cyberpunk: {
+    name: 'Cyberpunk',
+    icon: '🤖',
+    accentColor: '#00ffff',
+    description: 'Neon-drenched future',
+  },
+  gothic: { name: 'Gothic', icon: '🦇', accentColor: '#8b00ff', description: 'Dark & mysterious' },
+  kawaii: { name: 'Kawaii', icon: '🌈', accentColor: '#ff69b4', description: 'Cute & colorful' },
+  elemental: {
+    name: 'Elemental',
+    icon: '🔥',
+    accentColor: '#ff4500',
+    description: 'Forces of nature',
+  },
+  cosmic: { name: 'Cosmic', icon: '✨', accentColor: '#9b30ff', description: 'Stellar phenomena' },
 };
 
-export const BORDER_THEMES: BorderThemeCategory[] = Object.entries(themeConfig).map(([id, cfg]) => ({
-  id: id as BorderTheme,
-  name: cfg.name,
-  description: cfg.description,
-  icon: cfg.icon,
-  accentColor: cfg.accentColor,
-  borderCount: AVATAR_BORDERS.filter((b) => b.theme === id).length,
-}));
+export const BORDER_THEMES: BorderThemeCategory[] = Object.entries(themeConfig).map(
+  ([id, cfg]) => ({
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    id: id as BorderTheme,
+    name: cfg.name,
+    description: cfg.description,
+    icon: cfg.icon,
+    accentColor: cfg.accentColor,
+    borderCount: AVATAR_BORDERS.filter((b) => b.theme === id).length,
+  })
+);
 
 /** Legacy helper — get BorderDefinition[] by theme */
 export function getLegacyBordersByTheme(theme: BorderTheme): BorderDefinition[] {

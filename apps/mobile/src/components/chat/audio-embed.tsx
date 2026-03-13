@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -60,23 +54,12 @@ const AudioEmbed = memo(function AudioEmbed({ embed }: AudioEmbedProps): React.R
   return (
     <GlassCard variant="frosted" intensity="medium" style={styles.audioCard}>
       <View style={styles.audioContainer}>
-        <TouchableOpacity
-          style={styles.audioButton}
-          onPress={handlePlayPause}
-          disabled={isLoading}
-        >
-          <LinearGradient
-            colors={['#8b5cf6', '#ec4899']}
-            style={styles.audioButtonGradient}
-          >
+        <TouchableOpacity style={styles.audioButton} onPress={handlePlayPause} disabled={isLoading}>
+          <LinearGradient colors={['#8b5cf6', '#ec4899']} style={styles.audioButtonGradient}>
             {isLoading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Ionicons
-                name={status.playing ? 'pause' : 'play'}
-                size={20}
-                color="#fff"
-              />
+              <Ionicons name={status.playing ? 'pause' : 'play'} size={20} color="#fff" />
             )}
           </LinearGradient>
         </TouchableOpacity>
@@ -86,11 +69,7 @@ const AudioEmbed = memo(function AudioEmbed({ embed }: AudioEmbedProps): React.R
             {embed.title || 'Audio File'}
           </Text>
           <Text style={styles.audioSubtitle}>
-            {status.playing 
-              ? 'Playing...' 
-              : status.currentTime > 0 
-              ? 'Paused' 
-              : 'Tap to play'}
+            {status.playing ? 'Playing...' : status.currentTime > 0 ? 'Paused' : 'Tap to play'}
           </Text>
         </View>
 

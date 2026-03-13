@@ -21,7 +21,7 @@ import {
   Platform,
   Keyboard,
 } from 'react-native';
-import Animated, { FadeIn, FadeOut, SlideInUp } from 'react-native-reanimated';
+import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -56,6 +56,8 @@ const typeIcons: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = 
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Search Overlay component. */
 export function SearchOverlay({
   visible,
   onClose,
@@ -90,10 +92,7 @@ export function SearchOverlay({
   if (!visible) return null;
 
   return (
-    <Animated.View
-      entering={SlideInUp.duration(250)}
-      style={styles.container}
-    >
+    <Animated.View entering={SlideInUp.duration(250)} style={styles.container}>
       {/* Search bar */}
       <View style={styles.header}>
         <View style={styles.searchBar}>
@@ -157,10 +156,7 @@ export function SearchOverlay({
           data={results}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <Pressable
-              onPress={() => onSelectResult?.(item)}
-              style={styles.resultItem}
-            >
+            <Pressable onPress={() => onSelectResult?.(item)} style={styles.resultItem}>
               {item.avatar ? (
                 <Animated.Image
                   entering={FadeIn.duration(200)}

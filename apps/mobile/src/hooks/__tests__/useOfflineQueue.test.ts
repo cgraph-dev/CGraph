@@ -147,12 +147,9 @@ describe('useOfflineQueue', () => {
 
       let item = null;
       await act(async () => {
-        item = await result.current.addToQueue(
-          'message',
-          '/api/v1/test',
-          'POST',
-          { content: 'test' }
-        );
+        item = await result.current.addToQueue('message', '/api/v1/test', 'POST', {
+          content: 'test',
+        });
       });
 
       expect(item).toEqual(mockQueueItem);

@@ -17,6 +17,7 @@ export interface ReferralLinkCardProps {
 }
 
 /**
+ * Referral Link Card component.
  *
  */
 export function ReferralLinkCard({ referralCode, copied, onCopy, onShare }: ReferralLinkCardProps) {

@@ -88,32 +88,32 @@ function FlagRow({
   onDelete: (name: string) => void;
 }) {
   return (
-    <tr className="border-b border-gray-200 dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-white/[0.04]">
+    <tr className="border-b border-gray-200 hover:bg-gray-50 dark:border-white/[0.08] dark:hover:bg-white/[0.04]">
       <td className="px-4 py-3">
         <button
-          className="text-left font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          className="text-left font-medium text-blue-600 hover:underline dark:text-blue-400"
           onClick={() => onSelect(flag.name)}
         >
           {flag.name}
         </button>
         {flag.description && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{flag.description}</p>
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{flag.description}</p>
         )}
       </td>
       <td className="px-4 py-3">
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-white/[0.06] text-gray-800 dark:text-gray-200">
+        <span className="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 dark:bg-white/[0.06] dark:text-gray-200">
           {flag.type}
         </span>
       </td>
       <td className="px-4 py-3">
-        <label className="relative inline-flex items-center cursor-pointer">
+        <label className="relative inline-flex cursor-pointer items-center">
           <input
             type="checkbox"
             checked={flag.enabled}
             onChange={() => onToggle(flag.name, !flag.enabled)}
-            className="sr-only peer"
+            className="peer sr-only"
           />
-          <div className="w-9 h-5 bg-gray-300 peer-checked:bg-green-500 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4" />
+          <div className="h-5 w-9 rounded-full bg-gray-300 transition-colors after:absolute after:left-[2px] after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-500 peer-checked:after:translate-x-4" />
         </label>
       </td>
       <td className="px-4 py-3">
@@ -125,9 +125,9 @@ function FlagRow({
               max={100}
               value={flag.percentage ?? 0}
               onChange={(e) => onPercentageChange(flag.name, Number(e.target.value))}
-              className="w-20 h-1.5 accent-blue-500"
+              className="h-1.5 w-20 accent-blue-500"
             />
-            <span className="text-sm text-gray-600 dark:text-gray-300 w-10">
+            <span className="w-10 text-sm text-gray-600 dark:text-gray-300">
               {flag.percentage ?? 0}%
             </span>
           </div>
@@ -145,7 +145,7 @@ function FlagRow({
       <td className="px-4 py-3">
         <button
           onClick={() => onDelete(flag.name)}
-          className="text-red-500 hover:text-red-700 text-sm"
+          className="text-sm text-red-500 hover:text-red-700"
           title="Delete flag"
         >
           Delete
@@ -169,25 +169,25 @@ function FlagHistory({ flagName }: { flagName: string }) {
   }, [flagName]);
 
   if (loading) {
-    return <p className="text-sm text-gray-500 py-4">Loading history...</p>;
+    return <p className="py-4 text-sm text-gray-500">Loading history...</p>;
   }
 
   if (history.length === 0) {
-    return <p className="text-sm text-gray-500 py-4">No history available.</p>;
+    return <p className="py-4 text-sm text-gray-500">No history available.</p>;
   }
 
   return (
-    <div className="space-y-3 max-h-64 overflow-y-auto">
+    <div className="max-h-64 space-y-3 overflow-y-auto">
       {history.map((entry, idx) => (
-        <div key={idx} className="flex gap-3 text-sm border-l-2 border-blue-300 pl-3">
+        <div key={idx} className="flex gap-3 border-l-2 border-blue-300 pl-3 text-sm">
           <div>
             <span className="font-medium text-gray-700 dark:text-gray-200">{entry.action}</span>
             <span className="text-gray-500 dark:text-gray-400"> by {entry.changed_by}</span>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="mt-0.5 text-xs text-gray-400">
               {new Date(entry.timestamp).toLocaleString()}
             </p>
             {entry.changes && Object.keys(entry.changes).length > 0 && (
-              <pre className="text-xs bg-gray-50 dark:bg-white/[0.04] rounded p-1 mt-1 max-w-xs overflow-x-auto">
+              <pre className="mt-1 max-w-xs overflow-x-auto rounded bg-gray-50 p-1 text-xs dark:bg-white/[0.04]">
                 {JSON.stringify(entry.changes, null, 2)}
               </pre>
             )}
@@ -222,27 +222,28 @@ function CreateFlagModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-white/[0.04] rounded-lg shadow-xl p-6 w-full max-w-md">
-        <h3 className="text-lg font-semibold mb-4">Create Feature Flag</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-white/[0.04]">
+        <h3 className="mb-4 text-lg font-semibold">Create Feature Flag</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <label className="mb-1 block text-sm font-medium">Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. dark_mode_v2"
-              className="w-full px-3 py-2 border rounded-md dark:bg-white/[0.06] dark:border-white/[0.08]"
+              className="w-full rounded-md border px-3 py-2 dark:border-white/[0.08] dark:bg-white/[0.06]"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Type</label>
+            <label className="mb-1 block text-sm font-medium">Type</label>
             <select
               value={type}
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               onChange={(e) => setType(e.target.value as FlagType)}
-              className="w-full px-3 py-2 border rounded-md dark:bg-white/[0.06] dark:border-white/[0.08]"
+              className="w-full rounded-md border px-3 py-2 dark:border-white/[0.08] dark:bg-white/[0.06]"
             >
               <option value="boolean">Boolean (on/off)</option>
               <option value="percentage">Percentage rollout</option>
@@ -251,26 +252,26 @@ function CreateFlagModal({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
+            <label className="mb-1 block text-sm font-medium">Description</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional description"
-              className="w-full px-3 py-2 border rounded-md dark:bg-white/[0.06] dark:border-white/[0.08]"
+              className="w-full rounded-md border px-3 py-2 dark:border-white/[0.08] dark:bg-white/[0.06]"
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50 dark:hover:bg-white/[0.06]"
+              className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-white/[0.06]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
             >
               Create
             </button>
@@ -376,13 +377,13 @@ export function FeatureFlagsPanel() {
         <div className="flex gap-2">
           <button
             onClick={loadFlags}
-            className="px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50 dark:hover:bg-white/[0.06]"
+            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-white/[0.06]"
           >
             Refresh
           </button>
           <button
             onClick={() => setShowCreate(true)}
-            className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="rounded-md bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
           >
             + New Flag
           </button>
@@ -391,7 +392,7 @@ export function FeatureFlagsPanel() {
 
       {/* Error banner */}
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-3 text-sm text-red-700 dark:text-red-300">
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
           {error}
           <button onClick={() => setError(null)} className="ml-2 underline">
             Dismiss
@@ -401,18 +402,18 @@ export function FeatureFlagsPanel() {
 
       {/* Flags table */}
       {loading ? (
-        <div className="text-center py-8 text-gray-500">Loading flags...</div>
+        <div className="py-8 text-center text-gray-500">Loading flags...</div>
       ) : flags.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="py-8 text-center text-gray-500">
           No feature flags configured.{' '}
           <button onClick={() => setShowCreate(true)} className="text-blue-600 underline">
             Create one
           </button>
         </div>
       ) : (
-        <div className="overflow-x-auto border rounded-lg dark:border-white/[0.08]">
+        <div className="overflow-x-auto rounded-lg border dark:border-white/[0.08]">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-white/[0.04] text-left">
+            <thead className="bg-gray-50 text-left dark:bg-white/[0.04]">
               <tr>
                 <th className="px-4 py-2 font-medium">Name</th>
                 <th className="px-4 py-2 font-medium">Type</th>
@@ -440,19 +441,19 @@ export function FeatureFlagsPanel() {
 
       {/* Detail view with history */}
       {selectedFlag && (
-        <div className="border rounded-lg dark:border-white/[0.08] p-4">
-          <div className="flex items-center justify-between mb-3">
+        <div className="rounded-lg border p-4 dark:border-white/[0.08]">
+          <div className="mb-3 flex items-center justify-between">
             <h3 className="font-semibold">
               Flag: <span className="text-blue-600 dark:text-blue-400">{selectedFlag}</span>
             </h3>
             <button
               onClick={() => setSelectedFlag(null)}
-              className="text-gray-400 hover:text-gray-600 text-sm"
+              className="text-sm text-gray-400 hover:text-gray-600"
             >
               Close
             </button>
           </div>
-          <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
+          <h4 className="mb-2 text-sm font-medium text-gray-600 dark:text-gray-300">
             Change History
           </h4>
           <FlagHistory flagName={selectedFlag} />
@@ -461,10 +462,12 @@ export function FeatureFlagsPanel() {
 
       {/* Delete confirmation */}
       {deleteConfirm && (
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 text-sm">
-          Are you sure you want to delete{' '}
-          <strong>{deleteConfirm}</strong>?{' '}
-          <button onClick={() => handleDelete(deleteConfirm)} className="text-red-600 font-medium underline">
+        <div className="rounded-md border border-yellow-200 bg-yellow-50 p-3 text-sm dark:border-yellow-800 dark:bg-yellow-900/20">
+          Are you sure you want to delete <strong>{deleteConfirm}</strong>?{' '}
+          <button
+            onClick={() => handleDelete(deleteConfirm)}
+            className="font-medium text-red-600 underline"
+          >
             Confirm Delete
           </button>{' '}
           <button onClick={() => setDeleteConfirm(null)} className="text-gray-500 underline">

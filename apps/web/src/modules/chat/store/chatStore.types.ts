@@ -225,8 +225,17 @@ export interface ChatState {
     isTyping: boolean,
     startedAt?: string
   ) => void;
-  updateMessageStatus: (conversationId: string, messageId: string, status: Message['deliveryStatus']) => void;
-  addReadReceipt: (conversationId: string, messageId: string, userId: string, readAt: string) => void;
+  updateMessageStatus: (
+    conversationId: string,
+    messageId: string,
+    status: Message['deliveryStatus']
+  ) => void;
+  addReadReceipt: (
+    conversationId: string,
+    messageId: string,
+    userId: string,
+    readAt: string
+  ) => void;
   markAsRead: (conversationId: string) => Promise<void>;
   createConversation: (userIds: string[]) => Promise<Conversation>;
   getRecipientId: (conversationId: string, currentUserId: string) => string | null;

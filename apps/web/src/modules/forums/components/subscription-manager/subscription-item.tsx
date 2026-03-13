@@ -62,7 +62,7 @@ export function SubscriptionItem({
   return (
     <div className="bg-card hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors">
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <div className="bg-primary/10 flex-shrink-0 rounded-md p-2">
+        <div className="flex-shrink-0 rounded-md bg-primary/10 p-2">
           {getTypeIcon(subscription.type)}
         </div>
         <div className="min-w-0 flex-1">
@@ -87,9 +87,10 @@ export function SubscriptionItem({
       <div className="flex items-center gap-2">
         <Select
           value={subscription.notificationMode}
-          onValueChange={(value: string) =>
-             
-            onUpdate(subscription.id, { notificationMode: value as NotificationMode }) // safe downcast – select event value
+          onValueChange={
+            (value: string) =>
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              onUpdate(subscription.id, { notificationMode: value as NotificationMode }) // safe downcast – select event value
           }
         >
           <SelectTrigger className="w-28">
@@ -114,4 +115,4 @@ export function SubscriptionItem({
       </div>
     </div>
   );
-};
+}

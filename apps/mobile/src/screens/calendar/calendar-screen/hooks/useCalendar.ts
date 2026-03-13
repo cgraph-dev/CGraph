@@ -16,6 +16,7 @@ import {
 } from '../types';
 
 /**
+ * Hook for calendar.
  *
  */
 export function useCalendar() {
@@ -121,7 +122,7 @@ export function useCalendar() {
     if (eventData.id) {
       // Update existing
       setEvents((prev) =>
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         prev.map((e) => (e.id === eventData.id ? ({ ...e, ...eventData } as CalendarEvent) : e))
       );
     } else {

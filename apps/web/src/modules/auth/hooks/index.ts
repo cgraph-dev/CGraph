@@ -74,7 +74,8 @@ export function useTwoFactor() {
     try {
       const { api } = await import('@/lib/api');
       const response = await api.post('/api/v1/auth/totp/setup');
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return response.data as { secret: string; qr_code: string };
     } catch {
       return null;
@@ -136,7 +137,8 @@ export function useSessions() {
     try {
       const { api } = await import('@/lib/api');
       const response = await api.get('/api/v1/auth/sessions');
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const data = response.data as { sessions: Session[]; current_session_id: string };
       setSessions(data.sessions);
       setCurrentSessionId(data.current_session_id);

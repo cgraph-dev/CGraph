@@ -36,6 +36,7 @@ interface HeaderProps {
 }
 
 /**
+ * Header component.
  *
  */
 export default function Header({
@@ -80,19 +81,13 @@ export default function Header({
 
         <View style={styles.titleContainer}>
           <Text
-            style={[
-              largeTitle ? styles.largeTitle : styles.title,
-              { color: colors.text },
-            ]}
+            style={[largeTitle ? styles.largeTitle : styles.title, { color: colors.text }]}
             numberOfLines={1}
           >
             {title}
           </Text>
           {subtitle && (
-            <Text
-              style={[styles.subtitle, { color: colors.textSecondary }]}
-              numberOfLines={1}
-            >
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]} numberOfLines={1}>
               {subtitle}
             </Text>
           )}

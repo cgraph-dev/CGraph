@@ -45,7 +45,7 @@ export function MembersList({
         </div>
         <select
           value={sort}
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           onChange={(e) => onSortChange(e.target.value as MemberSortOption)} // safe downcast – select event value
           className="rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
         >

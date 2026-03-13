@@ -76,7 +76,7 @@ export function AdvancedControlsSection({
             transition={springs.bouncy}
           >
             <div
-              className={`px-4 py-2 text-sm text-white ${enableGlassEffect ? 'border border-white/10 bg-white/[0.08]/70 backdrop-blur-md' : 'bg-white/[0.08]'}`}
+              className={`px-4 py-2 text-sm text-white ${enableGlassEffect ? 'bg-white/[0.08]/70 border border-white/10 backdrop-blur-md' : 'bg-white/[0.08]'}`}
               style={{
                 borderRadius: `${bubbleBorderRadius}px`,
                 boxShadow: shadowValue,

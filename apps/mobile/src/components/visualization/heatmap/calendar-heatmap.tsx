@@ -8,6 +8,7 @@ import type { CalendarHeatmapProps } from './types';
 import { DEFAULT_COLOR_SCALE } from './constants';
 
 /**
+ * Calendar Heatmap component.
  *
  */
 export function CalendarHeatmap({

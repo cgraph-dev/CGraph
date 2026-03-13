@@ -4,5 +4,5 @@
  * @module components/nameplate
  */
 
-export { NameplateBar } from './NameplateBar';
-export type { NameplateBarProps } from './NameplateBar';
+export { NameplateBar } from './nameplate-bar';
+export type { NameplateBarProps } from './nameplate-bar';

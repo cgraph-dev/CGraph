@@ -1,18 +1,12 @@
 /**
  * AnimatedCard - A reusable animated container component
- * 
+ *
  * Provides smooth fade-in and scale animations for card-like UI elements.
  * Supports press feedback and customizable animation timing.
  */
 
 import React, { useEffect, useRef } from 'react';
-import {
-  Animated,
-  TouchableWithoutFeedback,
-  ViewStyle,
-  StyleSheet,
-  StyleProp,
-} from 'react-native';
+import { Animated, TouchableWithoutFeedback, ViewStyle, StyleSheet, StyleProp } from 'react-native';
 import { timings, easings, pressAnimation } from '../lib/animations';
 import { useThemeStore } from '@/stores';
 
@@ -27,6 +21,7 @@ interface AnimatedCardProps {
 }
 
 /**
+ * Animated Card component.
  *
  */
 export default function AnimatedCard({
@@ -64,14 +59,12 @@ export default function AnimatedCard({
         }),
       ]).start();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animateOnMount, delay]);
 
   const animatedStyle = {
     opacity,
-    transform: [
-      { translateY },
-      { scale },
-    ],
+    transform: [{ translateY }, { scale }],
   };
 
   const content = (

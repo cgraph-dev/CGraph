@@ -24,12 +24,13 @@ interface AddEmojiModalProps {
     shortcode: string,
     imageUri: string,
     category: string,
-    animationFormat?: AnimationFormat,
+    animationFormat?: AnimationFormat
   ) => void;
   categories: EmojiCategory[];
 }
 
 /**
+ * Add Emoji Modal component.
  *
  */
 export function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmojiModalProps) {
@@ -71,7 +72,13 @@ export function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmo
       return;
     }
 
-    onSubmit(name.trim(), shortcode.trim().toLowerCase(), lottieJsonUri || imageUri, category, animationFormat);
+    onSubmit(
+      name.trim(),
+      shortcode.trim().toLowerCase(),
+      lottieJsonUri || imageUri,
+      category,
+      animationFormat
+    );
     setName('');
     setShortcode('');
     setImageUri('');
@@ -122,7 +129,10 @@ export function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmo
                   const content = await FileSystem.readAsStringAsync(asset.uri);
                   const parsed = JSON.parse(content);
                   if (!parsed.v || !parsed.layers) {
-                    Alert.alert('Invalid Lottie', 'The file does not appear to be a valid Lottie JSON animation.');
+                    Alert.alert(
+                      'Invalid Lottie',
+                      'The file does not appear to be a valid Lottie JSON animation.'
+                    );
                     return;
                   }
                   setLottieJsonUri(asset.uri);

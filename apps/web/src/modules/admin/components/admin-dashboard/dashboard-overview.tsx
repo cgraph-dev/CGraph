@@ -46,10 +46,12 @@ export function DashboardOverview() {
         reports.reports.map((r) => ({
           id: r.id,
           // type assertion: API response field maps to known union type
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           type: r.contentType as ModerationItem['type'],
           // type assertion: API response field maps to known union type
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           status: r.status as ModerationItem['status'],
           riskLevel: 'medium' as const,
           createdAt: new Date(r.insertedAt),

@@ -4,13 +4,7 @@
  * @module screens/forums/components/theme-picker
  */
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeStore } from '@/stores';
 
@@ -23,45 +17,103 @@ const PRESETS = [
   {
     key: 'dark-elite',
     name: 'Dark Elite',
-    colors: { primary_color: '#BB86FC', secondary_color: '#03DAC6', accent_color: '#CF6679', background_color: '#121212', text_color: '#E0E0E0', link_color: '#BB86FC' },
+    colors: {
+      primary_color: '#BB86FC',
+      secondary_color: '#03DAC6',
+      accent_color: '#CF6679',
+      background_color: '#121212',
+      text_color: '#E0E0E0',
+      link_color: '#BB86FC',
+    },
   },
   {
     key: 'cyberpunk',
     name: 'Cyberpunk',
-    colors: { primary_color: '#00F0FF', secondary_color: '#FF00FF', accent_color: '#FCEE0A', background_color: '#0a0a0a', text_color: '#e0e0e0', link_color: '#00F0FF' },
+    colors: {
+      primary_color: '#00F0FF',
+      secondary_color: '#FF00FF',
+      accent_color: '#FCEE0A',
+      background_color: '#0a0a0a',
+      text_color: '#e0e0e0',
+      link_color: '#00F0FF',
+    },
   },
   {
     key: 'classic-mybb',
     name: 'Classic MyBB',
-    colors: { primary_color: '#0F4C81', secondary_color: '#1565C0', accent_color: '#FF8F00', background_color: '#FFFFFF', text_color: '#212121', link_color: '#0F4C81' },
+    colors: {
+      primary_color: '#0F4C81',
+      secondary_color: '#1565C0',
+      accent_color: '#FF8F00',
+      background_color: '#FFFFFF',
+      text_color: '#212121',
+      link_color: '#0F4C81',
+    },
   },
   {
     key: 'forest',
     name: 'Forest',
-    colors: { primary_color: '#2D6A4F', secondary_color: '#40916C', accent_color: '#95D5B2', background_color: '#1B4332', text_color: '#D8F3DC', link_color: '#74C69D' },
+    colors: {
+      primary_color: '#2D6A4F',
+      secondary_color: '#40916C',
+      accent_color: '#95D5B2',
+      background_color: '#1B4332',
+      text_color: '#D8F3DC',
+      link_color: '#74C69D',
+    },
   },
   {
     key: 'ocean',
     name: 'Ocean',
-    colors: { primary_color: '#0077B6', secondary_color: '#00B4D8', accent_color: '#90E0EF', background_color: '#03045E', text_color: '#CAF0F8', link_color: '#48CAE4' },
+    colors: {
+      primary_color: '#0077B6',
+      secondary_color: '#00B4D8',
+      accent_color: '#90E0EF',
+      background_color: '#03045E',
+      text_color: '#CAF0F8',
+      link_color: '#48CAE4',
+    },
   },
   {
     key: 'sunset',
     name: 'Sunset',
-    colors: { primary_color: '#E63946', secondary_color: '#F4A261', accent_color: '#E9C46A', background_color: '#264653', text_color: '#F1FAEE', link_color: '#E76F51' },
+    colors: {
+      primary_color: '#E63946',
+      secondary_color: '#F4A261',
+      accent_color: '#E9C46A',
+      background_color: '#264653',
+      text_color: '#F1FAEE',
+      link_color: '#E76F51',
+    },
   },
   {
     key: 'neon',
     name: 'Neon',
-    colors: { primary_color: '#39FF14', secondary_color: '#FF073A', accent_color: '#FF6EC7', background_color: '#0D0D0D', text_color: '#FFFFFF', link_color: '#39FF14' },
+    colors: {
+      primary_color: '#39FF14',
+      secondary_color: '#FF073A',
+      accent_color: '#FF6EC7',
+      background_color: '#0D0D0D',
+      text_color: '#FFFFFF',
+      link_color: '#39FF14',
+    },
   },
   {
     key: 'monochrome',
     name: 'Monochrome',
-    colors: { primary_color: '#FFFFFF', secondary_color: '#CCCCCC', accent_color: '#999999', background_color: '#111111', text_color: '#E5E5E5', link_color: '#FFFFFF' },
+    colors: {
+      primary_color: '#FFFFFF',
+      secondary_color: '#CCCCCC',
+      accent_color: '#999999',
+      background_color: '#111111',
+      text_color: '#E5E5E5',
+      link_color: '#FFFFFF',
+    },
   },
 ];
 
+/** Description. */
+/** Theme Picker component. */
 export function ThemePicker({ activePreset, onSelect }: ThemePickerProps) {
   const appColors = useThemeStore((s) => s.colors);
 
@@ -95,16 +147,31 @@ export function ThemePicker({ activePreset, onSelect }: ThemePickerProps) {
             </View>
 
             {/* Mini preview */}
-            <View style={[styles.previewHeader, { backgroundColor: preset.colors.primary_color + '40' }]}>
+            <View
+              style={[
+                styles.previewHeader,
+                { backgroundColor: preset.colors.primary_color + '40' },
+              ]}
+            >
               <View style={[styles.previewBar, { backgroundColor: preset.colors.primary_color }]} />
             </View>
             <View style={styles.previewBody}>
-              <View style={[styles.previewLine, { backgroundColor: preset.colors.text_color + '40' }]} />
-              <View style={[styles.previewLine, { backgroundColor: preset.colors.text_color + '20', width: '60%' }]} />
+              <View
+                style={[styles.previewLine, { backgroundColor: preset.colors.text_color + '40' }]}
+              />
+              <View
+                style={[
+                  styles.previewLine,
+                  { backgroundColor: preset.colors.text_color + '20', width: '60%' },
+                ]}
+              />
             </View>
 
             {/* Label */}
-            <Text style={[styles.presetName, { color: preset.colors.text_color }]} numberOfLines={1}>
+            <Text
+              style={[styles.presetName, { color: preset.colors.text_color }]}
+              numberOfLines={1}
+            >
               {preset.name}
             </Text>
 

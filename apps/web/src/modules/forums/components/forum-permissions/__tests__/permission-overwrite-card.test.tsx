@@ -12,7 +12,9 @@ vi.mock('framer-motion', () => ({
       className,
       onClick,
     }: React.PropsWithChildren<{ className?: string; onClick?: () => void }>) => (
-      <button className={className} onClick={onClick}>{children}</button>
+      <button className={className} onClick={onClick}>
+        {children}
+      </button>
     ),
   },
   AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
@@ -28,13 +30,17 @@ vi.mock('@heroicons/react/24/outline', () => ({
 
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, className }: React.PropsWithChildren<{ className?: string }>) => (
-    <div className={className} data-testid="glass-card">{children}</div>
+    <div className={className} data-testid="glass-card">
+      {children}
+    </div>
   ),
 }));
 
 vi.mock('../perm-toggle', () => ({
   PermToggle: ({ value, onClick }: { value: string; onClick: () => void }) => (
-    <button data-testid={`perm-${value}`} onClick={onClick}>{value}</button>
+    <button data-testid={`perm-${value}`} onClick={onClick}>
+      {value}
+    </button>
   ),
 }));
 

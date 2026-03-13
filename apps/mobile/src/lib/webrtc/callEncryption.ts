@@ -9,10 +9,7 @@
  * @version 1.0.0
  */
 
-import {
-  Room,
-  type E2EEOptions,
-} from '@livekit/react-native';
+import { Room, type E2EEOptions } from '@livekit/react-native';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -37,10 +34,7 @@ export interface CallEncryptionState {
  * @param roomName - Room name used as HKDF info
  * @returns Derived key bytes
  */
-async function deriveKeyBytes(
-  roomKey: Uint8Array,
-  roomName: string
-): Promise<Uint8Array> {
+async function deriveKeyBytes(roomKey: Uint8Array, roomName: string): Promise<Uint8Array> {
   try {
     const subtle = globalThis.crypto?.subtle;
     if (!subtle) {
@@ -49,13 +43,7 @@ async function deriveKeyBytes(
       return roomKey;
     }
 
-    const baseKey = await subtle.importKey(
-      'raw',
-      roomKey,
-      { name: 'HKDF' },
-      false,
-      ['deriveKey']
-    );
+    const baseKey = await subtle.importKey('raw', roomKey, { name: 'HKDF' }, false, ['deriveKey']);
 
     const encoder = new TextEncoder();
     const salt = encoder.encode('livekit-e2ee');
@@ -90,21 +78,20 @@ const roomE2EEState = new Map<string, CallEncryptionState>();
  * @param room - Connected LiveKit Room instance
  * @param roomKey - Raw 256-bit room key from backend
  */
-export async function setupMobileE2EE(
-  room: Room,
-  roomKey: Uint8Array
-): Promise<void> {
+export async function setupMobileE2EE(room: Room, roomKey: Uint8Array): Promise<void> {
   try {
     const keyBytes = await deriveKeyBytes(roomKey, room.name);
 
     // LiveKit React Native E2EE setup
     // The @livekit/react-native SDK supports E2EE via room options
     const e2eeOptions: E2EEOptions = {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       keyProvider: {
-        setKey: async (key: Uint8Array) => {
+        setKey: async (_key: Uint8Array) => {
           // Key provider implementation
         },
         getKey: async () => keyBytes,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     };
 
@@ -130,10 +117,7 @@ export async function setupMobileE2EE(
  * @param room - Connected LiveKit Room instance
  * @param newKey - New raw 256-bit room key
  */
-export async function rotateMobileKey(
-  room: Room,
-  newKey: Uint8Array
-): Promise<void> {
+export async function rotateMobileKey(room: Room, newKey: Uint8Array): Promise<void> {
   try {
     const keyBytes = await deriveKeyBytes(newKey, room.name);
     // Re-setup E2EE with new key

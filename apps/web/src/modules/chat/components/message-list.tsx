@@ -17,7 +17,6 @@ import { AnimatedReactionBubble } from './animated-reaction-bubble';
 import { TypingIndicator } from './typing-indicator';
 import { MessageBubble, type UIPreferences } from './message-bubble';
 
-
 // ============================================================================
 // Types
 // ============================================================================
@@ -143,7 +142,7 @@ export function MessageList({
 
       const { message, groupMessages, msgIndex } = row;
       const messageSenderId =
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         getMessageSenderId(message as unknown as Record<string, unknown>) || ''; // type assertion: narrowing for helper function
       const currentUserId = userId || '';
 
@@ -152,8 +151,8 @@ export function MessageList({
 
       const prevMessage = groupMessages[msgIndex - 1];
       const prevSenderId = prevMessage
-         
-        ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || '' // type assertion: narrowing for helper function
+        ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || '' // type assertion: narrowing for helper function
         : '';
       const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);
 

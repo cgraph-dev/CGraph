@@ -36,7 +36,9 @@ export function createFeatureActions(set: Set, _get: Get) {
 
     fetchThreadPrefixes: async (forumId?: string) => {
       try {
-        const url = forumId ? `/api/v1/forums/${forumId}/thread-prefixes` : '/api/v1/admin/thread-prefixes';
+        const url = forumId
+          ? `/api/v1/forums/${forumId}/thread-prefixes`
+          : '/api/v1/admin/thread-prefixes';
         const response = await api.get(url);
         const prefixes = ensureArray<ThreadPrefix>(response.data, 'prefixes');
         set({ threadPrefixes: prefixes });
@@ -146,7 +148,8 @@ export function createFeatureActions(set: Set, _get: Get) {
         const response = await api.post('/api/v1/attachments', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         return response.data.attachment as PostAttachment; // safe downcast – API response field
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'uploadAttachment');
@@ -187,7 +190,8 @@ export function createFeatureActions(set: Set, _get: Get) {
           timeout: data.timeout,
           public: data.public,
         });
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         return response.data.poll as Poll; // safe downcast – API response field
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'createPoll');
@@ -299,24 +303,33 @@ export function createFeatureActions(set: Set, _get: Get) {
         const response = await api.get(`/api/v1/forums/${forumId}/categories`);
         const categories = ensureArray<ForumCategory>(response.data, 'categories');
         set((state) => ({
-          currentForum: state.currentForum?.id === forumId
-            ? { ...state.currentForum, categories }
-            : state.currentForum,
+          currentForum:
+            state.currentForum?.id === forumId
+              ? { ...state.currentForum, categories }
+              : state.currentForum,
         }));
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'fetchCategories');
       }
     },
 
-    createCategory: async (forumId: string, data: { name: string; color?: string; description?: string }) => {
+    createCategory: async (
+      forumId: string,
+      data: { name: string; color?: string; description?: string }
+    ) => {
       try {
         const response = await api.post(`/api/v1/forums/${forumId}/categories`, data);
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const category = response.data?.category as ForumCategory | undefined;
         if (category) {
           set((state) => ({
-            currentForum: state.currentForum?.id === forumId
-              ? { ...state.currentForum, categories: [...(state.currentForum.categories || []), category] }
-              : state.currentForum,
+            currentForum:
+              state.currentForum?.id === forumId
+                ? {
+                    ...state.currentForum,
+                    categories: [...(state.currentForum.categories || []), category],
+                  }
+                : state.currentForum,
           }));
         }
       } catch (error: unknown) {
@@ -329,14 +342,15 @@ export function createFeatureActions(set: Set, _get: Get) {
       try {
         await api.put(`/api/v1/forums/${forumId}/categories/${categoryId}`, data);
         set((state) => ({
-          currentForum: state.currentForum?.id === forumId
-            ? {
-                ...state.currentForum,
-                categories: (state.currentForum.categories || []).map((c) =>
-                  c.id === categoryId ? { ...c, ...data } : c
-                ),
-              }
-            : state.currentForum,
+          currentForum:
+            state.currentForum?.id === forumId
+              ? {
+                  ...state.currentForum,
+                  categories: (state.currentForum.categories || []).map((c) =>
+                    c.id === categoryId ? { ...c, ...data } : c
+                  ),
+                }
+              : state.currentForum,
         }));
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'updateCategory');
@@ -348,12 +362,15 @@ export function createFeatureActions(set: Set, _get: Get) {
       try {
         await api.delete(`/api/v1/forums/${forumId}/categories/${categoryId}`);
         set((state) => ({
-          currentForum: state.currentForum?.id === forumId
-            ? {
-                ...state.currentForum,
-                categories: (state.currentForum.categories || []).filter((c) => c.id !== categoryId),
-              }
-            : state.currentForum,
+          currentForum:
+            state.currentForum?.id === forumId
+              ? {
+                  ...state.currentForum,
+                  categories: (state.currentForum.categories || []).filter(
+                    (c) => c.id !== categoryId
+                  ),
+                }
+              : state.currentForum,
         }));
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'deleteCategory');
@@ -363,16 +380,22 @@ export function createFeatureActions(set: Set, _get: Get) {
 
     reorderCategories: async (forumId: string, categoryIds: string[]) => {
       try {
-        await api.put(`/api/v1/forums/${forumId}/categories/reorder`, { category_ids: categoryIds });
+        await api.put(`/api/v1/forums/${forumId}/categories/reorder`, {
+          category_ids: categoryIds,
+        });
         set((state) => {
           if (state.currentForum?.id !== forumId) return {};
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const ordered = categoryIds
             .map((id) => (state.currentForum!.categories || []).find((c) => c.id === id))
             .filter(Boolean) as ForumCategory[];
           return { currentForum: { ...state.currentForum!, categories: ordered } };
         });
       } catch (error: unknown) {
-        logger.error(error instanceof Error ? error : new Error(String(error)), 'reorderCategories');
+        logger.error(
+          error instanceof Error ? error : new Error(String(error)),
+          'reorderCategories'
+        );
         throw error;
       }
     },

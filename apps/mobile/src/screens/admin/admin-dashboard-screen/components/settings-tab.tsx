@@ -44,6 +44,7 @@ const settingsGroups = [
 ];
 
 /**
+ * Settings Tab component.
  *
  */
 export function SettingsTab({ onNavigate }: SettingsTabProps) {
@@ -67,7 +68,7 @@ export function SettingsTab({ onNavigate }: SettingsTabProps) {
               >
                 <View style={styles.settingsItemIcon}>
                   <Ionicons
-                     
+                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                     name={item.icon as keyof typeof Ionicons.glyphMap}
                     size={20}
                     color="#10b981"

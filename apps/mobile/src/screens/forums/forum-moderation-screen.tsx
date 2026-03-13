@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler';
 
 import { useThemeStore } from '@/stores';
 import { ModQueueList } from './components/mod-queue-list';
@@ -106,9 +105,7 @@ function WarningItem({
   return (
     <View style={[styles.warningCard, { backgroundColor: colors.surface }]}>
       <View style={styles.warningHeader}>
-        <Text style={[styles.warningUser, { color: colors.text }]}>
-          {warning.user.username}
-        </Text>
+        <Text style={[styles.warningUser, { color: colors.text }]}>{warning.user.username}</Text>
         <View
           style={[
             styles.pointsBadge,
@@ -125,13 +122,10 @@ function WarningItem({
           <Text style={styles.pointsText}>{warning.points} pts</Text>
         </View>
       </View>
-      <Text style={[styles.warningReason, { color: colors.textSecondary }]}>
-        {warning.reason}
-      </Text>
+      <Text style={[styles.warningReason, { color: colors.textSecondary }]}>{warning.reason}</Text>
       <View style={styles.warningMeta}>
         <Text style={[styles.metaText, { color: colors.textTertiary }]}>
-          By {warning.issued_by.username} •{' '}
-          {new Date(warning.created_at).toLocaleDateString()}
+          By {warning.issued_by.username} • {new Date(warning.created_at).toLocaleDateString()}
         </Text>
         {warning.expires_at && (
           <Text style={[styles.metaText, { color: colors.textTertiary }]}>
@@ -196,6 +190,8 @@ interface ForumModerationScreenProps {
   route: { params: { forumId: string } };
 }
 
+/** Description. */
+/** Forum Moderation Screen component. */
 export function ForumModerationScreen({ route }: ForumModerationScreenProps) {
   const { forumId } = route.params;
   const { colors } = useThemeStore();
@@ -228,6 +224,7 @@ export function ForumModerationScreen({ route }: ForumModerationScreenProps) {
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forumId]);
 
   useEffect(() => {
@@ -241,7 +238,7 @@ export function ForumModerationScreen({ route }: ForumModerationScreenProps) {
   }, [fetchData]);
 
   const handleModAction = useCallback(
-    async (itemId: string, action: 'approve' | 'reject' | 'hide' | 'delete') => {
+    async (itemId: string, _action: 'approve' | 'reject' | 'hide' | 'delete') => {
       try {
         // await forumService.takeModAction(forumId, itemId, action);
         setQueue((prev) => prev.filter((item) => item.id !== itemId));
@@ -250,11 +247,12 @@ export function ForumModerationScreen({ route }: ForumModerationScreenProps) {
           pending_count: Math.max(0, prev.pending_count - 1),
           resolved_today: prev.resolved_today + 1,
         }));
-      } catch (error) {
+      } catch (_error) {
         Alert.alert('Error', 'Failed to perform moderation action');
       }
     },
-    [forumId],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [forumId]
   );
 
   const handleRevokeWarning = useCallback(
@@ -268,16 +266,17 @@ export function ForumModerationScreen({ route }: ForumModerationScreenProps) {
             try {
               // await forumService.revokeWarning(forumId, warningId);
               setWarnings((prev) =>
-                prev.map((w) => (w.id === warningId ? { ...w, revoked: true } : w)),
+                prev.map((w) => (w.id === warningId ? { ...w, revoked: true } : w))
               );
-            } catch (error) {
+            } catch (_error) {
               Alert.alert('Error', 'Failed to revoke warning');
             }
           },
         },
       ]);
     },
-    [forumId],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [forumId]
   );
 
   const handleIssueWarning = useCallback(() => {
@@ -314,9 +313,7 @@ export function ForumModerationScreen({ route }: ForumModerationScreenProps) {
       {activeTab === 'warnings' && (
         <ScrollView
           style={styles.scrollView}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
           <QuickWarnButton onPress={handleIssueWarning} />
           {warnings.length === 0 ? (
@@ -327,11 +324,7 @@ export function ForumModerationScreen({ route }: ForumModerationScreenProps) {
             </View>
           ) : (
             warnings.map((warning) => (
-              <WarningItem
-                key={warning.id}
-                warning={warning}
-                onRevoke={handleRevokeWarning}
-              />
+              <WarningItem key={warning.id} warning={warning} onRevoke={handleRevokeWarning} />
             ))
           )}
         </ScrollView>
@@ -340,9 +333,7 @@ export function ForumModerationScreen({ route }: ForumModerationScreenProps) {
       {activeTab === 'stats' && (
         <ScrollView
           style={styles.scrollView}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
           <StatsCard stats={stats} />
         </ScrollView>

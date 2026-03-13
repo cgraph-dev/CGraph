@@ -11,11 +11,11 @@ interface WindowSize {
 
 /**
  * Hook that tracks window dimensions.
- * 
+ *
  * Updates on window resize with optional debouncing.
- * 
+ *
  * @returns object with current width and height
- * 
+ *
  * @example
  * const { width, height } = useWindowSize();
  * const columns = width > 1024 ? 4 : width > 768 ? 3 : 2;
@@ -68,10 +68,10 @@ export function useWindowSize(): WindowSize {
 
 /**
  * Hook that tracks if window has scrolled past a threshold.
- * 
+ *
  * @param threshold - scroll position in pixels to trigger
  * @returns boolean indicating if scrolled past threshold
- * 
+ *
  * @example
  * const isScrolled = useScrolled(100);
  * return <header className={isScrolled ? 'shadow-lg' : ''}>...</header>;

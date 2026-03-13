@@ -60,7 +60,7 @@ export function useAnimationIntensity(): number {
  */
 export function getMotionTransition(
   reducedMotion: boolean,
-  springConfig?: { damping?: number; stiffness?: number },
+  springConfig?: { damping?: number; stiffness?: number }
 ) {
   if (reducedMotion) {
     return { duration: 0 };

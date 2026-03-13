@@ -81,6 +81,7 @@ const DEFAULT_INDICATOR_SIZE = 40;
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 /**
+ * Pull To Refresh component.
  *
  */
 export function PullToRefresh({
@@ -122,6 +123,7 @@ export function PullToRefresh({
     pullDistance.value = withSpring(0, springCfg);
     refreshProgress.value = withTiming(0, { duration: durations.normal.ms });
     indicatorOpacity.value = withTiming(0, { duration: durations.normal.ms });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [springCfg]);
 
   // Handle refresh trigger
@@ -235,6 +237,7 @@ export function PullToRefresh({
       default:
         return null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshIndicatorStyle, indicatorColor, indicatorSize, renderIndicator, isRefreshing]);
 
   return (
@@ -282,6 +285,7 @@ function SpinnerIndicator({ progress, isRefreshing, color, size }: IndicatorProp
     } else {
       cancelAnimation(rotation);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRefreshing]);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -351,6 +355,7 @@ function DotItem({ index, progress, isRefreshing, color, size }: DotItemProps) {
     } else {
       scale.value = withSpring(1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRefreshing]);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -376,7 +381,7 @@ function DotItem({ index, progress, isRefreshing, color, size }: DotItemProps) {
   );
 }
 
-function ProgressIndicator({ progress, isRefreshing, color, size }: IndicatorProps) {
+function ProgressIndicator({ progress, _isRefreshing, color, size }: IndicatorProps) {
   const animatedStyle = useAnimatedStyle(() => ({
     width: interpolate(progress.value, [0, 1], [0, size * 2]),
   }));
@@ -403,6 +408,7 @@ function ArrowsIndicator({ progress, isRefreshing, color, size }: IndicatorProps
     } else {
       cancelAnimation(rotation);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRefreshing]);
 
   const arrowStyle = useAnimatedStyle(() => {
@@ -433,6 +439,7 @@ export interface RefreshableListProps<T = unknown> extends PullToRefreshProps {
 }
 
 /**
+ * Refreshable List component.
  *
  */
 export function RefreshableList({

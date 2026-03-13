@@ -14,6 +14,8 @@ interface FormatSelectionProps {
   onPaperSizeChange: (size: ExportOptions['paperSize']) => void;
 }
 
+/** Description. */
+/** Formats selection. */
 export function FormatSelection({
   selectedFormat,
   paperSize,
@@ -38,7 +40,9 @@ export function FormatSelection({
               size={32}
               color={selectedFormat === 'pdf' ? '#10b981' : '#6b7280'}
             />
-            <Text style={[styles.formatLabel, selectedFormat === 'pdf' && styles.formatLabelSelected]}>
+            <Text
+              style={[styles.formatLabel, selectedFormat === 'pdf' && styles.formatLabelSelected]}
+            >
               PDF
             </Text>
             <Text style={styles.formatDescription}>Best for printing</Text>
@@ -56,7 +60,9 @@ export function FormatSelection({
               size={32}
               color={selectedFormat === 'html' ? '#10b981' : '#6b7280'}
             />
-            <Text style={[styles.formatLabel, selectedFormat === 'html' && styles.formatLabelSelected]}>
+            <Text
+              style={[styles.formatLabel, selectedFormat === 'html' && styles.formatLabelSelected]}
+            >
               HTML
             </Text>
             <Text style={styles.formatDescription}>Best for archiving</Text>
@@ -87,7 +93,9 @@ export function FormatSelection({
                 onPaperSizeChange('letter');
               }}
             >
-              <Text style={[styles.paperLabel, paperSize === 'letter' && styles.paperLabelSelected]}>
+              <Text
+                style={[styles.paperLabel, paperSize === 'letter' && styles.paperLabelSelected]}
+              >
                 Letter
               </Text>
             </TouchableOpacity>
@@ -103,22 +111,34 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: '600', color: '#fff', marginBottom: 12 },
   formatOptions: { flexDirection: 'row', gap: 12 },
   formatOption: {
-    flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12,
-    padding: 20, alignItems: 'center', borderWidth: 2, borderColor: 'transparent',
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   formatOptionSelected: {
-    borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderColor: '#10b981',
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
   },
   formatLabel: { fontSize: 16, fontWeight: '600', color: '#9ca3af', marginTop: 8 },
   formatLabelSelected: { color: '#10b981' },
   formatDescription: { fontSize: 12, color: '#6b7280', marginTop: 4 },
   paperOptions: { flexDirection: 'row', gap: 10 },
   paperOption: {
-    flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 10,
-    paddingVertical: 14, alignItems: 'center', borderWidth: 2, borderColor: 'transparent',
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   paperOptionSelected: {
-    borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderColor: '#10b981',
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
   },
   paperLabel: { fontSize: 15, fontWeight: '600', color: '#9ca3af' },
   paperLabelSelected: { color: '#10b981' },

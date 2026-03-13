@@ -178,7 +178,13 @@ describe('joinPresenceLobby', () => {
   });
 
   it('returns null when socket is null', () => {
-    const ch = joinPresenceLobby(null, channels as never, presences as never, onlineUsers, notifyStatusChange);
+    const ch = joinPresenceLobby(
+      null,
+      channels as never,
+      presences as never,
+      onlineUsers,
+      notifyStatusChange
+    );
     expect(ch).toBeNull();
   });
 
@@ -187,20 +193,40 @@ describe('joinPresenceLobby', () => {
     channels.set('presence:lobby', existing as never);
 
     const socket = createMockSocket();
-    const ch = joinPresenceLobby(socket as never, channels as never, presences as never, onlineUsers, notifyStatusChange);
+    const ch = joinPresenceLobby(
+      socket as never,
+      channels as never,
+      presences as never,
+      onlineUsers,
+      notifyStatusChange
+    );
     expect(ch).toBe(existing);
     expect(socket.channel).not.toHaveBeenCalled();
   });
 
   it('creates channel with correct topic and params', () => {
     const socket = createMockSocket();
-    joinPresenceLobby(socket as never, channels as never, presences as never, onlineUsers, notifyStatusChange);
-    expect(socket.channel).toHaveBeenCalledWith('presence:lobby', { include_contact_presence: true });
+    joinPresenceLobby(
+      socket as never,
+      channels as never,
+      presences as never,
+      onlineUsers,
+      notifyStatusChange
+    );
+    expect(socket.channel).toHaveBeenCalledWith('presence:lobby', {
+      include_contact_presence: true,
+    });
   });
 
   it('registers friend_online and friend_offline handlers', () => {
     const socket = createMockSocket();
-    joinPresenceLobby(socket as never, channels as never, presences as never, onlineUsers, notifyStatusChange);
+    joinPresenceLobby(
+      socket as never,
+      channels as never,
+      presences as never,
+      onlineUsers,
+      notifyStatusChange
+    );
 
     const ch = channels.get('presence:lobby')!;
     const events = ch.on.mock.calls.map((c: unknown[]) => c[0]);
@@ -212,7 +238,13 @@ describe('joinPresenceLobby', () => {
 
   it('dispatches friend_online to notifyStatusChange', () => {
     const socket = createMockSocket();
-    joinPresenceLobby(socket as never, channels as never, presences as never, onlineUsers, notifyStatusChange);
+    joinPresenceLobby(
+      socket as never,
+      channels as never,
+      presences as never,
+      onlineUsers,
+      notifyStatusChange
+    );
 
     // Simulate join success first to create the lobby set
     const ch = channels.get('presence:lobby')!;
@@ -225,7 +257,13 @@ describe('joinPresenceLobby', () => {
 
   it('dispatches friend_offline to notifyStatusChange', () => {
     const socket = createMockSocket();
-    joinPresenceLobby(socket as never, channels as never, presences as never, onlineUsers, notifyStatusChange);
+    joinPresenceLobby(
+      socket as never,
+      channels as never,
+      presences as never,
+      onlineUsers,
+      notifyStatusChange
+    );
 
     const ch = channels.get('presence:lobby')!;
     ch._triggerJoin('ok', {});
@@ -237,7 +275,13 @@ describe('joinPresenceLobby', () => {
 
   it('cleans up on join error', () => {
     const socket = createMockSocket();
-    joinPresenceLobby(socket as never, channels as never, presences as never, onlineUsers, notifyStatusChange);
+    joinPresenceLobby(
+      socket as never,
+      channels as never,
+      presences as never,
+      onlineUsers,
+      notifyStatusChange
+    );
 
     const ch = channels.get('presence:lobby')!;
     ch._triggerJoin('error', { reason: 'unauthorized' });

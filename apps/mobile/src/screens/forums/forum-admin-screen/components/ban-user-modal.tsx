@@ -20,8 +20,16 @@ interface Props {
   };
 }
 
+/** Description. */
+/** Ban User Modal component. */
 export function BanUserModal({
-  visible, selectedUser, banReason, onBanReasonChange, onConfirm, onCancel, colors,
+  visible,
+  selectedUser,
+  banReason,
+  onBanReasonChange,
+  onConfirm,
+  onCancel,
+  colors,
 }: Props) {
   return (
     <Modal visible={visible} animationType="slide" transparent>

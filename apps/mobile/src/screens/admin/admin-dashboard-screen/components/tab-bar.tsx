@@ -16,6 +16,7 @@ export interface TabBarProps {
 }
 
 /**
+ * Tab Bar component.
  *
  */
 export function TabBar({ activeTab, onTabChange, pendingReports }: TabBarProps) {

@@ -3,4 +3,9 @@
  * @module modules/premium/components
  */
 
-export { PaymentModal, default, type PaymentItem, type PaymentModalProps } from './payment-modal/index';
+export {
+  PaymentModal,
+  default,
+  type PaymentItem,
+  type PaymentModalProps,
+} from './payment-modal/index';

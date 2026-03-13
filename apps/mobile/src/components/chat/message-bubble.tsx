@@ -3,14 +3,7 @@
  * @module components/chat/message-bubble
  */
 import React, { memo, useCallback } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Linking,
-  type ViewStyle,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet, _Linking, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { space, radius } from '../../theme/tokens';
@@ -54,17 +47,14 @@ export const MessageBubble = memo(function MessageBubble({
     ...styles.bubble,
     ...bubbleRadius,
     ...(isOwnMessage ? styles.ownBubble : styles.otherBubble),
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     ...(style as object),
   };
 
   const inner = (
     <>
-      <Text style={isOwnMessage ? styles.ownText : styles.otherText}>
-        {content}
-      </Text>
-      {isEdited && (
-        <Text style={styles.editedLabel}>(edited)</Text>
-      )}
+      <Text style={isOwnMessage ? styles.ownText : styles.otherText}>{content}</Text>
+      {isEdited && <Text style={styles.editedLabel}>(edited)</Text>}
     </>
   );
 
@@ -72,10 +62,7 @@ export const MessageBubble = memo(function MessageBubble({
     <Pressable
       onLongPress={handleLongPress}
       delayLongPress={400}
-      style={({ pressed }) => [
-        bubbleStyle,
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [bubbleStyle, pressed && styles.pressed]}
     >
       {isOwnMessage ? (
         <LinearGradient

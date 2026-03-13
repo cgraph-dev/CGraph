@@ -30,9 +30,7 @@ function MockSearchBar({
           placeholder={placeholder}
           className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
         />
-        {hasQuery && (
-          <button className="text-xs text-gray-400 hover:text-white">✕</button>
-        )}
+        {hasQuery && <button className="text-xs text-gray-400 hover:text-white">✕</button>}
       </div>
 
       {showFilters && (

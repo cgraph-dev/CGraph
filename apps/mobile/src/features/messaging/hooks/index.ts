@@ -16,19 +16,19 @@ export function useMessageHaptics() {
   const onSend = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
-  
+
   const onReact = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }, []);
-  
+
   const onLongPress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }, []);
-  
+
   const onSwipe = useCallback(() => {
     Haptics.selectionAsync();
   }, []);
-  
+
   return {
     onSend,
     onReact,
@@ -56,6 +56,12 @@ export function useVoiceRecording() {
       stop: recorder.stopRecording,
       cancel: recorder.handleCancel,
     }),
-    [recorder.state, recorder.duration, recorder.startRecording, recorder.stopRecording, recorder.handleCancel]
+    [
+      recorder.state,
+      recorder.duration,
+      recorder.startRecording,
+      recorder.stopRecording,
+      recorder.handleCancel,
+    ]
   );
 }

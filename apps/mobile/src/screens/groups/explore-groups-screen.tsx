@@ -178,8 +178,7 @@ export default function ExploreGroupsScreen({ navigation }: Props) {
         style={[
           styles.joinButton,
           {
-            backgroundColor:
-              joiningId === item.id ? colors.primary + '80' : colors.primary,
+            backgroundColor: joiningId === item.id ? colors.primary + '80' : colors.primary,
           },
         ]}
         onPress={() => handleJoin(item)}
@@ -220,8 +219,7 @@ export default function ExploreGroupsScreen({ navigation }: Props) {
               style={[
                 styles.sortChip,
                 {
-                  backgroundColor:
-                    sortBy === opt.key ? colors.primary : colors.surfaceHover,
+                  backgroundColor: sortBy === opt.key ? colors.primary : colors.surfaceHover,
                 },
               ]}
               onPress={() => setSortBy(opt.key)}

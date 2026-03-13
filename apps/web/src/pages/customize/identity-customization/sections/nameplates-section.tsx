@@ -163,8 +163,8 @@ export function NameplatesSection({ selectedNameplate, onEquip }: NameplatesSect
       {/* Description */}
       <div>
         <p className="text-sm text-white/60">
-          Choose how your name appears across CGraph — in friend lists, group channels,
-          forum posts, and online member panels. Showing {NAMEPLATE_REGISTRY.length} nameplates.
+          Choose how your name appears across CGraph — in friend lists, group channels, forum posts,
+          and online member panels. Showing {NAMEPLATE_REGISTRY.length} nameplates.
         </p>
       </div>
 
@@ -178,7 +178,7 @@ export function NameplatesSection({ selectedNameplate, onEquip }: NameplatesSect
             >
               {place}
             </span>
-          ),
+          )
         )}
       </div>
 
@@ -197,11 +197,7 @@ export function NameplatesSection({ selectedNameplate, onEquip }: NameplatesSect
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-500" />
                 <div>
-                  <NameplateRenderer
-                    nameplate={currentPlate}
-                    username="CryptoNinja"
-                    size="sm"
-                  />
+                  <NameplateRenderer nameplate={currentPlate} username="CryptoNinja" size="sm" />
                   <span className="text-[10px] text-green-400">● Online</span>
                 </div>
               </div>
@@ -215,11 +211,7 @@ export function NameplatesSection({ selectedNameplate, onEquip }: NameplatesSect
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500" />
                 <div>
-                  <NameplateRenderer
-                    nameplate={currentPlate}
-                    username="CryptoNinja"
-                    size="sm"
-                  />
+                  <NameplateRenderer nameplate={currentPlate} username="CryptoNinja" size="sm" />
                   <span className="text-[10px] text-white/30">Admin</span>
                 </div>
               </div>
@@ -233,11 +225,7 @@ export function NameplatesSection({ selectedNameplate, onEquip }: NameplatesSect
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-gradient-to-br from-orange-500 to-red-500" />
                 <div>
-                  <NameplateRenderer
-                    nameplate={currentPlate}
-                    username="CryptoNinja"
-                    size="sm"
-                  />
+                  <NameplateRenderer nameplate={currentPlate} username="CryptoNinja" size="sm" />
                   <span className="text-[10px] text-white/30">Level 42 · 3.2k posts</span>
                 </div>
               </div>
@@ -279,7 +267,8 @@ export function NameplatesSection({ selectedNameplate, onEquip }: NameplatesSect
               <NameplateRow
                 plate={plate}
                 isSelected={
-                  selectedNameplate === plate.id || (!selectedNameplate && plate.id === 'plate_none')
+                  selectedNameplate === plate.id ||
+                  (!selectedNameplate && plate.id === 'plate_none')
                 }
                 onSelect={() => onEquip(plate.id)}
               />

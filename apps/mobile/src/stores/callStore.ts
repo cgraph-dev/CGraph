@@ -47,7 +47,11 @@ interface CallStoreState {
 
 interface CallStoreActions {
   /** Start an outgoing call */
-  startCall: (recipientId: string, recipientName: string, callType: 'audio' | 'video') => Promise<string | null>;
+  startCall: (
+    recipientId: string,
+    recipientName: string,
+    callType: 'audio' | 'video'
+  ) => Promise<string | null>;
   /** Answer an incoming call */
   answerCall: (roomId: string, callType: 'audio' | 'video') => Promise<boolean>;
   /** End the current active call */
@@ -196,9 +200,7 @@ export const useCallStore = create<CallStore>((set, get) => ({
       const response = await getCallHistory(cursor);
 
       set({
-        callHistory: refresh
-          ? response.data
-          : [...state.callHistory, ...response.data],
+        callHistory: refresh ? response.data : [...state.callHistory, ...response.data],
         cursor: response.meta.cursor,
         hasMore: response.meta.has_more,
         isLoading: false,

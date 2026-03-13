@@ -15,6 +15,8 @@ interface WithdrawalModalProps {
 const MIN_WITHDRAWAL = 1000;
 const EUR_PER_NODE = 0.008;
 
+/** Description. */
+/** Withdrawal Modal component. */
 export function WithdrawalModal({ availableBalance, isOpen, onClose }: WithdrawalModalProps) {
   const [amount, setAmount] = useState(MIN_WITHDRAWAL);
   const mutation = useRequestWithdrawal();
@@ -77,7 +79,7 @@ export function WithdrawalModal({ availableBalance, isOpen, onClose }: Withdrawa
             disabled={!canWithdraw || mutation.isPending}
             className={cn(
               'flex-1 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors',
-              'bg-purple-600 hover:bg-purple-500 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-500',
+              'bg-purple-600 hover:bg-purple-500 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-500'
             )}
           >
             {mutation.isPending ? 'Processing…' : 'Withdraw'}

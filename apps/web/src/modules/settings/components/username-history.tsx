@@ -76,6 +76,6 @@ export function UsernameHistorySection({
       )}
     </>
   );
-};
+}
 
 export default UsernameHistorySection;

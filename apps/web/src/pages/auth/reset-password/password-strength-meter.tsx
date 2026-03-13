@@ -42,7 +42,8 @@ export function PasswordStrengthMeter({ strength }: PasswordStrengthMeterProps) 
             key={key}
             label={label}
             // type assertion: iterating config keys which are valid PasswordRequirements keys
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             met={strength.requirements[key as keyof PasswordRequirements]}
           />
         ))}

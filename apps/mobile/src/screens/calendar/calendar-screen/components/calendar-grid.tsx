@@ -23,6 +23,7 @@ interface CalendarGridProps {
 }
 
 /**
+ * Calendar Grid component.
  *
  */
 export function CalendarGrid({

@@ -55,6 +55,7 @@ const DEBOUNCE_MS = 300;
 // Component
 // ---------------------------------------------------------------------------
 
+/** Mention Input component. */
 export default function MentionInput({
   value,
   onChangeText,
@@ -120,7 +121,7 @@ export default function MentionInput({
       setShowMentions(false);
       setMentionQuery('');
     },
-    [value, cursorPos, onChangeText],
+    [value, cursorPos, onChangeText]
   );
 
   const handleSelectUser = useCallback(
@@ -139,7 +140,7 @@ export default function MentionInput({
       setShowMentions(false);
       setMentionQuery('');
     },
-    [value, cursorPos, onChangeText],
+    [value, cursorPos, onChangeText]
   );
 
   const renderUserItem = useCallback(
@@ -164,7 +165,7 @@ export default function MentionInput({
         </View>
       </TouchableOpacity>
     ),
-    [colors, handleSelectUser],
+    [colors, handleSelectUser]
   );
 
   return (
@@ -186,6 +187,7 @@ export default function MentionInput({
         placeholderTextColor={colors.textTertiary}
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         {...(inputProps as object)}
       />
 
@@ -202,9 +204,7 @@ export default function MentionInput({
           />
           <View style={[styles.mentionSheet, { backgroundColor: colors.surface }]}>
             <View style={styles.mentionHeader}>
-              <Text style={[styles.mentionTitle, { color: colors.text }]}>
-                Mention a user
-              </Text>
+              <Text style={[styles.mentionTitle, { color: colors.text }]}>Mention a user</Text>
               <TouchableOpacity onPress={() => setShowMentions(false)}>
                 <Ionicons name="close" size={22} color={colors.textSecondary} />
               </TouchableOpacity>

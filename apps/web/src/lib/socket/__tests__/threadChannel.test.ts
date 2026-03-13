@@ -151,7 +151,9 @@ describe('threadChannel', () => {
       joinThread(socket as never, 't1', state as never, threadCallbacks, cbs);
 
       // Grab the mock channel to trigger error callback
-      const mockCh = state.channels.get('thread:t1') as unknown as ReturnType<typeof createMockChannel>;
+      const mockCh = state.channels.get('thread:t1') as unknown as ReturnType<
+        typeof createMockChannel
+      >;
       mockCh._triggerPush('error', { reason: 'unauthorized' });
 
       expect(state.channels.has('thread:t1')).toBe(false);
@@ -327,9 +329,7 @@ describe('threadChannel', () => {
     it('pushes get_viewers and resolves with viewer list', async () => {
       const ch = createMockChannel('joined');
       const channels = new Map([['thread:t1', ch]]);
-      const viewers = [
-        { user_id: 'u1', username: 'alice', typing: false },
-      ];
+      const viewers = [{ user_id: 'u1', username: 'alice', typing: false }];
 
       const promise = getThreadViewers('t1', channels as never);
       ch._triggerPush('ok', { viewers });

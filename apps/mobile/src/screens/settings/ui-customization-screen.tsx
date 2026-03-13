@@ -30,7 +30,7 @@ import { SettingsStackParamList } from '@/types';
 // Import extracted components
 import {
   SettingsSection,
-  ToggleRow,
+  _ToggleRow,
   SliderRow,
   ColorShadePicker,
   PresetSelector,
@@ -56,6 +56,7 @@ type TabId = 'colors' | 'typography' | 'layout' | 'effects' | 'animations' | 'ac
 // ============================================================================
 
 /**
+ * U I Customization Screen component.
  *
  */
 export default function UICustomizationScreen({ navigation }: Props) {

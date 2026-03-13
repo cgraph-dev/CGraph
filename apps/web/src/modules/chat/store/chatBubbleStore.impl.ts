@@ -54,7 +54,7 @@ export const useChatBubbleStore = () => {
       value?: ChatBubbleConfig[K]
     ) => {
       if (typeof keyOrUpdates === 'string') {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         updateChatBubble({ [keyOrUpdates]: value } as Partial<ChatBubbleConfig>); // type assertion: computed property key as config partial
       } else {
         updateChatBubble(keyOrUpdates);

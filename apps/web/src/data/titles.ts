@@ -75,7 +75,10 @@ export interface TitleAnimation {
 }
 
 // Rarity color schemes
-export const RARITY_COLORS: Record<TitleRarity, { primary: string; secondary: string; glow: string }> = {
+export const RARITY_COLORS: Record<
+  TitleRarity,
+  { primary: string; secondary: string; glow: string }
+> = {
   free: { primary: '#6b7280', secondary: '#4b5563', glow: 'rgba(107, 114, 128, 0.2)' },
   common: { primary: '#9ca3af', secondary: '#6b7280', glow: 'rgba(156, 163, 175, 0.3)' },
   rare: { primary: '#3b82f6', secondary: '#2563eb', glow: 'rgba(59, 130, 246, 0.4)' },
@@ -770,33 +773,33 @@ export const TITLES: Title[] = [
  * Get title by ID
  */
 export function getTitleById(id: string): Title | undefined {
-  return TITLES.find(t => t.id === id);
+  return TITLES.find((t) => t.id === id);
 }
 
 /**
  * Get titles by category
  */
 export function getTitlesByCategory(category: TitleCategory): Title[] {
-  return TITLES.filter(t => t.category === category);
+  return TITLES.filter((t) => t.category === category);
 }
 
 /**
  * Get titles by rarity
  */
 export function getTitlesByRarity(rarity: TitleRarity): Title[] {
-  return TITLES.filter(t => t.rarity === rarity);
+  return TITLES.filter((t) => t.rarity === rarity);
 }
 
 /**
  * Get purchasable titles
  */
 export function getPurchasableTitles(): Title[] {
-  return TITLES.filter(t => t.coinPrice !== undefined && t.coinPrice > 0);
+  return TITLES.filter((t) => t.coinPrice !== undefined && t.coinPrice > 0);
 }
 
 /**
  * Get achievement-unlocked titles
  */
 export function getAchievementTitles(): Title[] {
-  return TITLES.filter(t => t.category === 'achievement');
+  return TITLES.filter((t) => t.category === 'achievement');
 }

@@ -1,6 +1,6 @@
 /**
  * Tier Service
- * 
+ *
  * API service for subscription tiers and limits.
  * Provides methods to check limits, get tier info, and compare tiers.
  */
@@ -49,7 +49,10 @@ export async function getMyTier(): Promise<UserTierInfo> {
 /**
  * Compare two tiers for upgrade/downgrade UI
  */
-export async function compareTiers(fromTier: string, toTier: string): Promise<TierCompareResponse['data']> {
+export async function compareTiers(
+  fromTier: string,
+  toTier: string
+): Promise<TierCompareResponse['data']> {
   const response = await api.get<TierCompareResponse>('/api/v1/tiers/compare', {
     params: { from: fromTier, to: toTier },
   });
@@ -59,9 +62,15 @@ export async function compareTiers(fromTier: string, toTier: string): Promise<Ti
 /**
  * Check if user can perform a specific action
  */
-export type TierAction = 'create_forum' | 'join_forum' | 'create_thread' | 'create_post' | 'use_ai_moderation';
+export type TierAction =
+  | 'create_forum'
+  | 'join_forum'
+  | 'create_thread'
+  | 'create_post'
+  | 'use_ai_moderation';
 
 /**
+ * Check action.
  *
  */
 export async function checkAction(action: TierAction): Promise<TierCheckActionResponse['data']> {

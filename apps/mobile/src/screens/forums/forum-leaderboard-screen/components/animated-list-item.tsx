@@ -63,9 +63,10 @@ const getRankChange = (current: number, previous?: number) => {
 // =============================================================================
 
 /**
+ * Animated List Item component.
  *
  */
-export function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps) {
+export function AnimatedListItem({ item, index, type, onPress, _colors }: ListItemProps) {
   // Entry animations
   const entryAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -184,11 +185,11 @@ export function AnimatedListItem({ item, index, type, onPress, colors }: ListIte
     outputRange: ['-6deg', '6deg'],
   });
 
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const rank = type === 'forums' ? (item as LeaderboardForum).rank : (item as TopContributor).rank;
 
   if (type === 'forums') {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const forum = item as LeaderboardForum;
     const rankChange = getRankChange(forum.rank, forum.previous_rank);
 
@@ -267,7 +268,7 @@ export function AnimatedListItem({ item, index, type, onPress, colors }: ListIte
             {/* Rank change */}
             <View style={styles.rankChangeContainer}>
               <Ionicons
-                 
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 name={rankChange.icon as 'arrow-up' | 'arrow-down' | 'remove'}
                 size={18}
                 color={rankChange.color}
@@ -280,7 +281,8 @@ export function AnimatedListItem({ item, index, type, onPress, colors }: ListIte
   }
 
   // Contributor item
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const contributor = item as TopContributor;
 
   return (

@@ -84,6 +84,7 @@ const DEFAULT_RUBBER_BAND_FACTOR = 0.3;
 // ============================================================================
 
 /**
+ * Swipeable Card component.
  *
  */
 export function SwipeableCard({
@@ -295,6 +296,7 @@ export function SwipeableCard({
   const close = useCallback(() => {
     translateX.value = withSpring(0, springCfg);
     translateY.value = withSpring(0, springCfg);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [springCfg]);
 
   return (
@@ -359,7 +361,7 @@ function ActionButton({ action, index, onPress }: ActionButtonProps) {
 
   return (
     <Animated.View
-       
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       entering={require('react-native-reanimated').FadeInRight.delay(staggerDelay).springify()}
       style={[styles.actionButton, { backgroundColor: action.color }]}
     >
@@ -387,6 +389,7 @@ export interface SwipeToDeleteProps {
 }
 
 /**
+ * Swipe To Delete component.
  *
  */
 export function SwipeToDelete({
@@ -423,6 +426,7 @@ export interface SwipeToArchiveProps {
 }
 
 /**
+ * Swipe To Archive component.
  *
  */
 export function SwipeToArchive({

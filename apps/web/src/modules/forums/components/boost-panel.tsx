@@ -27,13 +27,25 @@ interface BoostOption {
 }
 
 const BOOST_OPTIONS: BoostOption[] = [
-  { kind: 'visibility', label: 'Visibility', ratePerHour: 50, description: 'Appear higher in feeds' },
+  {
+    kind: 'visibility',
+    label: 'Visibility',
+    ratePerHour: 50,
+    description: 'Appear higher in feeds',
+  },
   { kind: 'pinned', label: 'Pinned', ratePerHour: 200, description: 'Pin to the top of the forum' },
-  { kind: 'highlighted', label: 'Highlighted', ratePerHour: 100, description: 'Highlighted border & badge' },
+  {
+    kind: 'highlighted',
+    label: 'Highlighted',
+    ratePerHour: 100,
+    description: 'Highlighted border & badge',
+  },
 ];
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Boost Panel component. */
 export function BoostPanel({ targetType, targetId }: BoostPanelProps) {
   const [selectedKind, setSelectedKind] = useState<BoostKind>('visibility');
   const [durationHours, setDurationHours] = useState(6);
@@ -42,7 +54,7 @@ export function BoostPanel({ targetType, targetId }: BoostPanelProps) {
 
   const selectedOption = useMemo(
     () => BOOST_OPTIONS.find((o) => o.kind === selectedKind)!,
-    [selectedKind],
+    [selectedKind]
   );
 
   const totalCost = selectedOption.ratePerHour * durationHours;
@@ -66,7 +78,7 @@ export function BoostPanel({ targetType, targetId }: BoostPanelProps) {
   }, [targetType, targetId, selectedKind, durationHours]);
 
   return (
-    <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+    <div className="border-border bg-card space-y-4 rounded-lg border p-4">
       <h3 className="font-semibold">Boost {targetType}</h3>
 
       {/* Type selector */}
@@ -90,9 +102,9 @@ export function BoostPanel({ targetType, targetId }: BoostPanelProps) {
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">{opt.label}</span>
-                <span className="text-xs text-muted-foreground">{opt.ratePerHour} Nodes/hr</span>
+                <span className="text-muted-foreground text-xs">{opt.ratePerHour} Nodes/hr</span>
               </div>
-              <p className="text-xs text-muted-foreground">{opt.description}</p>
+              <p className="text-muted-foreground text-xs">{opt.description}</p>
             </div>
           </label>
         ))}
@@ -112,14 +124,14 @@ export function BoostPanel({ targetType, targetId }: BoostPanelProps) {
           onChange={(e) => setDurationHours(Number(e.target.value))}
           className="w-full"
         />
-        <div className="flex justify-between text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex justify-between text-xs">
           <span>1 hr</span>
           <span>72 hrs</span>
         </div>
       </div>
 
       {/* Live price calculator */}
-      <div className="rounded-lg bg-muted p-3">
+      <div className="bg-muted rounded-lg p-3">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">
             {selectedOption.ratePerHour} × {durationHours} hr{durationHours > 1 ? 's' : ''}
@@ -133,7 +145,7 @@ export function BoostPanel({ targetType, targetId }: BoostPanelProps) {
         type="button"
         disabled={isPurchasing}
         onClick={handlePurchase}
-        className="w-full rounded-md bg-primary py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className="text-primary-foreground w-full rounded-md bg-primary py-2 text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
       >
         {isPurchasing ? 'Purchasing…' : `Boost for ${totalCost} Nodes`}
       </button>

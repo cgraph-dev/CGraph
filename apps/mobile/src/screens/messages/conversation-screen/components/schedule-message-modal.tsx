@@ -88,6 +88,8 @@ function formatPreview(date: Date): string {
 // Component
 // ────────────────────────────────────────────────────────
 
+/** Description. */
+/** Schedule Message Modal component. */
 export function ScheduleMessageModal({
   visible,
   onClose,
@@ -136,7 +138,7 @@ export function ScheduleMessageModal({
         }
       }
     },
-    [customDate],
+    [customDate]
   );
 
   const handleTimeChange = useCallback(
@@ -149,7 +151,7 @@ export function ScheduleMessageModal({
         setSelectedDate(merged);
       }
     },
-    [customDate],
+    [customDate]
   );
 
   const openCustomPicker = useCallback(() => {
@@ -220,7 +222,12 @@ export function ScheduleMessageModal({
         },
         previewLabel: { fontSize: 12, color: colors.textSecondary, marginBottom: 4 },
         previewText: { fontSize: 14, color: colors.text, lineHeight: 20 },
-        quickLabel: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 8 },
+        quickLabel: {
+          fontSize: 13,
+          fontWeight: '600',
+          color: colors.textSecondary,
+          marginBottom: 8,
+        },
         quickRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
         quickBtn: {
           flexDirection: 'row',
@@ -231,7 +238,11 @@ export function ScheduleMessageModal({
           borderRadius: 12,
           backgroundColor: colors.surfaceHover,
         },
-        quickBtnActive: { backgroundColor: colors.primary + '33', borderWidth: 1, borderColor: colors.primary },
+        quickBtnActive: {
+          backgroundColor: colors.primary + '33',
+          borderWidth: 1,
+          borderColor: colors.primary,
+        },
         quickBtnText: { fontSize: 14, color: colors.text },
         customBtn: {
           flexDirection: 'row',
@@ -273,7 +284,7 @@ export function ScheduleMessageModal({
         scheduleBtnDisabled: { opacity: 0.5 },
         scheduleText: { fontSize: 16, fontWeight: '600', color: '#fff' },
       }),
-    [colors],
+    [colors]
   );
 
   return (
@@ -302,8 +313,7 @@ export function ScheduleMessageModal({
               {QUICK_OPTIONS.map((opt) => {
                 const resolved = opt.resolve();
                 const isActive =
-                  selectedDate &&
-                  Math.abs(selectedDate.getTime() - resolved.getTime()) < 60_000;
+                  selectedDate && Math.abs(selectedDate.getTime() - resolved.getTime()) < 60_000;
 
                 return (
                   <TouchableOpacity
@@ -312,6 +322,7 @@ export function ScheduleMessageModal({
                     onPress={() => handleQuickOption(opt)}
                     activeOpacity={0.7}
                   >
+                    {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
                     <Ionicons name={opt.icon as any} size={18} color={colors.primary} />
                     <Text style={dynamicStyles.quickBtnText}>{opt.label}</Text>
                   </TouchableOpacity>
@@ -336,14 +347,15 @@ export function ScheduleMessageModal({
                 mode={Platform.OS === 'ios' ? 'datetime' : 'date'}
                 display={Platform.OS === 'ios' ? 'inline' : 'default'}
                 minimumDate={minDate}
-                onChange={Platform.OS === 'ios'
-                  ? (_e, d) => {
-                      if (d) {
-                        setCustomDate(d);
-                        setSelectedDate(d);
+                onChange={
+                  Platform.OS === 'ios'
+                    ? (_e, d) => {
+                        if (d) {
+                          setCustomDate(d);
+                          setSelectedDate(d);
+                        }
                       }
-                    }
-                  : handleDateChange
+                    : handleDateChange
                 }
                 themeVariant="dark"
               />

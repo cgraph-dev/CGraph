@@ -21,6 +21,7 @@ export interface NotificationTabsProps {
 }
 
 /**
+ * Notification Tabs component.
  *
  */
 export function NotificationTabs({

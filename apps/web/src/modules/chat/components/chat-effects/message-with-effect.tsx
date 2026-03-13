@@ -18,9 +18,10 @@ interface AnimationVariant {
 }
 
 const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffectConfig>) => {
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const animationSpeed = (config as Record<string, unknown>).animationSpeed as string | undefined; // type assertion: accessing optional config properties
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const size = (config as Record<string, unknown>).size as string | undefined; // type assertion: accessing optional config properties
   const duration = animationSpeed === 'slow' ? 0.8 : animationSpeed === 'fast' ? 0.3 : 0.5;
   const scale = size === 'small' ? 0.9 : size === 'large' ? 1.1 : 1;
@@ -83,7 +84,10 @@ const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffe
     },
     pulse: {
       initial: { scale: 1 },
-      animate: { scale: [1, 1.05, 1], transition: { repeat: Infinity, duration: durations.verySlow.ms / 1000 } },
+      animate: {
+        scale: [1, 1.05, 1],
+        transition: { repeat: Infinity, duration: durations.verySlow.ms / 1000 },
+      },
       exit: { opacity: 0 },
     },
     glow: {
@@ -129,7 +133,11 @@ const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffe
         ],
         backgroundClip: 'text',
         color: 'transparent',
-        transition: { repeat: Infinity, duration: durations.cinematic.ms / 1000, repeatType: 'reverse' },
+        transition: {
+          repeat: Infinity,
+          duration: durations.cinematic.ms / 1000,
+          repeatType: 'reverse',
+        },
       },
       exit: { background: 'none' },
     },
@@ -163,7 +171,10 @@ const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffe
     },
     wave: {
       initial: { y: 0 },
-      animate: { y: [0, -5, 0, 5, 0], transition: { repeat: Infinity, duration: durations.verySlow.ms / 1000 } },
+      animate: {
+        y: [0, -5, 0, 5, 0],
+        transition: { repeat: Infinity, duration: durations.verySlow.ms / 1000 },
+      },
       exit: { y: 0 },
     },
     'elastic-in': {

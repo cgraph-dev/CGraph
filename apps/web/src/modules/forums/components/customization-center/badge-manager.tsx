@@ -7,12 +7,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import {
-  CheckIcon,
-  PlusIcon,
-  TrashIcon,
-  PencilIcon,
-} from '@heroicons/react/24/outline';
+import { CheckIcon, PlusIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 import type { BadgeConfig } from '@cgraph/shared-types';
 
 interface BadgeManagerProps {
@@ -31,6 +26,8 @@ const DEFAULT_BADGE: BadgeConfig = {
   color: '#3B82F6',
 };
 
+/** Description. */
+/** Badge Manager component. */
 export function BadgeManager({ forumId, onSave, saving }: BadgeManagerProps) {
   const [badges, setBadges] = useState<BadgeConfig[]>([]);
   const [editing, setEditing] = useState<BadgeConfig | null>(null);
@@ -82,42 +79,42 @@ export function BadgeManager({ forumId, onSave, saving }: BadgeManagerProps) {
         {badges.map((badge) => (
           <div
             key={badge.id}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5 border border-white/10"
+            className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3"
           >
             {badge.imageUrl ? (
-              <img src={badge.imageUrl} alt={badge.name} className="w-8 h-8 rounded" />
+              <img src={badge.imageUrl} alt={badge.name} className="h-8 w-8 rounded" />
             ) : (
               <div
-                className="w-8 h-8 rounded flex items-center justify-center text-white text-xs font-bold"
+                className="flex h-8 w-8 items-center justify-center rounded text-xs font-bold text-white"
                 style={{ backgroundColor: badge.color }}
               >
                 {badge.name.charAt(0).toUpperCase()}
               </div>
             )}
             <div className="flex-1">
-              <div className="text-sm text-white font-medium">{badge.name}</div>
+              <div className="text-sm font-medium text-white">{badge.name}</div>
               <div className="text-xs text-white/40">{badge.description || 'No description'}</div>
             </div>
-            <div className="text-xs text-white/30 capitalize">{badge.criteria}</div>
+            <div className="text-xs capitalize text-white/30">{badge.criteria}</div>
             <button
               onClick={() => {
                 setEditing(badge);
                 setShowForm(true);
               }}
-              className="p-1.5 rounded hover:bg-white/10 text-white/40 hover:text-white/70"
+              className="rounded p-1.5 text-white/40 hover:bg-white/10 hover:text-white/70"
             >
-              <PencilIcon className="w-4 h-4" />
+              <PencilIcon className="h-4 w-4" />
             </button>
             <button
               onClick={() => handleDeleteBadge(badge.id)}
-              className="p-1.5 rounded hover:bg-red-500/20 text-white/40 hover:text-red-400"
+              className="rounded p-1.5 text-white/40 hover:bg-red-500/20 hover:text-red-400"
             >
-              <TrashIcon className="w-4 h-4" />
+              <TrashIcon className="h-4 w-4" />
             </button>
           </div>
         ))}
         {badges.length === 0 && (
-          <div className="text-center py-8 text-white/30 text-sm">
+          <div className="py-8 text-center text-sm text-white/30">
             No badges created yet. Add your first badge below.
           </div>
         )}
@@ -126,62 +123,65 @@ export function BadgeManager({ forumId, onSave, saving }: BadgeManagerProps) {
       {/* Add Button */}
       <button
         onClick={handleAddBadge}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 text-sm transition-colors"
+        className="flex items-center gap-2 rounded-lg bg-white/5 px-4 py-2 text-sm text-white/70 transition-colors hover:bg-white/10"
       >
-        <PlusIcon className="w-4 h-4" />
+        <PlusIcon className="h-4 w-4" />
         Add Badge
       </button>
 
       {/* Edit Form */}
       {showForm && editing && (
-        <div className="p-4 rounded-lg bg-white/5 border border-white/10 space-y-3">
+        <div className="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
           <h4 className="text-sm font-semibold text-white/80">
             {badges.find((b) => b.id === editing.id) ? 'Edit' : 'New'} Badge
           </h4>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-white/50 mb-1">Name</label>
+              <label className="mb-1 block text-xs text-white/50">Name</label>
               <input
                 type="text"
                 value={editing.name}
                 onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
+                className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
               />
             </div>
             <div>
-              <label className="block text-xs text-white/50 mb-1">Color</label>
+              <label className="mb-1 block text-xs text-white/50">Color</label>
               <input
                 type="color"
                 value={editing.color}
                 onChange={(e) => setEditing({ ...editing, color: e.target.value })}
-                className="w-full h-8 rounded cursor-pointer"
+                className="h-8 w-full cursor-pointer rounded"
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-xs text-white/50 mb-1">Description</label>
+              <label className="mb-1 block text-xs text-white/50">Description</label>
               <input
                 type="text"
                 value={editing.description}
                 onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
+                className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
               />
             </div>
             <div>
-              <label className="block text-xs text-white/50 mb-1">Image URL</label>
+              <label className="mb-1 block text-xs text-white/50">Image URL</label>
               <input
                 type="url"
                 value={editing.imageUrl}
                 onChange={(e) => setEditing({ ...editing, imageUrl: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
+                className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
                 placeholder="https://..."
               />
             </div>
             <div>
-              <label className="block text-xs text-white/50 mb-1">Award Criteria</label>
+              <label className="mb-1 block text-xs text-white/50">Award Criteria</label>
               <select
                 value={editing.criteria}
-                onChange={(e) => setEditing({ ...editing, criteria: e.target.value as BadgeConfig['criteria'] })}
-                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
+                onChange={(e) =>
+                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                  setEditing({ ...editing, criteria: e.target.value as BadgeConfig['criteria'] })
+                }
+                className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
               >
                 <option value="manual">Manual</option>
                 <option value="post_count">Post Count</option>
@@ -196,13 +196,13 @@ export function BadgeManager({ forumId, onSave, saving }: BadgeManagerProps) {
                 setShowForm(false);
                 setEditing(null);
               }}
-              className="px-3 py-1.5 rounded text-sm text-white/50 hover:text-white/70"
+              className="rounded px-3 py-1.5 text-sm text-white/50 hover:text-white/70"
             >
               Cancel
             </button>
             <button
               onClick={handleSaveBadge}
-              className="px-3 py-1.5 rounded bg-blue-600 text-white text-sm hover:bg-blue-500"
+              className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-500"
             >
               Save Badge
             </button>
@@ -211,13 +211,13 @@ export function BadgeManager({ forumId, onSave, saving }: BadgeManagerProps) {
       )}
 
       {/* Save All */}
-      <div className="flex justify-end pt-4 border-t border-white/10">
+      <div className="flex justify-end border-t border-white/10 pt-4">
         <button
           onClick={handleSaveAll}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-500 disabled:opacity-50"
         >
-          <CheckIcon className="w-4 h-4" />
+          <CheckIcon className="h-4 w-4" />
           {saving ? 'Saving...' : 'Save Badges'}
         </button>
       </div>

@@ -23,6 +23,7 @@ const logger = createLogger('UserProfileScreen');
 type RouteProps = RouteProp<FriendsStackParamList, 'UserProfile'>;
 
 /**
+ * User Profile Screen component.
  *
  */
 export default function UserProfileScreen() {
@@ -52,7 +53,9 @@ export default function UserProfileScreen() {
     }
   }, [userId, navigation]);
 
-  useEffect(() => { fetchUser(); }, [fetchUser]);
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   const actions = useProfileActions({
     user,

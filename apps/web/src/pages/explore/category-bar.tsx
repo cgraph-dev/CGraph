@@ -21,7 +21,7 @@ interface CategoryBarProps {
  */
 export default function CategoryBar({ categories, selected, onSelect }: CategoryBarProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+    <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2">
       {/* "All" chip */}
       <button
         onClick={() => onSelect(null)}

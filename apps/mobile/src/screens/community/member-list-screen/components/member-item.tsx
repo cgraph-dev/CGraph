@@ -20,6 +20,8 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
+/** Description. */
+/** Member Item component. */
 export function MemberItem({ member, onPress }: MemberItemProps) {
   return (
     <TouchableOpacity
@@ -52,7 +54,10 @@ export function MemberItem({ member, onPress }: MemberItemProps) {
             {member.displayName || member.username}
           </Text>
           <View
-            style={[styles.groupBadge, { backgroundColor: (member.userGroupColor || '#6b7280') + '30' }]}
+            style={[
+              styles.groupBadge,
+              { backgroundColor: (member.userGroupColor || '#6b7280') + '30' },
+            ]}
           >
             <Text style={[styles.groupBadgeText, { color: member.userGroupColor || '#6b7280' }]}>
               {member.userGroup}

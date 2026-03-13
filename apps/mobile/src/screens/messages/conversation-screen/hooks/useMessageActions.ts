@@ -8,7 +8,15 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback } from 'react';
-import { useSharedValue, withTiming, withSpring, withDelay, runOnJS, Easing, type SharedValue } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  withTiming,
+  withSpring,
+  withDelay,
+  runOnJS,
+  Easing,
+  type SharedValue,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import * as Clipboard from 'expo-clipboard';
 import { Alert } from 'react-native';
@@ -54,6 +62,7 @@ export function useMessageActions(): UseMessageActionsReturn {
   const actionItemAnim1 = useSharedValue(0);
   const actionItemAnim2 = useSharedValue(0);
   const actionItemAnim3 = useSharedValue(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const actionItemAnims = [actionItemAnim0, actionItemAnim1, actionItemAnim2, actionItemAnim3];
 
   /**
@@ -72,7 +81,10 @@ export function useMessageActions(): UseMessageActionsReturn {
       actionItemAnims.forEach((anim) => (anim.value = 0));
 
       // Staggered entrance animation
-      backdropAnim.value = withTiming(1, { duration: durations.normal.ms, easing: Easing.out(Easing.cubic) });
+      backdropAnim.value = withTiming(1, {
+        duration: durations.normal.ms,
+        easing: Easing.out(Easing.cubic),
+      });
       menuScaleAnim.value = withSpring(1, { stiffness: 180, damping: 10 });
       messageActionsAnim.value = withSpring(1, { stiffness: 120, damping: 9 });
       actionItemAnims.forEach((anim, index) => {

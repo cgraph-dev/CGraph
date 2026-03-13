@@ -6,12 +6,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { entranceVariants, springs } from '@/lib/animation-presets';
-import {
-  XMarkIcon,
-  PlusIcon,
-  TrashIcon,
-  ChartBarIcon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon, PlusIcon, TrashIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 
 interface CreatePollModalProps {
   isOpen: boolean;

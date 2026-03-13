@@ -4,7 +4,12 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { DevicePhoneMobileIcon, ComputerDesktopIcon, DeviceTabletIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import {
+  DevicePhoneMobileIcon,
+  ComputerDesktopIcon,
+  DeviceTabletIcon,
+  GlobeAltIcon,
+} from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { asString, asBool } from '@/lib/api-utils';
 import { createLogger } from '@/lib/logger';
@@ -58,8 +63,7 @@ function getDeviceIcon(device: string) {
   const d = device.toLowerCase();
   if (d.includes('iphone') || d.includes('android') || d.includes('mobile'))
     return DevicePhoneMobileIcon;
-  if (d.includes('ipad') || d.includes('tablet'))
-    return DeviceTabletIcon;
+  if (d.includes('ipad') || d.includes('tablet')) return DeviceTabletIcon;
   if (d.includes('mac') || d.includes('windows') || d.includes('linux') || d.includes('desktop'))
     return ComputerDesktopIcon;
   return GlobeAltIcon;

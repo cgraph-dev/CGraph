@@ -72,7 +72,7 @@ export default function CommunityCard({ community }: CommunityCardProps) {
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="truncate font-semibold text-white group-hover:text-primary-400 transition-colors">
+            <h3 className="truncate font-semibold text-white transition-colors group-hover:text-primary-400">
               {community.name}
             </h3>
             {community.is_verified && (
@@ -83,7 +83,9 @@ export default function CommunityCard({ community }: CommunityCardProps) {
           </div>
 
           <div className="mt-0.5 flex items-center gap-2 text-xs text-white/40">
-            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${typeColor}`}>
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${typeColor}`}
+            >
               <TypeIcon className="h-3 w-3" />
               {typeLabel}
             </span>

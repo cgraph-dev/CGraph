@@ -31,6 +31,7 @@ import { AddEmojiModal } from './add-emoji-modal';
 import { styles } from './styles';
 
 /**
+ * Custom Emoji Screen component.
  *
  */
 export default function CustomEmojiScreen() {
@@ -123,7 +124,7 @@ export default function CustomEmojiScreen() {
     shortcode: string,
     imageUri: string,
     category: string,
-    animationFormat?: AnimationFormat,
+    animationFormat?: AnimationFormat
   ) => {
     try {
       HapticFeedback.medium();

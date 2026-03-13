@@ -1,6 +1,6 @@
 /**
  * Alert Component
- * 
+ *
  * Display important messages to users.
  */
 
@@ -31,14 +31,7 @@ const variantStyles: Record<AlertVariant, string> = {
  */
 export function Alert({ children, variant = 'default', className = '' }: AlertProps) {
   return (
-    <div
-      role="alert"
-      className={`
-        p-4 rounded-lg border
-        ${variantStyles[variant]}
-        ${className}
-      `}
-    >
+    <div role="alert" className={`rounded-lg border p-4 ${variantStyles[variant]} ${className} `}>
       {children}
     </div>
   );
@@ -56,11 +49,7 @@ export interface AlertDescriptionProps {
  * Alert Description component.
  */
 export function AlertDescription({ children, className = '' }: AlertDescriptionProps) {
-  return (
-    <div className={`text-sm ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`text-sm ${className}`}>{children}</div>;
 }
 
 export interface AlertTitleProps {
@@ -75,11 +64,7 @@ export interface AlertTitleProps {
  * Alert Title component.
  */
 export function AlertTitle({ children, className = '' }: AlertTitleProps) {
-  return (
-    <h4 className={`font-medium mb-1 ${className}`}>
-      {children}
-    </h4>
-  );
+  return <h4 className={`mb-1 font-medium ${className}`}>{children}</h4>;
 }
 
 export default Alert;

@@ -38,10 +38,7 @@ export const ProfileHeader = memo(function ProfileHeader({
   onAddFriend,
 }: ProfileHeaderProps) {
   const bannerContent = (
-    <LinearGradient
-      colors={['transparent', 'rgba(18,18,24,0.8)']}
-      style={styles.bannerGradient}
-    />
+    <LinearGradient colors={['transparent', 'rgba(18,18,24,0.8)']} style={styles.bannerGradient} />
   );
 
   return (
@@ -55,26 +52,23 @@ export const ProfileHeader = memo(function ProfileHeader({
           {bannerContent}
         </ImageBackground>
       ) : (
-        <View style={[styles.banner, { backgroundColor: bannerColor }]}>
-          {bannerContent}
-        </View>
+        <View style={[styles.banner, { backgroundColor: bannerColor }]}>{bannerContent}</View>
       )}
 
       {/* Avatar */}
       <View style={styles.avatarWrap}>
-        <Avatar
-          size="xl"
-          name={displayName}
-          src={avatarUrl}
-          status={status}
-        />
+        <Avatar size="xl" name={displayName} src={avatarUrl} status={status} />
       </View>
 
       {/* Info */}
       <View style={styles.info}>
         <Text style={styles.displayName}>{displayName}</Text>
         <Text style={styles.username}>@{username}</Text>
-        {bio && <Text style={styles.bio} numberOfLines={3}>{bio}</Text>}
+        {bio && (
+          <Text style={styles.bio} numberOfLines={3}>
+            {bio}
+          </Text>
+        )}
 
         {/* Stats row */}
         <View style={styles.statsRow}>

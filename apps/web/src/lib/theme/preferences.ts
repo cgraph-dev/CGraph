@@ -62,7 +62,7 @@ export function loadPreferences(): ThemePreferences {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const parsed = JSON.parse(stored) as ThemePreferences; // safe downcast – structural boundary
       return { ...getDefaultPreferences(), ...parsed };
     }

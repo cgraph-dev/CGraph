@@ -37,6 +37,7 @@ export function useScheduledMessages(conversationId: string, isOpen: boolean) {
 
   const [cancelingId, setCancelingId] = useState<string | null>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const messages = scheduledMessages[conversationId] || [];
 
   useEffect(() => {

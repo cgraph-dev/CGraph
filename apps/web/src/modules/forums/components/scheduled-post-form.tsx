@@ -14,12 +14,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import {
-  CalendarDaysIcon,
-  ClockIcon,
-  GlobeAltIcon,
-  EyeIcon,
-} from '@heroicons/react/24/outline';
+import { CalendarDaysIcon, ClockIcon, GlobeAltIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -64,6 +59,7 @@ function getMinTime(date: string): string {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Scheduled Post Form component. */
 export default function ScheduledPostForm({
   content,
   title,
@@ -106,12 +102,7 @@ export default function ScheduledPostForm({
   };
 
   return (
-    <div
-      className={cn(
-        'rounded-xl border border-white/[0.06] bg-white/[0.03] p-4',
-        className,
-      )}
-    >
+    <div className={cn('rounded-xl border border-white/[0.06] bg-white/[0.03] p-4', className)}>
       <div className="mb-4 flex items-center gap-2">
         <CalendarDaysIcon className="h-5 w-5 text-primary-400" />
         <h3 className="text-sm font-bold text-white">Schedule Post</h3>
@@ -127,7 +118,7 @@ export default function ScheduledPostForm({
               value={date}
               min={getMinDate()}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/30 [color-scheme:dark]"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white outline-none [color-scheme:dark] focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/30"
             />
           </div>
         </div>
@@ -140,7 +131,7 @@ export default function ScheduledPostForm({
               value={time}
               min={date ? getMinTime(date) : undefined}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/30 [color-scheme:dark]"
+              className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-white outline-none [color-scheme:dark] focus:border-primary-500/50 focus:ring-1 focus:ring-primary-500/30"
             />
           </div>
         </div>
@@ -178,9 +169,7 @@ export default function ScheduledPostForm({
               animate={{ opacity: 1, height: 'auto' }}
               className="overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] p-3"
             >
-              {title && (
-                <h4 className="mb-2 text-sm font-semibold text-white">{title}</h4>
-              )}
+              {title && <h4 className="mb-2 text-sm font-semibold text-white">{title}</h4>}
               <p className="max-h-40 overflow-y-auto whitespace-pre-wrap text-sm text-gray-300">
                 {content}
               </p>
@@ -201,7 +190,7 @@ export default function ScheduledPostForm({
             'flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all',
             isValid
               ? 'bg-primary-600 text-white hover:bg-primary-500'
-              : 'cursor-not-allowed bg-white/[0.04] text-gray-600',
+              : 'cursor-not-allowed bg-white/[0.04] text-gray-600'
           )}
         >
           Schedule

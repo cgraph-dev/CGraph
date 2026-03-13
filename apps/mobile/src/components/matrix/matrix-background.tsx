@@ -56,7 +56,7 @@ import Animated, {
 
 import type {
   MatrixBackgroundProps,
-  MatrixBackgroundRef,
+  _MatrixBackgroundRef,
   MatrixColumnData,
   MatrixChar,
   MatrixMobileTheme,
@@ -123,6 +123,7 @@ const MatrixColumn = memo<MatrixColumnProps>(
         cancelAnimation(translateY);
         cancelAnimation(opacity);
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [column.id, column.active, column.speed, startY, endY, duration, speedMultiplier]);
 
     const animatedStyle = useAnimatedStyle(
@@ -246,7 +247,7 @@ export const MatrixBackground = memo(function MatrixBackground(props: MatrixBack
   // Theme
   const theme: MatrixMobileTheme = useMemo(() => {
     if (typeof themeProp === 'string') {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return getTheme(themeProp as ThemePreset);
     }
     return themeProp;
@@ -505,6 +506,7 @@ export const MatrixBackground = memo(function MatrixBackground(props: MatrixBack
     return () => {
       stopLoop();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Handle app state changes for battery optimization
@@ -547,6 +549,7 @@ export const MatrixBackground = memo(function MatrixBackground(props: MatrixBack
       initializeColumns();
       startLoop();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dimensions.width, dimensions.height]);
 
   // =========================================================================

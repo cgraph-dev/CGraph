@@ -9,7 +9,13 @@
 import { durations } from '@cgraph/animation-constants';
 import { useState, useRef, useCallback } from 'react';
 import { Alert } from 'react-native';
-import { useSharedValue, withSpring, withTiming, runOnJS, type SharedValue } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  withSpring,
+  withTiming,
+  runOnJS,
+  type SharedValue,
+} from 'react-native-reanimated';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Haptics from 'expo-haptics';

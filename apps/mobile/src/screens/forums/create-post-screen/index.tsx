@@ -19,8 +19,23 @@
 
 import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Switch, StyleSheet, Alert, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
-import Animated, { useSharedValue, withTiming, withSpring, useAnimatedStyle } from 'react-native-reanimated';
+import {
+  View,
+  Text,
+  TextInput,
+  Switch,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+} from 'react-native';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withSpring,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -50,11 +65,12 @@ type Props = {
 };
 
 /**
+ * Creates post screen.
  *
  */
 export default function CreatePostScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -85,6 +101,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
 
     fadeAnim.value = withTiming(1, { duration: durations.smooth.ms });
     slideAnim.value = withSpring(0, { damping: 8, stiffness: 50 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async () => {
@@ -125,7 +142,8 @@ export default function CreatePostScreen({ navigation, route }: Props) {
       navigation.goBack();
     } catch (error: unknown) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const apiError = error as { response?: { data?: { message?: string } } };
       Alert.alert('Error', apiError.response?.data?.message || 'Failed to create post');
     } finally {
@@ -151,10 +169,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
         <Animated.ScrollView
-          style={[
-            styles.scrollView,
-            scrollAnimStyle,
-          ]}
+          style={[styles.scrollView, scrollAnimStyle]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >

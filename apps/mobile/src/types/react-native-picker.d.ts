@@ -25,6 +25,7 @@ declare module '@react-native-picker/picker' {
     children?: React.ReactNode;
   }
 
+  /** Picker class. */
   export class Picker<T = string> extends Component<PickerProps<T>> {
     static Item: React.ComponentType<PickerItemProps>;
   }

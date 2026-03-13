@@ -66,19 +66,9 @@ export function PulsingDot() {
   return (
     <View style={styles.pulsingDotContainer}>
       {/* Outer rotating ring */}
-      <Animated.View
-        style={[
-          styles.pulsingDotRing,
-          ringStyle,
-        ]}
-      />
+      <Animated.View style={[styles.pulsingDotRing, ringStyle]} />
       {/* Pulsing glow */}
-      <Animated.View
-        style={[
-          styles.pulsingDotOuter,
-          pulseStyle,
-        ]}
-      />
+      <Animated.View style={[styles.pulsingDotOuter, pulseStyle]} />
       {/* Core dot */}
       <View style={styles.pulsingDotInner} />
     </View>

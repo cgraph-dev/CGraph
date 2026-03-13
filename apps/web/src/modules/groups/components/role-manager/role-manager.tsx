@@ -96,29 +96,36 @@ export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
 
       if (selectedRole.id.startsWith('temp-')) {
         // Create new role on backend
-        api.post(`/api/v1/groups/${groupId}/roles`, {
-          name: updatedRole.name,
-          color: updatedRole.color,
-          permissions: updatedRole.permissions,
-          position: updatedRole.position,
-          is_mentionable: updatedRole.isMentionable,
-        }).then((res) => {
-          const newId = res.data?.data?.id || res.data?.id;
-          if (newId) {
-            setRoles((prev) => prev.map((r) => r.id === selectedRole.id ? { ...r, id: newId } : r));
-            setSelectedRole((prev) => prev ? { ...prev, id: newId } : prev);
-          }
-          setIsCreating(false);
-        }).catch(() => {});
+        api
+          .post(`/api/v1/groups/${groupId}/roles`, {
+            name: updatedRole.name,
+            color: updatedRole.color,
+            permissions: updatedRole.permissions,
+            position: updatedRole.position,
+            is_mentionable: updatedRole.isMentionable,
+          })
+          .then((res) => {
+            const newId = res.data?.data?.id || res.data?.id;
+            if (newId) {
+              setRoles((prev) =>
+                prev.map((r) => (r.id === selectedRole.id ? { ...r, id: newId } : r))
+              );
+              setSelectedRole((prev) => (prev ? { ...prev, id: newId } : prev));
+            }
+            setIsCreating(false);
+          })
+          .catch(() => {});
       } else {
         // Update existing role on backend
-        api.put(`/api/v1/groups/${groupId}/roles/${selectedRole.id}`, {
-          name: updatedRole.name,
-          color: updatedRole.color,
-          permissions: updatedRole.permissions,
-          position: updatedRole.position,
-          is_mentionable: updatedRole.isMentionable,
-        }).catch(() => {});
+        api
+          .put(`/api/v1/groups/${groupId}/roles/${selectedRole.id}`, {
+            name: updatedRole.name,
+            color: updatedRole.color,
+            permissions: updatedRole.permissions,
+            position: updatedRole.position,
+            is_mentionable: updatedRole.isMentionable,
+          })
+          .catch(() => {});
       }
     },
     [roles, selectedRole, groupId]

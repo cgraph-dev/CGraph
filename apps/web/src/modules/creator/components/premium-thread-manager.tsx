@@ -37,6 +37,8 @@ const EMPTY_FORM: FormData = {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Premium Thread Manager component. */
 export function PremiumThreadManager() {
   const [threads, setThreads] = useState<PremiumThread[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,14 +111,14 @@ export function PremiumThreadManager() {
     <div className="space-y-4">
       {/* Thread list */}
       {threads.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No premium threads yet.</p>
+        <p className="text-muted-foreground text-sm">No premium threads yet.</p>
       ) : (
-        <div className="divide-y divide-border rounded-lg border border-border">
+        <div className="divide-border border-border divide-y rounded-lg border">
           {threads.map((t) => (
             <div key={t.id} className="flex items-center justify-between px-4 py-3">
               <div>
                 <p className="text-sm font-medium">{t.title ?? t.threadId}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   {t.priceNodes} Nodes · Preview: {t.previewLength} chars
                   {t.subscriberOnly && ' · Subscriber only'}
                 </p>
@@ -124,7 +126,7 @@ export function PremiumThreadManager() {
               <button
                 type="button"
                 onClick={() => handleEdit(t)}
-                className="rounded-md border border-border px-3 py-1 text-xs font-medium hover:bg-muted"
+                className="border-border hover:bg-muted rounded-md border px-3 py-1 text-xs font-medium"
               >
                 Edit
               </button>
@@ -138,7 +140,7 @@ export function PremiumThreadManager() {
         <button
           type="button"
           onClick={handleCreate}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="text-primary-foreground rounded-md bg-primary px-4 py-2 text-sm font-medium hover:bg-primary/90"
         >
           + New Premium Thread
         </button>
@@ -146,7 +148,7 @@ export function PremiumThreadManager() {
 
       {/* Form */}
       {showForm && (
-        <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+        <div className="border-border bg-card space-y-4 rounded-lg border p-4">
           <h3 className="font-medium">{editingId ? 'Edit' : 'Create'} Premium Thread</h3>
 
           {/* Thread ID */}
@@ -157,7 +159,7 @@ export function PremiumThreadManager() {
             <input
               id="pt-thread-id"
               type="text"
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="border-input bg-background focus:ring-ring w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2"
               value={form.threadId}
               onChange={(e) => setForm((f) => ({ ...f, threadId: e.target.value }))}
               disabled={!!editingId}
@@ -173,7 +175,7 @@ export function PremiumThreadManager() {
               id="pt-price"
               type="number"
               min={1}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="border-input bg-background focus:ring-ring w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2"
               value={form.priceNodes}
               onChange={(e) =>
                 setForm((f) => ({ ...f, priceNodes: Math.max(1, Number(e.target.value)) }))
@@ -205,9 +207,7 @@ export function PremiumThreadManager() {
               step={50}
               className="w-full"
               value={form.previewLength}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, previewLength: Number(e.target.value) }))
-              }
+              onChange={(e) => setForm((f) => ({ ...f, previewLength: Number(e.target.value) }))}
             />
           </div>
 
@@ -217,7 +217,7 @@ export function PremiumThreadManager() {
               type="button"
               disabled={isSaving || !form.threadId}
               onClick={handleSubmit}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              className="text-primary-foreground rounded-md bg-primary px-4 py-2 text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
             >
               {isSaving ? 'Saving…' : editingId ? 'Update' : 'Create'}
             </button>
@@ -227,7 +227,7 @@ export function PremiumThreadManager() {
                 setShowForm(false);
                 setEditingId(null);
               }}
-              className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
+              className="border-border hover:bg-muted rounded-md border px-4 py-2 text-sm font-medium"
             >
               Cancel
             </button>

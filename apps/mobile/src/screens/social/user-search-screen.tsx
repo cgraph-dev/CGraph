@@ -49,7 +49,14 @@ function UserResultRow({
   isPending,
 }: {
   user: UserResult;
-  colors: { text: string; textSecondary: string; card: string; border: string; primary: string; background: string };
+  colors: {
+    text: string;
+    textSecondary: string;
+    card: string;
+    border: string;
+    primary: string;
+    background: string;
+  };
   onAddFriend: (userId: string) => void;
   isPending: boolean;
 }) {
@@ -80,7 +87,10 @@ function UserResultRow({
       <TouchableOpacity
         onPress={() => onAddFriend(user.id)}
         disabled={isPending}
-        style={[styles.addButton, { backgroundColor: colors.primary, opacity: isPending ? 0.5 : 1 }]}
+        style={[
+          styles.addButton,
+          { backgroundColor: colors.primary, opacity: isPending ? 0.5 : 1 },
+        ]}
       >
         <Text style={styles.addButtonText}>{isPending ? 'Sending…' : 'Add Friend'}</Text>
       </TouchableOpacity>
@@ -153,7 +163,7 @@ export default function UserSearchScreen({ navigation: _navigation }: { navigati
         }
       }
     }, 300),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -201,7 +211,7 @@ export default function UserSearchScreen({ navigation: _navigation }: { navigati
         isPending={pendingIds.has(item.id)}
       />
     ),
-    [colors, pendingIds],
+    [colors, pendingIds]
   );
 
   const keyExtractor = useCallback((item: UserResult) => item.id, []);
@@ -209,7 +219,12 @@ export default function UserSearchScreen({ navigation: _navigation }: { navigati
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Search input */}
-      <View style={[styles.searchContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View
+        style={[
+          styles.searchContainer,
+          { backgroundColor: colors.card, borderColor: colors.border },
+        ]}
+      >
         <Ionicons name="search" size={20} color={colors.textSecondary} />
         <TextInput
           style={[styles.input, { color: colors.text }]}
@@ -255,9 +270,7 @@ export default function UserSearchScreen({ navigation: _navigation }: { navigati
       )}
 
       {/* Empty state */}
-      {!isLoading && !error && results.length === 0 && (
-        <EmptyState query={query} colors={colors} />
-      )}
+      {!isLoading && !error && results.length === 0 && <EmptyState query={query} colors={colors} />}
     </View>
   );
 }

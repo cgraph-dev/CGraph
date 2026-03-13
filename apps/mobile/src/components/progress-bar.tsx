@@ -3,13 +3,7 @@
  * @module components/ProgressBar
  */
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useThemeStore } from '@/stores';
 
 type ProgressBarProps = {
@@ -22,6 +16,7 @@ type ProgressBarProps = {
 };
 
 /**
+ * Progress Bar component.
  *
  */
 export default function ProgressBar({
@@ -33,22 +28,22 @@ export default function ProgressBar({
   style,
 }: ProgressBarProps) {
   const { colors } = useThemeStore();
-  
+
   const clampedValue = Math.min(100, Math.max(0, value));
-  
+
   const heights = {
     sm: 4,
     md: 8,
     lg: 12,
   };
-  
+
   const colorMap = {
     primary: colors.primary,
     success: colors.success,
     warning: colors.warning,
     error: colors.error,
   };
-  
+
   const height = heights[size];
   const barColor = colorMap[color];
 
@@ -56,9 +51,7 @@ export default function ProgressBar({
     <View style={[styles.container, style]}>
       {(showLabel || label) && (
         <View style={styles.labelContainer}>
-          {label && (
-            <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
-          )}
+          {label && <Text style={[styles.label, { color: colors.text }]}>{label}</Text>}
           {showLabel && (
             <Text style={[styles.percentage, { color: colors.textSecondary }]}>
               {Math.round(clampedValue)}%

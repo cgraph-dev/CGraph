@@ -127,7 +127,8 @@ class SessionManager {
 
     // Check if we should use PQXDH + Triple Ratchet
     // type assertion: widen to PQPreKeyBundle to check for PQ support via bundleSupportsPQ guard
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const pqBundle = recipientBundle as PQPreKeyBundle;
     if (this._useTripleRatchet && bundleSupportsPQ(pqBundle)) {
       const { session, pendingPQData } = await createPQSessionForRecipient(

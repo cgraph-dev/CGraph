@@ -86,10 +86,7 @@ export const PanicWipeButton = memo(function PanicWipeButton({
     >
       {/* Progress ring */}
       {isHolding && (
-        <svg
-          className="absolute inset-0 -rotate-90"
-          viewBox="0 0 32 32"
-        >
+        <svg className="absolute inset-0 -rotate-90" viewBox="0 0 32 32">
           <circle
             cx="16"
             cy="16"

@@ -104,41 +104,48 @@ export function DiscoverTab({ searchQuery, searchResults, onSearchChange }: Disc
                       </p>
                     )}
                   </div>
-                  {result.type === 'user' && result.id !== currentUser?.id && (() => {
-                    const isFriend = friends.some((f) => f.id === result.id);
-                    const isPending = sentRequests.some((r) => r.user.id === result.id) ||
-                      pendingRequests.some((r) => r.user.id === result.id);
-                    return (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          if (!isFriend && !isPending) {
-                            try {
-                              await sendRequest(result.id);
-                              HapticFeedback.success();
-                            } catch {
-                              HapticFeedback.error();
+                  {result.type === 'user' &&
+                    result.id !== currentUser?.id &&
+                    (() => {
+                      const isFriend = friends.some((f) => f.id === result.id);
+                      const isPending =
+                        sentRequests.some((r) => r.user.id === result.id) ||
+                        pendingRequests.some((r) => r.user.id === result.id);
+                      return (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            if (!isFriend && !isPending) {
+                              try {
+                                await sendRequest(result.id);
+                                HapticFeedback.success();
+                              } catch {
+                                HapticFeedback.error();
+                              }
                             }
-                          }
-                        }}
-                        className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
-                          isFriend || isPending
-                            ? 'bg-white/[0.06] text-white/60 ring-1 ring-white/[0.08]'
-                            : 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30'
-                        }`}
-                        disabled={isFriend || isPending}
-                      >
-                        {isFriend ? 'Friends' : isPending ? 'Pending' : (
-                          <>
-                            <UserPlusIcon className="h-4 w-4" />
-                            Add
-                          </>
-                        )}
-                      </motion.button>
-                    );
-                  })()}
+                          }}
+                          className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+                            isFriend || isPending
+                              ? 'bg-white/[0.06] text-white/60 ring-1 ring-white/[0.08]'
+                              : 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30'
+                          }`}
+                          disabled={isFriend || isPending}
+                        >
+                          {isFriend ? (
+                            'Friends'
+                          ) : isPending ? (
+                            'Pending'
+                          ) : (
+                            <>
+                              <UserPlusIcon className="h-4 w-4" />
+                              Add
+                            </>
+                          )}
+                        </motion.button>
+                      );
+                    })()}
                   {result.type !== 'user' && (
                     <motion.button
                       whileHover={{ scale: 1.05 }}

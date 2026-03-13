@@ -60,9 +60,10 @@ interface BlockedUser {
 // =============================================================================
 
 /**
+ * Blocked Users Screen component.
  *
  */
-export default function BlockedUsersScreen({ navigation }: Props) {
+export default function BlockedUsersScreen({ _navigation }: Props) {
   const { colors } = useThemeStore();
 
   const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);
@@ -78,29 +79,32 @@ export default function BlockedUsersScreen({ navigation }: Props) {
   const modalScaleAnim = useMemo(() => new Animated.Value(0), []);
 
   // Fetch blocked users
-  const fetchBlockedUsers = useCallback(async (showRefresh = false) => {
-    if (showRefresh) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
-    }
-    setError(null);
+  const fetchBlockedUsers = useCallback(
+    async (showRefresh = false) => {
+      if (showRefresh) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoading(true);
+      }
+      setError(null);
 
-    try {
-      const response = await api.get('/api/v1/users/blocked');
-      setBlockedUsers(response.data);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: durations.slow.ms,
-        useNativeDriver: true,
-      }).start();
-    } catch {
-      setError('Failed to load blocked users');
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [fadeAnim]);
+      try {
+        const response = await api.get('/api/v1/users/blocked');
+        setBlockedUsers(response.data);
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: durations.slow.ms,
+          useNativeDriver: true,
+        }).start();
+      } catch {
+        setError('Failed to load blocked users');
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [fadeAnim]
+  );
 
   useEffect(() => {
     fetchBlockedUsers();
@@ -118,17 +122,20 @@ export default function BlockedUsersScreen({ navigation }: Props) {
   }, [blockedUsers, searchQuery]);
 
   // Handle unblock
-  const handleUnblockPress = useCallback((user: BlockedUser) => {
-    setSelectedUser(user);
-    setShowConfirmModal(true);
-    Animated.spring(modalScaleAnim, {
-      toValue: 1,
-      tension: 50,
-      friction: 8,
-      useNativeDriver: true,
-    }).start();
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, [modalScaleAnim]);
+  const handleUnblockPress = useCallback(
+    (user: BlockedUser) => {
+      setSelectedUser(user);
+      setShowConfirmModal(true);
+      Animated.spring(modalScaleAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 8,
+        useNativeDriver: true,
+      }).start();
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    },
+    [modalScaleAnim]
+  );
 
   const handleCloseModal = useCallback(() => {
     Animated.timing(modalScaleAnim, {
@@ -147,9 +154,7 @@ export default function BlockedUsersScreen({ navigation }: Props) {
     setIsUnblocking(true);
     try {
       await api.delete(`/api/v1/users/blocked/${selectedUser.blockedUserId}`);
-      setBlockedUsers((prev) =>
-        prev.filter((b) => b.blockedUserId !== selectedUser.blockedUserId)
-      );
+      setBlockedUsers((prev) => prev.filter((b) => b.blockedUserId !== selectedUser.blockedUserId));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       handleCloseModal();
     } catch {
@@ -163,10 +168,7 @@ export default function BlockedUsersScreen({ navigation }: Props) {
   const renderItem = useCallback(
     ({ item }: { item: BlockedUser }) => (
       <Animated.View
-        style={[
-          styles.userCard,
-          { backgroundColor: colors.surface, opacity: fadeAnim },
-        ]}
+        style={[styles.userCard, { backgroundColor: colors.surface, opacity: fadeAnim }]}
       >
         {/* Avatar */}
         {item.blockedUser.avatarUrl ? (
@@ -220,9 +222,7 @@ export default function BlockedUsersScreen({ navigation }: Props) {
           {searchQuery ? 'No users found' : 'No blocked users'}
         </Text>
         <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-          {searchQuery
-            ? 'Try a different search term'
-            : "You haven't blocked anyone yet"}
+          {searchQuery ? 'Try a different search term' : "You haven't blocked anyone yet"}
         </Text>
       </View>
     );
@@ -246,10 +246,7 @@ export default function BlockedUsersScreen({ navigation }: Props) {
         </View>
         <Text style={[styles.errorText, { color: colors.textSecondary }]}>{error}</Text>
         <TouchableOpacity onPress={() => fetchBlockedUsers()}>
-          <LinearGradient
-            colors={[colors.primary, colors.secondary]}
-            style={styles.retryButton}
-          >
+          <LinearGradient colors={[colors.primary, colors.secondary]} style={styles.retryButton}>
             <Text style={styles.retryButtonText}>Retry</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -269,7 +266,12 @@ export default function BlockedUsersScreen({ navigation }: Props) {
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <View style={[styles.searchBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View
+            style={[
+              styles.searchBox,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
             <Text style={styles.searchIcon}>🔍</Text>
             <TextInput
               value={searchQuery}
@@ -324,11 +326,7 @@ export default function BlockedUsersScreen({ navigation }: Props) {
         animationType="fade"
         onRequestClose={handleCloseModal}
       >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={handleCloseModal}
-          style={styles.modalOverlay}
-        >
+        <TouchableOpacity activeOpacity={1} onPress={handleCloseModal} style={styles.modalOverlay}>
           <Animated.View
             style={[
               styles.modalContent,
@@ -347,7 +345,12 @@ export default function BlockedUsersScreen({ navigation }: Props) {
                     style={styles.modalAvatar}
                   />
                 ) : (
-                  <View style={[styles.modalAvatarPlaceholder, { backgroundColor: colors.primary + '30' }]}>
+                  <View
+                    style={[
+                      styles.modalAvatarPlaceholder,
+                      { backgroundColor: colors.primary + '30' },
+                    ]}
+                  >
                     <Text style={[styles.modalAvatarInitial, { color: colors.primary }]}>
                       {selectedUser?.blockedUser.displayName?.charAt(0).toUpperCase()}
                     </Text>

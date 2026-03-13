@@ -4,14 +4,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  FlatList,
-  RefreshControl,
-  TouchableOpacity,
-  Text,
-  TextInput,
-} from 'react-native';
+import { View, FlatList, RefreshControl, TouchableOpacity, Text, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -30,14 +23,23 @@ import { AnimatedFriendItem } from './friend-list-screen/components/animated-fri
 type NavigationProp = NativeStackNavigationProp<FriendsStackParamList>;
 
 /**
+ * Friend List Screen component.
  *
  */
 export default function FriendListScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { colors } = useThemeStore();
   const {
-    friends, filteredFriends, loading, refreshing, searchQuery,
-    setSearchQuery, pendingCount, onlineFriends, onlineCount, onRefresh,
+    friends,
+    filteredFriends,
+    loading,
+    refreshing,
+    searchQuery,
+    setSearchQuery,
+    pendingCount,
+    onlineFriends,
+    onlineCount,
+    onRefresh,
   } = useFriendList();
 
   const handleFriendPress = (userId: string) => {
@@ -46,9 +48,11 @@ export default function FriendListScreen() {
 
   const renderFriend = ({ item, index }: { item: FriendItem; index: number }) => (
     <AnimatedFriendItem
-      item={item} index={index}
+      item={item}
+      index={index}
       onPress={() => handleFriendPress(item.user.id)}
-      colors={colors} isOnline={onlineFriends.has(item.user.id)}
+      colors={colors}
+      isOnline={onlineFriends.has(item.user.id)}
     />
   );
 
@@ -57,7 +61,10 @@ export default function FriendListScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <GlassCard variant="frosted" intensity="subtle" style={styles.searchCard}>
@@ -83,25 +90,46 @@ export default function FriendListScreen() {
       <View style={styles.statusBar}>
         <View style={styles.statusItem}>
           <View style={[styles.statusDot, { backgroundColor: '#22c55e' }]} />
-          <Text style={[styles.statusText, { color: colors.textSecondary }]}>{onlineCount} Online</Text>
+          <Text style={[styles.statusText, { color: colors.textSecondary }]}>
+            {onlineCount} Online
+          </Text>
         </View>
         <View style={styles.statusItem}>
           <View style={[styles.statusDot, { backgroundColor: colors.textTertiary }]} />
-          <Text style={[styles.statusText, { color: colors.textSecondary }]}>{friends.length - onlineCount} Offline</Text>
+          <Text style={[styles.statusText, { color: colors.textSecondary }]}>
+            {friends.length - onlineCount} Offline
+          </Text>
         </View>
       </View>
 
       {/* Quick Actions */}
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.actionButtonWrapper} activeOpacity={0.8}
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); navigation.navigate('AddFriend'); }}>
-          <LinearGradient colors={['#10b981', '#059669']} style={styles.actionButton} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+        <TouchableOpacity
+          style={styles.actionButtonWrapper}
+          activeOpacity={0.8}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            navigation.navigate('AddFriend');
+          }}
+        >
+          <LinearGradient
+            colors={['#10b981', '#059669']}
+            style={styles.actionButton}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
             <Ionicons name="person-add" size={18} color="#fff" />
             <Text style={styles.actionButtonText}>Add Friend</Text>
           </LinearGradient>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButtonWrapper} activeOpacity={0.8}
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); navigation.navigate('FriendRequests'); }}>
+        <TouchableOpacity
+          style={styles.actionButtonWrapper}
+          activeOpacity={0.8}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            navigation.navigate('FriendRequests');
+          }}
+        >
           <GlassCard variant="frosted" intensity="subtle" style={styles.actionCardButton}>
             <View style={styles.actionCardInner}>
               <Ionicons name="mail" size={18} color={colors.primary} />
@@ -114,9 +142,20 @@ export default function FriendListScreen() {
             </View>
           </GlassCard>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButtonWrapper} activeOpacity={0.8}
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); navigation.navigate('Leaderboard'); }}>
-          <LinearGradient colors={['#f59e0b', '#d97706']} style={styles.actionButton} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+        <TouchableOpacity
+          style={styles.actionButtonWrapper}
+          activeOpacity={0.8}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            navigation.navigate('Leaderboard');
+          }}
+        >
+          <LinearGradient
+            colors={['#f59e0b', '#d97706']}
+            style={styles.actionButton}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
             <Ionicons name="trophy" size={18} color="#fff" />
             <Text style={styles.actionButtonText}>Top Users</Text>
           </LinearGradient>
@@ -128,8 +167,17 @@ export default function FriendListScreen() {
         data={filteredFriends}
         keyExtractor={(item) => item.id}
         renderItem={renderFriend}
-        contentContainerStyle={[styles.listContent, filteredFriends.length === 0 && styles.emptyList]}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+        contentContainerStyle={[
+          styles.listContent,
+          filteredFriends.length === 0 && styles.emptyList,
+        ]}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
+        }
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -144,8 +192,13 @@ export default function FriendListScreen() {
                 {searchQuery ? 'Try a different search term' : 'Add friends to start chatting!'}
               </Text>
               {!searchQuery && (
-                <TouchableOpacity activeOpacity={0.8}
-                  onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); navigation.navigate('AddFriend'); }}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    navigation.navigate('AddFriend');
+                  }}
+                >
                   <LinearGradient colors={['#10b981', '#059669']} style={styles.emptyButton}>
                     <Ionicons name="person-add" size={18} color="#fff" />
                     <Text style={styles.emptyButtonText}>Add Friend</Text>

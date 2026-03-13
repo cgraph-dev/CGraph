@@ -19,9 +19,7 @@ import {
   PhoneXMarkIcon,
   SignalIcon,
 } from '@heroicons/react/24/solid';
-import {
-  MicrophoneIcon as MicOffIcon,
-} from '@heroicons/react/24/outline';
+import { MicrophoneIcon as MicOffIcon } from '@heroicons/react/24/outline';
 import { useVoiceStateStore } from '@/stores/voiceStateStore';
 import { useVoiceChannel } from '@/modules/calls/hooks/useVoiceChannel';
 import { EncryptionIndicator } from '@/modules/calls/components/encryption-indicator';
@@ -29,6 +27,8 @@ import { springs } from '@/lib/animation-presets';
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Voice Channel Panel component. */
 export function VoiceChannelPanel() {
   const currentChannelId = useVoiceStateStore((s) => s.currentChannelId);
   const members = useVoiceStateStore((s) =>
@@ -68,10 +68,7 @@ export function VoiceChannelPanel() {
           {members.length > 0 && (
             <div className="max-h-32 overflow-y-auto px-3 pb-1">
               {members.slice(0, 6).map((member) => (
-                <div
-                  key={member.userId}
-                  className="flex items-center gap-2 rounded py-0.5 text-sm"
-                >
+                <div key={member.userId} className="flex items-center gap-2 rounded py-0.5 text-sm">
                   {/* Avatar */}
                   <div className="h-5 w-5 flex-shrink-0 overflow-hidden rounded-full bg-white/[0.08]">
                     {member.avatarUrl ? (
@@ -102,14 +99,10 @@ export function VoiceChannelPanel() {
                   )}
 
                   {/* Mute indicator */}
-                  {member.selfMute && (
-                    <MicOffIcon className="h-3.5 w-3.5 text-red-400" />
-                  )}
+                  {member.selfMute && <MicOffIcon className="h-3.5 w-3.5 text-red-400" />}
 
                   {/* Deafen indicator */}
-                  {member.selfDeafen && (
-                    <SpeakerXMarkIcon className="h-3.5 w-3.5 text-red-400" />
-                  )}
+                  {member.selfDeafen && <SpeakerXMarkIcon className="h-3.5 w-3.5 text-red-400" />}
                 </div>
               ))}
               {members.length > 6 && (
@@ -158,11 +151,7 @@ export function VoiceChannelPanel() {
             </ControlButton>
 
             {/* Disconnect */}
-            <ControlButton
-              onClick={handleDisconnect}
-              danger
-              title="Disconnect"
-            >
+            <ControlButton onClick={handleDisconnect} danger title="Disconnect">
               <PhoneXMarkIcon className="h-4 w-4" />
             </ControlButton>
           </div>

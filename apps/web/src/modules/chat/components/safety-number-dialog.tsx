@@ -109,8 +109,7 @@ export function SafetyNumberDialog({
 
       setState({ safetyNumber, isVerified, loading: false, verifying: false, error: null });
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to load safety number';
+      const message = err instanceof Error ? err.message : 'Failed to load safety number';
       setState((s) => ({ ...s, loading: false, error: message }));
     }
   }, [recipientId]);
@@ -128,8 +127,7 @@ export function SafetyNumberDialog({
       await api.post(`/api/v1/e2ee/keys/${recipientId}/verify`);
       setState((s) => ({ ...s, isVerified: true, verifying: false }));
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to mark as verified';
+      const message = err instanceof Error ? err.message : 'Failed to mark as verified';
       setState((s) => ({ ...s, verifying: false, error: message }));
     }
   };
@@ -147,8 +145,8 @@ export function SafetyNumberDialog({
             Verify Security with {recipientName}
           </DialogTitle>
           <DialogDescription>
-            Compare the safety number below with your contact&apos;s screen to verify
-            end-to-end encryption.
+            Compare the safety number below with your contact&apos;s screen to verify end-to-end
+            encryption.
           </DialogDescription>
         </DialogHeader>
 
@@ -163,10 +161,10 @@ export function SafetyNumberDialog({
         {!state.loading && state.error && (
           <div className="flex flex-col items-center gap-3 py-8 text-center">
             <ExclamationTriangleIcon className="h-10 w-10 text-yellow-400" />
-            <p className="text-sm text-textMuted">{state.error}</p>
+            <p className="text-textMuted text-sm">{state.error}</p>
             <button
               onClick={fetchSafetyNumber}
-              className="rounded-lg bg-surfaceHover px-4 py-2 text-sm font-medium text-textPrimary hover:bg-surfaceHover/80"
+              className="bg-surfaceHover text-textPrimary hover:bg-surfaceHover/80 rounded-lg px-4 py-2 text-sm font-medium"
             >
               Retry
             </button>
@@ -185,9 +183,9 @@ export function SafetyNumberDialog({
             )}
 
             {/* 4×3 grid of 5-digit groups */}
-            <div className="rounded-lg border border-surfaceBorder bg-surface/50 p-4">
-              <p className="mb-3 text-xs uppercase tracking-wide text-textMuted">Safety Number</p>
-              <div className="grid grid-cols-3 gap-x-6 gap-y-2 text-center font-mono text-base tracking-widest text-textPrimary">
+            <div className="border-surfaceBorder bg-surface/50 rounded-lg border p-4">
+              <p className="text-textMuted mb-3 text-xs uppercase tracking-wide">Safety Number</p>
+              <div className="text-textPrimary grid grid-cols-3 gap-x-6 gap-y-2 text-center font-mono text-base tracking-widest">
                 {groups.map((group, i) => (
                   <span key={i} className="select-all">
                     {group}
@@ -198,7 +196,7 @@ export function SafetyNumberDialog({
 
             {/* QR code */}
             <div className="flex flex-col items-center gap-3">
-              <div className="rounded-lg border border-surfaceBorder bg-white p-3">
+              <div className="border-surfaceBorder rounded-lg border bg-white p-3">
                 <QRCodeSVG
                   value={buildQRPayload(recipientId, state.safetyNumber)}
                   size={200}
@@ -206,7 +204,7 @@ export function SafetyNumberDialog({
                   includeMargin
                 />
               </div>
-              <p className="max-w-xs text-center text-xs text-textMuted">
+              <p className="text-textMuted max-w-xs text-center text-xs">
                 Ask your contact to scan this code, or compare the numbers above
               </p>
             </div>
@@ -218,7 +216,7 @@ export function SafetyNumberDialog({
           <DialogFooter>
             <button
               onClick={onClose}
-              className="rounded-lg border border-surfaceBorder px-4 py-2 text-sm font-medium text-textPrimary hover:bg-surfaceHover"
+              className="border-surfaceBorder text-textPrimary hover:bg-surfaceHover rounded-lg border px-4 py-2 text-sm font-medium"
             >
               Close
             </button>

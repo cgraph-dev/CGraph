@@ -28,12 +28,26 @@ const STATUS_PRESETS = [
 ];
 
 const QUICK_EMOJIS = [
-  '😊', '😎', '🤔', '😢', '🎉', '🔥', '💪', '🎮',
-  '💻', '📚', '🎵', '☕', '🌙', '✨', '💜', '🚀',
+  '😊',
+  '😎',
+  '🤔',
+  '😢',
+  '🎉',
+  '🔥',
+  '💪',
+  '🎮',
+  '💻',
+  '📚',
+  '🎵',
+  '☕',
+  '🌙',
+  '✨',
+  '💜',
+  '🚀',
 ];
 
- 
 /**
+ * Custom Status Screen component.
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,7 +92,9 @@ export default function CustomStatusScreen({ navigation }: { navigation: any }) 
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <Animated.View entering={FadeInDown.springify().delay(50)} style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>YOUR STATUS</Text>
-        <View style={[styles.inputRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <View
+          style={[styles.inputRow, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
           <TouchableOpacity style={[styles.emojiButton, { backgroundColor: colors.background }]}>
             <Text style={styles.emojiText}>{emoji}</Text>
           </TouchableOpacity>
@@ -103,7 +119,10 @@ export default function CustomStatusScreen({ navigation }: { navigation: any }) 
               onPress={() => setEmoji(e)}
               style={[
                 styles.emojiOption,
-                emoji === e && { backgroundColor: colors.primary + '30', borderColor: colors.primary },
+                emoji === e && {
+                  backgroundColor: colors.primary + '30',
+                  borderColor: colors.primary,
+                },
               ]}
             >
               <Text style={styles.emojiOptionText}>{e}</Text>
@@ -126,9 +145,10 @@ export default function CustomStatusScreen({ navigation }: { navigation: any }) 
               { backgroundColor: colors.card, borderColor: colors.border },
               index === 0 && styles.presetFirst,
               index === STATUS_PRESETS.length - 1 && styles.presetLast,
-              statusText === preset.text && emoji === preset.emoji && {
-                backgroundColor: colors.primary + '15',
-              },
+              statusText === preset.text &&
+                emoji === preset.emoji && {
+                  backgroundColor: colors.primary + '15',
+                },
             ]}
           >
             <Text style={styles.presetEmoji}>{preset.emoji}</Text>
@@ -141,7 +161,10 @@ export default function CustomStatusScreen({ navigation }: { navigation: any }) 
         <TouchableOpacity
           onPress={handleSave}
           disabled={saving}
-          style={[styles.saveButton, { backgroundColor: colors.primary, opacity: saving ? 0.5 : 1 }]}
+          style={[
+            styles.saveButton,
+            { backgroundColor: colors.primary, opacity: saving ? 0.5 : 1 },
+          ]}
         >
           <Text style={styles.saveText}>{saving ? 'Saving...' : 'Save Status'}</Text>
         </TouchableOpacity>

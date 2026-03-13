@@ -29,13 +29,7 @@ import type {
 } from '../services/referralService';
 
 // Re-export types
-export type {
-  ReferralCode,
-  ReferralStats,
-  Referral,
-  RewardTier,
-  LeaderboardEntry,
-};
+export type { ReferralCode, ReferralStats, Referral, RewardTier, LeaderboardEntry };
 
 interface UseReferralsReturn {
   // Data
@@ -73,6 +67,7 @@ interface UseReferralsReturn {
 const CACHE_DURATION = 60 * 1000; // 1 minute
 
 /**
+ * Hook for referrals.
  *
  */
 export function useReferrals(): UseReferralsReturn {
@@ -108,9 +103,10 @@ export function useReferrals(): UseReferralsReturn {
 
   const nextTier = rewardTiers.find((tier) => !tier.achieved) ?? null;
 
-  const progressToNextTier = nextTier && stats
-    ? Math.min(100, (stats.verifiedReferrals / nextTier.referralsRequired) * 100)
-    : 100;
+  const progressToNextTier =
+    nextTier && stats
+      ? Math.min(100, (stats.verifiedReferrals / nextTier.referralsRequired) * 100)
+      : 100;
 
   const hasUnclaimedRewards = rewardTiers.some((tier) => tier.achieved && !tier.claimed);
 
@@ -164,27 +160,28 @@ export function useReferrals(): UseReferralsReturn {
   }, []);
 
   // Load leaderboard
-  const loadLeaderboard = useCallback(async (
-    period: 'daily' | 'weekly' | 'monthly' | 'all_time' = 'all_time'
-  ) => {
-    const now = Date.now();
-    const cache = cacheRef.current.leaderboard;
-    if (cache && now - cache.timestamp < CACHE_DURATION && cache.period === period) {
-      return;
-    }
+  const loadLeaderboard = useCallback(
+    async (period: 'daily' | 'weekly' | 'monthly' | 'all_time' = 'all_time') => {
+      const now = Date.now();
+      const cache = cacheRef.current.leaderboard;
+      if (cache && now - cache.timestamp < CACHE_DURATION && cache.period === period) {
+        return;
+      }
 
-    setIsLoadingLeaderboard(true);
+      setIsLoadingLeaderboard(true);
 
-    try {
-      const result = await referralService.getLeaderboard({ period, limit: 50 });
-      setLeaderboard(result.entries);
-      cacheRef.current.leaderboard = { timestamp: now, period };
-    } catch (err) {
-      console.error('Failed to load leaderboard:', err);
-    } finally {
-      setIsLoadingLeaderboard(false);
-    }
-  }, []);
+      try {
+        const result = await referralService.getLeaderboard({ period, limit: 50 });
+        setLeaderboard(result.entries);
+        cacheRef.current.leaderboard = { timestamp: now, period };
+      } catch (err) {
+        console.error('Failed to load leaderboard:', err);
+      } finally {
+        setIsLoadingLeaderboard(false);
+      }
+    },
+    []
+  );
 
   // Claim a tier reward
   const claimReward = useCallback(async (tierId: string): Promise<boolean> => {
@@ -198,9 +195,7 @@ export function useReferrals(): UseReferralsReturn {
 
         // Update local tier state
         setRewardTiers((prev) =>
-          prev.map((tier) =>
-            tier.id === tierId ? { ...tier, claimed: true } : tier
-          )
+          prev.map((tier) => (tier.id === tierId ? { ...tier, claimed: true } : tier))
         );
 
         // Invalidate cache to refresh stats
@@ -240,9 +235,8 @@ export function useReferrals(): UseReferralsReturn {
 
       await Share.share({
         title: shareData.title,
-        message: Platform.OS === 'ios'
-          ? shareData.message
-          : `${shareData.message}\n${shareData.url}`,
+        message:
+          Platform.OS === 'ios' ? shareData.message : `${shareData.message}\n${shareData.url}`,
         url: Platform.OS === 'ios' ? shareData.url : undefined,
       });
 
@@ -259,11 +253,7 @@ export function useReferrals(): UseReferralsReturn {
     cacheRef.current = { data: null, referrals: null, leaderboard: null };
 
     // Reload everything
-    await Promise.all([
-      loadReferralData(),
-      loadReferrals(),
-      loadLeaderboard(),
-    ]);
+    await Promise.all([loadReferralData(), loadReferrals(), loadLeaderboard()]);
   }, [loadReferralData, loadReferrals, loadLeaderboard]);
 
   // Initial load

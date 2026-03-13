@@ -39,13 +39,16 @@ export function ForumLeaderboardCard({
   const badge = getRankBadge(rank);
   const [voteAnim, setVoteAnim] = useState<string | null>(null);
 
-  const handleVote = useCallback((value: 1 | -1) => {
-    if (!isAuthenticated) return;
-    HapticFeedback.light();
-    onVote(forum, value);
-    setVoteAnim(value === 1 ? '+1' : '-1');
-    setTimeout(() => setVoteAnim(null), 600);
-  }, [isAuthenticated, onVote, forum]);
+  const handleVote = useCallback(
+    (value: 1 | -1) => {
+      if (!isAuthenticated) return;
+      HapticFeedback.light();
+      onVote(forum, value);
+      setVoteAnim(value === 1 ? '+1' : '-1');
+      setTimeout(() => setVoteAnim(null), 600);
+    },
+    [isAuthenticated, onVote, forum]
+  );
 
   return (
     <GlassCard variant="crystal" className="group relative overflow-hidden">

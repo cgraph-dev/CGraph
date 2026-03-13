@@ -72,6 +72,7 @@ const EFFECT_OPTIONS: EffectOption[] = [
 ];
 
 /**
+ * Effects Customization Screen component.
  *
  */
 export default function EffectsCustomizationScreen() {
@@ -123,7 +124,7 @@ export default function EffectsCustomizationScreen() {
           <TouchableOpacity
             key={option.id}
             style={[styles.optionCard, { backgroundColor: colors.surface }]}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
             onPress={() => option.screen && navigation.navigate(option.screen as any)}
             activeOpacity={0.7}
           >

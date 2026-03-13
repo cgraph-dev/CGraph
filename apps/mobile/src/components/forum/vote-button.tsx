@@ -11,12 +11,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -39,6 +34,8 @@ interface VoteButtonProps {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Vote Button component. */
 export function VoteButton({
   count,
   userVote = null,
@@ -54,17 +51,15 @@ export function VoteButton({
       // toggle off if same direction, otherwise swing
       const newDir = userVote === direction ? null : direction;
       Haptics.impactAsync(
-        newDir
-          ? Haptics.ImpactFeedbackStyle.Medium
-          : Haptics.ImpactFeedbackStyle.Light,
+        newDir ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Light
       );
       scale.value = withSequence(
         withSpring(1.15, { damping: 6, stiffness: 400 }),
-        withSpring(1, { damping: 10, stiffness: 300 }),
+        withSpring(1, { damping: 10, stiffness: 300 })
       );
       onVote?.(newDir);
     },
-    [userVote, onVote, scale],
+    [userVote, onVote, scale]
   );
 
   const animatedCountStyle = useAnimatedStyle(() => ({
@@ -74,38 +69,26 @@ export function VoteButton({
   const upColor = userVote === 'up' ? '#6366f1' : 'rgba(255,255,255,0.4)';
   const downColor = userVote === 'down' ? '#ef4444' : 'rgba(255,255,255,0.4)';
   const countColor =
-    userVote === 'up'
-      ? '#6366f1'
-      : userVote === 'down'
-        ? '#ef4444'
-        : 'rgba(255,255,255,0.6)';
+    userVote === 'up' ? '#6366f1' : userVote === 'down' ? '#ef4444' : 'rgba(255,255,255,0.6)';
 
   return (
     <View style={[styles.container, size === 'sm' && styles.containerSm]}>
       <Pressable
         onPress={() => handleVote('up')}
         hitSlop={8}
-        style={({ pressed }) => [
-          styles.voteBtn,
-          pressed && styles.voteBtnPressed,
-        ]}
+        style={({ pressed }) => [styles.voteBtn, pressed && styles.voteBtnPressed]}
       >
         <MaterialCommunityIcons name="arrow-up-bold" size={iconSize} color={upColor} />
       </Pressable>
 
       <Animated.View style={animatedCountStyle}>
-        <Text style={[styles.count, { fontSize, color: countColor }]}>
-          {formatCount(count)}
-        </Text>
+        <Text style={[styles.count, { fontSize, color: countColor }]}>{formatCount(count)}</Text>
       </Animated.View>
 
       <Pressable
         onPress={() => handleVote('down')}
         hitSlop={8}
-        style={({ pressed }) => [
-          styles.voteBtn,
-          pressed && styles.voteBtnPressed,
-        ]}
+        style={({ pressed }) => [styles.voteBtn, pressed && styles.voteBtnPressed]}
       >
         <MaterialCommunityIcons name="arrow-down-bold" size={iconSize} color={downColor} />
       </Pressable>

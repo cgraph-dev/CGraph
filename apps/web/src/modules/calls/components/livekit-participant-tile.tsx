@@ -9,16 +9,9 @@
  */
 
 import { useRef, useEffect } from 'react';
-import {
-  Track,
-  type RemoteParticipant,
-  type LocalParticipant,
-} from 'livekit-client';
+import { Track, type RemoteParticipant, type LocalParticipant } from 'livekit-client';
 import { MicrophoneIcon } from '@heroicons/react/24/outline';
-import {
-  VideoCameraSlashIcon,
-  SignalIcon,
-} from '@heroicons/react/24/solid';
+import { VideoCameraSlashIcon, SignalIcon } from '@heroicons/react/24/solid';
 
 interface LiveKitParticipantTileProps {
   /** The LiveKit participant (remote or local) */
@@ -60,6 +53,7 @@ export function LiveKitParticipantTile({
 
     return () => {
       if (track) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         track.detach(videoRef.current!);
       }
     };
@@ -69,9 +63,7 @@ export function LiveKitParticipantTile({
   useEffect(() => {
     if (isLocal || !audioRef.current) return;
 
-    const publication = participant.getTrackPublication(
-      Track.Source.Microphone
-    );
+    const publication = participant.getTrackPublication(Track.Source.Microphone);
     const track = publication?.track;
 
     if (track) {
@@ -80,6 +72,7 @@ export function LiveKitParticipantTile({
 
     return () => {
       if (track) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         track.detach(audioRef.current!);
       }
     };
@@ -129,19 +122,13 @@ export function LiveKitParticipantTile({
 
       {/* Name + mute indicator */}
       <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1">
-        {isMuted && (
-          <MicrophoneIcon className="h-3.5 w-3.5 text-red-400" />
-        )}
-        <span className="text-xs font-medium text-white">
-          {isLocal ? 'You' : name}
-        </span>
+        {isMuted && <MicrophoneIcon className="h-3.5 w-3.5 text-red-400" />}
+        <span className="text-xs font-medium text-white">{isLocal ? 'You' : name}</span>
       </div>
 
       {/* Connection quality indicator */}
       <div className="absolute right-2 top-2 flex items-center gap-1">
-        {!isVideoEnabled && (
-          <VideoCameraSlashIcon className="h-4 w-4 text-white/40" />
-        )}
+        {!isVideoEnabled && <VideoCameraSlashIcon className="h-4 w-4 text-white/40" />}
         <SignalIcon className={`h-3.5 w-3.5 ${qualityColor}`} />
       </div>
     </div>

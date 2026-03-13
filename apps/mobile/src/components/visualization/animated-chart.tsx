@@ -17,7 +17,7 @@ import Animated, {
   useAnimatedProps,
   withTiming,
   withDelay,
-  withSpring,
+  _withSpring,
   interpolate,
   Easing,
   SharedValue,
@@ -33,7 +33,6 @@ import Svg, {
   Stop,
   G,
 } from 'react-native-svg';
-
 
 // ============================================================================
 // Types
@@ -160,6 +159,7 @@ export interface LineChartProps extends ChartProps {
 }
 
 /**
+ * Line Chart component.
  *
  */
 export function LineChart({
@@ -246,6 +246,7 @@ export function LineChart({
     } else {
       progress.value = 1;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animated, animationDuration, animationDelay]);
 
   // Animated line props
@@ -380,6 +381,7 @@ export interface BarChartProps extends ChartProps {
 }
 
 /**
+ * Bar Chart component.
  *
  */
 export function BarChart({
@@ -392,7 +394,7 @@ export function BarChart({
   showLabels = true,
   barWidth,
   barSpacing = 8,
-  horizontal = false,
+  _horizontal = false,
   animated = true,
   animationDuration = 800,
   animationDelay = 0,
@@ -432,6 +434,7 @@ export function BarChart({
     } else {
       progress.value = 1;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animated, animationDuration, animationDelay]);
 
   const gradientId = `barGradient-${Math.random().toString(36).substr(2, 9)}`;
@@ -525,6 +528,7 @@ export interface PieChartProps {
 }
 
 /**
+ * Pie Chart component.
  *
  */
 export function PieChart({
@@ -593,6 +597,7 @@ export function PieChart({
     } else {
       progress.value = 1;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animated, animationDuration]);
 
   return (

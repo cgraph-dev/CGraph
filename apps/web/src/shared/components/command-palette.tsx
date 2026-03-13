@@ -64,7 +64,7 @@ function highlightMatch(text: string, query: string) {
   return (
     <>
       {text.slice(0, idx)}
-      <span className="text-primary-400 font-semibold">{text.slice(idx, idx + query.length)}</span>
+      <span className="font-semibold text-primary-400">{text.slice(idx, idx + query.length)}</span>
       {text.slice(idx + query.length)}
     </>
   );
@@ -72,6 +72,8 @@ function highlightMatch(text: string, query: string) {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Command Palette component. */
 export function CommandPalette({
   results = [],
   recentItems = [],
@@ -148,7 +150,7 @@ export function CommandPalette({
         setOpen(false);
       }
     },
-    [flatList, activeIndex, onSelect],
+    [flatList, activeIndex, onSelect]
   );
 
   // Scroll active into view
@@ -175,15 +177,15 @@ export function CommandPalette({
 
           {/* Palette */}
           <motion.div
-            className="relative w-full max-w-[640px] mx-4 rounded-xl bg-[#1e1f22] shadow-2xl border border-white/[0.06] overflow-hidden"
+            className="relative mx-4 w-full max-w-[640px] overflow-hidden rounded-xl border border-white/[0.06] bg-[#1e1f22] shadow-2xl"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 400 }}
           >
             {/* Search Input */}
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06]">
-              <MagnifyingGlassIcon className="h-5 w-5 text-white/40 shrink-0" />
+            <div className="flex items-center gap-3 border-b border-white/[0.06] px-4 py-3">
+              <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-white/40" />
               <input
                 ref={inputRef}
                 value={query}
@@ -193,9 +195,9 @@ export function CommandPalette({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Where would you like to go?"
-                className="flex-1 bg-transparent text-white text-[15px] placeholder:text-white/25 outline-none"
+                className="flex-1 bg-transparent text-[15px] text-white outline-none placeholder:text-white/25"
               />
-              <kbd className="text-[10px] text-white/20 border border-white/10 rounded px-1.5 py-0.5 font-mono">
+              <kbd className="rounded border border-white/10 px-1.5 py-0.5 font-mono text-[10px] text-white/20">
                 ESC
               </kbd>
             </div>
@@ -203,7 +205,7 @@ export function CommandPalette({
             {/* Results */}
             <div ref={listRef} className="max-h-[400px] overflow-y-auto py-2">
               {flatList.length === 0 ? (
-                <div className="px-4 py-8 text-center text-white/25 text-sm">
+                <div className="px-4 py-8 text-center text-sm text-white/25">
                   {query ? 'No results found' : 'Start typing to search...'}
                 </div>
               ) : (
@@ -211,7 +213,7 @@ export function CommandPalette({
                   const conf = categoryConfig[category];
                   return (
                     <div key={category} className="mb-1">
-                      <div className="px-4 py-1.5 text-[11px] font-semibold text-white/30 uppercase tracking-wider flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/30">
                         {conf.icon}
                         {conf.label}
                       </div>
@@ -229,31 +231,33 @@ export function CommandPalette({
                             }}
                             onMouseEnter={() => setActiveIndex(globalIdx)}
                             className={cn(
-                              'w-full flex items-center gap-3 px-4 py-2 text-left transition-colors',
-                              isActive ? 'bg-primary-600/20 text-white' : 'text-white/60 hover:bg-white/[0.04]',
+                              'flex w-full items-center gap-3 px-4 py-2 text-left transition-colors',
+                              isActive
+                                ? 'bg-primary-600/20 text-white'
+                                : 'text-white/60 hover:bg-white/[0.04]'
                             )}
                           >
                             {item.avatar ? (
                               <img
                                 src={item.avatar}
                                 alt=""
-                                className="h-8 w-8 rounded-full object-cover shrink-0"
+                                className="h-8 w-8 shrink-0 rounded-full object-cover"
                               />
                             ) : (
-                              <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center shrink-0">
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06]">
                                 {item.icon || conf.icon}
                               </div>
                             )}
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium truncate">
+                              <p className="truncate text-sm font-medium">
                                 {highlightMatch(item.label, query)}
                               </p>
                               {item.sublabel && (
-                                <p className="text-xs text-white/30 truncate">{item.sublabel}</p>
+                                <p className="truncate text-xs text-white/30">{item.sublabel}</p>
                               )}
                             </div>
                             {isActive && (
-                              <ArrowRightIcon className="h-4 w-4 text-white/30 shrink-0" />
+                              <ArrowRightIcon className="h-4 w-4 shrink-0 text-white/30" />
                             )}
                           </button>
                         );
@@ -265,15 +269,15 @@ export function CommandPalette({
             </div>
 
             {/* Footer hints */}
-            <div className="px-4 py-2 border-t border-white/[0.06] flex items-center gap-4 text-[10px] text-white/20">
+            <div className="flex items-center gap-4 border-t border-white/[0.06] px-4 py-2 text-[10px] text-white/20">
               <span className="flex items-center gap-1">
-                <kbd className="border border-white/10 rounded px-1 font-mono">↑↓</kbd> navigate
+                <kbd className="rounded border border-white/10 px-1 font-mono">↑↓</kbd> navigate
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="border border-white/10 rounded px-1 font-mono">↵</kbd> open
+                <kbd className="rounded border border-white/10 px-1 font-mono">↵</kbd> open
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="border border-white/10 rounded px-1 font-mono">esc</kbd> close
+                <kbd className="rounded border border-white/10 px-1 font-mono">esc</kbd> close
               </span>
             </div>
           </motion.div>

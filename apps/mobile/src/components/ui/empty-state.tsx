@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { rnTransitions } from '@cgraph/animation-constants';
@@ -54,9 +54,7 @@ export function EmptyState({
     >
       {/* Icon / illustration */}
       <Animated.View entering={FadeInDown.duration(rnTransitions.pageEnter.duration).delay(80)}>
-        {iconComponent ?? (
-          <Ionicons name={icon} size={64} color="#6b7280" style={styles.icon} />
-        )}
+        {iconComponent ?? <Ionicons name={icon} size={64} color="#6b7280" style={styles.icon} />}
       </Animated.View>
 
       {/* Title */}

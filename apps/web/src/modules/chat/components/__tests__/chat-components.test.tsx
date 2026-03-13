@@ -187,10 +187,17 @@ vi.mock('@/stores/theme', () => ({
 
 vi.mock('framer-motion', () => ({
   motion: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    div: ({ children, whileHover: _whileHover, whileTap: _whileTap, animate: _animate, initial: _initial, exit: _exit, transition: _transition, ...rest }: any) => (
-      <div {...rest}>{children}</div>
-    ),
+    div: ({
+      children,
+      whileHover: _whileHover,
+      whileTap: _whileTap,
+      animate: _animate,
+      initial: _initial,
+      exit: _exit,
+      transition: _transition,
+      ...rest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }: any) => <div {...rest}>{children}</div>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     button: ({ children, whileHover: _whileHover, whileTap: _whileTap, ...rest }: any) => (
       <button {...rest}>{children}</button>

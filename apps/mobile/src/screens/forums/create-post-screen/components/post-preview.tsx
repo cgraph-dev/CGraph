@@ -19,6 +19,7 @@ interface PostPreviewProps {
 }
 
 /**
+ * Post Preview component.
  *
  */
 export function PostPreview({ title, content, postType }: PostPreviewProps) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * CSS Editor — Custom CSS & Advanced category
  *
@@ -16,6 +17,8 @@ interface CssEditorProps {
   saving: boolean;
 }
 
+/** Description. */
+/** Css Editor component. */
 export function CssEditor({ options, onSave, saving }: CssEditorProps) {
   const [draft, setDraft] = useState<Record<string, unknown>>({});
   const [showPreview, setShowPreview] = useState(false);
@@ -32,13 +35,13 @@ export function CssEditor({ options, onSave, saving }: CssEditorProps) {
     <div className="space-y-6">
       {/* Custom CSS */}
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <label className="text-sm font-semibold text-white/80">Custom CSS</label>
           <button
             onClick={() => setShowPreview(!showPreview)}
             className="flex items-center gap-1 text-xs text-white/50 hover:text-white/70"
           >
-            <EyeIcon className="w-3.5 h-3.5" />
+            <EyeIcon className="h-3.5 w-3.5" />
             {showPreview ? 'Hide' : 'Show'} Preview
           </button>
         </div>
@@ -46,26 +49,26 @@ export function CssEditor({ options, onSave, saving }: CssEditorProps) {
           value={(draft.custom_css as string) ?? ''}
           onChange={(e) => updateField('custom_css', e.target.value)}
           placeholder="/* Your custom CSS here */&#10;.forum-header { }&#10;.thread-list { }"
-          className="w-full h-64 bg-[#1e1e1e] border border-white/10 rounded-lg px-4 py-3 text-sm text-green-300 font-mono resize-y focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="h-64 w-full resize-y rounded-lg border border-white/10 bg-[#1e1e1e] px-4 py-3 font-mono text-sm text-green-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           spellCheck={false}
         />
-        <p className="text-xs text-white/30 mt-1">
+        <p className="mt-1 text-xs text-white/30">
           Maximum 100,000 characters. CSS is sanitized before rendering.
         </p>
       </div>
 
       {/* Preview */}
       {showPreview && (draft.custom_css as string) && (
-        <div className="border border-white/10 rounded-lg p-4 bg-white/5">
-          <h4 className="text-xs font-semibold text-white/50 mb-2">CSS Preview</h4>
+        <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+          <h4 className="mb-2 text-xs font-semibold text-white/50">CSS Preview</h4>
           <style>{draft.custom_css as string}</style>
           <div className="forum-preview">
-            <div className="forum-header p-3 bg-white/5 rounded mb-2 text-sm text-white">
+            <div className="forum-header mb-2 rounded bg-white/5 p-3 text-sm text-white">
               Forum Header Area
             </div>
             <div className="thread-list space-y-1">
-              <div className="p-2 bg-white/5 rounded text-sm text-white/70">Sample Thread 1</div>
-              <div className="p-2 bg-white/5 rounded text-sm text-white/70">Sample Thread 2</div>
+              <div className="rounded bg-white/5 p-2 text-sm text-white/70">Sample Thread 1</div>
+              <div className="rounded bg-white/5 p-2 text-sm text-white/70">Sample Thread 2</div>
             </div>
           </div>
         </div>
@@ -73,25 +76,25 @@ export function CssEditor({ options, onSave, saving }: CssEditorProps) {
 
       {/* Custom Header HTML */}
       <div>
-        <label className="block text-sm font-semibold text-white/80 mb-2">Custom Header HTML</label>
+        <label className="mb-2 block text-sm font-semibold text-white/80">Custom Header HTML</label>
         <textarea
           value={(draft.custom_header_html as string) ?? ''}
           onChange={(e) => updateField('custom_header_html', e.target.value)}
           placeholder="<div class='custom-banner'>Welcome to our forum!</div>"
-          className="w-full h-32 bg-[#1e1e1e] border border-white/10 rounded-lg px-4 py-3 text-sm text-orange-300 font-mono resize-y focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="h-32 w-full resize-y rounded-lg border border-white/10 bg-[#1e1e1e] px-4 py-3 font-mono text-sm text-orange-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           spellCheck={false}
         />
-        <p className="text-xs text-white/30 mt-1">HTML is sanitized. Max 10,000 characters.</p>
+        <p className="mt-1 text-xs text-white/30">HTML is sanitized. Max 10,000 characters.</p>
       </div>
 
       {/* Custom Footer HTML */}
       <div>
-        <label className="block text-sm font-semibold text-white/80 mb-2">Custom Footer HTML</label>
+        <label className="mb-2 block text-sm font-semibold text-white/80">Custom Footer HTML</label>
         <textarea
           value={(draft.custom_footer_html as string) ?? ''}
           onChange={(e) => updateField('custom_footer_html', e.target.value)}
           placeholder="<div class='custom-footer'>© 2026 My Forum</div>"
-          className="w-full h-32 bg-[#1e1e1e] border border-white/10 rounded-lg px-4 py-3 text-sm text-orange-300 font-mono resize-y focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="h-32 w-full resize-y rounded-lg border border-white/10 bg-[#1e1e1e] px-4 py-3 font-mono text-sm text-orange-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
           spellCheck={false}
         />
       </div>
@@ -100,12 +103,12 @@ export function CssEditor({ options, onSave, saving }: CssEditorProps) {
       <div className="flex items-center gap-3">
         <button
           onClick={() => updateField('custom_js_enabled', !draft.custom_js_enabled)}
-          className={`relative w-10 h-5 rounded-full transition-colors ${
+          className={`relative h-5 w-10 rounded-full transition-colors ${
             draft.custom_js_enabled ? 'bg-amber-500' : 'bg-white/20'
           }`}
         >
           <span
-            className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+            className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
               draft.custom_js_enabled ? 'left-5' : 'left-0.5'
             }`}
           />
@@ -117,13 +120,13 @@ export function CssEditor({ options, onSave, saving }: CssEditorProps) {
       </div>
 
       {/* Save */}
-      <div className="flex justify-end pt-4 border-t border-white/10">
+      <div className="flex justify-end border-t border-white/10 pt-4">
         <button
           onClick={() => onSave(draft)}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-500 disabled:opacity-50"
         >
-          <CheckIcon className="w-4 h-4" />
+          <CheckIcon className="h-4 w-4" />
           {saving ? 'Saving...' : 'Save Advanced CSS'}
         </button>
       </div>

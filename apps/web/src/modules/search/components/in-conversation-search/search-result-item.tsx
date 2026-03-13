@@ -24,8 +24,7 @@ export function SearchResultItem({ message, query, onJumpTo }: SearchResultItemP
     onJumpTo(message.id);
   }, [message.id, onJumpTo]);
 
-  const senderName =
-    message.sender?.display_name || message.sender?.username || 'Unknown';
+  const senderName = message.sender?.display_name || message.sender?.username || 'Unknown';
   const timestamp = new Date(message.inserted_at).toLocaleString(undefined, {
     month: 'short',
     day: 'numeric',

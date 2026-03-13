@@ -28,6 +28,7 @@ type Props = {
 };
 
 /**
+ * Profile Screen component.
  *
  */
 export default function ProfileScreen({ navigation }: Props) {
@@ -59,7 +60,7 @@ export default function ProfileScreen({ navigation }: Props) {
       const { uri } = result.assets[0];
       const filename = uri.split('/').pop() ?? 'avatar.jpg';
 
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       formData.append('avatar', {
         uri,
         name: filename,
@@ -109,7 +110,6 @@ export default function ProfileScreen({ navigation }: Props) {
     try {
       const response = await api.put('/api/v1/me/username', { username });
       updateUser({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         ...user!,
         username: response.data.data.username,
         can_change_username: false,
@@ -117,7 +117,7 @@ export default function ProfileScreen({ navigation }: Props) {
       });
       Alert.alert('Success', 'Username changed successfully');
     } catch (err: unknown) {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const error = err as {
         response?: { data?: { error?: { message?: string }; message?: string } };
       };
@@ -139,7 +139,6 @@ export default function ProfileScreen({ navigation }: Props) {
           <AnimatedAvatar
             source={
               getValidImageUrl(user?.avatar_url)
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ? { uri: getValidImageUrl(user?.avatar_url)! }
                 : {
                     uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username || 'U')}&background=10b981&color=fff&size=256`,
@@ -162,7 +161,7 @@ export default function ProfileScreen({ navigation }: Props) {
           <View style={{ marginTop: 12 }}>
             <TitleBadge
               title={user.title}
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               rarity={(user.title_rarity as Rarity) ?? 'common'}
               animation="shimmer"
               showSparkles={true}

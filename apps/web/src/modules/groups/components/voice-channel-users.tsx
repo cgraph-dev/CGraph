@@ -8,11 +8,7 @@
  */
 
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  SpeakerXMarkIcon,
-  VideoCameraIcon,
-  ComputerDesktopIcon,
-} from '@heroicons/react/24/solid';
+import { SpeakerXMarkIcon, VideoCameraIcon, ComputerDesktopIcon } from '@heroicons/react/24/solid';
 import { MicrophoneIcon as MicOffIcon } from '@heroicons/react/24/outline';
 import { springs } from '@/lib/animation-presets';
 import { cn } from '@/lib/utils';
@@ -47,7 +43,7 @@ function VoiceUserRow({ user }: { user: VoiceUser }) {
       transition={springs.snappy}
       className={cn(
         'flex items-center gap-1.5 rounded py-0.5 pl-6 pr-2',
-        user.isSelf && 'bg-white/[0.04]',
+        user.isSelf && 'bg-white/[0.04]'
       )}
     >
       {/* Avatar with speaking ring */}
@@ -55,11 +51,15 @@ function VoiceUserRow({ user }: { user: VoiceUser }) {
         <div
           className={cn(
             'flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-white/[0.06]',
-            user.isSpeaking && 'ring-2 ring-green-400 ring-offset-1 ring-offset-transparent',
+            user.isSpeaking && 'ring-2 ring-green-400 ring-offset-1 ring-offset-transparent'
           )}
         >
           {user.avatarUrl ? (
-            <img src={user.avatarUrl} alt={user.displayName} className="h-full w-full object-cover" />
+            <img
+              src={user.avatarUrl}
+              alt={user.displayName}
+              className="h-full w-full object-cover"
+            />
           ) : (
             <span className="text-[9px] font-bold text-gray-400">
               {user.displayName.charAt(0).toUpperCase()}
@@ -73,7 +73,7 @@ function VoiceUserRow({ user }: { user: VoiceUser }) {
         className={cn(
           'flex-1 truncate text-xs',
           user.isSelf ? 'font-medium text-gray-200' : 'text-gray-400',
-          user.isSpeaking && 'text-green-400',
+          user.isSpeaking && 'text-green-400'
         )}
       >
         {user.displayName}
@@ -88,17 +88,11 @@ function VoiceUserRow({ user }: { user: VoiceUser }) {
           </div>
         )}
 
-        {user.isVideoOn && (
-          <VideoCameraIcon className="h-3 w-3 text-gray-400" />
-        )}
+        {user.isVideoOn && <VideoCameraIcon className="h-3 w-3 text-gray-400" />}
 
-        {user.isMuted && (
-          <MicOffIcon className="h-3 w-3 text-red-400" />
-        )}
+        {user.isMuted && <MicOffIcon className="h-3 w-3 text-red-400" />}
 
-        {user.isDeafened && (
-          <SpeakerXMarkIcon className="h-3 w-3 text-red-400" />
-        )}
+        {user.isDeafened && <SpeakerXMarkIcon className="h-3 w-3 text-red-400" />}
       </div>
     </motion.div>
   );
@@ -106,6 +100,8 @@ function VoiceUserRow({ user }: { user: VoiceUser }) {
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Description. */
+/** Voice Channel Users component. */
 export function VoiceChannelUsers({ users, className }: VoiceChannelUsersProps) {
   if (users.length === 0) return null;
 

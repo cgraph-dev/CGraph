@@ -1,22 +1,15 @@
 /**
  * Holographic Demo Screen
- * 
+ *
  * Showcases the revolutionary Holographic UI component system
  * with all available components and themes.
- * 
+ *
  * @version 1.0.0
  * @since v0.8.1
  */
 
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  SafeAreaView,
-  StatusBar,
-  Dimensions,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, SafeAreaView, StatusBar, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -51,7 +44,7 @@ interface ThemeSelectorProps {
 
 function ThemeSelector({ selectedTheme, onSelectTheme }: ThemeSelectorProps) {
   const themes: HolographicConfig['colorTheme'][] = ['cyan', 'green', 'purple', 'gold'];
-  
+
   return (
     <View style={styles.themeSelector}>
       <HolographicText variant="label" colorTheme={selectedTheme}>
@@ -104,51 +97,56 @@ function ShowcaseSection({ title, colorTheme, children }: ShowcaseSectionProps) 
 // =============================================================================
 
 /**
+ * Holographic Demo Screen component.
  *
  */
 export function HolographicDemoScreen({ navigation }: Props) {
   const [selectedTheme, setSelectedTheme] = useState<HolographicConfig['colorTheme']>('cyan');
   const [inputValue, setInputValue] = useState('');
   const [showNotification, setShowNotification] = useState(false);
-  const [notificationType, setNotificationType] = useState<'info' | 'success' | 'warning' | 'error'>('info');
+  const [notificationType, setNotificationType] = useState<
+    'info' | 'success' | 'warning' | 'error'
+  >('info');
   const [progressValue, setProgressValue] = useState(65);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const theme = HOLOGRAPHIC_THEMES[selectedTheme];
-  
+
   const handleShowNotification = useCallback((type: typeof notificationType) => {
     setNotificationType(type);
     setShowNotification(true);
     Haptics.notificationAsync(
-      type === 'success' ? Haptics.NotificationFeedbackType.Success :
-      type === 'error' ? Haptics.NotificationFeedbackType.Error :
-      Haptics.NotificationFeedbackType.Warning
+      type === 'success'
+        ? Haptics.NotificationFeedbackType.Success
+        : type === 'error'
+          ? Haptics.NotificationFeedbackType.Error
+          : Haptics.NotificationFeedbackType.Warning
     );
   }, []);
-  
+
   const handleLoadingDemo = useCallback(() => {
     setIsLoading(true);
     setTimeout(() => setIsLoading(false), 2000);
   }, []);
-  
+
   const incrementProgress = useCallback(() => {
-    setProgressValue(prev => Math.min(prev + 10, 100));
+    setProgressValue((prev) => Math.min(prev + 10, 100));
   }, []);
-  
+
   const decrementProgress = useCallback(() => {
-    setProgressValue(prev => Math.max(prev - 10, 0));
+    setProgressValue((prev) => Math.max(prev - 10, 0));
   }, []);
-  
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      
+
       {/* Background gradient */}
       <LinearGradient
         colors={['#0a0a1a', '#1a1a3a', '#0a0a2a'] as const}
         style={StyleSheet.absoluteFillObject}
       />
-      
+
       {/* Notification */}
       {showNotification && (
         <HolographicNotification
@@ -160,7 +158,7 @@ export function HolographicDemoScreen({ navigation }: Props) {
           duration={4000}
         />
       )}
-      
+
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
@@ -177,18 +175,15 @@ export function HolographicDemoScreen({ navigation }: Props) {
           </HolographicText>
           <View style={{ width: 40 }} />
         </View>
-        
+
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           {/* Theme Selector */}
-          <ThemeSelector
-            selectedTheme={selectedTheme}
-            onSelectTheme={setSelectedTheme}
-          />
-          
+          <ThemeSelector selectedTheme={selectedTheme} onSelectTheme={setSelectedTheme} />
+
           {/* Container Demo */}
           <ShowcaseSection title="Holographic Container" colorTheme={selectedTheme}>
             <HolographicContainer
@@ -208,10 +203,13 @@ export function HolographicDemoScreen({ navigation }: Props) {
               </View>
             </HolographicContainer>
           </ShowcaseSection>
-          
+
           {/* Text Variants */}
           <ShowcaseSection title="Text Variants" colorTheme={selectedTheme}>
-            <HolographicContainer config={{ colorTheme: selectedTheme }} style={styles.demoContainer}>
+            <HolographicContainer
+              config={{ colorTheme: selectedTheme }}
+              style={styles.demoContainer}
+            >
               <View style={styles.textDemo}>
                 <HolographicText variant="title" colorTheme={selectedTheme}>
                   Title Text
@@ -228,7 +226,7 @@ export function HolographicDemoScreen({ navigation }: Props) {
               </View>
             </HolographicContainer>
           </ShowcaseSection>
-          
+
           {/* Button Variants */}
           <ShowcaseSection title="Button Variants" colorTheme={selectedTheme}>
             <View style={styles.buttonGrid}>
@@ -285,7 +283,7 @@ export function HolographicDemoScreen({ navigation }: Props) {
               </HolographicButton>
             </View>
           </ShowcaseSection>
-          
+
           {/* Card Demo */}
           <ShowcaseSection title="Holographic Card" colorTheme={selectedTheme}>
             <HolographicCard
@@ -307,15 +305,18 @@ export function HolographicDemoScreen({ navigation }: Props) {
               }
             >
               <HolographicText variant="body" colorTheme={selectedTheme}>
-                Cards combine the container with structured header, body, and footer sections
-                for organized content display.
+                Cards combine the container with structured header, body, and footer sections for
+                organized content display.
               </HolographicText>
             </HolographicCard>
           </ShowcaseSection>
-          
+
           {/* Avatar Showcase */}
           <ShowcaseSection title="Holographic Avatars" colorTheme={selectedTheme}>
-            <HolographicContainer config={{ colorTheme: selectedTheme }} style={styles.demoContainer}>
+            <HolographicContainer
+              config={{ colorTheme: selectedTheme }}
+              style={styles.demoContainer}
+            >
               <View style={styles.avatarRow}>
                 <View style={styles.avatarItem}>
                   <HolographicAvatar
@@ -324,7 +325,11 @@ export function HolographicDemoScreen({ navigation }: Props) {
                     status="online"
                     colorTheme={selectedTheme}
                   />
-                  <HolographicText variant="label" colorTheme={selectedTheme} style={styles.avatarLabel}>
+                  <HolographicText
+                    variant="label"
+                    colorTheme={selectedTheme}
+                    style={styles.avatarLabel}
+                  >
                     SM
                   </HolographicText>
                 </View>
@@ -335,7 +340,11 @@ export function HolographicDemoScreen({ navigation }: Props) {
                     status="away"
                     colorTheme={selectedTheme}
                   />
-                  <HolographicText variant="label" colorTheme={selectedTheme} style={styles.avatarLabel}>
+                  <HolographicText
+                    variant="label"
+                    colorTheme={selectedTheme}
+                    style={styles.avatarLabel}
+                  >
                     MD
                   </HolographicText>
                 </View>
@@ -346,7 +355,11 @@ export function HolographicDemoScreen({ navigation }: Props) {
                     status="busy"
                     colorTheme={selectedTheme}
                   />
-                  <HolographicText variant="label" colorTheme={selectedTheme} style={styles.avatarLabel}>
+                  <HolographicText
+                    variant="label"
+                    colorTheme={selectedTheme}
+                    style={styles.avatarLabel}
+                  >
                     LG
                   </HolographicText>
                 </View>
@@ -357,14 +370,18 @@ export function HolographicDemoScreen({ navigation }: Props) {
                     status="offline"
                     colorTheme={selectedTheme}
                   />
-                  <HolographicText variant="label" colorTheme={selectedTheme} style={styles.avatarLabel}>
+                  <HolographicText
+                    variant="label"
+                    colorTheme={selectedTheme}
+                    style={styles.avatarLabel}
+                  >
                     XL
                   </HolographicText>
                 </View>
               </View>
             </HolographicContainer>
           </ShowcaseSection>
-          
+
           {/* Input Demo */}
           <ShowcaseSection title="Holographic Input" colorTheme={selectedTheme}>
             <HolographicInput
@@ -374,10 +391,13 @@ export function HolographicDemoScreen({ navigation }: Props) {
               colorTheme={selectedTheme}
             />
           </ShowcaseSection>
-          
+
           {/* Progress Demo */}
           <ShowcaseSection title="Holographic Progress" colorTheme={selectedTheme}>
-            <HolographicContainer config={{ colorTheme: selectedTheme }} style={styles.demoContainer}>
+            <HolographicContainer
+              config={{ colorTheme: selectedTheme }}
+              style={styles.demoContainer}
+            >
               <View style={styles.progressDemo}>
                 <HolographicProgress
                   progress={progressValue / 100}
@@ -420,7 +440,7 @@ export function HolographicDemoScreen({ navigation }: Props) {
               </View>
             </HolographicContainer>
           </ShowcaseSection>
-          
+
           {/* Notification Demo */}
           <ShowcaseSection title="Notifications" colorTheme={selectedTheme}>
             <View style={styles.notificationButtons}>
@@ -458,7 +478,7 @@ export function HolographicDemoScreen({ navigation }: Props) {
               </HolographicButton>
             </View>
           </ShowcaseSection>
-          
+
           {/* Intensity Comparison */}
           <ShowcaseSection title="Intensity Levels" colorTheme={selectedTheme}>
             <View style={styles.intensityDemo}>
@@ -488,13 +508,18 @@ export function HolographicDemoScreen({ navigation }: Props) {
               </HolographicContainer>
             </View>
           </ShowcaseSection>
-          
+
           {/* Footer */}
           <View style={styles.footer}>
             <HolographicText variant="label" colorTheme={selectedTheme} animate={false}>
               CGraph Holographic UI v1.0.0
             </HolographicText>
-            <HolographicText variant="body" colorTheme={selectedTheme} animate={false} style={styles.footerSubtext}>
+            <HolographicText
+              variant="body"
+              colorTheme={selectedTheme}
+              animate={false}
+              style={styles.footerSubtext}
+            >
               Revolutionary Mobile Interface Design
             </HolographicText>
           </View>
@@ -530,7 +555,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 40,
   },
-  
+
   // Theme selector
   themeSelector: {
     marginBottom: 24,
@@ -545,7 +570,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: (SCREEN_WIDTH - 64) / 4,
   },
-  
+
   // Showcase section
   showcaseSection: {
     marginBottom: 32,
@@ -553,7 +578,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginBottom: 16,
   },
-  
+
   // Demo container
   demoContainer: {
     padding: 16,
@@ -561,13 +586,13 @@ const styles = StyleSheet.create({
   containerContent: {
     padding: 8,
   },
-  
+
   // Text demo
   textDemo: {
     gap: 12,
     padding: 8,
   },
-  
+
   // Button grid
   buttonGrid: {
     flexDirection: 'row',
@@ -577,14 +602,14 @@ const styles = StyleSheet.create({
   fullWidthButton: {
     width: '100%',
   },
-  
+
   // Card footer
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 12,
   },
-  
+
   // Avatar row
   avatarRow: {
     flexDirection: 'row',
@@ -599,7 +624,7 @@ const styles = StyleSheet.create({
   avatarLabel: {
     marginTop: 8,
   },
-  
+
   // Progress demo
   progressDemo: {
     padding: 8,
@@ -613,13 +638,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  
+
   // Notification buttons
   notificationButtons: {
     flexDirection: 'row',
     gap: 8,
   },
-  
+
   // Intensity demo
   intensityDemo: {
     gap: 12,
@@ -628,7 +653,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
   },
-  
+
   // Footer
   footer: {
     alignItems: 'center',

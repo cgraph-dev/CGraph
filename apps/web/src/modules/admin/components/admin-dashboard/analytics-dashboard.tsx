@@ -106,7 +106,7 @@ export function AnalyticsDashboard() {
         <DashboardChart
           title="User Activity"
           data={
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             generateChartData(range, Math.max(dau, 120)) as unknown as Record<string, unknown>[] // safe downcast – structural boundary
           }
           dataKey="value"
@@ -116,8 +116,9 @@ export function AnalyticsDashboard() {
         <DashboardChart
           title="Revenue Trend"
           data={
-             
-            generateChartData(range, Math.max(rev, 80)) as unknown as Record< // type assertion: chart data type bridge
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            generateChartData(range, Math.max(rev, 80)) as unknown as Record<
+              // type assertion: chart data type bridge
               string,
               unknown
             >[] /* safe downcast – structural boundary */
@@ -129,7 +130,7 @@ export function AnalyticsDashboard() {
         <DashboardChart
           title="Event Participation"
           data={
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             generateChartData(range, Math.max(jobs, 60)) as unknown as Record<string, unknown>[] // safe downcast – structural boundary
           }
           dataKey="value"
@@ -139,8 +140,9 @@ export function AnalyticsDashboard() {
         <DashboardChart
           title="Marketplace Volume"
           data={
-             
-            generateChartData(range, Math.max(rpm, 45)) as unknown as Record< // type assertion: chart data type bridge
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            generateChartData(range, Math.max(rpm, 45)) as unknown as Record<
+              // type assertion: chart data type bridge
               string,
               unknown
             >[] /* safe downcast – structural boundary */

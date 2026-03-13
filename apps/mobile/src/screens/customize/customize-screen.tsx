@@ -5,7 +5,7 @@
  * Acts as a navigation hub to more specific customization screens.
  */
 
-import React, { } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -42,10 +42,10 @@ const CATEGORIES: CustomizeCategory[] = [
     screen: 'EffectsCustomization',
     color: '#ec4899',
   },
-
 ];
 
 /**
+ * Customize Screen component.
  *
  */
 export default function CustomizeScreen() {
@@ -75,7 +75,7 @@ export default function CustomizeScreen() {
           <TouchableOpacity
             key={cat.id}
             style={[styles.card, { backgroundColor: colors.surface }]}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
             onPress={() => navigation.navigate(cat.screen as any)}
             activeOpacity={0.7}
           >

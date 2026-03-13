@@ -33,7 +33,7 @@ import { useThemeStore } from '@/stores';
 import { useCallStore } from '@/stores/callStore';
 import { getWebRTCManager } from '@/lib/webrtc/webrtcService';
 import { MobileLiveKitService, type MobileLiveKitParticipant } from '@/lib/webrtc/livekitService';
-import { setupMobileE2EE, isMobileEncrypted, decodeRoomKey, cleanupMobileE2EE } from '@/lib/webrtc/callEncryption';
+import { setupMobileE2EE, decodeRoomKey, cleanupMobileE2EE } from '@/lib/webrtc/callEncryption';
 import socketManager from '@/lib/socket';
 import api from '../../lib/api';
 
@@ -92,6 +92,7 @@ const CALL_STATES: Record<CallStatus, string> = {
 // =============================================================================
 
 /**
+ * Call Screen component.
  *
  */
 export default function CallScreen({ navigation, route }: Props) {
@@ -107,8 +108,10 @@ export default function CallScreen({ navigation, route }: Props) {
   const [callDuration, setCallDuration] = useState(0);
   const [_showControls, setShowControls] = useState(true);
   const [isE2EEEnabled, setIsE2EEEnabled] = useState(false);
-  const [groupParticipants, setGroupParticipants] = useState<MobileLiveKitParticipant[]>([]);
+  const [_groupParticipants, setGroupParticipants] = useState<MobileLiveKitParticipant[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [remoteStream, setRemoteStream] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [localStream, setLocalStream] = useState<any>(null);
 
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -116,6 +119,7 @@ export default function CallScreen({ navigation, route }: Props) {
   const controlsAnim = useRef(new Animated.Value(1)).current;
   const callStartTimeRef = useRef<number | null>(null);
   const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const livekitRoomRef = useRef<any>(null);
   const livekitCleanupRef = useRef<(() => void) | null>(null);
 
@@ -186,6 +190,7 @@ export default function CallScreen({ navigation, route }: Props) {
       clearInterval(pollLocalStream);
       // Cleanup handled by endCall
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Connect to LiveKit for group calls
@@ -267,6 +272,7 @@ export default function CallScreen({ navigation, route }: Props) {
         MobileLiveKitService.disconnect(livekitRoomRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGroupCall]);
 
   // Track call duration
@@ -281,7 +287,9 @@ export default function CallScreen({ navigation, route }: Props) {
       }, 1000);
     }
 
-    return () => { if (interval) clearInterval(interval); };
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [callStatus]);
 
   // Pulse animation for ringing/connecting states
@@ -429,8 +437,8 @@ export default function CallScreen({ navigation, route }: Props) {
             danger
               ? { backgroundColor: colors.error }
               : active
-              ? { backgroundColor: colors.primary }
-              : { backgroundColor: 'rgba(255, 255, 255, 0.15)' },
+                ? { backgroundColor: colors.primary }
+                : { backgroundColor: 'rgba(255, 255, 255, 0.15)' },
           ]}
         >
           <Text style={styles.controlIcon}>{icon}</Text>
@@ -446,10 +454,7 @@ export default function CallScreen({ navigation, route }: Props) {
       <StatusBar barStyle="light-content" />
 
       {/* Background */}
-      <LinearGradient
-        colors={['#1a1a2e', '#16213e', '#0f3460']}
-        style={StyleSheet.absoluteFill}
-      />
+      <LinearGradient colors={['#1a1a2e', '#16213e', '#0f3460']} style={StyleSheet.absoluteFill} />
 
       <SafeAreaView style={styles.safeArea}>
         <TouchableOpacity
@@ -461,7 +466,7 @@ export default function CallScreen({ navigation, route }: Props) {
           <Animated.View style={[styles.header, { opacity: controlsAnim }]}>
             <View style={styles.headerInfo}>
               <Text style={styles.recipientName}>
-                {isGroupCall ? 'Group Call' : (recipient?.displayName || 'Calling...')}
+                {isGroupCall ? 'Group Call' : recipient?.displayName || 'Calling...'}
               </Text>
               <Text style={styles.callStatus}>
                 {callStatus === 'connected' ? formattedDuration : CALL_STATES[callStatus]}
@@ -569,7 +574,10 @@ export default function CallScreen({ navigation, route }: Props) {
                         objectFit="cover"
                       />
                     ) : recipient?.avatarUrl ? (
-                      <Image source={{ uri: recipient.avatarUrl }} style={styles.videoPlaceholder} />
+                      <Image
+                        source={{ uri: recipient.avatarUrl }}
+                        style={styles.videoPlaceholder}
+                      />
                     ) : (
                       <LinearGradient
                         colors={[colors.primary, colors.secondary]}

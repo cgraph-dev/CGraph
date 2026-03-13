@@ -47,6 +47,8 @@ interface PostIconPickerProps {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
+/** Description. */
+/** Post Icon Picker component. */
 export function PostIconPicker({
   visible,
   onClose,
@@ -65,9 +67,8 @@ export function PostIconPicker({
     async function fetchIcons() {
       setLoading(true);
       try {
-        const res = await api.get(
-          `/api/v1/forums/${forumId}/boards/${boardId}/post-icons`
-        );
+        const res = await api.get(`/api/v1/forums/${forumId}/boards/${boardId}/post-icons`);
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const data = (res.data as { data: PostIcon[] }).data || [];
         if (!cancelled) setIcons(data);
       } catch {
@@ -78,7 +79,9 @@ export function PostIconPicker({
     }
 
     fetchIcons();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [visible, forumId, boardId]);
 
   const handleSelect = useCallback(
@@ -105,10 +108,7 @@ export function PostIconPicker({
           ) : (
             <Image source={{ uri: item.icon_url }} style={styles.iconImage} />
           )}
-          <Text
-            style={[styles.iconName, isSelected && styles.iconNameSelected]}
-            numberOfLines={1}
-          >
+          <Text style={[styles.iconName, isSelected && styles.iconNameSelected]} numberOfLines={1}>
             {item.name}
           </Text>
           {isSelected && (
@@ -147,11 +147,7 @@ export function PostIconPicker({
               size={20}
               color={!selectedIconId ? '#818cf8' : '#9ca3af'}
             />
-            <Text
-              style={[styles.noneText, !selectedIconId && styles.noneTextActive]}
-            >
-              No Icon
-            </Text>
+            <Text style={[styles.noneText, !selectedIconId && styles.noneTextActive]}>No Icon</Text>
           </TouchableOpacity>
 
           {/* Grid */}

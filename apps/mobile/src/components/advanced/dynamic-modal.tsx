@@ -117,6 +117,7 @@ const DEFAULT_SNAP_POINTS: SnapPoint[] = [
 // ============================================================================
 
 /**
+ * Dynamic Modal component.
  *
  */
 export function DynamicModal({
@@ -160,7 +161,8 @@ export function DynamicModal({
         const percentage = parseFloat(point.height) / 100;
         return SCREEN_HEIGHT * percentage;
       }
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return point.height as number;
     });
   }, [snapPoints]);
@@ -207,6 +209,7 @@ export function DynamicModal({
       translateY.value = withSpring(SCREEN_HEIGHT, springCfg);
       backdropProgress.value = withTiming(0, { duration: animationDuration });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, initialSnapIndex]);
 
   // Haptic feedback helper
@@ -225,6 +228,7 @@ export function DynamicModal({
     backdropProgress.value = withTiming(0, { duration: animationDuration }, () => {
       runOnJS(onClose)();
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [springCfg, animationDuration, onClose]);
 
   // Snap to index
@@ -242,6 +246,7 @@ export function DynamicModal({
 
       runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [getModalHeight, springConfig, onSnapChange, triggerHaptic]
   );
 
@@ -401,6 +406,7 @@ export interface BottomSheetProps {
 }
 
 /**
+ * Bottom Sheet component.
  *
  */
 export function BottomSheet({ visible, onClose, children, title, style }: BottomSheetProps) {
@@ -428,6 +434,7 @@ export interface ActionSheetProps {
 }
 
 /**
+ * Action Sheet component.
  *
  */
 export function ActionSheet({
@@ -474,6 +481,7 @@ export interface AlertModalProps {
 }
 
 /**
+ * Alert Modal component.
  *
  */
 export function AlertModal({

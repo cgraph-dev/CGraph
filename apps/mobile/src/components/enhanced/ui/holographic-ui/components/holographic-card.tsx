@@ -13,6 +13,7 @@ interface HolographicCardProps {
 }
 
 /**
+ * Holographic Card component.
  *
  */
 export function HolographicCard({

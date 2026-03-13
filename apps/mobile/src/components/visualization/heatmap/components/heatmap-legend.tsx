@@ -13,6 +13,8 @@ interface HeatmapLegendProps {
   cellRadius: number;
 }
 
+/** Description. */
+/** Heatmap Legend component. */
 export function HeatmapLegend({ colorScale, cellSize, cellRadius }: HeatmapLegendProps) {
   return (
     <View style={styles.legend}>

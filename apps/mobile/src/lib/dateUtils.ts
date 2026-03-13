@@ -1,6 +1,6 @@
 /**
  * Date utility functions with safe error handling.
- * 
+ *
  * These functions prevent "Invalid time value" RangeError by validating
  * date strings before parsing. This is critical for mobile where backend
  * data might have null/undefined dates or invalid formats.
@@ -36,7 +36,7 @@ export function safeFormatDistanceToNow(
 ): string {
   const date = safeParseDate(dateString);
   if (!date) return '';
-  
+
   try {
     return formatDistanceToNow(date, { addSuffix: true, ...options });
   } catch {
@@ -54,7 +54,7 @@ export function safeFormatTime(
 ): string {
   const date = safeParseDate(dateString);
   if (!date) return '';
-  
+
   try {
     return date.toLocaleTimeString([], {
       hour: '2-digit',
@@ -74,12 +74,12 @@ export function safeFormatTime(
 export function safeFormatMessageTime(dateString: string | undefined | null): string {
   const date = safeParseDate(dateString);
   if (!date) return '';
-  
+
   try {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    
+
     if (diffHours < 1) return 'just now';
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffHours < 168) return `${Math.floor(diffHours / 24)}d ago`;
@@ -97,11 +97,11 @@ export function safeFormatMessageTime(dateString: string | undefined | null): st
 export function safeFormatConversationTime(dateString: string | undefined | null): string {
   const date = safeParseDate(dateString);
   if (!date) return '';
-  
+
   try {
     const now = new Date();
     const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else if (diffDays === 1) {

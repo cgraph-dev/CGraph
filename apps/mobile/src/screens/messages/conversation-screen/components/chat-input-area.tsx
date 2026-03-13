@@ -132,9 +132,7 @@ export function ChatInputArea({
           ]}
         >
           <TouchableOpacity style={styles.attachButton} onPress={onToggleAttachMenu}>
-            <Animated.View
-              style={attachRotateStyle}
-            >
+            <Animated.View style={attachRotateStyle}>
               <Ionicons
                 name="add-circle"
                 size={28}
@@ -146,7 +144,9 @@ export function ChatInputArea({
           {/* GIF button */}
           {onGifPress && (
             <TouchableOpacity style={styles.attachButton} onPress={onGifPress}>
-              <Text style={{ fontSize: 18, fontWeight: '700', color: colors.textSecondary }}>GIF</Text>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: colors.textSecondary }}>
+                GIF
+              </Text>
             </TouchableOpacity>
           )}
 

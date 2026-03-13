@@ -18,6 +18,7 @@ interface AnimationsTabProps {
 }
 
 /**
+ * Animations Tab component.
  *
  */
 export function AnimationsTab({ theme, updateTheme }: AnimationsTabProps) {

@@ -73,6 +73,7 @@ const actionIcons: Record<string, string> = {
 };
 
 /**
+ * Group Moderation Screen component.
  *
  */
 export default function GroupModerationScreen({ route }: Props) {
@@ -88,20 +89,32 @@ export default function GroupModerationScreen({ route }: Props) {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/groups/${groupId}/bans`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setBans(
         data.map((b: Record<string, unknown>) => ({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: (b.id ?? b.user_id ?? '') as string,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           userId: (b.user_id ?? b.userId ?? '') as string,
-           
-          username: (b.username ?? (b.user as Record<string, unknown>)?.username ?? 'unknown') as string,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          username: (b.username ??
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            (b.user as Record<string, unknown>)?.username ??
+            'unknown') as string,
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           reason: (b.reason ?? null) as string | null,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           bannedAt: (b.banned_at ?? b.bannedAt ?? b.inserted_at ?? '') as string,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           expiresAt: (b.expires_at ?? b.expiresAt ?? null) as string | null,
         }))
       );
@@ -116,20 +129,37 @@ export default function GroupModerationScreen({ route }: Props) {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/groups/${groupId}/audit-log`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setAuditLog(
         data.map((e: Record<string, unknown>) => ({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: (e.id ?? '') as string,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           action: (e.action ?? e.action_type ?? '') as string,
-           
-          actorUsername: (e.actor_username ?? e.actorUsername ?? (e.actor as Record<string, unknown>)?.username ?? 'unknown') as string,
-           
-          targetUsername: (e.target_username ?? e.targetUsername ?? (e.target as Record<string, unknown>)?.username ?? null) as string | null,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          actorUsername: (e.actor_username ??
+            e.actorUsername ??
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            (e.actor as Record<string, unknown>)?.username ??
+            'unknown') as string,
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          targetUsername: (e.target_username ??
+            e.targetUsername ??
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            (e.target as Record<string, unknown>)?.username ??
+            null) as string | null,
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           details: (e.details ?? e.reason ?? null) as string | null,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           createdAt: (e.created_at ?? e.createdAt ?? e.inserted_at ?? '') as string,
         }))
       );
@@ -144,15 +174,29 @@ export default function GroupModerationScreen({ route }: Props) {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/groups/${groupId}/moderation/reports`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setReports(
         data.map((r: Record<string, unknown>) => ({
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: (r.id ?? '') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           category: (r.category ?? '') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           status: (r.status ?? 'pending') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           targetType: (r.target_type ?? r.targetType ?? '') as string,
-          reporterUsername: (r.reporter_username ?? (r.reporter as Record<string, unknown>)?.username ?? 'unknown') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          reporterUsername: (r.reporter_username ??
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            (r.reporter as Record<string, unknown>)?.username ??
+            'unknown') as string,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           description: (r.description ?? null) as string | null,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           createdAt: (r.created_at ?? r.createdAt ?? r.inserted_at ?? '') as string,
         }))
       );
@@ -223,16 +267,19 @@ export default function GroupModerationScreen({ route }: Props) {
       <View style={[styles.item, { backgroundColor: colors.surface }]}>
         <View style={[styles.avatar, { backgroundColor: colors.textTertiary + '20' }]}>
           <Ionicons
-             
-            name={(actionIcons[item.action] || 'document-text-outline') as keyof typeof Ionicons.glyphMap}
+            name={
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              (actionIcons[item.action] ||
+                'document-text-outline') as keyof typeof Ionicons.glyphMap
+            }
             size={18}
             color={colors.textSecondary}
           />
         </View>
         <View style={styles.info}>
           <Text style={[styles.auditText, { color: colors.text }]}>
-            <Text style={{ fontWeight: '700' }}>{item.actorUsername}</Text>
-            {' '}{item.action.replace(/_/g, ' ')}
+            <Text style={{ fontWeight: '700' }}>{item.actorUsername}</Text>{' '}
+            {item.action.replace(/_/g, ' ')}
             {item.targetUsername && (
               <Text style={{ fontWeight: '700' }}> {item.targetUsername}</Text>
             )}
@@ -253,10 +300,15 @@ export default function GroupModerationScreen({ route }: Props) {
         {(['reports', 'bans', 'audit'] as const).map((t) => (
           <TouchableOpacity
             key={t}
-            style={[styles.tab, tab === t && { borderBottomColor: colors.primary, borderBottomWidth: 2 }]}
+            style={[
+              styles.tab,
+              tab === t && { borderBottomColor: colors.primary, borderBottomWidth: 2 },
+            ]}
             onPress={() => setTab(t)}
           >
-            <Text style={[styles.tabText, { color: tab === t ? colors.primary : colors.textSecondary }]}>
+            <Text
+              style={[styles.tabText, { color: tab === t ? colors.primary : colors.textSecondary }]}
+            >
               {t === 'reports' ? 'Reports' : t === 'bans' ? 'Bans' : 'Audit Log'}
             </Text>
           </TouchableOpacity>
@@ -274,8 +326,17 @@ export default function GroupModerationScreen({ route }: Props) {
           renderItem={({ item, index }) => (
             <Animated.View entering={FadeInDown.springify().delay(index * 30)}>
               <View style={[styles.item, { backgroundColor: colors.surface }]}>
-                <View style={[styles.avatar, { backgroundColor: (statusColors[item.status] || colors.textTertiary) + '20' }]}>
-                  <Ionicons name="flag-outline" size={18} color={statusColors[item.status] || colors.textTertiary} />
+                <View
+                  style={[
+                    styles.avatar,
+                    { backgroundColor: (statusColors[item.status] || colors.textTertiary) + '20' },
+                  ]}
+                >
+                  <Ionicons
+                    name="flag-outline"
+                    size={18}
+                    color={statusColors[item.status] || colors.textTertiary}
+                  />
                 </View>
                 <View style={styles.info}>
                   <Text style={[styles.name, { color: colors.text }]}>
@@ -290,8 +351,18 @@ export default function GroupModerationScreen({ route }: Props) {
                     </Text>
                   )}
                 </View>
-                <View style={[styles.statusBadge, { backgroundColor: (statusColors[item.status] || colors.textTertiary) + '20' }]}>
-                  <Text style={[styles.statusText, { color: statusColors[item.status] || colors.textTertiary }]}>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    { backgroundColor: (statusColors[item.status] || colors.textTertiary) + '20' },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.statusText,
+                      { color: statusColors[item.status] || colors.textTertiary },
+                    ]}
+                  >
                     {item.status}
                   </Text>
                 </View>
@@ -328,7 +399,9 @@ export default function GroupModerationScreen({ route }: Props) {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Ionicons name="document-text-outline" size={48} color={colors.textTertiary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No audit log entries</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No audit log entries
+              </Text>
             </View>
           }
         />

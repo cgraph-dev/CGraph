@@ -15,6 +15,8 @@ interface InfoStepProps {
   delay: number;
 }
 
+/** Description. */
+/** Info Step component. */
 export function InfoStep({ number, title, description, delay }: InfoStepProps) {
   const slideAnim = useRef(new Animated.Value(30)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -43,6 +45,7 @@ export function InfoStep({ number, title, description, delay }: InfoStepProps) {
         }),
       ]),
     ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

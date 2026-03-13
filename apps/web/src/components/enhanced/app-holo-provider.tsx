@@ -1,6 +1,6 @@
 /**
  * Holographic UI Theme Integration
- * 
+ *
  * This module provides integration between the app's theme system
  * and the Holographic UI component library.
  */
@@ -81,21 +81,21 @@ interface AppHoloProviderProps {
 
 /**
  * App-level Holographic UI Provider
- * 
+ *
  * Integrates with the app's theme context and provides
  * appropriate HoloUI configuration based on user preferences.
  */
-export function AppHoloProvider({ 
-  children, 
+export function AppHoloProvider({
+  children,
   variant = 'default',
-  config: customConfig 
+  config: customConfig,
 }: AppHoloProviderProps) {
   const { theme, preferences } = useThemeEnhanced();
-  
+
   // Extract settings from preferences
   const reducedMotion = preferences?.settings?.reduceMotion ?? false;
   const performanceMode = false; // Can be added to preferences if needed
-  
+
   // Select base config based on variant
   let baseConfig: Partial<HoloConfig>;
   switch (variant) {
@@ -111,15 +111,17 @@ export function AppHoloProvider({
     default:
       baseConfig = defaultHoloConfig;
   }
-  
+
   // Apply overrides based on user preferences
-  const performanceModeConfig: Partial<HoloConfig> = performanceMode ? {
-    enableParticles: false,
-    enableFlicker: false,
-    enable3D: false,
-    intensity: 'subtle' as const,
-  } : {};
-  
+  const performanceModeConfig: Partial<HoloConfig> = performanceMode
+    ? {
+        enableParticles: false,
+        enableFlicker: false,
+        enable3D: false,
+        intensity: 'subtle' as const,
+      }
+    : {};
+
   const finalConfig: Partial<HoloConfig> = {
     ...baseConfig,
     ...customConfig,
@@ -128,7 +130,7 @@ export function AppHoloProvider({
     // Reduce effects in performance mode
     ...performanceModeConfig,
   };
-  
+
   // Map app theme colors to HoloUI theme
   const customTheme: Partial<HoloTheme> = {
     primary: theme.colors.primary,
@@ -142,21 +144,17 @@ export function AppHoloProvider({
     border: theme.colors.surfaceBorder,
     success: '#10b981', // emerald-500
     warning: '#f59e0b', // amber-500
-    error: '#ef4444',   // red-500
-    info: '#3b82f6',    // blue-500
+    error: '#ef4444', // red-500
+    info: '#3b82f6', // blue-500
   };
-  
+
   const holoConfig: Partial<HoloConfig> = {
     ...finalConfig,
     customTheme,
     preset: 'custom',
   };
-  
-  return (
-    <HoloProvider config={holoConfig}>
-      {children}
-    </HoloProvider>
-  );
+
+  return <HoloProvider config={holoConfig}>{children}</HoloProvider>;
 }
 
 export default AppHoloProvider;

@@ -15,7 +15,11 @@ function SettingsNavSkeleton() {
   return (
     <div className="w-48 space-y-1 border-r border-dark-600 py-4 pr-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="h-8 animate-pulse rounded bg-white/[0.06]" style={{ width: '80%' }} />
+        <div
+          key={i}
+          className="h-8 animate-pulse rounded bg-white/[0.06]"
+          style={{ width: '80%' }}
+        />
       ))}
     </div>
   );

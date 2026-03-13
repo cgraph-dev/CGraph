@@ -29,9 +29,9 @@ export default function WhosOnline() {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <GlobeAltIcon className="text-primary h-8 w-8" />
+          <GlobeAltIcon className="h-8 w-8 text-primary" />
           <div>
-            <h1 className="text-foreground text-2xl font-bold">Who's Online</h1>
+            <h1 className="text-2xl font-bold text-foreground">Who's Online</h1>
             <p className="text-muted-foreground text-sm">
               Last updated: {formatRelativeTime(lastUpdated.toISOString())}
             </p>
@@ -44,7 +44,7 @@ export default function WhosOnline() {
               type="checkbox"
               checked={autoRefresh}
               onChange={(e) => setAutoRefresh(e.target.checked)}
-              className="border-border text-primary focus:ring-primary h-4 w-4 rounded"
+              className="border-border h-4 w-4 rounded text-primary focus:ring-primary"
             />
             Auto-refresh
           </label>
@@ -94,7 +94,7 @@ export default function WhosOnline() {
               type="checkbox"
               checked={showGuests}
               onChange={(e) => setShowGuests(e.target.checked)}
-              className="border-border text-primary focus:ring-primary h-4 w-4 rounded"
+              className="border-border h-4 w-4 rounded text-primary focus:ring-primary"
             />
             Show guest count
           </label>

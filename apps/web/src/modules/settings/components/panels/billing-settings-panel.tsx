@@ -27,7 +27,10 @@ export function BillingSettingsPanel() {
   const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
 
   useEffect(() => {
-    billingService.getInvoices().then(setInvoices).catch(() => {});
+    billingService
+      .getInvoices()
+      .then(setInvoices)
+      .catch(() => {});
   }, []);
 
   const handleUpgrade = async () => {

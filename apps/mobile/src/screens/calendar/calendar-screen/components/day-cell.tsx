@@ -22,6 +22,7 @@ interface DayCellProps {
 }
 
 /**
+ * Day Cell component.
  *
  */
 export function DayCell({ date, isToday, isSelected, events, onPress }: DayCellProps) {

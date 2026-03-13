@@ -39,7 +39,7 @@ export interface AdaptiveIntervalOptions {
 export function useAdaptiveInterval(
   callback: () => void | Promise<void>,
   activeMs: number,
-  options: AdaptiveIntervalOptions = {},
+  options: AdaptiveIntervalOptions = {}
 ) {
   const { hiddenMultiplier = 4, enabled = true, immediate = false } = options;
 
@@ -50,7 +50,7 @@ export function useAdaptiveInterval(
 
   const getDelay = useCallback(
     () => (document.hidden ? activeMs * hiddenMultiplier : activeMs),
-    [activeMs, hiddenMultiplier],
+    [activeMs, hiddenMultiplier]
   );
 
   // Start / restart the interval with the appropriate delay.

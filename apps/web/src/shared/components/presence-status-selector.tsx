@@ -147,7 +147,9 @@ export function PresenceStatusSelector({
                     <span className={`h-2.5 w-2.5 rounded-full shadow-sm ${option.dotClass}`} />
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-200">{option.label}</div>
-                      <div className="text-[11px] leading-tight text-gray-500">{option.description}</div>
+                      <div className="text-[11px] leading-tight text-gray-500">
+                        {option.description}
+                      </div>
                     </div>
                     {status === option.value && (
                       <motion.span
@@ -164,7 +166,7 @@ export function PresenceStatusSelector({
             </>
           )}
         </AnimatePresence>,
-        document.body,
+        document.body
       )}
     </div>
   );

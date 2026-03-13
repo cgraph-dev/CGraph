@@ -50,7 +50,12 @@ interface GroupE2eeState {
   initGroupE2EE: (groupId: string) => Promise<{ senderKeyId: string; publicKeyBase64: string }>;
   handleSessionKeys: (groupId: string, keys: SessionKeyPayload[]) => Promise<void>;
   encryptMessage: (groupId: string, content: string) => Promise<EncryptedGroupMessage | null>;
-  decryptMessage: (senderKeyId: string, ciphertext: string, chainIndex: number, iv: string) => Promise<string | null>;
+  decryptMessage: (
+    senderKeyId: string,
+    ciphertext: string,
+    chainIndex: number,
+    iv: string
+  ) => Promise<string | null>;
   isGroupE2EEEnabled: (groupId: string) => boolean;
   enableGroupE2EE: (groupId: string) => void;
   disableGroupE2EE: (groupId: string) => void;
@@ -162,15 +167,19 @@ export const useGroupE2eeStore = create<GroupE2eeState>()(
 
         // Increment chain index
         keyPair.chainIndex++;
-        set((state) => ({
-          senderKeys: {
-            ...state.senderKeys,
-            [groupId]: {
-              ...state.senderKeys[groupId],
-              chainIndex: keyPair!.chainIndex,
-            },
-          },
-        } as Partial<GroupE2eeState>));
+        set(
+          (state) =>
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            ({
+              senderKeys: {
+                ...state.senderKeys,
+                [groupId]: {
+                  ...state.senderKeys[groupId],
+                  chainIndex: keyPair!.chainIndex,
+                },
+              },
+            }) as Partial<GroupE2eeState>
+        );
 
         return encrypted;
       },
@@ -200,10 +209,7 @@ export const useGroupE2eeStore = create<GroupE2eeState>()(
         }
 
         try {
-          return await decryptGroupMessage(
-            { ciphertext, senderKeyId, chainIndex, iv },
-            publicKey
-          );
+          return await decryptGroupMessage({ ciphertext, senderKeyId, chainIndex, iv }, publicKey);
         } catch {
           console.warn(`Failed to decrypt message with key ${senderKeyId}`);
           return null;

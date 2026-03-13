@@ -8,11 +8,7 @@
  * @version 1.0.0
  */
 
-import {
-  Room,
-  type E2EEOptions,
-  type ExternalE2EEKeyProvider,
-} from 'livekit-client';
+import { Room, type E2EEOptions, type ExternalE2EEKeyProvider } from 'livekit-client';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -36,17 +32,10 @@ export interface CallEncryptionState {
  * @param roomName - Room name used as HKDF info
  * @returns Derived CryptoKey for E2EE
  */
-async function deriveKey(
-  roomKey: Uint8Array,
-  roomName: string
-): Promise<CryptoKey> {
-  const baseKey = await crypto.subtle.importKey(
-    'raw',
-    roomKey,
-    { name: 'HKDF' },
-    false,
-    ['deriveKey']
-  );
+async function deriveKey(roomKey: Uint8Array, roomName: string): Promise<CryptoKey> {
+  const baseKey = await crypto.subtle.importKey('raw', roomKey, { name: 'HKDF' }, false, [
+    'deriveKey',
+  ]);
 
   const encoder = new TextEncoder();
   const salt = encoder.encode('livekit-e2ee');
@@ -85,15 +74,10 @@ const roomKeyProviders = new Map<string, ExternalE2EEKeyProvider>();
  * @param room - Connected LiveKit Room instance
  * @param roomKey - Raw 256-bit room key from backend
  */
-export async function setupE2EE(
-  room: Room,
-  roomKey: Uint8Array
-): Promise<void> {
+export async function setupE2EE(room: Room, roomKey: Uint8Array): Promise<void> {
   try {
     // Dynamic import to handle environments where E2EE isn't available
-    const { ExternalE2EEKeyProvider: KeyProvider } = await import(
-      'livekit-client'
-    );
+    const { ExternalE2EEKeyProvider: KeyProvider } = await import('livekit-client');
 
     const keyProvider = new KeyProvider();
     const derivedKey = await deriveKey(roomKey, room.name);
@@ -124,10 +108,7 @@ export async function setupE2EE(
  * @param room - Connected LiveKit Room instance
  * @param newKey - New raw 256-bit room key
  */
-export async function rotateKey(
-  room: Room,
-  newKey: Uint8Array
-): Promise<void> {
+export async function rotateKey(room: Room, newKey: Uint8Array): Promise<void> {
   const keyProvider = roomKeyProviders.get(room.name);
   if (!keyProvider) {
     console.warn('[callEncryption] No key provider found for room, setting up fresh');

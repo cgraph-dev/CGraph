@@ -41,7 +41,8 @@ export function DeleteChannelModal({
           >
             <h3 className="text-lg font-semibold text-white">Delete Channel</h3>
             <p className="text-sm text-gray-400">
-              This will permanently delete the channel and all its messages. This action cannot be undone.
+              This will permanently delete the channel and all its messages. This action cannot be
+              undone.
             </p>
             <div className="flex justify-end gap-3">
               <button

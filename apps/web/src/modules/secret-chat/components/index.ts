@@ -1,17 +1,17 @@
 /**
  * Secret Chat Components — Barrel Export
  */
-export { SecretChatHeader } from './SecretChatHeader';
-export type { SecretChatHeaderProps } from './SecretChatHeader';
+export { SecretChatHeader } from './secret-chat-header';
+export type { SecretChatHeaderProps } from './secret-chat-header';
 
-export { GhostModeIndicator } from './GhostModeIndicator';
-export type { GhostModeIndicatorProps } from './GhostModeIndicator';
+export { GhostModeIndicator } from './ghost-mode-indicator';
+export type { GhostModeIndicatorProps } from './ghost-mode-indicator';
 
-export { TimerCountdown } from './TimerCountdown';
-export type { TimerCountdownProps } from './TimerCountdown';
+export { TimerCountdown } from './timer-countdown';
+export type { TimerCountdownProps } from './timer-countdown';
 
-export { PanicWipeButton } from './PanicWipeButton';
-export type { PanicWipeButtonProps } from './PanicWipeButton';
+export { PanicWipeButton } from './panic-wipe-button';
+export type { PanicWipeButtonProps } from './panic-wipe-button';
 
-export { SecretIdentity } from './SecretIdentity';
-export type { SecretIdentityProps } from './SecretIdentity';
+export { SecretIdentity } from './secret-identity';
+export type { SecretIdentityProps } from './secret-identity';

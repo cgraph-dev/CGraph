@@ -20,11 +20,7 @@ interface ReorderModalProps {
 /**
  * Reorder Modal dialog component.
  */
-export function ReorderModal({
-  parent,
-  onClose,
-  onSave,
-}: ReorderModalProps): React.ReactElement {
+export function ReorderModal({ parent, onClose, onSave }: ReorderModalProps): React.ReactElement {
   const [items, setItems] = useState(parent.children ?? []);
   const [saving, setSaving] = useState(false);
 
@@ -44,7 +40,10 @@ export function ReorderModal({
 
       <div className="mb-4 max-h-64 space-y-1 overflow-y-auto">
         {items.map((item, idx) => (
-          <div key={item.id} className="flex items-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2">
+          <div
+            key={item.id}
+            className="flex items-center gap-2 rounded-lg bg-white/[0.06] px-3 py-2"
+          >
             <span className="flex-1 text-sm text-white">{item.name}</span>
             <button
               disabled={idx === 0}

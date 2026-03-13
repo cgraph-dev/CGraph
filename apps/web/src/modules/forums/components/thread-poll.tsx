@@ -16,12 +16,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  PlusIcon,
-  XMarkIcon,
-  ChartBarIcon,
-  Cog6ToothIcon,
-} from '@heroicons/react/24/outline';
+import { PlusIcon, XMarkIcon, ChartBarIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { type Poll } from '@/modules/forums/store';
 
@@ -86,8 +81,7 @@ function PollCreateForm({ onCreate, className }: PollCreateFormProps) {
   };
 
   const isValid =
-    question.trim().length > 0 &&
-    options.filter((o) => o.trim().length > 0).length >= 2;
+    question.trim().length > 0 && options.filter((o) => o.trim().length > 0).length >= 2;
 
   const handleSubmit = useCallback(() => {
     if (!isValid) return;
@@ -105,12 +99,7 @@ function PollCreateForm({ onCreate, className }: PollCreateFormProps) {
   }, [question, options, allowMultiple, maxSelections, isPublic, timeout, isValid, onCreate]);
 
   return (
-    <div
-      className={cn(
-        'rounded-xl border border-white/[0.06] bg-white/[0.03] p-4',
-        className,
-      )}
-    >
+    <div className={cn('rounded-xl border border-white/[0.06] bg-white/[0.03] p-4', className)}>
       <div className="mb-4 flex items-center gap-2">
         <ChartBarIcon className="h-5 w-5 text-primary-400" />
         <h3 className="text-sm font-bold text-white">Create Poll</h3>
@@ -118,9 +107,7 @@ function PollCreateForm({ onCreate, className }: PollCreateFormProps) {
 
       {/* Question */}
       <div className="mb-4">
-        <label className="mb-1 block text-xs font-medium text-gray-400">
-          Question
-        </label>
+        <label className="mb-1 block text-xs font-medium text-gray-400">Question</label>
         <input
           type="text"
           value={question}
@@ -253,7 +240,7 @@ function PollCreateForm({ onCreate, className }: PollCreateFormProps) {
           'w-full rounded-lg py-2.5 text-sm font-semibold transition-all',
           isValid
             ? 'bg-primary-600 text-white hover:bg-primary-500'
-            : 'cursor-not-allowed bg-white/[0.04] text-gray-600',
+            : 'cursor-not-allowed bg-white/[0.04] text-gray-600'
         )}
       >
         Create Poll
@@ -264,6 +251,7 @@ function PollCreateForm({ onCreate, className }: PollCreateFormProps) {
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Thread Poll component. */
 export default function ThreadPoll({
   poll,
   threadId,
@@ -286,12 +274,7 @@ export default function ThreadPoll({
   // View mode — full variant uses PollWidget
   if (variant === 'full') {
     return (
-      <PollWidget
-        poll={poll}
-        threadId={threadId}
-        isCreator={isCreator}
-        className={className}
-      />
+      <PollWidget poll={poll} threadId={threadId} isCreator={isCreator} className={className} />
     );
   }
 

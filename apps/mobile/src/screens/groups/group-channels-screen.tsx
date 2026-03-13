@@ -41,6 +41,7 @@ const channelIcons: Record<string, string> = {
 };
 
 /**
+ * Group Channels Screen component.
  *
  */
 export default function GroupChannelsScreen({ route }: Props) {
@@ -56,19 +57,27 @@ export default function GroupChannelsScreen({ route }: Props) {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/groups/${groupId}/channels`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setChannels(
         data
           .map((c: Record<string, unknown>) => ({
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             id: c.id as string,
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             name: (c.name ?? '') as string,
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             type: (c.type ?? 'text') as string,
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             topic: (c.topic ?? null) as string | null,
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             position: (c.position ?? 0) as number,
           }))
           .sort((a: Channel, b: Channel) => a.position - b.position)
@@ -129,7 +138,7 @@ export default function GroupChannelsScreen({ route }: Props) {
         onLongPress={() => handleDelete(item)}
       >
         <Ionicons
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           name={(channelIcons[item.type] || 'chatbox-outline') as keyof typeof Ionicons.glyphMap}
           size={22}
           color={colors.textSecondary}
@@ -191,13 +200,16 @@ export default function GroupChannelsScreen({ route }: Props) {
                 onPress={() => setNewType(type)}
               >
                 <Ionicons
-                   
+                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                   name={(channelIcons[type] || 'chatbox-outline') as keyof typeof Ionicons.glyphMap}
                   size={16}
                   color={newType === type ? colors.primary : colors.textSecondary}
                 />
                 <Text
-                  style={[styles.typeOptionText, { color: newType === type ? colors.primary : colors.textSecondary }]}
+                  style={[
+                    styles.typeOptionText,
+                    { color: newType === type ? colors.primary : colors.textSecondary },
+                  ]}
                 >
                   {type}
                 </Text>
@@ -205,7 +217,10 @@ export default function GroupChannelsScreen({ route }: Props) {
             ))}
           </View>
           <TouchableOpacity
-            style={[styles.submitBtn, { backgroundColor: colors.primary, opacity: newName.trim() ? 1 : 0.5 }]}
+            style={[
+              styles.submitBtn,
+              { backgroundColor: colors.primary, opacity: newName.trim() ? 1 : 0.5 },
+            ]}
             onPress={handleCreate}
             disabled={!newName.trim()}
           >
@@ -227,7 +242,9 @@ export default function GroupChannelsScreen({ route }: Props) {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Ionicons name="list-outline" size={48} color={colors.textTertiary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No channels yet</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No channels yet
+              </Text>
             </View>
           }
         />

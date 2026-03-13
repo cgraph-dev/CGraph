@@ -403,10 +403,12 @@ export function createMockNavigation() {
 /**
  * Creates a mock route prop for screen testing
  */
- 
+
 /**
+ * Creates mock route.
  *
  */
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 export function createMockRoute<T extends object = object>(name: string, params: T = {} as T) {
   return {
     key: `${name}-key`,

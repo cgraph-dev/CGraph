@@ -114,6 +114,7 @@ export function useConversationSearch(conversationId: string) {
         setHasMore(data.meta?.has_next_page ?? false);
         setCursor(data.meta?.next_cursor);
       } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         if ((err as Error).name !== 'AbortError') {
           logger.error('Conversation search failed', err);
         }
@@ -181,6 +182,17 @@ export function useConversationSearch(conversationId: string) {
       fetchMore,
       reset,
     }),
-    [query, updateQuery, filters, updateFilters, results, isLoading, total, hasMore, fetchMore, reset]
+    [
+      query,
+      updateQuery,
+      filters,
+      updateFilters,
+      results,
+      isLoading,
+      total,
+      hasMore,
+      fetchMore,
+      reset,
+    ]
   );
 }

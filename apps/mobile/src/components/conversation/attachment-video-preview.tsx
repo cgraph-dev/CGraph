@@ -1,9 +1,9 @@
 /**
  * AttachmentVideoPreview Component
- * 
+ *
  * Displays a video thumbnail preview for pending attachments before sending.
  * Uses expo-video for efficient video frame rendering.
- * 
+ *
  * @module components/conversation/AttachmentVideoPreview
  * @since v0.7.29
  */
@@ -33,10 +33,10 @@ const formatDuration = (seconds: number): string => {
 
 /**
  * Renders a video preview thumbnail with play overlay and duration badge.
- * 
+ *
  * Used in the attachment preview modal before sending videos.
  * The video player is paused by default, showing the first frame as a thumbnail.
- * 
+ *
  * @example
  * ```tsx
  * <AttachmentVideoPreview
@@ -56,20 +56,15 @@ export const AttachmentVideoPreview = memo(function AttachmentVideoPreview({
 
   return (
     <View style={styles.container}>
-      <VideoView
-        style={styles.video}
-        player={player}
-        contentFit="cover"
-        nativeControls={false}
-      />
-      
+      <VideoView style={styles.video} player={player} contentFit="cover" nativeControls={false} />
+
       {/* Play button overlay */}
       <View style={styles.playOverlay}>
         <View style={styles.playButton}>
           <Ionicons name="play" size={40} color="#fff" />
         </View>
       </View>
-      
+
       {/* Duration badge */}
       {duration !== undefined && duration > 0 && (
         <View style={styles.durationBadge}>

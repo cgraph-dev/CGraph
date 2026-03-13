@@ -1,6 +1,6 @@
 /**
  * Enhanced Components - Index
- * 
+ *
  * Aggregates all enhanced UI component exports.
  */
 

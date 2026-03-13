@@ -35,18 +35,16 @@ export function createCategoryActions(set: SetState, get: GetState) {
       try {
         const response = await api.get('/api/v1/calendar/categories');
         // type assertion: ensureArray returns unknown[], narrowing to Record
-        const categories = (
-           
-          ensureArray(response.data, 'categories') as Record<string, unknown>[]
-        ).map((c) => ({
-          id: asString(c.id),
-          name: asString(c.name, 'Uncategorized'),
-          color: asString(c.color, '#6366f1'),
-          icon: asOptionalString(c.icon),
-          description: asOptionalString(c.description),
-          isDefault: asBool(c.is_default),
-          order: asNumber(c.order),
-        }));
+        const categories = // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          (ensureArray(response.data, 'categories') as Record<string, unknown>[]).map((c) => ({
+            id: asString(c.id),
+            name: asString(c.name, 'Uncategorized'),
+            color: asString(c.color, '#6366f1'),
+            icon: asOptionalString(c.icon),
+            description: asOptionalString(c.description),
+            isDefault: asBool(c.is_default),
+            order: asNumber(c.order),
+          }));
         set({ categories });
       } catch (error) {
         logger.error('[calendarStore] Failed to fetch categories:', error);

@@ -8,15 +8,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  Pressable,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-} from 'react-native';
+import { View, Text, Modal, Pressable, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
@@ -89,21 +81,14 @@ export function DisappearingMessagesToggle({
     >
       <View style={modalStyles.overlay}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
-        <View
-          style={[
-            modalStyles.sheet,
-            { backgroundColor: colors.surface || '#1a1a2e' },
-          ]}
-        >
+        <View style={[modalStyles.sheet, { backgroundColor: colors.surface || '#1a1a2e' }]}>
           {/* Handle */}
           <View style={[modalStyles.handle, { backgroundColor: colors.border || '#333' }]} />
 
           {/* Header */}
           <View style={modalStyles.header}>
             <Ionicons name="timer-outline" size={24} color={colors.primary} />
-            <Text style={[modalStyles.title, { color: colors.text }]}>
-              Disappearing Messages
-            </Text>
+            <Text style={[modalStyles.title, { color: colors.text }]}>Disappearing Messages</Text>
           </View>
 
           <Text style={[modalStyles.subtitle, { color: colors.textSecondary }]}>
@@ -120,9 +105,7 @@ export function DisappearingMessagesToggle({
                   style={[
                     modalStyles.optionItem,
                     {
-                      backgroundColor: isSelected
-                        ? `${colors.primary}15`
-                        : 'transparent',
+                      backgroundColor: isSelected ? `${colors.primary}15` : 'transparent',
                       borderColor: isSelected ? colors.primary : colors.border || '#333',
                     },
                   ]}
@@ -139,12 +122,7 @@ export function DisappearingMessagesToggle({
                     >
                       {option.label}
                     </Text>
-                    <Text
-                      style={[
-                        modalStyles.optionDescription,
-                        { color: colors.textSecondary },
-                      ]}
-                    >
+                    <Text style={[modalStyles.optionDescription, { color: colors.textSecondary }]}>
                       {option.description}
                     </Text>
                   </View>

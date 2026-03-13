@@ -40,6 +40,6 @@ export const PARTICLE_COLORS: Record<string, string> = {
 import { ALL_TITLES } from '@/data/titlesCollection';
 
 // Legendary/mythic title IDs for fire effect
-export const LEGENDARY_TITLE_IDS = ALL_TITLES
-  .filter((t) => t.rarity === 'legendary' || t.rarity === 'mythic')
-  .map((t) => t.id);
+export const LEGENDARY_TITLE_IDS = ALL_TITLES.filter(
+  (t) => t.rarity === 'legendary' || t.rarity === 'mythic'
+).map((t) => t.id);

@@ -27,7 +27,10 @@ function LoadingDot({ index, size, color }: { index: number; size: number; color
     scale.value = withDelay(
       index * 150,
       withRepeat(
-        withSequence(withTiming(1.5, { duration: durations.slow.ms }), withTiming(1, { duration: durations.slow.ms })),
+        withSequence(
+          withTiming(1.5, { duration: durations.slow.ms }),
+          withTiming(1, { duration: durations.slow.ms })
+        ),
         -1,
         false
       )
@@ -65,7 +68,10 @@ function LoadingBar({
     scaleY.value = withDelay(
       index * 100,
       withRepeat(
-        withSequence(withTiming(1, { duration: durations.slow.ms }), withTiming(0.4, { duration: durations.slow.ms })),
+        withSequence(
+          withTiming(1, { duration: durations.slow.ms }),
+          withTiming(0.4, { duration: durations.slow.ms })
+        ),
         -1,
         false
       )
@@ -135,6 +141,7 @@ function PulsingCircle({ size, color }: { size: number; color: string }) {
 }
 
 /**
+ * Loading Animation component.
  *
  */
 export function LoadingAnimation({

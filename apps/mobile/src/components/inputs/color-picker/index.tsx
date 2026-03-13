@@ -6,7 +6,13 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, TextInput } from 'react-native';
 import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { type ColorPickerProps, type HSL, DEFAULT_SWATCHES, SIZE_CONFIG, SCREEN_WIDTH } from './types';
+import {
+  type ColorPickerProps,
+  type HSL,
+  DEFAULT_SWATCHES,
+  SIZE_CONFIG,
+  SCREEN_WIDTH,
+} from './types';
 import { styles } from './styles';
 import { hexToHSL, hslToHex } from './utils';
 import { HueSlider, SaturationSlider, LightnessSlider } from './sliders';
@@ -25,7 +31,7 @@ export function ColorPicker({
   showRecentColors = true,
   recentColorsCount = 8,
   showInput = true,
-  inputMode = 'hex',
+  _inputMode = 'hex',
   showPreview = true,
   size = 'md',
   style,

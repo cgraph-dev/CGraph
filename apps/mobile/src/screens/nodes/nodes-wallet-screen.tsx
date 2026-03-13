@@ -53,6 +53,7 @@ const TX_ICON_MAP: Record<NodeTransactionType, { name: string; color: string }> 
 // Component
 // ---------------------------------------------------------------------------
 
+/** Nodes Wallet Screen component. */
 export default function NodesWalletScreen(): React.ReactElement {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { colors } = useThemeStore();
@@ -113,7 +114,7 @@ export default function NodesWalletScreen(): React.ReactElement {
       setHasMore(true);
       fetchTransactions({ page: 1, per_page: PAGE_SIZE, type: value ?? undefined });
     },
-    [fetchTransactions],
+    [fetchTransactions]
   );
 
   // ─── Transaction row ─────────────────────────────────────────────
@@ -128,6 +129,7 @@ export default function NodesWalletScreen(): React.ReactElement {
       return (
         <View style={[styles.txRow, { borderBottomColor: colors.border }]}>
           <View style={[styles.txIcon, { backgroundColor: meta.color + '18' }]}>
+            {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
             <Ionicons name={meta.name as never} size={20} color={meta.color} />
           </View>
           <View style={styles.txInfo}>
@@ -137,12 +139,13 @@ export default function NodesWalletScreen(): React.ReactElement {
             <Text style={[styles.txDate, { color: colors.textSecondary }]}>{dateStr}</Text>
           </View>
           <Text style={[styles.txAmount, { color: amountColor }]}>
-            {sign}{item.amount} N
+            {sign}
+            {item.amount} N
           </Text>
         </View>
       );
     },
-    [colors],
+    [colors]
   );
 
   // ─── Empty state ──────────────────────────────────────────────────
@@ -157,7 +160,7 @@ export default function NodesWalletScreen(): React.ReactElement {
           </Text>
         </View>
       ) : null,
-    [isLoading, colors],
+    [isLoading, colors]
   );
 
   // ─── Render ───────────────────────────────────────────────────────
@@ -225,10 +228,7 @@ export default function NodesWalletScreen(): React.ReactElement {
               onPress={() => handleFilterChange(item.value)}
             >
               <Text
-                style={[
-                  styles.filterTabText,
-                  { color: isActive ? '#fff' : colors.textSecondary },
-                ]}
+                style={[styles.filterTabText, { color: isActive ? '#fff' : colors.textSecondary }]}
               >
                 {item.label}
               </Text>
@@ -246,7 +246,11 @@ export default function NodesWalletScreen(): React.ReactElement {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+          />
         }
         ListFooterComponent={
           isLoading && transactions.length > 0 ? (

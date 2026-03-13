@@ -37,6 +37,8 @@ const SIZE_MAP = {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Rank Badge component. */
 export function RankBadge({
   rankName,
   rankImage,

@@ -62,7 +62,7 @@ export const useFeatureFlagStore = create<FeatureFlagStore>((set, get) => ({
     const now = Date.now();
     const { lastFetched, loading } = get();
 
-    if (loading || (now - lastFetched < CACHE_TTL_MS)) return;
+    if (loading || now - lastFetched < CACHE_TTL_MS) return;
 
     set({ loading: true, error: null });
 
@@ -70,7 +70,8 @@ export const useFeatureFlagStore = create<FeatureFlagStore>((set, get) => ({
       const response = await api.get(FLAGS_API_PATH);
       const flagsMap: Record<string, FeatureFlag> = {};
 
-      const flagArray = response.data?.data?.flags ?? response.data?.flags ?? response.data?.data ?? [];
+      const flagArray =
+        response.data?.data?.flags ?? response.data?.flags ?? response.data?.data ?? [];
       for (const flag of flagArray) {
         flagsMap[flag.name] = flag;
       }

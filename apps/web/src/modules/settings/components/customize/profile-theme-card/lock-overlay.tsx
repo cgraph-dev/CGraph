@@ -23,9 +23,7 @@ export default function LockOverlay({ theme }: LockOverlayProps) {
       animate={{ opacity: 1 }}
     >
       <LockClosedIcon className="mb-2 h-8 w-8 text-white/70" />
-      <span className="text-xs font-medium text-white/80">
-        {'Locked'}
-      </span>
+      <span className="text-xs font-medium text-white/80">{'Locked'}</span>
       {theme.unlockRequirement && (
         <span className="mt-1 px-4 text-center text-[10px] text-white/60">
           {theme.unlockRequirement}

@@ -1,17 +1,17 @@
 /**
  * Matrix Text Encryption Animation
- * 
+ *
  * @description Animated text component that transforms between encrypted
  * cipher text and readable text with a Matrix-style decryption effect.
- * 
+ *
  * @version 1.0.0
  * @since v0.6.5
  * @author CGraph Development Team
- * 
+ *
  * @example
  * ```tsx
- * <MatrixText 
- *   text="CGraph" 
+ * <MatrixText
+ *   text="CGraph"
  *   className="text-4xl font-bold"
  *   animationDuration={2000}
  *   loop
@@ -33,7 +33,7 @@ export { MatrixLogo, MatrixHeading, MatrixCipherText } from './matrix-text-prese
 
 /**
  * Matrix-style text encryption/decryption animation
- * 
+ *
  * Displays text that morphs between encrypted cipher characters
  * and readable text with a cascading reveal effect.
  * Now with continuous cipher morphing for ambient effect.
@@ -53,13 +53,15 @@ export const MatrixText = memo(function MatrixText({
 }: MatrixTextProps) {
   const [displayText, setDisplayText] = useState<string[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [phase, setPhase] = useState<'idle' | 'encrypting' | 'encrypted' | 'decrypting' | 'decrypted'>('idle');
+  const [phase, setPhase] = useState<
+    'idle' | 'encrypting' | 'encrypted' | 'decrypting' | 'decrypted'
+  >('idle');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const frameRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
   const ambientMorphRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  
+
   const charsetString = CHARSETS[charset] || CHARSETS.katakana;
-  
+
   // Initialize display text
   useEffect(() => {
     if (direction === 'encrypt') {
@@ -70,7 +72,7 @@ export const MatrixText = memo(function MatrixText({
       setPhase('encrypted');
     }
   }, [text, direction, charsetString]);
-  
+
   /**
    * Animate decryption - reveal characters one by one with scramble effect
    */
@@ -79,18 +81,18 @@ export const MatrixText = memo(function MatrixText({
     const totalChars = chars.length;
     const perCharDuration = animationDuration / totalChars;
     const scrambleIterations = 5;
-    
+
     setIsAnimating(true);
     setPhase('decrypting');
-    
+
     let currentIndex = 0;
-    
+
     const revealNext = () => {
       if (currentIndex >= totalChars) {
         setIsAnimating(false);
         setPhase('decrypted');
         onComplete?.();
-        
+
         if (loop) {
           animationRef.current = setTimeout(() => {
             if (direction === 'both') {
@@ -105,7 +107,7 @@ export const MatrixText = memo(function MatrixText({
         }
         return;
       }
-      
+
       // Scramble current character a few times before revealing
       let scrambleCount = 0;
       const scramble = () => {
@@ -120,7 +122,7 @@ export const MatrixText = memo(function MatrixText({
           animationRef.current = setTimeout(revealNext, perCharDuration * 0.3);
           return;
         }
-        
+
         // Show random character
         setDisplayText((prev: string[]) => {
           const newText = [...prev];
@@ -129,17 +131,18 @@ export const MatrixText = memo(function MatrixText({
           }
           return newText;
         });
-        
+
         scrambleCount++;
-        animationRef.current = setTimeout(scramble, perCharDuration * 0.7 / scrambleIterations);
+        animationRef.current = setTimeout(scramble, (perCharDuration * 0.7) / scrambleIterations);
       };
-      
+
       scramble();
     };
-    
+
     animationRef.current = setTimeout(revealNext, startDelay);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, animationDuration, startDelay, loop, loopDelay, direction, charsetString, onComplete]);
-  
+
   /**
    * Animate encryption - scramble characters one by one
    */
@@ -147,23 +150,23 @@ export const MatrixText = memo(function MatrixText({
     const chars = text.split('');
     const totalChars = chars.length;
     const perCharDuration = animationDuration / totalChars;
-    
+
     setIsAnimating(true);
     setPhase('encrypting');
-    
+
     let currentIndex = 0;
-    
+
     const encryptNext = () => {
       if (currentIndex >= totalChars) {
         setIsAnimating(false);
         setPhase('encrypted');
-        
+
         if (loop && direction === 'both') {
           animationRef.current = setTimeout(animateDecrypt, loopDelay);
         }
         return;
       }
-      
+
       // Encrypt current character
       if (chars[currentIndex] !== ' ') {
         setDisplayText((prev: string[]) => {
@@ -172,14 +175,14 @@ export const MatrixText = memo(function MatrixText({
           return newText;
         });
       }
-      
+
       currentIndex++;
       animationRef.current = setTimeout(encryptNext, perCharDuration * 0.5);
     };
-    
+
     animationRef.current = setTimeout(encryptNext, 0);
   }, [text, animationDuration, loop, loopDelay, direction, charsetString, animateDecrypt]);
-  
+
   // Start animation on mount
   useEffect(() => {
     animationRef.current = setTimeout(() => {
@@ -189,12 +192,13 @@ export const MatrixText = memo(function MatrixText({
         animateDecrypt();
       }
     }, startDelay);
-    
+
     return () => {
       if (animationRef.current) {
         clearTimeout(animationRef.current);
       }
       if (frameRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         cancelAnimationFrame(frameRef.current);
       }
       if (ambientMorphRef.current) {
@@ -202,60 +206,65 @@ export const MatrixText = memo(function MatrixText({
       }
     };
   }, [direction, animateDecrypt, animateEncrypt, startDelay]);
-  
+
   // Continuous ambient cipher morph when decrypted (subtle effect)
   useEffect(() => {
     if (phase === 'decrypted' && !loop) {
       // Start ambient morphing - occasional character flickers
       let morphIndex = 0;
-      
-      ambientMorphRef.current = setInterval(() => {
-        setDisplayText((prev: string[]) => {
-          const newText = [...prev];
-          const idx = morphIndex % text.length;
-          
-          if (text[idx] !== ' ') {
-            // Briefly show cipher character then restore
-            const originalChar = text[idx];
-            newText[idx] = getRandomChar(charsetString);
-            
-            // Restore after brief delay
-            setTimeout(() => {
-              setDisplayText((current: string[]) => {
-                const restored = [...current];
-                restored[idx] = originalChar ?? '';
-                return restored;
-              });
-            }, 80);
-          }
-          
-          morphIndex++;
-          return newText;
-        });
-      }, 800 + Math.random() * 400);
-      
+
+      ambientMorphRef.current = setInterval(
+        () => {
+          setDisplayText((prev: string[]) => {
+            const newText = [...prev];
+            const idx = morphIndex % text.length;
+
+            if (text[idx] !== ' ') {
+              // Briefly show cipher character then restore
+              const originalChar = text[idx];
+              newText[idx] = getRandomChar(charsetString);
+
+              // Restore after brief delay
+              setTimeout(() => {
+                setDisplayText((current: string[]) => {
+                  const restored = [...current];
+                  restored[idx] = originalChar ?? '';
+                  return restored;
+                });
+              }, 80);
+            }
+
+            morphIndex++;
+            return newText;
+          });
+        },
+        800 + Math.random() * 400
+      );
+
       return () => {
         if (ambientMorphRef.current) {
           clearInterval(ambientMorphRef.current);
         }
       };
     }
-    
+
     return undefined;
   }, [phase, loop, text, charsetString]);
-  
+
   // Glow style with enhanced animation
-  const glowStyle = enableGlow ? {
-    textShadow: `
+  const glowStyle = enableGlow
+    ? {
+        textShadow: `
       0 0 5px ${glowColor},
       0 0 10px ${glowColor},
       0 0 20px ${glowColor},
       0 0 40px ${glowColor}88
     `,
-  } : {};
-  
+      }
+    : {};
+
   return (
-    <span 
+    <span
       className={`inline-block font-mono ${className}`}
       style={glowStyle}
       aria-label={text}
@@ -265,7 +274,7 @@ export const MatrixText = memo(function MatrixText({
       {displayText.map((char: string, index: number) => {
         const isOriginal = char === text[index];
         const isMorphing = !isOriginal && phase !== 'encrypted';
-        
+
         return (
           <span
             key={index}

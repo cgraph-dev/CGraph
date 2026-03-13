@@ -31,6 +31,7 @@ interface TipButtonProps {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Tip Button component. */
 export default function TipButton({
   recipientId,
   recipientName,
@@ -47,7 +48,7 @@ export default function TipButton({
     (amount: number) => {
       onTipSent?.(amount);
     },
-    [onTipSent],
+    [onTipSent]
   );
 
   return (

@@ -5,7 +5,13 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, StyleSheet, ViewStyle, Platform } from 'react-native';
-import Animated, { useSharedValue, withTiming, withRepeat, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withRepeat,
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { HolographicConfig, getTheme } from '../types';
 import { HolographicText } from './holographic-text';
@@ -20,6 +26,7 @@ interface HolographicProgressProps {
 }
 
 /**
+ * Holographic Progress component.
  *
  */
 export function HolographicProgress({
@@ -38,16 +45,14 @@ export function HolographicProgress({
 
   useEffect(() => {
     progressAnim.value = withTiming(clampedProgress, { duration: durations.slower.ms });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clampedProgress]);
 
   useEffect(() => {
     // Shine animation loop
     shineAnim.value = 0;
-    shineAnim.value = withRepeat(
-      withTiming(1, { duration: durations.loop.ms }),
-      -1,
-      false
-    );
+    shineAnim.value = withRepeat(withTiming(1, { duration: durations.loop.ms }), -1, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const progressWidthStyle = useAnimatedStyle(() => ({
@@ -92,12 +97,7 @@ export function HolographicProgress({
           />
 
           {/* Shine overlay */}
-          <Animated.View
-            style={[
-              styles.shine,
-              shinePositionStyle,
-            ]}
-          >
+          <Animated.View style={[styles.shine, shinePositionStyle]}>
             <LinearGradient
               colors={['transparent', 'rgba(255,255,255,0.4)', 'transparent']}
               start={{ x: 0, y: 0 }}

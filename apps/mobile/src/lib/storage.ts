@@ -1,6 +1,6 @@
 /**
  * Storage abstraction layer for React Native
- * 
+ *
  * Provides a unified interface for secure storage operations
  * Uses expo-secure-store for sensitive data and AsyncStorage for general data
  */
@@ -23,7 +23,7 @@ const KEYS = {
   LAST_SYNC: 'cgraph_last_sync',
 } as const;
 
-type StorageKey = typeof KEYS[keyof typeof KEYS];
+type StorageKey = (typeof KEYS)[keyof typeof KEYS];
 
 /**
  * Secure storage for sensitive data (tokens, etc.)
@@ -98,7 +98,7 @@ const generalStorage = {
     const value = await this.getItem(key);
     if (!value) return null;
     try {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return JSON.parse(value) as T;
     } catch {
       return null;
@@ -172,7 +172,8 @@ export const storage = {
   // Theme preference
   async getTheme(): Promise<'light' | 'dark' | 'system' | null> {
     const theme = await generalStorage.getItem(KEYS.THEME);
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return theme as 'light' | 'dark' | 'system' | null;
   },
 

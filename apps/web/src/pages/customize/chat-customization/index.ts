@@ -19,8 +19,4 @@ export {
   ENTRANCE_ANIMATIONS,
   type EntranceAnimationType,
 } from './constants';
-export {
-  BubbleStylesSection,
-  MessageEffectsSection,
-  AdvancedControlsSection,
-} from './sections';
+export { BubbleStylesSection, MessageEffectsSection, AdvancedControlsSection } from './sections';

@@ -191,6 +191,7 @@ export const RssFeedConfig = memo(function RssFeedConfig({ forumId }: RssFeedCon
           <select
             value={feedFormat}
             onChange={(e) => {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               const v = e.target.value as 'rss' | 'atom';
               setFeedFormatLocal(v);
               setFeedFormat(v);

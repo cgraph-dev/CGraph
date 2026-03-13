@@ -52,9 +52,7 @@ export function RoleAssignmentModal({
             className="w-full max-w-md space-y-4 rounded-xl border border-white/[0.08] bg-[rgb(30,32,40)] p-6 shadow-2xl"
           >
             <h3 className="text-lg font-semibold text-white">Assign Roles</h3>
-            <p className="text-sm text-gray-400">
-              Select the roles for {displayName}
-            </p>
+            <p className="text-sm text-gray-400">Select the roles for {displayName}</p>
 
             <div className="max-h-64 space-y-2 overflow-y-auto">
               {availableRoles
@@ -70,10 +68,7 @@ export function RoleAssignmentModal({
                       onChange={() => onToggleRole(role.id)}
                       className="h-4 w-4 rounded border-white/[0.08] bg-white/[0.04] text-primary-600"
                     />
-                    <div
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: role.color }}
-                    />
+                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: role.color }} />
                     <span className="text-sm text-white">{role.name}</span>
                   </label>
                 ))}

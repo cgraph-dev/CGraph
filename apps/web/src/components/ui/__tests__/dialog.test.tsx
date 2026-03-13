@@ -12,12 +12,22 @@ import { render, screen, fireEvent } from '@testing-library/react';
 // Mock motion/react so Dialog renders plain elements in jsdom
 vi.mock('motion/react', () => ({
   motion: {
-    div: React.forwardRef(({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>, ref: React.Ref<HTMLDivElement>) => {
-      const { initial, animate, exit, transition, ...domProps } = props as Record<string, unknown>;
-      return React.createElement('div', { ...domProps, ref }, children);
-    }),
+    // eslint-disable-next-line no-restricted-syntax
+    div: React.forwardRef(
+      (
+        { children, ...props }: React.PropsWithChildren<Record<string, unknown>>,
+        ref: React.Ref<HTMLDivElement>
+      ) => {
+        const { _initial, _animate, _exit, _transition, ...domProps } = props as Record<
+          string,
+          unknown
+        >;
+        return React.createElement('div', { ...domProps, ref }, children);
+      }
+    ),
   },
-  AnimatePresence: ({ children }: React.PropsWithChildren) => React.createElement(React.Fragment, null, children),
+  AnimatePresence: ({ children }: React.PropsWithChildren) =>
+    React.createElement(React.Fragment, null, children),
 }));
 
 vi.mock('@/hooks/useReducedMotion', () => ({

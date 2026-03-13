@@ -117,8 +117,7 @@ export function AppealScreen() {
       void queryClient.invalidateQueries({ queryKey: ['my-restrictions'] });
     },
     onError: (error: Error & { response?: { data?: { error?: string } } }) => {
-      const message =
-        error.response?.data?.error ?? 'Failed to submit appeal. Please try again.';
+      const message = error.response?.data?.error ?? 'Failed to submit appeal. Please try again.';
       Alert.alert('Error', message);
     },
   });
@@ -143,18 +142,14 @@ export function AppealScreen() {
   };
 
   // Check if a restriction already has a pending appeal
-  const hasAppeal = (restrictionId: string) =>
-    appeals?.some(
-      (a) => a.status === 'pending'
-    ) ?? false;
+  const hasAppeal = (_restrictionId: string) =>
+    appeals?.some((a) => a.status === 'pending') ?? false;
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -212,8 +207,8 @@ export function AppealScreen() {
           <View style={styles.appealForm}>
             <Text style={styles.sectionTitle}>Submit Appeal</Text>
             <Text style={styles.formLabel}>
-              Explain why you believe this restriction should be lifted
-              (minimum {MIN_APPEAL_REASON_LENGTH} characters):
+              Explain why you believe this restriction should be lifted (minimum{' '}
+              {MIN_APPEAL_REASON_LENGTH} characters):
             </Text>
             <TextInput
               style={styles.textArea}
@@ -247,8 +242,7 @@ export function AppealScreen() {
                 ]}
                 onPress={handleSubmitAppeal}
                 disabled={
-                  appealReason.length < MIN_APPEAL_REASON_LENGTH ||
-                  submitAppealMutation.isPending
+                  appealReason.length < MIN_APPEAL_REASON_LENGTH || submitAppealMutation.isPending
                 }
               >
                 {submitAppealMutation.isPending ? (
@@ -279,10 +273,9 @@ export function AppealScreen() {
           return (
             <View key={appeal.id} style={styles.appealCard}>
               <View style={styles.appealHeader}>
+                {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
                 <Ionicons name={config.icon as 'time'} size={18} color={config.color} />
-                <Text style={[styles.appealStatus, { color: config.color }]}>
-                  {config.label}
-                </Text>
+                <Text style={[styles.appealStatus, { color: config.color }]}>{config.label}</Text>
                 <Text style={styles.appealDate}>
                   {new Date(appeal.created_at).toLocaleDateString()}
                 </Text>

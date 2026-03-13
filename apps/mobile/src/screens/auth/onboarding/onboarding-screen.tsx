@@ -40,6 +40,7 @@ import type { NotificationSettings, OnboardingProps } from './types';
 import { styles } from './styles';
 
 /**
+ * Onboarding Screen component.
  *
  */
 export default function OnboardingScreen({ navigation }: OnboardingProps) {
@@ -61,7 +62,9 @@ export default function OnboardingScreen({ navigation }: OnboardingProps) {
 
   // Find friends state
   const [friendQuery, setFriendQuery] = useState('');
-  const [friendResults, setFriendResults] = useState<Array<{ id: string; username: string; display_name: string | null; avatar_url: string | null }>>([]);
+  const [friendResults, setFriendResults] = useState<
+    Array<{ id: string; username: string; display_name: string | null; avatar_url: string | null }>
+  >([]);
   const [friendSearchLoading, setFriendSearchLoading] = useState(false);
   const [sentFriendRequests, setSentFriendRequests] = useState<Set<string>>(new Set());
   const friendSearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -153,7 +156,8 @@ export default function OnboardingScreen({ navigation }: OnboardingProps) {
       try {
         if (avatarUri && avatarUri !== user?.avatar_url) {
           const formData = new FormData();
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           formData.append('avatar', {
             uri: avatarUri,
             type: 'image/jpeg',

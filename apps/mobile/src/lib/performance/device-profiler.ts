@@ -75,28 +75,35 @@ export interface PerformanceRecommendations {
 
 // Known high-end device patterns
 const HIGH_END_PATTERNS = {
-  ios: [
-    'iPhone14', 'iPhone15', 'iPhone16',
-    'iPad Pro', 'iPad Air (5th', 'iPad Air (4th',
-  ],
+  ios: ['iPhone14', 'iPhone15', 'iPhone16', 'iPad Pro', 'iPad Air (5th', 'iPad Air (4th'],
   android: [
-    'SM-S9', 'SM-S8', 'SM-S7', // Samsung S series
-    'SM-N9', 'SM-N8', // Samsung Note
-    'SM-F9', 'SM-F7', // Samsung Fold/Flip
-    'Pixel 8', 'Pixel 7', 'Pixel 6',
-    'OnePlus 11', 'OnePlus 10', 'OnePlus 9',
+    'SM-S9',
+    'SM-S8',
+    'SM-S7', // Samsung S series
+    'SM-N9',
+    'SM-N8', // Samsung Note
+    'SM-F9',
+    'SM-F7', // Samsung Fold/Flip
+    'Pixel 8',
+    'Pixel 7',
+    'Pixel 6',
+    'OnePlus 11',
+    'OnePlus 10',
+    'OnePlus 9',
   ],
 };
 
 const MID_RANGE_PATTERNS = {
-  ios: [
-    'iPhone12', 'iPhone13', 'iPhoneX', 'iPhone11',
-    'iPad (9th', 'iPad (8th', 'iPad mini',
-  ],
+  ios: ['iPhone12', 'iPhone13', 'iPhoneX', 'iPhone11', 'iPad (9th', 'iPad (8th', 'iPad mini'],
   android: [
-    'SM-A5', 'SM-A7', 'SM-M', // Samsung A/M series
-    'Pixel 5', 'Pixel 4',
-    'OnePlus Nord', 'OnePlus 8', 'OnePlus 7',
+    'SM-A5',
+    'SM-A7',
+    'SM-M', // Samsung A/M series
+    'Pixel 5',
+    'Pixel 4',
+    'OnePlus Nord',
+    'OnePlus 8',
+    'OnePlus 7',
   ],
 };
 
@@ -146,7 +153,8 @@ class DeviceProfiler {
 
     this.capabilities = {
       tier,
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       platform: Platform.OS as 'ios' | 'android' | 'web' | 'unknown',
       platformVersion,
       deviceModel,
@@ -240,10 +248,7 @@ class DeviceProfiler {
     return version;
   }
 
-  private determineDeviceTier(
-    deviceModel: string | null,
-    platformVersion: number
-  ): DeviceTier {
+  private determineDeviceTier(deviceModel: string | null, platformVersion: number): DeviceTier {
     if (!deviceModel) {
       // Fallback based on platform version
       if (Platform.OS === 'ios') {
@@ -320,10 +325,17 @@ class DeviceProfiler {
 
     // Known devices with high refresh rate
     const highRefreshDevices = [
-      'iPhone13', 'iPhone14', 'iPhone15', 'iPhone16',
+      'iPhone13',
+      'iPhone14',
+      'iPhone15',
+      'iPhone16',
       'iPad Pro',
-      'SM-S2', 'SM-S9', 'SM-S8', // Samsung S21+, S22+, S23+
-      'Pixel 6', 'Pixel 7', 'Pixel 8',
+      'SM-S2',
+      'SM-S9',
+      'SM-S8', // Samsung S21+, S22+, S23+
+      'Pixel 6',
+      'Pixel 7',
+      'Pixel 8',
       'OnePlus',
     ];
 
@@ -367,9 +379,7 @@ class DeviceProfiler {
     }
   }
 
-  private generateRecommendations(
-    capabilities: DeviceCapabilities
-  ): PerformanceRecommendations {
+  private generateRecommendations(capabilities: DeviceCapabilities): PerformanceRecommendations {
     const { tier, supportsNativeBlur, supportsHaptics, supportsParticles, supportsShaders } =
       capabilities;
 
@@ -439,6 +449,7 @@ export const deviceProfiler = new DeviceProfiler();
 import { useState, useEffect } from 'react';
 
 /**
+ * Hook for device capabilities.
  *
  */
 export function useDeviceCapabilities(): DeviceCapabilities | null {
@@ -452,6 +463,7 @@ export function useDeviceCapabilities(): DeviceCapabilities | null {
 }
 
 /**
+ * Hook for performance recommendations.
  *
  */
 export function usePerformanceRecommendations(): PerformanceRecommendations | null {

@@ -170,15 +170,20 @@ export default function AnimatedAvatar({
               scale: 1,
               boxShadow:
                 statusType === 'online'
-                  ? [`0 0 0 0 ${STATUS_COLORS[statusType].glow}`, `0 0 6px 2px ${STATUS_COLORS[statusType].glow}`, `0 0 0 0 ${STATUS_COLORS[statusType].glow}`]
+                  ? [
+                      `0 0 0 0 ${STATUS_COLORS[statusType].glow}`,
+                      `0 0 6px 2px ${STATUS_COLORS[statusType].glow}`,
+                      `0 0 0 0 ${STATUS_COLORS[statusType].glow}`,
+                    ]
                   : `0 0 0 0 transparent`,
             }}
             exit={{ scale: 0 }}
             transition={{
               scale: springs.superBouncy,
-              boxShadow: statusType === 'online'
-                ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
-                : { duration: durations.normal.ms / 1000 },
+              boxShadow:
+                statusType === 'online'
+                  ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
+                  : { duration: durations.normal.ms / 1000 },
             }}
           />
         </AnimatePresence>

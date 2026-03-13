@@ -52,21 +52,21 @@ export function NotificationsTab({ groupId }: NotificationsTabProps) {
 
   const notifOptions = [
     {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       level: 'all' as NotificationLevel, // safe downcast – literal to union
       label: 'All Messages',
       desc: 'Receive notifications for every message',
       icon: ChatBubbleLeftIcon,
     },
     {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       level: 'mentions' as NotificationLevel, // safe downcast – literal to union
       label: 'Only @Mentions',
       desc: 'Only receive notifications when mentioned',
       icon: AtSymbolIcon,
     },
     {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       level: 'none' as NotificationLevel, // safe downcast – literal to union
       label: 'Nothing',
       desc: 'Suppress all notifications from this group',

@@ -16,15 +16,15 @@ interface UseCopyToClipboardOptions {
 
 /**
  * Hook for copying text to clipboard with haptic feedback.
- * 
+ *
  * React Native version using expo-clipboard and expo-haptics.
- * 
+ *
  * @param options - configuration options
  * @returns tuple of [copyToClipboard, { copied, error }]
- * 
+ *
  * @example
  * const [copy, { copied }] = useCopyToClipboard();
- * 
+ *
  * return (
  *   <Pressable onPress={() => copy(text)}>
  *     <Text>{copied ? 'Copied!' : 'Copy'}</Text>
@@ -35,12 +35,12 @@ export function useCopyToClipboard(
   options: UseCopyToClipboardOptions = {}
 ): [(text: string) => Promise<boolean>, CopyState] {
   const { resetDelay = 2000, hapticFeedback = true } = options;
-  
+
   const [state, setState] = useState<CopyState>({
     copied: false,
     error: null,
   });
-  
+
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clear timeout on unmount
@@ -52,46 +52,49 @@ export function useCopyToClipboard(
     };
   }, []);
 
-  const copyToClipboard = useCallback(async (text: string): Promise<boolean> => {
-    // Clear any existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    try {
-      await Clipboard.setStringAsync(text);
-      
-      // Haptic feedback on success
-      if (hapticFeedback) {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  const copyToClipboard = useCallback(
+    async (text: string): Promise<boolean> => {
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
-      
-      setState({ copied: true, error: null });
 
-      // Reset after delay
-      timeoutRef.current = setTimeout(() => {
-        setState(prev => ({ ...prev, copied: false }));
-      }, resetDelay);
+      try {
+        await Clipboard.setStringAsync(text);
 
-      return true;
-    } catch (error) {
-      // Haptic feedback on error
-      if (hapticFeedback) {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        // Haptic feedback on success
+        if (hapticFeedback) {
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+
+        setState({ copied: true, error: null });
+
+        // Reset after delay
+        timeoutRef.current = setTimeout(() => {
+          setState((prev) => ({ ...prev, copied: false }));
+        }, resetDelay);
+
+        return true;
+      } catch (error) {
+        // Haptic feedback on error
+        if (hapticFeedback) {
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        setState({ copied: false, error: error as Error });
+        return false;
       }
-      
-       
-      setState({ copied: false, error: error as Error });
-      return false;
-    }
-  }, [resetDelay, hapticFeedback]);
+    },
+    [resetDelay, hapticFeedback]
+  );
 
   return [copyToClipboard, state];
 }
 
 /**
  * Hook for reading text from clipboard.
- * 
+ *
  * @returns function to read clipboard content
  */
 export function useClipboardRead(): () => Promise<string> {

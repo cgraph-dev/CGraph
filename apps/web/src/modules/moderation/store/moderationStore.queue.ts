@@ -45,7 +45,8 @@ export function createQueueActions(set: Set) {
           .filter(isRecord)
           .map((item) => ({
             id: String(item.id),
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             itemType: item.item_type as ModerationQueueItem['itemType'], // safe downcast – discriminated union from API
             itemId: String(item.item_id),
             authorId: String(item.author_id),
@@ -58,11 +59,14 @@ export function createQueueActions(set: Set) {
               typeof item.content_preview === 'string'
                 ? item.content_preview
                 : String(item.content).slice(0, 200),
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             reason: item.reason as ModerationQueueItem['reason'], // safe downcast – discriminated union from API
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             status: item.status as ModerationQueueItem['status'], // safe downcast – discriminated union from API
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             priority: item.priority as ModerationQueueItem['priority'], // safe downcast – discriminated union from API
             reportCount: typeof item.report_count === 'number' ? item.report_count : 0,
             moderatedById:

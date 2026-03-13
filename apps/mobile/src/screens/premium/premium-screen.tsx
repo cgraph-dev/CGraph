@@ -29,6 +29,7 @@ import { TierCard } from './premium/tier-card';
 import { PremiumFooter } from './premium/premium-footer';
 
 /**
+ * Premium Screen component.
  *
  */
 function PremiumScreen(): React.ReactElement | null {
@@ -107,8 +108,12 @@ function PremiumScreen(): React.ReactElement | null {
               // Use native IAP for subscription purchases on mobile
               const iapSku =
                 tier.id === 'premium'
-                  ? billingCycle === 'yearly' ? 'com.cgraph.premium.yearly' : 'com.cgraph.premium.monthly'
-                  : billingCycle === 'yearly' ? 'com.cgraph.enterprise.yearly' : 'com.cgraph.enterprise.monthly';
+                  ? billingCycle === 'yearly'
+                    ? 'com.cgraph.premium.yearly'
+                    : 'com.cgraph.premium.monthly'
+                  : billingCycle === 'yearly'
+                    ? 'com.cgraph.enterprise.yearly'
+                    : 'com.cgraph.enterprise.monthly';
 
               const hasIAP = iapProducts.length > 0;
               if (hasIAP) {
@@ -117,28 +122,42 @@ function PremiumScreen(): React.ReactElement | null {
                     const status = await paymentService.getSubscriptionStatus();
                     setSubscriptionStatus(status);
                     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                    Alert.alert('Success!', `Welcome to ${tier.name}! Your subscription is now active.`);
+                    Alert.alert(
+                      'Success!',
+                      `Welcome to ${tier.name}! Your subscription is now active.`
+                    );
                   },
                 });
               } else {
                 // Fallback to REST-based purchase (simulator / web)
                 const productId =
                   tier.id === 'premium'
-                    ? billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_YEARLY : PRODUCT_IDS.PREMIUM_MONTHLY
-                    : billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_PLUS_YEARLY : PRODUCT_IDS.PREMIUM_PLUS_MONTHLY;
+                    ? billingCycle === 'yearly'
+                      ? PRODUCT_IDS.PREMIUM_YEARLY
+                      : PRODUCT_IDS.PREMIUM_MONTHLY
+                    : billingCycle === 'yearly'
+                      ? PRODUCT_IDS.PREMIUM_PLUS_YEARLY
+                      : PRODUCT_IDS.PREMIUM_PLUS_MONTHLY;
                 const purchase = await paymentService.purchaseProduct(productId);
                 if (purchase) {
                   const status = await paymentService.getSubscriptionStatus();
                   setSubscriptionStatus(status);
                   if (purchase.purchaseState === 'purchased') {
                     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                    Alert.alert('Success!', `Welcome to ${tier.name}! Your subscription is now active.`);
+                    Alert.alert(
+                      'Success!',
+                      `Welcome to ${tier.name}! Your subscription is now active.`
+                    );
                   } else if (purchase.purchaseState === 'pending') {
-                    Alert.alert('Processing', 'Your purchase is being processed. It may take a few moments.');
+                    Alert.alert(
+                      'Processing',
+                      'Your purchase is being processed. It may take a few moments.'
+                    );
                   }
                 }
               }
             } catch (error: unknown) {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               const err = error as Error;
               console.error('[PremiumScreen] Purchase error:', err);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -150,38 +169,44 @@ function PremiumScreen(): React.ReactElement | null {
         },
       ]);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [billingCycle, currentTier]
   );
 
   const handleRestorePurchases = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert('Restore Purchases', "We'll restore any previous purchases linked to your account.", [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Restore',
-        onPress: async () => {
-          setIsPurchasing(true);
-          try {
-            const restoredPurchases = await paymentService.restorePurchases();
-            if (restoredPurchases.length > 0) {
-              const status = await paymentService.getSubscriptionStatus();
-              setSubscriptionStatus(status);
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              Alert.alert('Success', `Restored ${restoredPurchases.length} purchase(s)!`);
-            } else {
-              Alert.alert('No Purchases', 'No previous purchases found to restore.');
+    Alert.alert(
+      'Restore Purchases',
+      "We'll restore any previous purchases linked to your account.",
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Restore',
+          onPress: async () => {
+            setIsPurchasing(true);
+            try {
+              const restoredPurchases = await paymentService.restorePurchases();
+              if (restoredPurchases.length > 0) {
+                const status = await paymentService.getSubscriptionStatus();
+                setSubscriptionStatus(status);
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Alert.alert('Success', `Restored ${restoredPurchases.length} purchase(s)!`);
+              } else {
+                Alert.alert('No Purchases', 'No previous purchases found to restore.');
+              }
+            } catch (error: unknown) {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              const err = error as Error;
+              console.error('[PremiumScreen] Restore error:', err);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              Alert.alert('Restore Failed', err?.message || 'Unable to restore purchases.');
+            } finally {
+              setIsPurchasing(false);
             }
-          } catch (error: unknown) {
-            const err = error as Error;
-            console.error('[PremiumScreen] Restore error:', err);
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-            Alert.alert('Restore Failed', err?.message || 'Unable to restore purchases.');
-          } finally {
-            setIsPurchasing(false);
-          }
+          },
         },
-      },
-    ]);
+      ]
+    );
   }, []);
 
   const handleManageSubscription = useCallback(() => {
@@ -198,16 +223,29 @@ function PremiumScreen(): React.ReactElement | null {
     >
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerTextContainer}>
-          <LinearGradient colors={['#8b5cf6', '#ec4899']} style={styles.premiumIconGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+          <LinearGradient
+            colors={['#8b5cf6', '#ec4899']}
+            style={styles.premiumIconGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
             <Ionicons name="diamond" size={24} color="#fff" />
           </LinearGradient>
           <Text style={[styles.headerTitle, { color: colors.text }]}>CGraph Premium</Text>
         </View>
-        <TouchableOpacity style={styles.restoreButton} onPress={handleRestorePurchases} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={styles.restoreButton}
+          onPress={handleRestorePurchases}
+          activeOpacity={0.7}
+        >
           <Text style={styles.restoreButtonText}>Restore</Text>
         </TouchableOpacity>
       </View>
@@ -215,7 +253,9 @@ function PremiumScreen(): React.ReactElement | null {
       {/* Hero */}
       <GlassCard variant="holographic" intensity="strong" style={styles.heroCard}>
         <Text style={styles.heroTitle}>Upgrade Your Experience</Text>
-        <Text style={styles.heroSubtitle}>Get access to premium features, exclusive themes, and priority support</Text>
+        <Text style={styles.heroSubtitle}>
+          Get access to premium features, exclusive themes, and priority support
+        </Text>
       </GlassCard>
 
       {/* Billing Toggle */}
@@ -240,6 +280,7 @@ function PremiumScreen(): React.ReactElement | null {
       <PremiumFooter
         currentTier={currentTier}
         onManageSubscription={handleManageSubscription}
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         colors={colors as unknown as Record<string, string>}
       />
     </ScrollView>
@@ -250,35 +291,53 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   contentContainer: { padding: 16, paddingBottom: 32 },
   header: {
-    flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'space-between', marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
   backButton: {
-    width: 40, height: 40, borderRadius: 20,
-    justifyContent: 'center', alignItems: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTextContainer: {
-    flex: 1, flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'center', gap: 10,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
   },
   premiumIconGradient: {
-    width: 36, height: 36, borderRadius: 18,
-    justifyContent: 'center', alignItems: 'center',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: { fontSize: 20, fontWeight: '700' },
   restoreButton: {
-    paddingHorizontal: 12, paddingVertical: 6,
-    borderRadius: 12, backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
   },
   restoreButtonText: { fontSize: 12, fontWeight: '600', color: '#8b5cf6' },
   heroCard: { padding: 24, marginBottom: 20, alignItems: 'center' },
   heroTitle: {
-    fontSize: 24, fontWeight: '800', color: '#fff',
-    textAlign: 'center', marginBottom: 8,
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 8,
   },
   heroSubtitle: {
-    fontSize: 14, color: 'rgba(255, 255, 255, 0.7)',
-    textAlign: 'center', lineHeight: 20,
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
+    textAlign: 'center',
+    lineHeight: 20,
   },
   tiersContainer: { gap: 16, marginBottom: 24 },
 });

@@ -34,7 +34,7 @@ export function useConversationParticipant(conversationId: string | undefined) {
   // Get other participant for DM
   const otherParticipant = useMemo(() => {
     return conversation?.participants.find((p) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const participantUserId = getParticipantUserId(p as unknown as Record<string, unknown>); // safe downcast – structural boundary
       return participantUserId !== user?.id;
     });
@@ -42,11 +42,11 @@ export function useConversationParticipant(conversationId: string | undefined) {
 
   // Type-safe extraction of userId and display name
   const otherParticipantUserId =
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     getParticipantUserId(otherParticipant as unknown as Record<string, unknown>) ?? undefined; // safe downcast – structural boundary
   const conversationName =
     conversation?.name ||
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     getParticipantDisplayName(otherParticipant as unknown as Record<string, unknown>); // safe downcast – structural boundary
 
   // Calculate mutual friends from the friends list
@@ -144,6 +144,7 @@ export function useConversationChannel(conversationId: string | undefined) {
 
       // Clean up typing indicator
       if (typingTimeoutRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         clearTimeout(typingTimeoutRef.current);
       }
       socketManager.sendTyping(`conversation:${conversationId}`, false);

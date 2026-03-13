@@ -86,7 +86,7 @@ export default function EffectsCustomization() {
         >
           {activeCategory === 'particles' && (
             <ParticleEffectsSection
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               particles={filteredItems as ParticleEffect[]} // safe downcast – runtime verified
               selectedParticle={particleEffect ?? 'particle-none'}
               previewingLockedItem={previewingLockedItem}
@@ -96,7 +96,7 @@ export default function EffectsCustomization() {
 
           {activeCategory === 'backgrounds' && (
             <BackgroundEffectsSection
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               backgrounds={filteredItems as BackgroundEffect[]} // safe downcast – runtime verified
               selectedBackground={backgroundEffect ?? 'bg-none'}
               previewingLockedItem={previewingLockedItem}
@@ -106,7 +106,7 @@ export default function EffectsCustomization() {
 
           {activeCategory === 'animations' && (
             <AnimationSetsSection
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               animations={filteredItems as AnimationSet[]} // safe downcast – runtime verified
               selectedAnimation={animationSpeed}
               previewingLockedItem={previewingLockedItem}

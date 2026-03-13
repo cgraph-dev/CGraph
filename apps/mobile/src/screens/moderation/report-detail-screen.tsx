@@ -2,14 +2,7 @@
  * ReportDetailScreen - Detailed view of a single moderation report
  */
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -28,8 +21,8 @@ interface ReportDetailParams {
   createdAt: string;
 }
 
- 
 /**
+ * Report Detail Screen component.
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,28 +33,24 @@ export default function ReportDetailScreen({ route, navigation }: any) {
 
   const handleAction = (action: string) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert(
-      'Confirm Action',
-      `Are you sure you want to ${action} @${params.targetUsername}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Confirm',
-          style: action === 'ban' ? 'destructive' : 'default',
-          onPress: async () => {
-            try {
-              await api.post(`/api/admin/reports/${params.reportId}/review`, {
-                action,
-                resolution: action,
-              });
-            } catch {
-              Alert.alert('Error', `Failed to ${action} the report.`);
-            }
-            navigation.goBack();
-          },
+    Alert.alert('Confirm Action', `Are you sure you want to ${action} @${params.targetUsername}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Confirm',
+        style: action === 'ban' ? 'destructive' : 'default',
+        onPress: async () => {
+          try {
+            await api.post(`/api/admin/reports/${params.reportId}/review`, {
+              action,
+              resolution: action,
+            });
+          } catch {
+            Alert.alert('Error', `Failed to ${action} the report.`);
+          }
+          navigation.goBack();
         },
-      ],
-    );
+      },
+    ]);
   };
 
   return (
@@ -74,9 +63,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Report Details
-        </Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Report Details</Text>
       </View>
 
       {/* Reporter & Target */}
@@ -84,9 +71,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
         style={[styles.section, { backgroundColor: colors.surface }]}
         entering={FadeIn.duration(250)}
       >
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          Involved Users
-        </Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Involved Users</Text>
         <View style={styles.userRow}>
           <View style={styles.userInfo}>
             <Ionicons name="person" size={18} color="#3b82f6" />
@@ -129,9 +114,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
         style={[styles.section, { backgroundColor: colors.surface }]}
         entering={FadeIn.delay(200).duration(250)}
       >
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          Reported Content
-        </Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Reported Content</Text>
         <View style={[styles.previewBox, { backgroundColor: colors.background }]}>
           <Text style={[styles.previewText, { color: colors.textSecondary }]}>
             "{params.contentPreview || 'Content unavailable'}"
@@ -140,10 +123,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
       </Animated.View>
 
       {/* Actions */}
-      <Animated.View
-        style={styles.actionsSection}
-        entering={FadeIn.delay(300).duration(250)}
-      >
+      <Animated.View style={styles.actionsSection} entering={FadeIn.delay(300).duration(250)}>
         <TouchableOpacity
           style={[styles.actionBtn, { borderColor: '#374151' }]}
           onPress={() => handleAction('dismiss')}
@@ -152,10 +132,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
           <Text style={styles.dismissBtnText}>Dismiss Report</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.actionBtn}
-          onPress={() => handleAction('warn')}
-        >
+        <TouchableOpacity style={styles.actionBtn} onPress={() => handleAction('warn')}>
           <LinearGradient
             colors={['#f59e0b', '#d97706']}
             style={styles.gradientBtn}
@@ -167,10 +144,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.actionBtn}
-          onPress={() => handleAction('mute')}
-        >
+        <TouchableOpacity style={styles.actionBtn} onPress={() => handleAction('mute')}>
           <LinearGradient
             colors={['#f97316', '#ea580c']}
             style={styles.gradientBtn}
@@ -182,10 +156,7 @@ export default function ReportDetailScreen({ route, navigation }: any) {
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.actionBtn}
-          onPress={() => handleAction('ban')}
-        >
+        <TouchableOpacity style={styles.actionBtn} onPress={() => handleAction('ban')}>
           <LinearGradient
             colors={['#ef4444', '#dc2626']}
             style={styles.gradientBtn}

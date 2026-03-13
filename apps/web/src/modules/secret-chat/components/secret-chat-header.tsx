@@ -9,9 +9,9 @@
 
 import { memo, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { GhostModeIndicator } from './GhostModeIndicator';
-import { TimerCountdown } from './TimerCountdown';
-import { PanicWipeButton } from './PanicWipeButton';
+import { GhostModeIndicator } from './ghost-mode-indicator';
+import { TimerCountdown } from './timer-countdown';
+import { PanicWipeButton } from './panic-wipe-button';
 
 /** Props for the SecretChatHeader component */
 export interface SecretChatHeaderProps {
@@ -73,7 +73,9 @@ export const SecretChatHeader = memo(function SecretChatHeader({
 
       {/* Lock icon + Secret label */}
       <div className="flex items-center gap-2">
-        <span className="text-sm" role="img" aria-label="lock">🔒</span>
+        <span className="text-sm" role="img" aria-label="lock">
+          🔒
+        </span>
         <span className="text-sm font-semibold text-white">Secret</span>
       </div>
 
@@ -89,11 +91,10 @@ export const SecretChatHeader = memo(function SecretChatHeader({
         }`}
         aria-label={ghostModeActive ? 'Deactivate ghost mode' : 'Activate ghost mode'}
       >
-        <span role="img" aria-label="ghost">👻</span>
-        <GhostModeIndicator
-          isActive={ghostModeActive}
-          isToggling={ghostModeToggling}
-        />
+        <span role="img" aria-label="ghost">
+          👻
+        </span>
+        <GhostModeIndicator isActive={ghostModeActive} isToggling={ghostModeToggling} />
         {!ghostModeActive && <span>Ghost</span>}
       </button>
 
@@ -104,10 +105,7 @@ export const SecretChatHeader = memo(function SecretChatHeader({
       <TimerCountdown expiresAt={expiresAt} onExpired={onExpired} />
 
       {/* Panic wipe button */}
-      <PanicWipeButton
-        onWipe={onPanicWipe}
-        isWiping={isPanicWiping}
-      />
+      <PanicWipeButton onWipe={onPanicWipe} isWiping={isPanicWiping} />
 
       {/* Menu button */}
       <button

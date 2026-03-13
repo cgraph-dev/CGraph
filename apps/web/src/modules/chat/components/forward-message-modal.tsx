@@ -166,7 +166,7 @@ export function ForwardMessageModal({
                     placeholder="Search conversations..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04]/50 py-2 pl-10 pr-4 text-white placeholder-white/30 transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                    className="bg-white/[0.04]/50 w-full rounded-lg border border-white/[0.08] py-2 pl-10 pr-4 text-white placeholder-white/30 transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
                   />
                 </div>
               </div>
@@ -181,9 +181,9 @@ export function ForwardMessageModal({
                   filteredConversations.map((conversation) => {
                     const isSelected = selectedConversations.has(conversation.id);
                     const avatarBorderId =
-                       
+                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                       (conversation as { avatarBorderId?: string | null })?.avatarBorderId ??
-                       
+                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                       (conversation as { avatar_border_id?: string | null })?.avatar_border_id ??
                       null;
                     return (
@@ -195,7 +195,7 @@ export function ForwardMessageModal({
                         className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-all ${
                           isSelected
                             ? 'border-primary-500 bg-primary-500/20'
-                            : 'border-white/[0.08] bg-white/[0.04]/50 hover:border-gray-500 hover:bg-white/[0.04]'
+                            : 'bg-white/[0.04]/50 border-white/[0.08] hover:border-gray-500 hover:bg-white/[0.04]'
                         }`}
                       >
                         {/* Avatar */}
@@ -244,7 +244,7 @@ export function ForwardMessageModal({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleClose}
-                  className="flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04]/50 px-6 py-3 font-semibold text-gray-300 transition-all hover:border-gray-500 hover:bg-white/[0.04]"
+                  className="bg-white/[0.04]/50 flex-1 rounded-xl border border-white/[0.08] px-6 py-3 font-semibold text-gray-300 transition-all hover:border-gray-500 hover:bg-white/[0.04]"
                 >
                   Cancel
                 </motion.button>

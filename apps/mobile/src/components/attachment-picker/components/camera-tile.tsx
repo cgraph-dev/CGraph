@@ -14,6 +14,7 @@ interface CameraTileProps {
 }
 
 /**
+ * Camera Tile component.
  *
  */
 export function CameraTile({ onPress, surfaceColor, textSecondaryColor }: CameraTileProps) {

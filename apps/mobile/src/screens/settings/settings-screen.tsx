@@ -35,12 +35,13 @@ const formatKarma = (karma: number): string => {
 };
 
 /**
+ * Settings Screen component.
  *
  */
 export default function SettingsScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const { user, logout } = useAuthStore();
-  
+
   const profileScale = useRef(new Animated.Value(0.8)).current;
   const profileOpacity = useRef(new Animated.Value(0)).current;
   const sectionsOpacity = useRef(new Animated.Value(0)).current;
@@ -78,13 +79,15 @@ export default function SettingsScreen({ navigation }: Props) {
         }),
       ]).start();
     }, 200);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   const settingsSections = [
     {
       title: 'Premium',
       icon: 'star',
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       gradient: ['#F59E0B', '#EF4444'] as [string, string],
       items: [
         {
@@ -92,7 +95,8 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'star' as const,
           onPress: () => navigation.navigate('Premium'),
           isPremium: true,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#F59E0B', '#EF4444'] as [string, string],
         },
         {
@@ -100,7 +104,8 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'logo-bitcoin' as const,
           onPress: () => navigation.navigate('CoinShop'),
           isShop: true,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
       ],
@@ -108,14 +113,16 @@ export default function SettingsScreen({ navigation }: Props) {
     {
       title: 'Features',
       icon: 'apps',
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       gradient: ['#3b82f6', '#8b5cf6'] as [string, string],
       items: [
         {
           title: 'Calendar',
           icon: 'calendar' as const,
           onPress: () => navigation.navigate('Calendar'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
 
@@ -123,14 +130,16 @@ export default function SettingsScreen({ navigation }: Props) {
           title: 'Referral Program',
           icon: 'gift' as const,
           onPress: () => navigation.navigate('Referrals'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#ec4899', '#f472b6'] as [string, string],
         },
         {
           title: 'Holographic UI Demo',
           icon: 'sparkles' as const,
           onPress: () => navigation.navigate('HolographicDemo'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
       ],
@@ -138,35 +147,40 @@ export default function SettingsScreen({ navigation }: Props) {
     {
       title: 'Account',
       icon: 'person',
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       gradient: ['#10b981', '#34d399'] as [string, string],
       items: [
         {
           title: 'Edit Profile',
           icon: 'person' as const,
           onPress: () => navigation.navigate('Profile'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#3b82f6', '#60a5fa'] as [string, string],
         },
         {
           title: 'Account',
           icon: 'lock-closed' as const,
           onPress: () => navigation.navigate('Account'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#6366f1', '#818cf8'] as [string, string],
         },
         {
           title: 'Privacy',
           icon: 'shield' as const,
           onPress: () => navigation.navigate('Privacy'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
         {
           title: 'Sessions',
           icon: 'phone-portrait' as const,
           onPress: () => navigation.navigate('Sessions'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#f97316', '#fb923c'] as [string, string],
         },
       ],
@@ -174,42 +188,48 @@ export default function SettingsScreen({ navigation }: Props) {
     {
       title: 'Preferences',
       icon: 'settings',
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       gradient: ['#6366f1', '#818cf8'] as [string, string],
       items: [
         {
           title: 'Appearance',
           icon: 'color-palette' as const,
           onPress: () => navigation.navigate('Appearance'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#ec4899', '#f472b6'] as [string, string],
         },
         {
           title: 'UI Customization',
           icon: 'options' as const,
           onPress: () => navigation.navigate('UICustomization'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
         {
           title: 'Chat Bubbles',
           icon: 'chatbubbles' as const,
           onPress: () => navigation.navigate('ChatBubbles'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
         {
           title: 'Avatar Settings',
           icon: 'person-circle' as const,
           onPress: () => navigation.navigate('AvatarSettings'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#f59e0b', '#fbbf24'] as [string, string],
         },
         {
           title: 'Notifications',
           icon: 'notifications' as const,
           onPress: () => navigation.navigate('Notifications'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#ef4444', '#f87171'] as [string, string],
         },
       ],
@@ -217,34 +237,38 @@ export default function SettingsScreen({ navigation }: Props) {
     {
       title: 'About',
       icon: 'information-circle',
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       gradient: ['#6b7280', '#9ca3af'] as [string, string],
       items: [
         {
           title: 'Help & Support',
           icon: 'help-circle' as const,
           onPress: () => {},
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
         {
           title: 'Terms of Service',
           icon: 'document-text' as const,
           onPress: () => navigation.navigate('TermsOfService'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
         {
           title: 'Privacy Policy',
           icon: 'shield-checkmark' as const,
           onPress: () => navigation.navigate('PrivacyPolicy'),
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
       ],
     },
   ];
-  
+
   const handleLogout = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -258,7 +282,7 @@ export default function SettingsScreen({ navigation }: Props) {
   };
 
   const renderSettingItem = (
-    item: typeof settingsSections[0]['items'][0],
+    item: (typeof settingsSections)[0]['items'][0],
     index: number,
     totalItems: number
   ) => {
@@ -288,15 +312,17 @@ export default function SettingsScreen({ navigation }: Props) {
         >
           <Ionicons name={item.icon} size={18} color="#fff" />
         </LinearGradient>
-        
-        <Text style={[
-          styles.settingsItemText,
-          { color: colors.text },
-          isPremiumItem && { fontWeight: '600' },
-        ]}>
+
+        <Text
+          style={[
+            styles.settingsItemText,
+            { color: colors.text },
+            isPremiumItem && { fontWeight: '600' },
+          ]}
+        >
           {item.title}
         </Text>
-        
+
         {'isPremium' in item && (
           <LinearGradient
             colors={['#F59E0B', '#EF4444']}
@@ -307,7 +333,7 @@ export default function SettingsScreen({ navigation }: Props) {
             <Text style={styles.proBadgeText}>PRO</Text>
           </LinearGradient>
         )}
-        
+
         {'isShop' in item && (
           <LinearGradient
             colors={['#10b981', '#34d399']}
@@ -318,14 +344,14 @@ export default function SettingsScreen({ navigation }: Props) {
             <Text style={styles.proBadgeText}>SHOP</Text>
           </LinearGradient>
         )}
-        
+
         <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
       </TouchableOpacity>
     );
   };
-  
+
   return (
-    <ScrollView 
+    <ScrollView
       style={[styles.container, { backgroundColor: colors.background }]}
       showsVerticalScrollIndicator={false}
     >
@@ -351,7 +377,6 @@ export default function SettingsScreen({ navigation }: Props) {
               <View style={styles.profileAvatarContainer}>
                 {getValidImageUrl(user?.avatar_url) ? (
                   <AnimatedAvatar
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     source={{ uri: getValidImageUrl(user?.avatar_url)! }}
                     size={70}
                     borderAnimation="holographic"
@@ -364,13 +389,11 @@ export default function SettingsScreen({ navigation }: Props) {
                     end={{ x: 1, y: 1 }}
                     style={styles.avatarPlaceholder}
                   >
-                    <Text style={styles.avatarText}>
-                      {user?.username?.charAt(0).toUpperCase()}
-                    </Text>
+                    <Text style={styles.avatarText}>{user?.username?.charAt(0).toUpperCase()}</Text>
                   </LinearGradient>
                 )}
               </View>
-              
+
               <View style={styles.profileInfo}>
                 <Text style={[styles.displayName, { color: colors.text }]}>
                   {user?.display_name || user?.username}
@@ -378,7 +401,7 @@ export default function SettingsScreen({ navigation }: Props) {
                 <Text style={[styles.username, { color: colors.textSecondary }]}>
                   @{user?.username}
                 </Text>
-                
+
                 {user?.karma !== undefined && (
                   <View style={styles.karmaContainer}>
                     <LinearGradient
@@ -388,14 +411,12 @@ export default function SettingsScreen({ navigation }: Props) {
                       style={styles.karmaBadge}
                     >
                       <Ionicons name="trophy" size={12} color="#fff" />
-                      <Text style={styles.karmaText}>
-                        {formatKarma(user.karma)} karma
-                      </Text>
+                      <Text style={styles.karmaText}>{formatKarma(user.karma)} karma</Text>
                     </LinearGradient>
                   </View>
                 )}
               </View>
-              
+
               <LinearGradient
                 colors={['#3b82f6', '#8b5cf6']}
                 start={{ x: 0, y: 0 }}
@@ -408,7 +429,7 @@ export default function SettingsScreen({ navigation }: Props) {
           </GlassCard>
         </TouchableOpacity>
       </Animated.View>
-      
+
       {/* Settings Sections */}
       <Animated.View
         style={[
@@ -428,25 +449,31 @@ export default function SettingsScreen({ navigation }: Props) {
                 end={{ x: 1, y: 1 }}
                 style={styles.sectionIconContainer}
               >
-                { }
-                <Ionicons name={section.icon as keyof typeof Ionicons.glyphMap} size={12} color="#fff" />
+                <Ionicons
+                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                  name={section.icon as keyof typeof Ionicons.glyphMap}
+                  size={12}
+                  color="#fff"
+                />
               </LinearGradient>
-              <Text style={[
-                styles.sectionTitle,
-                { color: section.title === 'Premium' ? '#F59E0B' : colors.textSecondary },
-              ]}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { color: section.title === 'Premium' ? '#F59E0B' : colors.textSecondary },
+                ]}
+              >
                 {section.title}
               </Text>
             </View>
-            
+
             <GlassCard variant="frosted" intensity="subtle" style={styles.sectionContent}>
-              {section.items.map((item, index) => 
+              {section.items.map((item, index) =>
                 renderSettingItem(item, index, section.items.length)
               )}
             </GlassCard>
           </View>
         ))}
-        
+
         {/* Logout Button */}
         <View style={styles.section}>
           <TouchableOpacity onPress={handleLogout} activeOpacity={0.8}>
@@ -465,11 +492,9 @@ export default function SettingsScreen({ navigation }: Props) {
             </GlassCard>
           </TouchableOpacity>
         </View>
-        
+
         {/* Version */}
-        <Text style={[styles.version, { color: colors.textTertiary }]}>
-          CGraph v0.8.1 ✨
-        </Text>
+        <Text style={[styles.version, { color: colors.textTertiary }]}>CGraph v0.8.1 ✨</Text>
       </Animated.View>
     </ScrollView>
   );

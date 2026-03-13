@@ -148,7 +148,9 @@ describe('notificationStore', () => {
     });
 
     it('sets hasMore false when fewer than 20 results', async () => {
-      mockApi.get.mockResolvedValueOnce({ data: { notifications: [{ id: 'n1', created_at: '' }] } });
+      mockApi.get.mockResolvedValueOnce({
+        data: { notifications: [{ id: 'n1', created_at: '' }] },
+      });
 
       await useNotificationStore.getState().fetchNotifications(true);
       expect(useNotificationStore.getState().hasMore).toBe(false);
@@ -299,10 +301,7 @@ describe('notificationStore', () => {
   describe('deleteNotification', () => {
     it('removes notification from list', async () => {
       useNotificationStore.setState({
-        notifications: [
-          makeNotification({ id: 'n1' }),
-          makeNotification({ id: 'n2' }),
-        ],
+        notifications: [makeNotification({ id: 'n1' }), makeNotification({ id: 'n2' })],
         unreadCount: 2,
       });
       mockApi.delete.mockResolvedValueOnce({});

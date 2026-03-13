@@ -18,6 +18,7 @@ interface HeaderProps {
 }
 
 /**
+ * Header component.
  *
  */
 export function Header({

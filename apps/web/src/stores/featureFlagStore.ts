@@ -81,7 +81,7 @@ export const useFeatureFlagStore = create<FeatureFlagStore>((set, get) => ({
     const { lastFetched, loading } = get();
 
     // Skip if fetched recently or already fetching
-    if (loading || (now - lastFetched < CACHE_TTL_MS)) return;
+    if (loading || now - lastFetched < CACHE_TTL_MS) return;
 
     set({ loading: true, error: null });
 

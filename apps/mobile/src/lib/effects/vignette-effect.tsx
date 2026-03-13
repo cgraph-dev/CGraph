@@ -20,6 +20,7 @@ export interface VignetteEffectProps {
 // ============================================================================
 
 /**
+ * Vignette Effect component.
  *
  */
 export function VignetteEffect({ config, style }: VignetteEffectProps) {

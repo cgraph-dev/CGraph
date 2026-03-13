@@ -18,6 +18,7 @@ interface AnimatedResultItemProps {
 }
 
 /**
+ * Animated Result Item component.
  *
  */
 export function AnimatedResultItem({ children, index, onPress }: AnimatedResultItemProps) {

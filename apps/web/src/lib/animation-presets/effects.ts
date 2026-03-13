@@ -56,7 +56,11 @@ export const createPulseAnimation = (color: string, intensity: 'subtle' | 'stron
         `0 0 ${values.min}px ${color}${values.opacity[2]}`,
       ],
     },
-    transition: { duration: durations.loop.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
+    transition: {
+      duration: durations.loop.ms / 1000,
+      repeat: Infinity,
+      ease: 'easeInOut' as const,
+    },
   };
 };
 
@@ -69,7 +73,11 @@ export const createFireAnimation = (colors: string[]) => ({
     ],
     y: [0, -2, 0],
   },
-  transition: { duration: durations.slower.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
+  transition: {
+    duration: durations.slower.ms / 1000,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
 });
 
 export const createElectricAnimation = (color: string) => ({
@@ -151,7 +159,11 @@ export const backgroundAnimations = {
       opacity: [0.5, 0.8, 0.5],
       scale: [1, 1.02, 1],
     },
-    transition: { duration: durations.cinematic.ms / 1000, repeat: Infinity, ease: 'easeInOut' as const },
+    transition: {
+      duration: durations.cinematic.ms / 1000,
+      repeat: Infinity,
+      ease: 'easeInOut' as const,
+    },
   }),
 };
 
@@ -206,7 +218,8 @@ export const getRarityGlow = (rarity: string): string => {
     legendary: '#f59e0b',
     mythic: '#ec4899',
   };
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return (rarityColors[rarity as keyof typeof rarityColors] ?? rarityColors.common) as string; // type assertion: color utility returns string
 };
 
@@ -219,6 +232,7 @@ export const getTierGlow = (tier: string): string => {
     premium: '#8b5cf6',
     enterprise: '#ec4899',
   };
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return (tierColors[tier as keyof typeof tierColors] ?? tierColors.free) as string; // type assertion: color utility returns string
 };

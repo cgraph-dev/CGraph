@@ -1,6 +1,6 @@
 /**
  * Biometric Authentication Utility
- * 
+ *
  * Provides secure biometric authentication (Face ID, Touch ID, Fingerprint)
  * for protecting sensitive operations like viewing encrypted messages,
  * accessing the app, or confirming transactions.
@@ -33,10 +33,10 @@ export async function getBiometricStatus(): Promise<BiometricStatus> {
     const hasHardware = await LocalAuthentication.hasHardwareAsync();
     const isEnrolled = await LocalAuthentication.isEnrolledAsync();
     const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
-    
+
     let biometricType: BiometricType = 'none';
     let securityLevel: 'none' | 'weak' | 'strong' = 'none';
-    
+
     if (supportedTypes.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
       biometricType = 'facial';
       securityLevel = 'strong';
@@ -47,7 +47,7 @@ export async function getBiometricStatus(): Promise<BiometricStatus> {
       biometricType = 'iris';
       securityLevel = 'strong';
     }
-    
+
     return {
       isAvailable: hasHardware,
       isEnrolled: isEnrolled,
@@ -89,15 +89,18 @@ export async function authenticateWithBiometrics(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const status = await getBiometricStatus();
-    
+
     if (!status.isAvailable) {
       return { success: false, error: 'Biometric authentication not available on this device' };
     }
-    
+
     if (!status.isEnrolled) {
-      return { success: false, error: 'No biometrics enrolled. Please set up biometrics in your device settings.' };
+      return {
+        success: false,
+        error: 'No biometrics enrolled. Please set up biometrics in your device settings.',
+      };
     }
-    
+
     const result = await LocalAuthentication.authenticateAsync({
       promptMessage: reason,
       fallbackLabel: 'Use passcode',
@@ -105,21 +108,16 @@ export async function authenticateWithBiometrics(
       disableDeviceFallback: false,
       requireConfirmation: Platform.OS === 'android',
     });
-    
+
     if (result.success) {
       // Store last authentication time
-      await SecureStore.setItemAsync(
-        BIOMETRIC_LAST_AUTH_KEY,
-        Date.now().toString()
-      );
+      await SecureStore.setItemAsync(BIOMETRIC_LAST_AUTH_KEY, Date.now().toString());
       return { success: true };
     }
-    
+
     return {
       success: false,
-      error: result.error === 'user_cancel' 
-        ? 'Authentication cancelled'
-        : 'Authentication failed',
+      error: result.error === 'user_cancel' ? 'Authentication cancelled' : 'Authentication failed',
     };
   } catch (error) {
     logger.error('Biometric authentication error:', error);
@@ -151,7 +149,7 @@ export async function setBiometricLockEnabled(enabled: boolean): Promise<boolean
         return false;
       }
     }
-    
+
     await SecureStore.setItemAsync(BIOMETRIC_ENABLED_KEY, enabled ? 'true' : 'false');
     return true;
   } catch (error) {
@@ -170,15 +168,15 @@ export async function needsReauthentication(timeoutMs: number = 5 * 60 * 1000): 
     if (!enabled) {
       return false;
     }
-    
+
     const lastAuthStr = await SecureStore.getItemAsync(BIOMETRIC_LAST_AUTH_KEY);
     if (!lastAuthStr) {
       return true;
     }
-    
+
     const lastAuth = parseInt(lastAuthStr, 10);
     const now = Date.now();
-    
+
     return now - lastAuth > timeoutMs;
   } catch {
     return true;
@@ -192,11 +190,11 @@ export async function requireAuthenticationIfNeeded(
   reason: string = 'Authenticate to access CGraph'
 ): Promise<{ success: boolean; error?: string }> {
   const needsAuth = await needsReauthentication();
-  
+
   if (!needsAuth) {
     return { success: true };
   }
-  
+
   return authenticateWithBiometrics(reason);
 }
 

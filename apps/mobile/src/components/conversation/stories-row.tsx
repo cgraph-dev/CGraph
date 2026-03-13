@@ -29,16 +29,8 @@ export const StoriesRow = memo(function StoriesRow({
   onCreateStory,
 }: StoriesRowProps) {
   const renderItem = ({ item }: { item: StoryUser }) => (
-    <Pressable
-      onPress={() => onStoryPress?.(item.id)}
-      style={styles.storyItem}
-    >
-      <Avatar
-        size="lg"
-        name={item.name}
-        src={item.avatarUrl}
-        storyRing={item.hasUnseenStory}
-      />
+    <Pressable onPress={() => onStoryPress?.(item.id)} style={styles.storyItem}>
+      <Avatar size="lg" name={item.name} src={item.avatarUrl} storyRing={item.hasUnseenStory} />
       <Text style={styles.storyName} numberOfLines={1}>
         {item.name.split(' ')[0]}
       </Text>

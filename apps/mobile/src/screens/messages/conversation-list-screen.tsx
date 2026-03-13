@@ -22,6 +22,7 @@ type Props = {
 };
 
 /**
+ * Conversation List Screen component.
  *
  */
 export default function ConversationListScreen({ navigation }: Props) {
@@ -31,7 +32,9 @@ export default function ConversationListScreen({ navigation }: Props) {
 
   const scrollY = useSharedValue(0);
   const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => { scrollY.value = event.contentOffset.y; },
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
   });
 
   useEffect(() => {
@@ -69,26 +72,35 @@ export default function ConversationListScreen({ navigation }: Props) {
       : item.participants?.[0];
 
     const displayName =
-      item.name || otherParticipant?.nickname ||
+      item.name ||
+      otherParticipant?.nickname ||
       otherParticipant?.user?.display_name ||
       otherParticipant?.display_name ||
       otherParticipant?.user?.username ||
-      otherParticipant?.username || 'Unknown';
+      otherParticipant?.username ||
+      'Unknown';
 
-    const avatarUrl: string | undefined = otherParticipant?.user?.avatar_url as string | undefined ??
-      otherParticipant?.avatar_url as string | undefined;
+    const avatarUrl: string | undefined =
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      (otherParticipant?.user?.avatar_url as string | undefined) ??
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      (otherParticipant?.avatar_url as string | undefined);
 
-    const otherUserId = otherParticipant?.userId || otherParticipant?.user_id ||
-      otherParticipant?.user?.id || '';
+    const otherUserId =
+      otherParticipant?.userId || otherParticipant?.user_id || otherParticipant?.user?.id || '';
     const isOnline = onlineUsers.has(String(otherUserId));
     const isPremium = Boolean(otherParticipant?.user?.is_premium);
 
     return (
       <AnimatedConversationItem
-        item={item} index={index}
+        item={item}
+        index={index}
         onPress={() => navigation.navigate('Conversation', { conversationId: item.id })}
-        colors={colors} displayName={displayName} avatarUrl={avatarUrl}
-        isOnline={isOnline} isPremium={isPremium}
+        colors={colors}
+        displayName={displayName}
+        avatarUrl={avatarUrl}
+        isOnline={isOnline}
+        isPremium={isPremium}
       />
     );
   };
@@ -96,8 +108,12 @@ export default function ConversationListScreen({ navigation }: Props) {
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <GlassCard variant="crystal" intensity="medium" style={styles.emptyCard}>
-        <LinearGradient colors={['#10b981', '#059669']} style={styles.emptyIconContainer}
-          start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+        <LinearGradient
+          colors={['#10b981', '#059669']}
+          style={styles.emptyIconContainer}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
           <Ionicons name="chatbubbles" size={48} color="#fff" />
         </LinearGradient>
         <Text style={[styles.emptyTitle, { color: colors.text }]}>No Messages Yet</Text>
@@ -105,10 +121,18 @@ export default function ConversationListScreen({ navigation }: Props) {
           Start a conversation with friends{'\n'}and see your messages here
         </Text>
         <TouchableOpacity
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); navigation.navigate('NewConversation'); }}
-          activeOpacity={0.8}>
-          <LinearGradient colors={['#10b981', '#059669']} style={styles.emptyButton}
-            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            navigation.navigate('NewConversation');
+          }}
+          activeOpacity={0.8}
+        >
+          <LinearGradient
+            colors={['#10b981', '#059669']}
+            style={styles.emptyButton}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
             <Ionicons name="add" size={20} color="#fff" />
             <Text style={styles.emptyButtonText}>Start Chatting</Text>
           </LinearGradient>
@@ -124,11 +148,18 @@ export default function ConversationListScreen({ navigation }: Props) {
         renderItem={renderConversation}
         keyExtractor={(item) => item.id}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh}
-            tintColor={colors.primary} colors={[colors.primary]} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
         }
         ListEmptyComponent={renderEmptyState}
-        contentContainerStyle={[styles.listContent, conversations.length === 0 && styles.emptyContainer]}
+        contentContainerStyle={[
+          styles.listContent,
+          conversations.length === 0 && styles.emptyContainer,
+        ]}
         showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}
         windowSize={11}

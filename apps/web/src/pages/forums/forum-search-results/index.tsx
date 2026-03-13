@@ -14,6 +14,7 @@ import type { ForumSearchFilters } from '@/modules/forums/store/forumStore.types
 import { SearchResultCard } from './search-result-card';
 import { SearchFiltersPanel } from './search-filters-panel';
 
+/** Forum Search Results component. */
 function ForumSearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
   const {
@@ -33,7 +34,9 @@ function ForumSearchResults() {
 
   // Read URL params on mount
   const urlQuery = searchParams.get('q') ?? '';
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const urlType = searchParams.get('type') as ForumSearchFilters['type'] | null;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const urlSort = searchParams.get('sort') as ForumSearchFilters['sort'] | null;
   const urlDateFrom = searchParams.get('date_from') ?? undefined;
   const urlDateTo = searchParams.get('date_to') ?? undefined;
@@ -99,7 +102,8 @@ function ForumSearchResults() {
         <h1 className="text-2xl font-bold text-white">Search Forums</h1>
         {searchQuery && !searchLoading && (
           <p className="mt-1 text-sm text-gray-400">
-            {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for &quot;{searchQuery}&quot;
+            {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for &quot;
+            {searchQuery}&quot;
           </p>
         )}
       </div>
@@ -122,10 +126,7 @@ function ForumSearchResults() {
       </form>
 
       {/* Filters */}
-      <SearchFiltersPanel
-        filters={searchFilters}
-        onFiltersChange={handleFiltersChange}
-      />
+      <SearchFiltersPanel filters={searchFilters} onFiltersChange={handleFiltersChange} />
 
       {/* Results */}
       <div className="space-y-3">

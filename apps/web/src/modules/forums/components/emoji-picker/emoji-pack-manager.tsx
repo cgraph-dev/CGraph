@@ -232,7 +232,7 @@ export const EmojiPackManager = memo(function EmojiPackManager({
       try {
         await createPack(forumId, data);
         setShowCreate(false);
-      } catch (err) {
+      } catch (_err) {
         // toast error
       }
     },
@@ -250,7 +250,7 @@ export const EmojiPackManager = memo(function EmojiPackManager({
         a.download = `emoji-pack-${packId}.json`;
         a.click();
         URL.revokeObjectURL(url);
-      } catch (err) {
+      } catch (_err) {
         // toast error
       }
     },
@@ -265,9 +265,10 @@ export const EmojiPackManager = memo(function EmojiPackManager({
       setImporting(true);
       try {
         const text = await file.text();
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const bundle = JSON.parse(text) as EmojiPackBundle;
         await importPack(forumId, bundle);
-      } catch (err) {
+      } catch (_err) {
         // toast error
       } finally {
         setImporting(false);
@@ -282,7 +283,7 @@ export const EmojiPackManager = memo(function EmojiPackManager({
       if (!confirm('Delete this emoji pack? This cannot be undone.')) return;
       try {
         await deletePack(forumId, packId);
-      } catch (err) {
+      } catch (_err) {
         // toast error
       }
     },

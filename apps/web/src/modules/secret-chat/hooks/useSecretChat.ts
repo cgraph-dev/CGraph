@@ -68,7 +68,14 @@ function serializeMessage(msg: TripleRatchetMessage): string {
 /** Shape of the parsed serialized message JSON */
 interface SerializedTripleRatchetMessage {
   header: {
-    ec: { dh: string; pn: number; n: number; sessionId: string; timestamp: number; version: number };
+    ec: {
+      dh: string;
+      pn: number;
+      n: number;
+      sessionId: string;
+      timestamp: number;
+      version: number;
+    };
     pq: TripleRatchetMessage['header']['pq'];
     version: number;
   };
@@ -81,6 +88,7 @@ interface SerializedTripleRatchetMessage {
  * Deserialize a base64 JSON blob back into a TripleRatchetMessage.
  */
 function deserializeMessage(blob: string): TripleRatchetMessage {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const parsed: SerializedTripleRatchetMessage = JSON.parse(blob) as SerializedTripleRatchetMessage;
 
   return {
@@ -210,11 +218,7 @@ export function useSecretChat(): UseSecretChatReturn {
     const { skEc, skScka } = splitTripleRatchetSecret(pqxdhResult.sharedSecret);
 
     // Initialize Triple Ratchet as Alice
-    const engine = await TripleRatchetEngine.initializeAlice(
-      skEc,
-      skScka,
-      peerBundle.signedPreKey
-    );
+    const engine = await TripleRatchetEngine.initializeAlice(skEc, skScka, peerBundle.signedPreKey);
 
     engineRef.current = engine;
 

@@ -63,6 +63,6 @@ export const useNodesStore = create<NodesState>()(
       partialize: (state) => ({
         wallet: state.wallet,
       }),
-    },
-  ),
+    }
+  )
 );

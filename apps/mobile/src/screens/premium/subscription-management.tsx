@@ -82,7 +82,7 @@ function SubscriptionManagementScreen(): React.ReactElement | null {
             }
           },
         },
-      ],
+      ]
     );
   }, []);
 
@@ -113,7 +113,7 @@ function SubscriptionManagementScreen(): React.ReactElement | null {
             }
           },
         },
-      ],
+      ]
     );
   }, []);
 
@@ -144,9 +144,7 @@ function SubscriptionManagementScreen(): React.ReactElement | null {
         >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Manage Subscription
-        </Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Manage Subscription</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -160,22 +158,12 @@ function SubscriptionManagementScreen(): React.ReactElement | null {
           />
           <View style={styles.planInfo}>
             <Text style={styles.planTierLabel}>Current Plan</Text>
-            <Text style={styles.planTierName}>
-              {tier.charAt(0).toUpperCase() + tier.slice(1)}
-            </Text>
+            <Text style={styles.planTierName}>{tier.charAt(0).toUpperCase() + tier.slice(1)}</Text>
           </View>
           <View
-            style={[
-              styles.statusBadge,
-              { backgroundColor: isActive ? '#22c55e33' : '#ef444433' },
-            ]}
+            style={[styles.statusBadge, { backgroundColor: isActive ? '#22c55e33' : '#ef444433' }]}
           >
-            <Text
-              style={[
-                styles.statusText,
-                { color: isActive ? '#22c55e' : '#ef4444' },
-              ]}
-            >
+            <Text style={[styles.statusText, { color: isActive ? '#22c55e' : '#ef4444' }]}>
               {isActive ? 'Active' : 'Inactive'}
             </Text>
           </View>
@@ -206,9 +194,7 @@ function SubscriptionManagementScreen(): React.ReactElement | null {
             <Ionicons name="refresh-outline" size={22} color="#8b5cf6" />
           )}
           <View style={styles.actionTextContainer}>
-            <Text style={[styles.actionTitle, { color: colors.text }]}>
-              Restore Purchases
-            </Text>
+            <Text style={[styles.actionTitle, { color: colors.text }]}>Restore Purchases</Text>
             <Text style={[styles.actionSubtitle, { color: colors.text + '80' }]}>
               Recover purchases from another device
             </Text>
@@ -225,9 +211,7 @@ function SubscriptionManagementScreen(): React.ReactElement | null {
           >
             <Ionicons name="settings-outline" size={22} color="#8b5cf6" />
             <View style={styles.actionTextContainer}>
-              <Text style={[styles.actionTitle, { color: colors.text }]}>
-                Manage Subscription
-              </Text>
+              <Text style={[styles.actionTitle, { color: colors.text }]}>Manage Subscription</Text>
               <Text style={[styles.actionSubtitle, { color: colors.text + '80' }]}>
                 Change plan or update payment method
               </Text>
@@ -245,13 +229,9 @@ function SubscriptionManagementScreen(): React.ReactElement | null {
           >
             <Ionicons name="close-circle-outline" size={22} color="#ef4444" />
             <View style={styles.actionTextContainer}>
-              <Text style={[styles.actionTitle, { color: colors.text }]}>
-                Cancel Subscription
-              </Text>
+              <Text style={[styles.actionTitle, { color: colors.text }]}>Cancel Subscription</Text>
               <Text style={[styles.actionSubtitle, { color: colors.text + '80' }]}>
-                {Platform.OS === 'ios'
-                  ? 'Managed via the App Store'
-                  : 'Managed via Google Play'}
+                {Platform.OS === 'ios' ? 'Managed via the App Store' : 'Managed via Google Play'}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={colors.text + '40'} />
@@ -263,9 +243,9 @@ function SubscriptionManagementScreen(): React.ReactElement | null {
       <View style={styles.infoContainer}>
         <Ionicons name="information-circle-outline" size={16} color={colors.text + '60'} />
         <Text style={[styles.infoText, { color: colors.text + '60' }]}>
-          Subscriptions are managed by {Platform.OS === 'ios' ? 'Apple' : 'Google'}.
-          To cancel, modify, or view your subscription history, use the link above.
-          Your premium benefits will remain active until the end of the current billing period.
+          Subscriptions are managed by {Platform.OS === 'ios' ? 'Apple' : 'Google'}. To cancel,
+          modify, or view your subscription history, use the link above. Your premium benefits will
+          remain active until the end of the current billing period.
         </Text>
       </View>
     </ScrollView>

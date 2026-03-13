@@ -22,12 +22,7 @@ import {
   type RoomOptions,
   VideoPresets,
 } from 'livekit-client';
-import {
-  setupE2EE,
-  rotateKey,
-  isEncrypted,
-  cleanupE2EE,
-} from './callEncryption';
+import { setupE2EE, rotateKey, isEncrypted, cleanupE2EE } from './callEncryption';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -84,11 +79,7 @@ class LiveKitServiceImpl {
    * @param opts - Optional room configuration
    * @returns Connected Room instance
    */
-  async connect(
-    url: string,
-    token: string,
-    opts?: Partial<RoomOptions>
-  ): Promise<Room> {
+  async connect(url: string, token: string, opts?: Partial<RoomOptions>): Promise<Room> {
     const room = new Room({
       adaptiveStream: true,
       dynacast: true,
@@ -153,9 +144,7 @@ class LiveKitServiceImpl {
       tracks.push(videoTrack);
     }
 
-    await Promise.all(
-      tracks.map((track) => room.localParticipant.publishTrack(track))
-    );
+    await Promise.all(tracks.map((track) => room.localParticipant.publishTrack(track)));
   }
 
   /**
@@ -166,9 +155,7 @@ class LiveKitServiceImpl {
 
     if (handlers.onParticipantConnected) {
       const handler = (participant: RemoteParticipant) => {
-        handlers.onParticipantConnected?.(
-          mapParticipant(participant)
-        );
+        handlers.onParticipantConnected?.(mapParticipant(participant));
       };
       room.on(RoomEvent.ParticipantConnected, handler);
       cleanups.push(() => room.off(RoomEvent.ParticipantConnected, handler));
@@ -179,56 +166,36 @@ class LiveKitServiceImpl {
         handlers.onParticipantDisconnected?.(participant.identity);
       };
       room.on(RoomEvent.ParticipantDisconnected, handler);
-      cleanups.push(() =>
-        room.off(RoomEvent.ParticipantDisconnected, handler)
-      );
+      cleanups.push(() => room.off(RoomEvent.ParticipantDisconnected, handler));
     }
 
     if (handlers.onTrackSubscribed) {
       room.on(RoomEvent.TrackSubscribed, handlers.onTrackSubscribed);
-      cleanups.push(() =>
-        room.off(RoomEvent.TrackSubscribed, handlers.onTrackSubscribed!)
-      );
+      cleanups.push(() => room.off(RoomEvent.TrackSubscribed, handlers.onTrackSubscribed!));
     }
 
     if (handlers.onTrackUnsubscribed) {
       room.on(RoomEvent.TrackUnsubscribed, handlers.onTrackUnsubscribed);
-      cleanups.push(() =>
-        room.off(RoomEvent.TrackUnsubscribed, handlers.onTrackUnsubscribed!)
-      );
+      cleanups.push(() => room.off(RoomEvent.TrackUnsubscribed, handlers.onTrackUnsubscribed!));
     }
 
     if (handlers.onActiveSpeakersChanged) {
-      room.on(
-        RoomEvent.ActiveSpeakersChanged,
-        handlers.onActiveSpeakersChanged
-      );
+      room.on(RoomEvent.ActiveSpeakersChanged, handlers.onActiveSpeakersChanged);
       cleanups.push(() =>
-        room.off(
-          RoomEvent.ActiveSpeakersChanged,
-          handlers.onActiveSpeakersChanged!
-        )
+        room.off(RoomEvent.ActiveSpeakersChanged, handlers.onActiveSpeakersChanged!)
       );
     }
 
     if (handlers.onConnectionStateChanged) {
-      room.on(
-        RoomEvent.ConnectionStateChanged,
-        handlers.onConnectionStateChanged
-      );
+      room.on(RoomEvent.ConnectionStateChanged, handlers.onConnectionStateChanged);
       cleanups.push(() =>
-        room.off(
-          RoomEvent.ConnectionStateChanged,
-          handlers.onConnectionStateChanged!
-        )
+        room.off(RoomEvent.ConnectionStateChanged, handlers.onConnectionStateChanged!)
       );
     }
 
     if (handlers.onDisconnected) {
       room.on(RoomEvent.Disconnected, handlers.onDisconnected);
-      cleanups.push(() =>
-        room.off(RoomEvent.Disconnected, handlers.onDisconnected!)
-      );
+      cleanups.push(() => room.off(RoomEvent.Disconnected, handlers.onDisconnected!));
     }
 
     // Return cleanup function
@@ -251,9 +218,7 @@ class LiveKitServiceImpl {
       connectionState: room.state,
       participants,
       activeSpeakers: room.activeSpeakers.map((s) => s.identity),
-      localParticipant: room.localParticipant
-        ? mapLocalParticipant(room.localParticipant)
-        : null,
+      localParticipant: room.localParticipant ? mapLocalParticipant(room.localParticipant) : null,
     };
   }
 
@@ -277,9 +242,7 @@ class LiveKitServiceImpl {
    * Disconnect from all rooms.
    */
   async disconnectAll(): Promise<void> {
-    const promises = Array.from(this.rooms.values()).map((room) =>
-      room.disconnect(true)
-    );
+    const promises = Array.from(this.rooms.values()).map((room) => room.disconnect(true));
     await Promise.all(promises);
     this.rooms.clear();
   }
@@ -302,9 +265,7 @@ function mapParticipant(participant: RemoteParticipant): LiveKitParticipant {
   };
 }
 
-function mapLocalParticipant(
-  participant: LocalParticipant
-): LiveKitParticipant {
+function mapLocalParticipant(participant: LocalParticipant): LiveKitParticipant {
   return {
     identity: participant.identity,
     name: participant.name || participant.identity,
@@ -317,9 +278,7 @@ function mapLocalParticipant(
   };
 }
 
-function mapConnectionQuality(
-  quality: number
-): 'excellent' | 'good' | 'poor' | 'unknown' {
+function mapConnectionQuality(quality: number): 'excellent' | 'good' | 'poor' | 'unknown' {
   switch (quality) {
     case 3:
       return 'excellent';

@@ -29,7 +29,7 @@ export function UserRow({ user, onBan, onUnban, isBanning, isUnbanning }: UserRo
 
   return (
     <>
-      <tr className="transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.06]/50">
+      <tr className="dark:hover:bg-white/[0.06]/50 transition-colors hover:bg-gray-50">
         <td className="whitespace-nowrap px-6 py-4">
           <div className="flex items-center space-x-3">
             <ThemedAvatar

@@ -15,11 +15,7 @@
 import { useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NavLink, useParams, useNavigate } from 'react-router-dom';
-import {
-  ChatBubbleLeftRightIcon,
-  PlusIcon,
-  GlobeAltIcon,
-} from '@heroicons/react/24/solid';
+import { ChatBubbleLeftRightIcon, PlusIcon, GlobeAltIcon } from '@heroicons/react/24/solid';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Tooltip from '@/components/ui/tooltip';
 import { springs } from '@/lib/animation-presets';
@@ -41,7 +37,11 @@ interface ServerEntry {
 
 // ── Pill Indicator ─────────────────────────────────────────────────────
 
-function UnreadPill({ active, hasUnread, mentionCount }: {
+function UnreadPill({
+  active,
+  hasUnread,
+  mentionCount,
+}: {
   active: boolean;
   hasUnread?: boolean;
   mentionCount?: number;
@@ -57,7 +57,7 @@ function UnreadPill({ active, hasUnread, mentionCount }: {
       className={cn(
         'absolute left-0 top-1/2 w-[3px] -translate-y-1/2 rounded-r-full bg-white transition-all',
         active ? 'h-9' : 'h-2',
-        hasUnread && !active && 'h-2',
+        hasUnread && !active && 'h-2'
       )}
     />
   );
@@ -65,13 +65,7 @@ function UnreadPill({ active, hasUnread, mentionCount }: {
 
 // ── Server Icon ────────────────────────────────────────────────────────
 
-function ServerIcon({
-  server,
-  isActive,
-}: {
-  server: ServerEntry;
-  isActive: boolean;
-}) {
+function ServerIcon({ server, isActive }: { server: ServerEntry; isActive: boolean }) {
   return (
     <Tooltip content={server.name} side="right">
       <NavLink
@@ -95,18 +89,14 @@ function ServerIcon({
           className={cn(
             'relative flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden',
             'bg-white/[0.06] transition-colors hover:bg-primary-600',
-            isActive && 'bg-primary-600',
+            isActive && 'bg-primary-600'
           )}
           style={{
             boxShadow: isActive ? '0 4px 15px rgba(99, 102, 241, 0.3)' : undefined,
           }}
         >
           {server.iconUrl ? (
-            <img
-              src={server.iconUrl}
-              alt={server.name}
-              className="h-full w-full object-cover"
-            />
+            <img src={server.iconUrl} alt={server.name} className="h-full w-full object-cover" />
           ) : (
             <span className="select-none text-sm font-bold text-white">
               {server.name.slice(0, 2).toUpperCase()}
@@ -154,7 +144,7 @@ function ActionButton({
         className={cn(
           'flex h-12 w-12 items-center justify-center rounded-full',
           'bg-white/[0.06] transition-colors',
-          colorClass,
+          colorClass
         )}
       >
         <Icon className="h-5 w-5" />
@@ -173,6 +163,8 @@ const MOCK_SERVERS: ServerEntry[] = [
   { id: '4', name: 'Music Lovers', hasUnread: true },
 ];
 
+/** Description. */
+/** Server Icon Bar component. */
 export function ServerIconBar({ className }: ServerIconBarProps) {
   const { groupId } = useParams();
   const navigate = useNavigate();
@@ -182,12 +174,7 @@ export function ServerIconBar({ className }: ServerIconBarProps) {
   }, [navigate]);
 
   return (
-    <div
-      className={cn(
-        'flex h-full w-[72px] flex-col items-center bg-[#1e1f22] py-3',
-        className,
-      )}
-    >
+    <div className={cn('flex h-full w-[72px] flex-col items-center bg-[#1e1f22] py-3', className)}>
       {/* Home / DMs button */}
       <Tooltip content="Direct Messages" side="right">
         <motion.button
@@ -197,7 +184,7 @@ export function ServerIconBar({ className }: ServerIconBarProps) {
           className={cn(
             'flex h-12 w-12 items-center justify-center rounded-full',
             'bg-white/[0.06] transition-colors hover:bg-primary-600',
-            !groupId && 'bg-primary-600',
+            !groupId && 'bg-primary-600'
           )}
           animate={{
             borderRadius: !groupId ? '35%' : '50%',
@@ -212,14 +199,10 @@ export function ServerIconBar({ className }: ServerIconBarProps) {
       <div className="my-2 h-[2px] w-8 rounded-full bg-white/[0.08]" />
 
       {/* Server List (scrollable) */}
-      <ScrollArea className="flex-1 w-full">
+      <ScrollArea className="w-full flex-1">
         <div className="flex flex-col items-center gap-2 px-3">
           {MOCK_SERVERS.map((server) => (
-            <ServerIcon
-              key={server.id}
-              server={server}
-              isActive={groupId === server.id}
-            />
+            <ServerIcon key={server.id} server={server} isActive={groupId === server.id} />
           ))}
         </div>
       </ScrollArea>

@@ -174,15 +174,20 @@ interface ApiSettings {
 function mapSettingsFromApi(data: ApiSettings): UserSettings {
   return {
     notifications: {
-      emailNotifications: data.email_notifications ?? DEFAULT_NOTIFICATION_SETTINGS.emailNotifications,
+      emailNotifications:
+        data.email_notifications ?? DEFAULT_NOTIFICATION_SETTINGS.emailNotifications,
       pushNotifications: data.push_notifications ?? DEFAULT_NOTIFICATION_SETTINGS.pushNotifications,
       notifyMessages: data.notify_messages ?? DEFAULT_NOTIFICATION_SETTINGS.notifyMessages,
       notifyMentions: data.notify_mentions ?? DEFAULT_NOTIFICATION_SETTINGS.notifyMentions,
-      notifyFriendRequests: data.notify_friend_requests ?? DEFAULT_NOTIFICATION_SETTINGS.notifyFriendRequests,
-      notifyGroupInvites: data.notify_group_invites ?? DEFAULT_NOTIFICATION_SETTINGS.notifyGroupInvites,
-      notifyForumReplies: data.notify_forum_replies ?? DEFAULT_NOTIFICATION_SETTINGS.notifyForumReplies,
+      notifyFriendRequests:
+        data.notify_friend_requests ?? DEFAULT_NOTIFICATION_SETTINGS.notifyFriendRequests,
+      notifyGroupInvites:
+        data.notify_group_invites ?? DEFAULT_NOTIFICATION_SETTINGS.notifyGroupInvites,
+      notifyForumReplies:
+        data.notify_forum_replies ?? DEFAULT_NOTIFICATION_SETTINGS.notifyForumReplies,
       notificationSound: data.notification_sound ?? DEFAULT_NOTIFICATION_SETTINGS.notificationSound,
-      quietHoursEnabled: data.quiet_hours_enabled ?? DEFAULT_NOTIFICATION_SETTINGS.quietHoursEnabled,
+      quietHoursEnabled:
+        data.quiet_hours_enabled ?? DEFAULT_NOTIFICATION_SETTINGS.quietHoursEnabled,
       quietHoursStart: data.quiet_hours_start ?? null,
       quietHoursEnd: data.quiet_hours_end ?? null,
       dndUntil: data.dnd_until ?? null,
@@ -190,10 +195,13 @@ function mapSettingsFromApi(data: ApiSettings): UserSettings {
     privacy: {
       showOnlineStatus: data.show_online_status ?? DEFAULT_PRIVACY_SETTINGS.showOnlineStatus,
       showReadReceipts: data.show_read_receipts ?? DEFAULT_PRIVACY_SETTINGS.showReadReceipts,
-      showTypingIndicators: data.show_typing_indicators ?? DEFAULT_PRIVACY_SETTINGS.showTypingIndicators,
+      showTypingIndicators:
+        data.show_typing_indicators ?? DEFAULT_PRIVACY_SETTINGS.showTypingIndicators,
       profileVisibility: data.profile_visibility ?? DEFAULT_PRIVACY_SETTINGS.profileVisibility,
-      allowFriendRequests: data.allow_friend_requests ?? DEFAULT_PRIVACY_SETTINGS.allowFriendRequests,
-      allowMessageRequests: data.allow_message_requests ?? DEFAULT_PRIVACY_SETTINGS.allowMessageRequests,
+      allowFriendRequests:
+        data.allow_friend_requests ?? DEFAULT_PRIVACY_SETTINGS.allowFriendRequests,
+      allowMessageRequests:
+        data.allow_message_requests ?? DEFAULT_PRIVACY_SETTINGS.allowMessageRequests,
       showInSearch: data.show_in_search ?? DEFAULT_PRIVACY_SETTINGS.showInSearch,
       allowGroupInvites: data.allow_group_invites ?? DEFAULT_PRIVACY_SETTINGS.allowGroupInvites,
     },
@@ -206,7 +214,8 @@ function mapSettingsFromApi(data: ApiSettings): UserSettings {
       animateEmojis: data.animate_emojis ?? DEFAULT_APPEARANCE_SETTINGS.animateEmojis,
       reduceMotion: data.reduce_motion ?? DEFAULT_APPEARANCE_SETTINGS.reduceMotion,
       highContrast: data.high_contrast ?? DEFAULT_APPEARANCE_SETTINGS.highContrast,
-      screenReaderOptimized: data.screen_reader_optimized ?? DEFAULT_APPEARANCE_SETTINGS.screenReaderOptimized,
+      screenReaderOptimized:
+        data.screen_reader_optimized ?? DEFAULT_APPEARANCE_SETTINGS.screenReaderOptimized,
     },
     locale: {
       language: data.language ?? DEFAULT_LOCALE_SETTINGS.language,
@@ -226,7 +235,8 @@ function mapSettingsToApi(settings: Partial<UserSettings>): Record<string, unkno
     if (n.pushNotifications !== undefined) result.push_notifications = n.pushNotifications;
     if (n.notifyMessages !== undefined) result.notify_messages = n.notifyMessages;
     if (n.notifyMentions !== undefined) result.notify_mentions = n.notifyMentions;
-    if (n.notifyFriendRequests !== undefined) result.notify_friend_requests = n.notifyFriendRequests;
+    if (n.notifyFriendRequests !== undefined)
+      result.notify_friend_requests = n.notifyFriendRequests;
     if (n.notifyGroupInvites !== undefined) result.notify_group_invites = n.notifyGroupInvites;
     if (n.notifyForumReplies !== undefined) result.notify_forum_replies = n.notifyForumReplies;
     if (n.notificationSound !== undefined) result.notification_sound = n.notificationSound;
@@ -240,10 +250,12 @@ function mapSettingsToApi(settings: Partial<UserSettings>): Record<string, unkno
     const p = settings.privacy;
     if (p.showOnlineStatus !== undefined) result.show_online_status = p.showOnlineStatus;
     if (p.showReadReceipts !== undefined) result.show_read_receipts = p.showReadReceipts;
-    if (p.showTypingIndicators !== undefined) result.show_typing_indicators = p.showTypingIndicators;
+    if (p.showTypingIndicators !== undefined)
+      result.show_typing_indicators = p.showTypingIndicators;
     if (p.profileVisibility !== undefined) result.profile_visibility = p.profileVisibility;
     if (p.allowFriendRequests !== undefined) result.allow_friend_requests = p.allowFriendRequests;
-    if (p.allowMessageRequests !== undefined) result.allow_message_requests = p.allowMessageRequests;
+    if (p.allowMessageRequests !== undefined)
+      result.allow_message_requests = p.allowMessageRequests;
     if (p.showInSearch !== undefined) result.show_in_search = p.showInSearch;
     if (p.allowGroupInvites !== undefined) result.allow_group_invites = p.allowGroupInvites;
   }
@@ -258,7 +270,8 @@ function mapSettingsToApi(settings: Partial<UserSettings>): Record<string, unkno
     if (a.animateEmojis !== undefined) result.animate_emojis = a.animateEmojis;
     if (a.reduceMotion !== undefined) result.reduce_motion = a.reduceMotion;
     if (a.highContrast !== undefined) result.high_contrast = a.highContrast;
-    if (a.screenReaderOptimized !== undefined) result.screen_reader_optimized = a.screenReaderOptimized;
+    if (a.screenReaderOptimized !== undefined)
+      result.screen_reader_optimized = a.screenReaderOptimized;
   }
 
   if (settings.locale) {

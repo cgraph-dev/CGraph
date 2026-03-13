@@ -17,6 +17,7 @@ interface SliderRowProps {
 }
 
 /**
+ * Slider Row component.
  *
  */
 export function SliderRow({ label, value, min, max, step, onValueChange }: SliderRowProps) {

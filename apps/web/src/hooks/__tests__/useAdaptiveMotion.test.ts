@@ -43,8 +43,8 @@ describe('useAdaptiveMotion', () => {
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation(
       (cb) => setTimeout(() => cb(performance.now()), 16) as unknown as number
     );
-    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(
-      (id) => clearTimeout(id as unknown as ReturnType<typeof setTimeout>)
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation((id) =>
+      clearTimeout(id as unknown as ReturnType<typeof setTimeout>)
     );
   });
 
@@ -63,9 +63,7 @@ describe('useAdaptiveMotion', () => {
   });
 
   it('respects forceReduced config', () => {
-    const { result } = renderHook(() =>
-      useAdaptiveMotion({ forceReduced: true })
-    );
+    const { result } = renderHook(() => useAdaptiveMotion({ forceReduced: true }));
 
     expect(result.current.shouldAnimate).toBe(false);
   });
@@ -198,8 +196,6 @@ describe('getAdaptiveAnimationProps', () => {
     });
 
     // Lower motionScale → faster duration (less time spent animating)
-    expect(reducedProps.transition.duration).toBeGreaterThan(
-      fullProps.transition.duration
-    );
+    expect(reducedProps.transition.duration).toBeGreaterThan(fullProps.transition.duration);
   });
 });

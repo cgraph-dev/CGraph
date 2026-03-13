@@ -61,7 +61,8 @@ function detectLowEndDevice(): boolean {
   if (cores <= 2) return true;
 
   // Check device memory if available
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const nav = navigator as Navigator & { deviceMemory?: number }; // type assertion: Navigator with optional deviceMemory API
   if (nav.deviceMemory && nav.deviceMemory < 4) return true;
 

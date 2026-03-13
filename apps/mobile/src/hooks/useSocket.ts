@@ -42,11 +42,12 @@ export interface UseSocketReturn {
 }
 
 /**
+ * Hook for socket.
  *
  */
 export function useSocket(options: UseSocketOptions = {}): UseSocketReturn {
-  const { autoConnect = true, reconnectOnAuthChange = true } = options;
-  
+  const { autoConnect = true, _reconnectOnAuthChange = true } = options;
+
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const mountedRef = useRef(true);
@@ -73,13 +74,16 @@ export function useSocket(options: UseSocketOptions = {}): UseSocketReturn {
     setIsConnected(false);
   }, []);
 
-  const joinChannel = useCallback(async (topic: string, params?: Record<string, unknown>) => {
-    if (!isConnected) {
-      await connect();
-    }
-    await socketManager.joinChannel(topic, params || {});
-    joinedChannels.current.add(topic);
-  }, [isConnected, connect]);
+  const joinChannel = useCallback(
+    async (topic: string, params?: Record<string, unknown>) => {
+      if (!isConnected) {
+        await connect();
+      }
+      await socketManager.joinChannel(topic, params || {});
+      joinedChannels.current.add(topic);
+    },
+    [isConnected, connect]
+  );
 
   const leaveChannel = useCallback((topic: string) => {
     socketManager.leaveChannel(topic);

@@ -6,18 +6,18 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * Hook that debounces a value.
- * 
+ *
  * Returns the debounced value that only updates after the specified
  * delay has passed without the value changing.
- * 
+ *
  * @param value - value to debounce
  * @param delay - debounce delay in milliseconds
  * @returns debounced value
- * 
+ *
  * @example
  * const [search, setSearch] = useState('');
  * const debouncedSearch = useDebounce(search, 300);
- * 
+ *
  * useEffect(() => {
  *   // API call only happens 300ms after user stops typing
  *   fetchResults(debouncedSearch);
@@ -39,11 +39,11 @@ export function useDebounce<T>(value: T, delay: number): T {
 
 /**
  * Hook that returns a debounced callback function.
- * 
+ *
  * @param callback - function to debounce
  * @param delay - debounce delay in milliseconds
  * @returns debounced function
- * 
+ *
  * @example
  * const debouncedSave = useDebouncedCallback((data) => {
  *   api.save(data);
@@ -70,15 +70,18 @@ export function useDebouncedCallback<T extends (...args: Parameters<T>) => void>
     };
   }, []);
 
-  return useCallback((...args: Parameters<T>) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    
-    timeoutRef.current = setTimeout(() => {
-      callbackRef.current(...args);
-    }, delay);
-  }, [delay]);
+  return useCallback(
+    (...args: Parameters<T>) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        callbackRef.current(...args);
+      }, delay);
+    },
+    [delay]
+  );
 }
 
 export default useDebounce;

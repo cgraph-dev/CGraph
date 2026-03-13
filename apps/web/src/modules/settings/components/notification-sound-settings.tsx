@@ -6,10 +6,7 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { entranceVariants, springs } from '@/lib/animation-presets';
-import {
-  SpeakerWaveIcon,
-  PlayIcon,
-} from '@heroicons/react/24/outline';
+import { SpeakerWaveIcon, PlayIcon } from '@heroicons/react/24/outline';
 
 interface SoundCategory {
   key: string;
@@ -21,7 +18,11 @@ const CATEGORIES: SoundCategory[] = [
   { key: 'message', label: 'New Message', description: 'When you receive a new message' },
   { key: 'mention', label: 'Mention', description: 'When someone mentions you' },
   { key: 'call', label: 'Incoming Call', description: 'When you receive a call' },
-  { key: 'friend_request', label: 'Friend Request', description: 'When someone sends you a friend request' },
+  {
+    key: 'friend_request',
+    label: 'Friend Request',
+    description: 'When someone sends you a friend request',
+  },
   { key: 'join', label: 'User Joined', description: 'When someone joins a voice channel' },
 ];
 
@@ -58,24 +59,27 @@ export function NotificationSoundSettings() {
     localStorage.setItem('notification_sounds', JSON.stringify(settings));
   }, []);
 
-  const handlePreview = useCallback((_soundId: string) => {
-    // In a real implementation, play the audio file
-    // For now, use Web Audio API to generate a simple beep
-    try {
-      const ctx = new AudioContext();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      gain.gain.value = volume / 100 * 0.3;
-      osc.frequency.value = 800;
-      osc.type = 'sine';
-      osc.start();
-      osc.stop(ctx.currentTime + 0.15);
-    } catch {
-      // Audio context may be blocked
-    }
-  }, [volume]);
+  const handlePreview = useCallback(
+    (_soundId: string) => {
+      // In a real implementation, play the audio file
+      // For now, use Web Audio API to generate a simple beep
+      try {
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        gain.gain.value = (volume / 100) * 0.3;
+        osc.frequency.value = 800;
+        osc.type = 'sine';
+        osc.start();
+        osc.stop(ctx.currentTime + 0.15);
+      } catch {
+        // Audio context may be blocked
+      }
+    },
+    [volume]
+  );
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -86,18 +90,16 @@ export function NotificationSoundSettings() {
         transition={springs.gentle}
         className="mb-6"
       >
-        <div className="flex items-center gap-3 mb-2">
+        <div className="mb-2 flex items-center gap-3">
           <SpeakerWaveIcon className="h-6 w-6 text-primary-400" />
           <h2 className="text-xl font-bold text-white">Notification Sounds</h2>
         </div>
-        <p className="text-sm text-white/40">
-          Customize sounds for different notification types
-        </p>
+        <p className="text-sm text-white/40">Customize sounds for different notification types</p>
       </motion.div>
 
       {/* Volume slider */}
       <div className="mb-6 rounded-xl border border-white/10 bg-white/[0.06] p-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <span className="text-sm font-medium text-white">Volume</span>
           <span className="text-xs text-white/40">{volume}%</span>
         </div>
@@ -129,7 +131,9 @@ export function NotificationSoundSettings() {
                 className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
               >
                 {SOUNDS.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
                 ))}
               </select>
               <button

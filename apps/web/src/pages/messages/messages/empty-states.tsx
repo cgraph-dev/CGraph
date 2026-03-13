@@ -109,9 +109,7 @@ export function NoConversationSelected() {
           {t('yourMessages')}
           <SparklesIcon className="h-6 w-6 animate-pulse text-primary-400" />
         </h3>
-        <p className="max-w-md text-lg text-gray-400">
-          {t('selectConversation')}
-        </p>
+        <p className="max-w-md text-lg text-gray-400">{t('selectConversation')}</p>
 
         <motion.div
           className="mt-6 inline-flex items-center gap-2 text-sm text-gray-500"

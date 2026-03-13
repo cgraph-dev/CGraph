@@ -11,13 +11,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet, Dimensions } from 'react-native';
 import Animated, { FadeInUp, FadeIn, SlideInUp } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -45,6 +39,8 @@ interface IncomingCallOverlayProps {
 
 // ── Call Controls ──────────────────────────────────────────────────────
 
+/** Description. */
+/** Call Controls component. */
 export function CallControls({
   isMuted = false,
   isCameraOff = false,
@@ -55,13 +51,10 @@ export function CallControls({
   onFlipCamera,
   onEndCall,
 }: CallControlsProps): React.ReactElement {
-  const press = useCallback(
-    (fn?: () => void) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      fn?.();
-    },
-    [],
-  );
+  const press = useCallback((fn?: () => void) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    fn?.();
+  }, []);
 
   return (
     <Animated.View entering={FadeInUp.duration(300)} style={styles.container}>
@@ -89,11 +82,7 @@ export function CallControls({
         toggled={!isSpeakerOn}
         onPress={() => press(onToggleSpeaker)}
       />
-      <ControlBtn
-        icon="camera-flip-outline"
-        label="Flip"
-        onPress={() => press(onFlipCamera)}
-      />
+      <ControlBtn icon="camera-flip-outline" label="Flip" onPress={() => press(onFlipCamera)} />
 
       {/* End call — bigger, red */}
       <Pressable
@@ -116,7 +105,7 @@ function ControlBtn({
   icon,
   activeIcon,
   label,
-  active,
+  _active,
   toggled,
   onPress,
 }: {
@@ -141,6 +130,8 @@ function ControlBtn({
 
 // ── Incoming Call Overlay ──────────────────────────────────────────────
 
+/** Description. */
+/** Incoming Call Overlay component. */
 export function IncomingCallOverlay({
   visible,
   callerName,
@@ -162,9 +153,7 @@ export function IncomingCallOverlay({
           />
         ) : (
           <Animated.View entering={SlideInUp.duration(400)} style={styles.callerAvatarPlaceholder}>
-            <Text style={styles.callerInitial}>
-              {callerName.charAt(0).toUpperCase()}
-            </Text>
+            <Text style={styles.callerInitial}>{callerName.charAt(0).toUpperCase()}</Text>
           </Animated.View>
         )}
         <Text style={styles.callerName}>{callerName}</Text>
@@ -199,7 +188,7 @@ export function IncomingCallOverlay({
 
 // ── Styles ─────────────────────────────────────────────────────────────
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {

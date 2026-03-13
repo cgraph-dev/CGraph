@@ -31,7 +31,7 @@ interface ThemeProviderEnhancedProps {
 export function ThemeProviderEnhanced({ children, initialTheme }: ThemeProviderEnhancedProps) {
   const [theme, setThemeState] = useState<Theme>(() => themeEngine.getCurrentTheme());
   const [preferences, setPreferences] = useState<ThemePreferences>(() =>
-    themeEngine.getPreferences(),
+    themeEngine.getPreferences()
   );
 
   // Subscribe to theme changes
@@ -112,7 +112,7 @@ export function ThemeProviderEnhanced({ children, initialTheme }: ThemeProviderE
       const clampedScale = Math.max(0.8, Math.min(1.4, scale));
       updateSettings({ fontScale: clampedScale });
     },
-    [updateSettings],
+    [updateSettings]
   );
 
   // Set message display
@@ -120,7 +120,7 @@ export function ThemeProviderEnhanced({ children, initialTheme }: ThemeProviderE
     (mode: 'cozy' | 'compact') => {
       updateSettings({ messageDisplay: mode });
     },
-    [updateSettings],
+    [updateSettings]
   );
 
   // Set message spacing
@@ -129,7 +129,7 @@ export function ThemeProviderEnhanced({ children, initialTheme }: ThemeProviderE
       const clampedSpacing = Math.max(0.5, Math.min(2, spacing));
       updateSettings({ messageSpacing: clampedSpacing });
     },
-    [updateSettings],
+    [updateSettings]
   );
 
   // Toggle reduced motion
@@ -166,6 +166,7 @@ export function ThemeProviderEnhanced({ children, initialTheme }: ThemeProviderE
   // Compute derived values
   const isSystemPreference = preferences.settings.respectSystemPreference;
   const resolvedBaseTheme = theme.category === 'light' ? 'light' : 'dark';
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const availableThemes = useMemo(() => getAllThemes(), [preferences.customThemes]);
 
   const value = useMemo<ThemeContextValue>(
@@ -204,7 +205,7 @@ export function ThemeProviderEnhanced({ children, initialTheme }: ThemeProviderE
       toggleSystemPreference,
       createCustomTheme,
       deleteCustomTheme,
-    ],
+    ]
   );
 
   return <ThemeContextEnhanced.Provider value={value}>{children}</ThemeContextEnhanced.Provider>;

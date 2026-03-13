@@ -10,13 +10,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -43,6 +37,7 @@ export interface ServerCardProps {
 }
 
 /**
+ * Server Card component.
  *
  */
 export function ServerCard({
@@ -72,9 +67,7 @@ export function ServerCard({
       {server.isVerified && (
         <MaterialCommunityIcons name="check-decagram" size={16} color="#3B82F6" />
       )}
-      {server.isPartner && (
-        <MaterialCommunityIcons name="star" size={16} color="#F59E0B" />
-      )}
+      {server.isPartner && <MaterialCommunityIcons name="star" size={16} color="#F59E0B" />}
     </View>
   );
 
@@ -87,9 +80,7 @@ export function ServerCard({
               <Image source={{ uri: server.icon }} style={styles.compactIcon} />
             ) : (
               <View style={styles.compactIconPlaceholder}>
-                <Text style={styles.compactIconText}>
-                  {server.name.charAt(0).toUpperCase()}
-                </Text>
+                <Text style={styles.compactIconText}>{server.name.charAt(0).toUpperCase()}</Text>
               </View>
             )}
             <View style={styles.compactInfo}>
@@ -111,21 +102,16 @@ export function ServerCard({
 
   if (variant === 'invite') {
     return (
-      <LinearGradient
-        colors={['#1F2937', '#111827']}
-        style={styles.inviteCard}
-      >
+      <LinearGradient colors={['#1F2937', '#111827']} style={styles.inviteCard}>
         <View style={styles.inviteContent}>
           {server.icon ? (
             <Image source={{ uri: server.icon }} style={styles.inviteIcon} />
           ) : (
             <View style={styles.inviteIconPlaceholder}>
-              <Text style={styles.inviteIconText}>
-                {server.name.charAt(0).toUpperCase()}
-              </Text>
+              <Text style={styles.inviteIconText}>{server.name.charAt(0).toUpperCase()}</Text>
             </View>
           )}
-          
+
           <View style={styles.inviteInfo}>
             <View style={styles.inviteNameRow}>
               <Text style={styles.inviteName} numberOfLines={1}>
@@ -133,7 +119,7 @@ export function ServerCard({
               </Text>
               {renderBadges()}
             </View>
-            
+
             <View style={styles.inviteStats}>
               <View style={styles.statItem}>
                 <View style={[styles.onlineDot, { backgroundColor: '#10B981' }]} />
@@ -143,22 +129,15 @@ export function ServerCard({
               </View>
               <View style={styles.statItem}>
                 <View style={[styles.onlineDot, { backgroundColor: '#6B7280' }]} />
-                <Text style={styles.statText}>
-                  {formatMemberCount(server.memberCount)} Members
-                </Text>
+                <Text style={styles.statText}>{formatMemberCount(server.memberCount)} Members</Text>
               </View>
             </View>
           </View>
         </View>
 
         <Pressable onPress={handleJoin}>
-          <LinearGradient
-            colors={['#10B981', '#059669']}
-            style={styles.joinButton}
-          >
-            <Text style={styles.joinButtonText}>
-              {server.isMember ? 'Joined' : 'Join'}
-            </Text>
+          <LinearGradient colors={['#10B981', '#059669']} style={styles.joinButton}>
+            <Text style={styles.joinButtonText}>{server.isMember ? 'Joined' : 'Join'}</Text>
           </LinearGradient>
         </Pressable>
       </LinearGradient>
@@ -170,17 +149,12 @@ export function ServerCard({
       <Pressable onPress={handlePress}>
         <GlassCard style={styles.detailedCard}>
           {/* Header with banner placeholder */}
-          <LinearGradient
-            colors={['#374151', '#1F2937']}
-            style={styles.detailedBanner}
-          >
+          <LinearGradient colors={['#374151', '#1F2937']} style={styles.detailedBanner}>
             {server.icon ? (
               <Image source={{ uri: server.icon }} style={styles.detailedIcon} />
             ) : (
               <View style={styles.detailedIconPlaceholder}>
-                <Text style={styles.detailedIconText}>
-                  {server.name.charAt(0).toUpperCase()}
-                </Text>
+                <Text style={styles.detailedIconText}>{server.name.charAt(0).toUpperCase()}</Text>
               </View>
             )}
           </LinearGradient>
@@ -207,9 +181,7 @@ export function ServerCard({
             <View style={styles.detailedStats}>
               <View style={styles.detailedStatItem}>
                 <MaterialCommunityIcons name="account-group" size={18} color="#9CA3AF" />
-                <Text style={styles.detailedStatText}>
-                  {formatMemberCount(server.memberCount)}
-                </Text>
+                <Text style={styles.detailedStatText}>{formatMemberCount(server.memberCount)}</Text>
               </View>
               {server.onlineCount !== undefined && (
                 <View style={styles.detailedStatItem}>
@@ -221,7 +193,7 @@ export function ServerCard({
               )}
             </View>
 
-            <Pressable 
+            <Pressable
               onPress={server.isMember ? handlePress : handleJoin}
               style={({ pressed }) => [
                 styles.detailedButton,
@@ -248,9 +220,7 @@ export function ServerCard({
             <Image source={{ uri: server.icon }} style={styles.defaultIcon} />
           ) : (
             <View style={styles.defaultIconPlaceholder}>
-              <Text style={styles.defaultIconText}>
-                {server.name.charAt(0).toUpperCase()}
-              </Text>
+              <Text style={styles.defaultIconText}>{server.name.charAt(0).toUpperCase()}</Text>
             </View>
           )}
 
@@ -261,7 +231,7 @@ export function ServerCard({
               </Text>
               {renderBadges()}
             </View>
-            
+
             {server.description && (
               <Text style={styles.defaultDescription} numberOfLines={1}>
                 {server.description}
@@ -288,7 +258,7 @@ export function ServerCard({
       </GlassCard>
     </Pressable>
   );
-};
+}
 
 const styles = StyleSheet.create({
   badges: {

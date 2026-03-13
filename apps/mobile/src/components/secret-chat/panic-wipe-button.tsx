@@ -26,6 +26,8 @@ interface PanicWipeButtonProps {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Description. */
+/** Panic Wipe Button component. */
 export function PanicWipeButton({ themeColors: _themeColors }: PanicWipeButtonProps) {
   const panicWipe = useSecretChatStore((s) => s.panicWipe);
   const [isWiping, setIsWiping] = useState(false);

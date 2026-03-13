@@ -263,19 +263,13 @@ function ConversationHeaderComponent({
             <motion.button
               onClick={onToggleNotificationSettings}
               className={`rounded-lg p-2 transition-all duration-200 hover:bg-white/10 ${
-                isMuted
-                  ? 'bg-amber-500/20 text-amber-400'
-                  : 'text-gray-400 hover:text-white'
+                isMuted ? 'bg-amber-500/20 text-amber-400' : 'text-gray-400 hover:text-white'
               }`}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               title={isMuted ? 'Unmute Conversation' : 'Notification Settings'}
             >
-              {isMuted ? (
-                <BellSlashIcon className="h-5 w-5" />
-              ) : (
-                <BellIcon className="h-5 w-5" />
-              )}
+              {isMuted ? <BellSlashIcon className="h-5 w-5" /> : <BellIcon className="h-5 w-5" />}
             </motion.button>
           )}
         </motion.div>

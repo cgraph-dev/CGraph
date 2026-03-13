@@ -73,13 +73,7 @@ export type AvatarBorderType =
 
 // ==================== RARITY SYSTEM ====================
 
-export type BorderRarity =
-  | 'free'
-  | 'common'
-  | 'rare'
-  | 'epic'
-  | 'legendary'
-  | 'mythic';
+export type BorderRarity = 'free' | 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
 
 export type BorderUnlockType =
   | 'default' // Available to all

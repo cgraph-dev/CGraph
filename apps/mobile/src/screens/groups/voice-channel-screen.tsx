@@ -43,6 +43,7 @@ type Props = {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Voice Channel Screen component. */
 export default function VoiceChannelScreen({ navigation, route }: Props) {
   const { channelId, channelName, groupId } = route.params;
   const { colors } = useThemeStore();
@@ -181,16 +182,19 @@ export default function VoiceChannelScreen({ navigation, route }: Props) {
       )}
 
       {/* Control Bar */}
-      <View style={[styles.controlBar, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
+      <View
+        style={[styles.controlBar, { backgroundColor: colors.card, borderTopColor: colors.border }]}
+      >
         {/* Mute */}
         <TouchableOpacity
           onPress={toggleMute}
-          style={[
-            styles.controlButton,
-            isMuted && styles.controlButtonDanger,
-          ]}
+          style={[styles.controlButton, isMuted && styles.controlButtonDanger]}
         >
-          <Ionicons name={isMuted ? 'mic-off' : 'mic'} size={24} color={isMuted ? '#ef4444' : '#fff'} />
+          <Ionicons
+            name={isMuted ? 'mic-off' : 'mic'}
+            size={24}
+            color={isMuted ? '#ef4444' : '#fff'}
+          />
           <Text style={[styles.controlLabel, isMuted && styles.controlLabelDanger]}>
             {isMuted ? 'Unmute' : 'Mute'}
           </Text>
@@ -199,10 +203,7 @@ export default function VoiceChannelScreen({ navigation, route }: Props) {
         {/* Deafen */}
         <TouchableOpacity
           onPress={toggleDeafen}
-          style={[
-            styles.controlButton,
-            isDeafened && styles.controlButtonDanger,
-          ]}
+          style={[styles.controlButton, isDeafened && styles.controlButtonDanger]}
         >
           <Ionicons
             name={isDeafened ? 'volume-mute' : 'volume-high'}
@@ -225,7 +226,12 @@ export default function VoiceChannelScreen({ navigation, route }: Props) {
           onPress={handleDisconnect}
           style={[styles.controlButton, styles.disconnectButton]}
         >
-          <Ionicons name="call" size={24} color="#fff" style={{ transform: [{ rotate: '135deg' }] }} />
+          <Ionicons
+            name="call"
+            size={24}
+            color="#fff"
+            style={{ transform: [{ rotate: '135deg' }] }}
+          />
           <Text style={[styles.controlLabel, { color: '#fff' }]}>Leave</Text>
         </TouchableOpacity>
       </View>

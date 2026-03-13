@@ -32,6 +32,7 @@ interface SwipeableMessageProps {
 }
 
 /**
+ * Swipeable Message component.
  *
  */
 export default function SwipeableMessage({
@@ -172,17 +173,11 @@ export default function SwipeableMessage({
         {...panResponder.panHandlers}
         style={[
           {
-            transform: [
-              { translateX },
-              { scale: scaleAnim },
-            ],
+            transform: [{ translateX }, { scale: scaleAnim }],
           },
         ]}
       >
-        <TouchableOpacity
-          activeOpacity={0.95}
-          onPress={() => HapticFeedback.light()}
-        >
+        <TouchableOpacity activeOpacity={0.95} onPress={() => HapticFeedback.light()}>
           {isMine ? (
             // My message - gradient background
             <LinearGradient
@@ -197,9 +192,7 @@ export default function SwipeableMessage({
           ) : (
             // Their message - solid background
             <View style={[styles.messageBubble, styles.theirMessageBubble]}>
-              {senderName && (
-                <Text style={styles.senderName}>{senderName}</Text>
-              )}
+              {senderName && <Text style={styles.senderName}>{senderName}</Text>}
               <Text style={[styles.messageText, styles.theirMessageText]}>{content}</Text>
               <Text style={[styles.timestamp, styles.theirTimestamp]}>{timestamp}</Text>
             </View>
@@ -212,9 +205,7 @@ export default function SwipeableMessage({
             {reactions.slice(0, 3).map((reaction, i) => (
               <View key={i} style={styles.reaction}>
                 <Text style={styles.reactionEmoji}>{reaction.emoji}</Text>
-                {reaction.count > 1 && (
-                  <Text style={styles.reactionCount}>{reaction.count}</Text>
-                )}
+                {reaction.count > 1 && <Text style={styles.reactionCount}>{reaction.count}</Text>}
               </View>
             ))}
             {reactions.length > 3 && (

@@ -44,6 +44,7 @@ function RippleCircle({
 }
 
 /**
+ * Ripple component.
  *
  */
 export function Ripple({

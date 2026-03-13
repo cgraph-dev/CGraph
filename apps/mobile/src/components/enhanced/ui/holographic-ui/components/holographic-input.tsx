@@ -5,7 +5,12 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useState, useEffect } from 'react';
 import { TextInput, StyleSheet, ViewStyle, Platform } from 'react-native';
-import Animated, { useSharedValue, withTiming, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { HolographicConfig, getTheme } from '../types';
 
@@ -20,6 +25,7 @@ interface HolographicInputProps {
 }
 
 /**
+ * Holographic Input component.
  *
  */
 export function HolographicInput({
@@ -43,10 +49,13 @@ export function HolographicInput({
     if (isFocused) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
   const containerAnimStyle = useAnimatedStyle(() => ({
-    ...(Platform.OS === 'ios' ? { shadowRadius: interpolate(glowIntensity.value, [0, 1], [5, 20]) } : {}),
+    ...(Platform.OS === 'ios'
+      ? { shadowRadius: interpolate(glowIntensity.value, [0, 1], [5, 20]) }
+      : {}),
   }));
 
   const focusLineAnimStyle = useAnimatedStyle(() => ({

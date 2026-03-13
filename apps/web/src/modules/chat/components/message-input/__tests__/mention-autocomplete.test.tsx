@@ -4,12 +4,30 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 
 vi.mock('motion/react', () => ({
   motion: new Proxy({} as Record<string, unknown>, {
-    get: (_t: unknown, prop: string) =>
+    get:
+      (_t: unknown, prop: string) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ({ children, ...rest }: any) => {
-        const { initial, animate, exit, transition, variants, whileHover, whileTap, layout, layoutId, ...safe } = rest;
-        return <div data-motion={prop} {...safe}>{children}</div>;
+        const {
+          _initial,
+          _animate,
+          _exit,
+          _transition,
+          _variants,
+          _whileHover,
+          _whileTap,
+          _layout,
+          _layoutId,
+          ...safe
+        } = rest;
+        return (
+          <div data-motion={prop} {...safe}>
+            {children}
+          </div>
+        );
       },
   }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 

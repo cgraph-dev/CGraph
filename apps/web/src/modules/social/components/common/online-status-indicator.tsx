@@ -16,4 +16,3 @@ export {
   formatLastActive,
   formatLastActiveLong,
 } from './online-status';
-

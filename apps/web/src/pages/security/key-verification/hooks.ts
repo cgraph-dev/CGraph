@@ -113,7 +113,8 @@ export function useKeyVerification() {
     formattedNumber: formatted,
     qrData,
     isLoading,
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     error: error as Error | null, // safe downcast – structural boundary
     isVerifying: verifyMutation.isPending,
     showQR,

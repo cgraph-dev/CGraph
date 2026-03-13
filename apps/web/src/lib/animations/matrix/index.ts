@@ -1,19 +1,19 @@
 /**
  * Matrix Cipher Background Animation System
- * 
+ *
  * @description Complete animation system for Matrix-style digital rain effect.
- * 
+ *
  * @version 1.0.0
  * @since v0.6.3
  * @author CGraph Development Team
- * 
+ *
  * @packageDocumentation
- * 
+ *
  * ## Quick Start
- * 
+ *
  * ```tsx
  * import { MatrixBackground } from '@/lib/animations/matrix';
- * 
+ *
  * function App() {
  *   return (
  *     <div>
@@ -23,35 +23,35 @@
  *   );
  * }
  * ```
- * 
+ *
  * ## Available Exports
- * 
+ *
  * ### Components
  * - `MatrixBackground` - Main background component
  * - `MatrixAuthBackground` - Optimized for auth pages
  * - `MatrixHeroBackground` - High-impact hero sections
  * - `MatrixAmbientBackground` - Subtle ambient effect
- * 
+ *
  * ### Hooks
  * - `useMatrix` - Full control hook
  * - `useMatrixThemes` - Theme selection utilities
  * - `useMatrixPerformance` - Performance monitoring
- * 
+ *
  * ### Engine
  * - `MatrixEngine` - Core animation engine class
  * - `createMatrixEngine` - Factory function
- * 
+ *
  * ### Configuration
  * - `createConfig` - Create custom configuration
  * - `getPreset` - Get configuration presets
  * - `DEFAULT_CONFIG` - Default configuration
- * 
+ *
  * ### Themes
  * - `THEME_REGISTRY` - All available themes
  * - `getTheme` - Get theme by ID
  * - `createCustomTheme` - Create custom themes
  * - `interpolateThemes` - Smooth theme transitions
- * 
+ *
  * ### Characters
  * - `getCharacterSet` - Get character sets by type
  * - `CHARACTER_PRESETS` - Predefined character combinations
@@ -71,31 +71,19 @@ export {
   type IntensityPreset,
 } from './matrix-background';
 
-export {
-  MatrixText,
-  MatrixLogo,
-  MatrixHeading,
-  type MatrixTextProps,
-} from './matrix-text';
+export { MatrixText, MatrixLogo, MatrixHeading, type MatrixTextProps } from './matrix-text';
 
 // =============================================================================
 // HOOKS
 // =============================================================================
 
-export {
-  useMatrix,
-  useMatrixThemes,
-  useMatrixPerformance,
-} from './useMatrix';
+export { useMatrix, useMatrixThemes, useMatrixPerformance } from './useMatrix';
 
 // =============================================================================
 // ENGINE
 // =============================================================================
 
-export {
-  MatrixEngine,
-  createMatrixEngine,
-} from './engine';
+export { MatrixEngine, createMatrixEngine } from './engine';
 
 // =============================================================================
 // CONFIGURATION
@@ -180,7 +168,7 @@ export type {
   ThemePreset,
   AnimationState,
   BlendMode,
-  
+
   // Configuration types
   ColorStop,
   GlowConfig,
@@ -194,15 +182,15 @@ export type {
   EffectsConfig,
   FontConfig,
   MatrixConfig,
-  
+
   // Engine types
   MatrixEngineState,
   MatrixEvents,
-  
+
   // Hook types
   UseMatrixOptions,
   UseMatrixReturn,
-  
+
   // Utility types
   DeepPartial,
   ConfigPreset,

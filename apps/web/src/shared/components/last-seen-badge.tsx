@@ -3,8 +3,6 @@
  * Respects privacy settings
  */
 
-
-
 interface LastSeenBadgeProps {
   lastSeenAt?: string | null;
   status?: string;
@@ -18,7 +16,12 @@ interface LastSeenBadgeProps {
 /**
  * Last Seen Badge component.
  */
-export function LastSeenBadge({ lastSeenAt, status, isOnline, className = '' }: LastSeenBadgeProps) {
+export function LastSeenBadge({
+  lastSeenAt,
+  status,
+  isOnline,
+  className = '',
+}: LastSeenBadgeProps) {
   if (isOnline || status === 'online') {
     return <span className={`text-xs text-green-400 ${className}`}>Online</span>;
   }
@@ -41,11 +44,7 @@ export function LastSeenBadge({ lastSeenAt, status, isOnline, className = '' }: 
 
   const timeAgo = formatLastSeen(new Date(lastSeenAt));
 
-  return (
-    <span className={`text-xs text-white/30 ${className}`}>
-      Last seen {timeAgo}
-    </span>
-  );
+  return <span className={`text-xs text-white/30 ${className}`}>Last seen {timeAgo}</span>;
 }
 
 function formatLastSeen(date: Date): string {

@@ -8,6 +8,7 @@ import { MessagePreview, TabBar, PresetsTab, ColorsTab, ShapeTab, LayoutTab } fr
 import type { Props, TabId } from './types';
 
 /**
+ * Chat Bubble Settings Screen component.
  *
  */
 export default function ChatBubbleSettingsScreen({ navigation }: Props) {

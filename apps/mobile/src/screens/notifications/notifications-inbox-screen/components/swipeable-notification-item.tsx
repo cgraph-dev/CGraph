@@ -37,6 +37,7 @@ export interface SwipeableNotificationItemProps {
 }
 
 /**
+ * Swipeable Notification Item component.
  *
  */
 export function SwipeableNotificationItem({
@@ -101,33 +102,16 @@ export function SwipeableNotificationItem({
   }));
 
   return (
-    <Animated.View
-      style={[
-        styles.wrapper,
-        wrapperStyle,
-      ]}
-    >
+    <Animated.View style={[styles.wrapper, wrapperStyle]}>
       {/* Background actions */}
       <View style={styles.actionsContainer}>
-        <Animated.View
-          style={[
-            styles.action,
-            styles.deleteAction,
-            deleteActionStyle,
-          ]}
-        >
+        <Animated.View style={[styles.action, styles.deleteAction, deleteActionStyle]}>
           <Ionicons name="trash" size={24} color="#FFF" />
           <Text style={styles.actionText}>Delete</Text>
         </Animated.View>
 
         {!item.read && (
-          <Animated.View
-            style={[
-              styles.action,
-              styles.readAction,
-              readActionStyle,
-            ]}
-          >
+          <Animated.View style={[styles.action, styles.readAction, readActionStyle]}>
             <Ionicons name="checkmark-circle" size={24} color="#FFF" />
             <Text style={styles.actionText}>Mark Read</Text>
           </Animated.View>
@@ -136,18 +120,11 @@ export function SwipeableNotificationItem({
 
       {/* Main card */}
       <Animated.View
-        style={[
-          styles.swipeableCard,
-          swipeableCardStyle,
-        ]}
+        style={[styles.swipeableCard, swipeableCardStyle]}
         {...panResponder.panHandlers}
       >
         <Animated.View
-          style={[
-            styles.cardGlow,
-            { backgroundColor: typeGradients[item.type][0] },
-            cardGlowStyle,
-          ]}
+          style={[styles.cardGlow, { backgroundColor: typeGradients[item.type][0] }, cardGlowStyle]}
         />
 
         <GlassCard

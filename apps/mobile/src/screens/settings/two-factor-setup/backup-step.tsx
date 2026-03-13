@@ -2,13 +2,7 @@
  * Backup codes step for 2FA setup wizard.
  */
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SCREEN_WIDTH } from './two-factor-types';
 
@@ -21,6 +15,8 @@ interface BackupStepProps {
   onComplete: () => void;
 }
 
+/** Description. */
+/** Backup Step component. */
 export function BackupStep({
   colors,
   backupCodes,
@@ -47,9 +43,7 @@ export function BackupStep({
               key={index}
               style={[styles.backupCodeItem, { backgroundColor: colors.background }]}
             >
-              <Text style={[styles.backupCodeText, { color: colors.textSecondary }]}>
-                {code}
-              </Text>
+              <Text style={[styles.backupCodeText, { color: colors.textSecondary }]}>{code}</Text>
             </View>
           ))}
         </View>
@@ -98,29 +92,48 @@ const styles = StyleSheet.create({
   stepTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 8, textAlign: 'center' },
   stepSubtitle: { fontSize: 14, textAlign: 'center', marginBottom: 32, lineHeight: 20 },
   warningIcon: {
-    width: 64, height: 64, borderRadius: 32,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
   },
   warningEmoji: { fontSize: 32 },
   backupCodesBox: { width: '100%', padding: 16, borderRadius: 16, marginBottom: 16 },
   backupCodesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
   backupCodeItem: {
-    width: '48%', paddingVertical: 10, paddingHorizontal: 12,
-    borderRadius: 8, alignItems: 'center',
+    width: '48%',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
   },
   backupCodeText: { fontFamily: 'monospace', fontSize: 14 },
   copyButton: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 10, borderWidth: 1, borderRadius: 10, gap: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+    gap: 8,
   },
   copyButtonText: { fontSize: 14 },
   warningBox: {
-    width: '100%', padding: 12, borderRadius: 12, borderWidth: 1, marginBottom: 24,
+    width: '100%',
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 24,
   },
   warningText: { fontSize: 13, textAlign: 'center', lineHeight: 18 },
   primaryButton: {
-    width: SCREEN_WIDTH - 48, height: 52, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
+    width: SCREEN_WIDTH - 48,
+    height: 52,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });

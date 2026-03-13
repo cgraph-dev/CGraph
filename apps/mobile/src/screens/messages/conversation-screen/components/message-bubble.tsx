@@ -273,7 +273,8 @@ function MessageContent({
               { color: isOwnMessage ? 'rgba(255,255,255,0.7)' : colors.textSecondary },
             ]}
           >
-            ↪ {item.forwarded_from_user_name
+            ↪{' '}
+            {item.forwarded_from_user_name
               ? `Forwarded from ${item.forwarded_from_user_name}`
               : 'Forwarded'}
           </Text>
@@ -412,7 +413,10 @@ function MessageContent({
           {item.is_edited && (
             <Text
               onPress={onEditHistoryPress}
-              style={{ color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.primary, textDecorationLine: 'underline' }}
+              style={{
+                color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.primary,
+                textDecorationLine: 'underline',
+              }}
             >
               {' • edited'}
             </Text>
@@ -429,12 +433,7 @@ function MessageContent({
         )}
         {/* Warning icon for decrypt failures */}
         {item.decryption_failed && (
-          <Ionicons
-            name="warning"
-            size={12}
-            color="#e5a100"
-            style={{ marginLeft: 4 }}
-          />
+          <Ionicons name="warning" size={12} color="#e5a100" style={{ marginLeft: 4 }} />
         )}
         {/* Timer icon for disappearing messages */}
         {item.expires_at && (
@@ -474,7 +473,7 @@ function MessageContent({
               reaction={reaction}
               isOwnMessage={isOwnMessage}
               onPress={() => onReactionTap(item.id, reaction.emoji, reaction.hasReacted)}
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               colors={colors as Parameters<typeof AnimatedReactionBubble>[0]['colors']}
             />
           ))}
@@ -492,7 +491,7 @@ function ImageGridContent({
   item: Message;
   onImagePress: (url: string, gallery?: string[], index?: number) => void;
 }) {
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const images = item.metadata?.grid_images as string[];
   const count = images.length;
 
@@ -586,7 +585,7 @@ function FileContent({
         ]}
       >
         <Ionicons
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           name={getFileIcon(item.metadata?.filename) as 'document-outline'}
           size={20}
           color={isOwnMessage ? '#fff' : colors.primary}

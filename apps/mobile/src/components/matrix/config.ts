@@ -1,9 +1,9 @@
 /**
  * Matrix Cipher Background Animation - Mobile Configuration
- * 
+ *
  * @description Default configuration and presets for mobile Matrix animation.
  * Optimized for battery life and smooth performance on mobile devices.
- * 
+ *
  * @version 1.0.0
  * @since v0.6.3
  * @author CGraph Development Team
@@ -18,7 +18,7 @@ import type { MatrixMobileConfig, IntensityPreset, CharacterSetType } from './ty
 /**
  * Katakana characters (classic Matrix style)
  */
-export const KATAKANA_CHARS = 
+export const KATAKANA_CHARS =
   'アイウエオカキクケコサシスセソタチツテトナニヌネノ' +
   'ハヒフヘホマミムメモヤユヨラリルレロワヲン';
 
@@ -85,15 +85,15 @@ export function getRandomChar(chars: string[]): string {
  * Balanced for visual appeal, smooth animation, and battery life
  */
 export const DEFAULT_CONFIG: MatrixMobileConfig = {
-  columnCount: 28,           // More columns for denser effect
-  fontSize: 13,              // Slightly smaller for more columns
-  minSpeed: 3,               // Faster minimum
-  maxSpeed: 9,               // Faster maximum
-  minLength: 8,              // Longer minimum trails
-  maxLength: 22,             // Longer maximum trails
-  changeFrequency: 0.08,     // Higher for more cipher morphing
+  columnCount: 28, // More columns for denser effect
+  fontSize: 13, // Slightly smaller for more columns
+  minSpeed: 3, // Faster minimum
+  maxSpeed: 9, // Faster maximum
+  minLength: 8, // Longer minimum trails
+  maxLength: 22, // Longer maximum trails
+  changeFrequency: 0.08, // Higher for more cipher morphing
   trailFade: 0.92,
-  frameInterval: 16,         // ~60 FPS target (RAF handles actual timing)
+  frameInterval: 16, // ~60 FPS target (RAF handles actual timing)
   characterSet: 'katakana',
 };
 

@@ -103,7 +103,7 @@ function CompactThreadRow({ thread, className }: { thread: ThreadCardData; class
             'flex h-8 min-w-[44px] flex-shrink-0 items-center justify-center rounded-lg text-xs font-bold',
             thread.userVote === 'up' && 'bg-primary-600/20 text-primary-400',
             thread.userVote === 'down' && 'bg-red-500/20 text-red-400',
-            !thread.userVote && 'bg-white/[0.04] text-gray-400',
+            !thread.userVote && 'bg-white/[0.04] text-gray-400'
           )}
         >
           {formatCount(thread.voteCount)}
@@ -112,8 +112,12 @@ function CompactThreadRow({ thread, className }: { thread: ThreadCardData; class
         {/* Title + meta */}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            {thread.isPinned && <MapPinIcon className="h-3.5 w-3.5 flex-shrink-0 text-primary-400" />}
-            {thread.isLocked && <LockClosedIcon className="h-3.5 w-3.5 flex-shrink-0 text-gray-500" />}
+            {thread.isPinned && (
+              <MapPinIcon className="h-3.5 w-3.5 flex-shrink-0 text-primary-400" />
+            )}
+            {thread.isLocked && (
+              <LockClosedIcon className="h-3.5 w-3.5 flex-shrink-0 text-gray-500" />
+            )}
             {thread.isHot && <FireIcon className="h-3.5 w-3.5 flex-shrink-0 text-orange-400" />}
             <span className="truncate text-sm font-medium text-gray-200">{thread.title}</span>
           </div>
@@ -156,6 +160,8 @@ function CompactThreadRow({ thread, className }: { thread: ThreadCardData; class
 
 // ── Full Card (Grid View) ──────────────────────────────────────────────
 
+/** Description. */
+/** Thread Card component. */
 export function ThreadCard({ thread, compact = false, className }: ThreadCardProps) {
   if (compact) {
     return <CompactThreadRow thread={thread} className={className} />;
@@ -169,7 +175,7 @@ export function ThreadCard({ thread, compact = false, className }: ThreadCardPro
         className={cn(
           'group relative overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.04] p-4',
           'transition-colors hover:border-white/[0.12]',
-          thread.isPinned && 'border-l-2 border-l-primary-500',
+          thread.isPinned && 'border-l-2 border-l-primary-500'
         )}
       >
         {/* Author row */}
@@ -245,7 +251,7 @@ export function ThreadCard({ thread, compact = false, className }: ThreadCardPro
             className={cn(
               'flex items-center gap-1 font-medium',
               thread.userVote === 'up' && 'text-primary-400',
-              thread.userVote === 'down' && 'text-red-400',
+              thread.userVote === 'down' && 'text-red-400'
             )}
           >
             <span>▲</span>

@@ -306,17 +306,17 @@ function transformNotificationGroup(data: ApiData): NotificationGroup {
 }
 
 function transformNotificationStats(data: ApiData): NotificationStats {
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const byType: Record<NotificationType, number> = {} as Record<NotificationType, number>;
 
   if (data.by_type) {
     Object.entries(data.by_type).forEach(([key, value]) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       byType[key as NotificationType] = value as number;
     });
   } else if (data.byType) {
     Object.entries(data.byType).forEach(([key, value]) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       byType[key as NotificationType] = value as number;
     });
   }

@@ -95,7 +95,7 @@ function ActionBtn({
       whileTap={{ scale: 0.95 }}
       className={cn(
         'flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors',
-        active ? 'text-primary-400' : 'text-gray-500 hover:bg-white/[0.04] hover:text-gray-300',
+        active ? 'text-primary-400' : 'text-gray-500 hover:bg-white/[0.04] hover:text-gray-300'
       )}
     >
       <Icon className="h-3.5 w-3.5" />
@@ -114,7 +114,7 @@ function ReplyItem({ reply, depth = 0 }: { reply: Reply; depth?: number }) {
       className={cn(
         'border-l-2 pl-4 pt-4',
         reply.isBestAnswer ? 'border-l-green-500' : 'border-l-white/[0.06]',
-        depth > 0 && 'ml-4',
+        depth > 0 && 'ml-4'
       )}
     >
       {/* Best answer badge */}
@@ -155,9 +155,10 @@ function ReplyItem({ reply, depth = 0 }: { reply: Reply; depth?: number }) {
           </div>
 
           {/* Nested replies */}
-          {depth < maxDepth && reply.replies?.map((nested) => (
-            <ReplyItem key={nested.id} reply={nested} depth={depth + 1} />
-          ))}
+          {depth < maxDepth &&
+            reply.replies?.map((nested) => (
+              <ReplyItem key={nested.id} reply={nested} depth={depth + 1} />
+            ))}
         </div>
       </div>
     </div>
@@ -166,6 +167,8 @@ function ReplyItem({ reply, depth = 0 }: { reply: Reply; depth?: number }) {
 
 // ── Main Component ─────────────────────────────────────────────────────
 
+/** Description. */
+/** Post View component. */
 export function PostView({
   title,
   author,

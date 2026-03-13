@@ -60,6 +60,7 @@ interface UserResultItemProps {
 }
 
 /**
+ * User Result Item component.
  *
  */
 export function UserResultItem({ user, index, colors, onPress }: UserResultItemProps) {
@@ -127,10 +128,11 @@ interface GroupResultItemProps {
 }
 
 /**
+ * Group Result Item component.
  *
  */
 export function GroupResultItem({ group, index, colors, onPress }: GroupResultItemProps) {
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const gradient = ['#f59e0b', '#f97316'] as [string, string];
 
   return (
@@ -170,10 +172,11 @@ interface ForumResultItemProps {
 }
 
 /**
+ * Forum Result Item component.
  *
  */
 export function ForumResultItem({ forum, index, colors, onPress }: ForumResultItemProps) {
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const gradient = ['#ec4899', '#f43f5e'] as [string, string];
 
   return (

@@ -13,16 +13,17 @@ import LoadingScreen from '../screens/loading-screen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 /**
+ * Root Navigator component.
  *
  */
 export default function RootNavigator() {
   const isLoading = useAuthStore((s) => s.isLoading);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  
+
   if (isLoading) {
     return <LoadingScreen />;
   }
-  
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isAuthenticated ? (

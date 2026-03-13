@@ -16,11 +16,11 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
+  _withTiming,
   runOnJS,
-  interpolate,
-  interpolateColor,
-  Extrapolate,
+  _interpolate,
+  _interpolateColor,
+  _Extrapolate,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
@@ -104,6 +104,7 @@ const SIZE_CONFIG = {
 // ============================================================================
 
 /**
+ * Slider component.
  *
  */
 export function Slider({
@@ -156,6 +157,7 @@ export function Slider({
     if (trackWidth > 0) {
       thumbX.value = withSpring(valueToPosition(value), getSpringConfig(SPRING_PRESETS.snappy));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, trackWidth, valueToPosition]);
 
   // Trigger haptic on step change
@@ -166,6 +168,7 @@ export function Slider({
         lastStepValue.value = newValue;
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [hapticFeedback]
   );
 
@@ -281,6 +284,7 @@ export function Slider({
 // ============================================================================
 
 /**
+ * Range Slider component.
  *
  */
 export function RangeSlider({
@@ -334,6 +338,7 @@ export function RangeSlider({
       thumbX1.value = withSpring(valueToPosition(values[0]), springCfg);
       thumbX2.value = withSpring(valueToPosition(values[1]), springCfg);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values, trackWidth, valueToPosition]);
 
   const gestureContext1 = useSharedValue({ startX: 0 });
@@ -365,7 +370,8 @@ export function RangeSlider({
 
       const value1 = positionToValue(newX);
       const value2 = positionToValue(thumbX2.value);
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       runOnJS(onChange)([value1, value2] as [number, number]);
 
       if (hapticFeedback) {
@@ -401,7 +407,8 @@ export function RangeSlider({
 
       const value1 = positionToValue(thumbX1.value);
       const value2 = positionToValue(newX);
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       runOnJS(onChange)([value1, value2] as [number, number]);
 
       if (hapticFeedback) {
@@ -519,6 +526,7 @@ export function RangeSlider({
 // ============================================================================
 
 /**
+ * Slider Group component.
  *
  */
 export function SliderGroup({

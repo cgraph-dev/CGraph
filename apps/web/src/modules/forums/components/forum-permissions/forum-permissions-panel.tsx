@@ -17,11 +17,7 @@
  */
 
 import { motion } from 'motion/react';
-import {
-  ShieldCheckIcon,
-  XMarkIcon,
-  CheckIcon,
-} from '@heroicons/react/24/outline';
+import { ShieldCheckIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import type { ForumPermissionsPanelProps } from './types';
 import { useForumPermissions } from './use-forum-permissions';
 import { AddGroupSection } from './add-group-section';

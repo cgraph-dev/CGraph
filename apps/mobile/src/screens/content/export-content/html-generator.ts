@@ -3,6 +3,8 @@
  */
 import { ExportOptions, ContentData } from './export-types';
 
+/** Description. */
+/** Generate h t m l. */
 export function generateHTML(data: ContentData, options: ExportOptions): string {
   const paperWidth = options.paperSize === 'a4' ? '210mm' : '8.5in';
 

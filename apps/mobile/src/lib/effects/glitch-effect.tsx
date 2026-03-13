@@ -49,6 +49,7 @@ function GlitchColorLayer({ color, offset }: GlitchColorLayerProps) {
 // ============================================================================
 
 /**
+ * Glitch Effect component.
  *
  */
 export function GlitchEffect({ config, style, children }: GlitchEffectProps) {
@@ -85,6 +86,7 @@ export function GlitchEffect({ config, style, children }: GlitchEffectProps) {
 
     const interval = setInterval(triggerGlitch, 1000 / mergedConfig.frequency);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mergedConfig.frequency, mergedConfig.intensity, mergedConfig.duration, sliceOffsets]);
 
   const mainStyle = useAnimatedStyle(() => ({

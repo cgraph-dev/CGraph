@@ -9,7 +9,9 @@ import type { Group } from '../group-list/types';
 vi.mock('framer-motion', () => ({
   motion: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    div: ({ children, whileHover: _whileHover, whileTap: _whileTap, ...rest }: any) => <div {...rest}>{children}</div>,
+    div: ({ children, whileHover: _whileHover, whileTap: _whileTap, ...rest }: any) => (
+      <div {...rest}>{children}</div>
+    ),
   },
 }));
 

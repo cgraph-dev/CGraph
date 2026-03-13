@@ -11,9 +11,9 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  _ScrollView,
   FlatList,
-  Alert,
+  _Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -109,6 +109,7 @@ const FALLBACK_BADGES: Badge[] = [
 ];
 
 /**
+ * Badge Selection Screen component.
  *
  */
 export default function BadgeSelectionScreen() {

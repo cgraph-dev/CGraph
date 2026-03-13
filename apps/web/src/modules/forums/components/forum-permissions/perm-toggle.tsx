@@ -4,11 +4,7 @@
  * @module modules/forums/components/forum-permissions
  */
 
-import {
-  CheckIcon,
-  MinusIcon,
-  NoSymbolIcon,
-} from '@heroicons/react/24/outline';
+import { CheckIcon, MinusIcon, NoSymbolIcon } from '@heroicons/react/24/outline';
 import type { PermValue } from './types';
 
 interface PermToggleProps {

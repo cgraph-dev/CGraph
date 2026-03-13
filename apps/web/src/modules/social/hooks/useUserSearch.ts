@@ -73,7 +73,7 @@ export function useUserSearch(query: string): UseUserSearchReturn {
           }
         }
       }, 300),
-    [],
+    []
   );
 
   useEffect(() => {

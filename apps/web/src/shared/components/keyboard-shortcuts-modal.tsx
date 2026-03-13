@@ -82,7 +82,7 @@ export function KeyboardShortcutsModal() {
       // ? key (not in input/textarea)
       if (
         e.key === '?' &&
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName) // safe downcast – DOM element
       ) {
         e.preventDefault();
@@ -99,7 +99,7 @@ export function KeyboardShortcutsModal() {
         setIsOpen(false);
       }
     },
-    [isOpen],
+    [isOpen]
   );
 
   useEffect(() => {

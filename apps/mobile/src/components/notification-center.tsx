@@ -57,7 +57,10 @@ interface NotificationCenterProps {
 
 // ── Type Config ────────────────────────────────────────────────────────
 
-const typeIcons: Record<NotificationType, { name: keyof typeof MaterialCommunityIcons.glyphMap; color: string }> = {
+const typeIcons: Record<
+  NotificationType,
+  { name: keyof typeof MaterialCommunityIcons.glyphMap; color: string }
+> = {
   mention: { name: 'at', color: '#3b82f6' },
   reaction: { name: 'emoticon-outline', color: '#eab308' },
   friend_request: { name: 'account-plus-outline', color: '#22c55e' },
@@ -95,6 +98,8 @@ const bucketOrder = ['Today', 'Yesterday', 'This Week', 'Older'];
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Notification Center component. */
 export function NotificationCenter({
   notifications = [],
   onNotificationPress,
@@ -110,9 +115,7 @@ export function NotificationCenter({
       existing.push(n);
       map.set(bucket, existing);
     }
-    return bucketOrder
-      .filter((b) => map.has(b))
-      .map((b) => ({ title: b, data: map.get(b)! }));
+    return bucketOrder.filter((b) => map.has(b)).map((b) => ({ title: b, data: map.get(b)! }));
   }, [notifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -143,8 +146,7 @@ export function NotificationCenter({
             {/* Content */}
             <View style={styles.notifContent}>
               <Text style={styles.notifText} numberOfLines={2}>
-                <Text style={styles.actorName}>{item.actorName}</Text>{' '}
-                {item.content}
+                <Text style={styles.actorName}>{item.actorName}</Text> {item.content}
                 {item.emoji ? ` ${item.emoji}` : ''}
               </Text>
               <Text style={styles.notifTime}>{relativeTime(item.timestamp)}</Text>
@@ -155,7 +157,7 @@ export function NotificationCenter({
         </Animated.View>
       );
     },
-    [onNotificationPress],
+    [onNotificationPress]
   );
 
   return (
@@ -186,7 +188,11 @@ export function NotificationCenter({
         )}
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <MaterialCommunityIcons name="bell-check-outline" size={48} color="rgba(255,255,255,0.1)" />
+            <MaterialCommunityIcons
+              name="bell-check-outline"
+              size={48}
+              color="rgba(255,255,255,0.1)"
+            />
             <Text style={styles.emptyTitle}>All caught up!</Text>
             <Text style={styles.emptySubtitle}>No notifications to show</Text>
           </View>

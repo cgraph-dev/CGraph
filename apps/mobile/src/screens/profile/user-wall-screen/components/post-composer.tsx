@@ -21,15 +21,28 @@ interface Props {
   };
 }
 
+/** Description. */
+/** Post Composer component. */
 export function PostComposer({
-  showComposer, composerAnim, newPostText, setNewPostText, onPost, onClose, colors,
+  showComposer,
+  composerAnim,
+  newPostText,
+  setNewPostText,
+  onPost,
+  onClose,
+  colors,
 }: Props) {
   return (
     <Animated.View
-      style={[styles.composerContainer, {
-        opacity: composerAnim,
-        transform: [{ translateY: composerAnim.interpolate({ inputRange: [0, 1], outputRange: [-20, 0] }) }],
-      }]}
+      style={[
+        styles.composerContainer,
+        {
+          opacity: composerAnim,
+          transform: [
+            { translateY: composerAnim.interpolate({ inputRange: [0, 1], outputRange: [-20, 0] }) },
+          ],
+        },
+      ]}
       pointerEvents={showComposer ? 'auto' : 'none'}
     >
       <GlassCard variant="frosted" intensity="medium" style={styles.composerCard}>
@@ -69,9 +82,11 @@ export function PostComposer({
             disabled={!newPostText.trim()}
           >
             <LinearGradient
-              colors={newPostText.trim()
-                ? [Colors.primary[500], Colors.primary[600]]
-                : [Colors.dark[600], Colors.dark[700]]}
+              colors={
+                newPostText.trim()
+                  ? [Colors.primary[500], Colors.primary[600]]
+                  : [Colors.dark[600], Colors.dark[700]]
+              }
               style={styles.postButtonGradient}
             >
               <Text style={styles.postButtonText}>Post</Text>

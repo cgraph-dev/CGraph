@@ -7,11 +7,7 @@
  * @module lib/crypto/session-manager/session-manager-pq
  */
 
-import {
-  loadIdentityKeyPair,
-  arrayBufferToBase64,
-  base64ToArrayBuffer,
-} from '../e2ee';
+import { loadIdentityKeyPair, arrayBufferToBase64, base64ToArrayBuffer } from '../e2ee';
 import { e2eeLogger as logger } from '../../logger';
 import {
   CryptoProtocol,
@@ -172,9 +168,7 @@ export async function acceptIncomingPQSession(
   };
 
   await saveSessionToStorage(session);
-  logger.log(
-    `[PQXDH] Accepted Triple Ratchet session ${stats.sessionId} from ${message.senderId}`
-  );
+  logger.log(`[PQXDH] Accepted Triple Ratchet session ${stats.sessionId} from ${message.senderId}`);
   return session;
 }
 

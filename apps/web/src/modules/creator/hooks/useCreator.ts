@@ -10,6 +10,8 @@
 import { useCallback } from 'react';
 import { useCreatorStore } from '../store';
 
+/** Description. */
+/** Hook for creator. */
 export function useCreator() {
   const isCreator = useCreatorStore((s) => s.isCreator);
   const onboardingComplete = useCreatorStore((s) => s.onboardingComplete);

@@ -73,8 +73,7 @@ export const SeasonalEffects = memo(function SeasonalEffects({
         }
 
         // Remove offscreen or expired
-        const offscreen =
-          p.y > h + 30 || p.y < -50 || p.x < -30 || p.x > w + 30;
+        const offscreen = p.y > h + 30 || p.y < -50 || p.x < -30 || p.x > w + 30;
         const expired = p.life >= p.maxLife;
 
         if (offscreen || expired) continue;
@@ -112,7 +111,7 @@ export const SeasonalEffects = memo(function SeasonalEffects({
 
       particlesRef.current = alive;
     },
-    [theme, particleCount],
+    [theme, particleCount]
   );
 
   useEffect(() => {
@@ -183,15 +182,13 @@ export function getAutoSeasonalTheme(): import('./seasonalParticles').SeasonalTh
   if (month === 1 && day <= 5) return 'snow';
 
   // Dec 31 - Jan 1: Fireworks (overrides snow)
-  if ((month === 12 && day === 31) || (month === 1 && day === 1))
-    return 'fireworks';
+  if ((month === 12 && day === 31) || (month === 1 && day === 1)) return 'fireworks';
 
   // Feb 13-15: Hearts (Valentine's)
   if (month === 2 && day >= 13 && day <= 15) return 'hearts';
 
   // Mar 20 - Apr 15: Cherry Blossoms (Spring)
-  if ((month === 3 && day >= 20) || (month === 4 && day <= 15))
-    return 'cherry-blossoms';
+  if ((month === 3 && day >= 20) || (month === 4 && day <= 15)) return 'cherry-blossoms';
 
   return 'none';
 }

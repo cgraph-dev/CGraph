@@ -23,6 +23,8 @@ const RARITY_COLORS: Record<Rarity, { bg: string; text: string; border: string }
   mythic: { bg: '#4a0e2b', text: '#f472b6', border: '#ec4899' },
 };
 
+/** Description. */
+/** Title Badge component. */
 export function TitleBadge({
   title,
   rarity = 'common',

@@ -5,7 +5,16 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, cancelAnimation, Easing as ReanimatedEasing } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolate,
+  cancelAnimation,
+  Easing as ReanimatedEasing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sticker } from '../types';
 import { styles } from '../styles';
@@ -18,6 +27,7 @@ interface StickerItemProps {
 }
 
 /**
+ * Sticker Item component.
  *
  */
 export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: StickerItemProps) {
@@ -97,8 +107,14 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       case 'float':
         translateYAnim.value = withRepeat(
           withSequence(
-            withTiming(-10, { duration: durations.verySlow.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) }),
-            withTiming(0, { duration: durations.verySlow.ms, easing: ReanimatedEasing.inOut(ReanimatedEasing.ease) })
+            withTiming(-10, {
+              duration: durations.verySlow.ms,
+              easing: ReanimatedEasing.inOut(ReanimatedEasing.ease),
+            }),
+            withTiming(0, {
+              duration: durations.verySlow.ms,
+              easing: ReanimatedEasing.inOut(ReanimatedEasing.ease),
+            })
           ),
           -1
         );
@@ -107,7 +123,10 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       case 'pop':
         scaleAnim.value = withSequence(
           withTiming(0, { duration: 0 }),
-          withTiming(1.2, { duration: durations.fast.ms, easing: ReanimatedEasing.out(ReanimatedEasing.back(2)) }),
+          withTiming(1.2, {
+            duration: durations.fast.ms,
+            easing: ReanimatedEasing.out(ReanimatedEasing.back(2)),
+          }),
           withTiming(1, { duration: durations.fast.ms })
         );
         break;
@@ -217,6 +236,7 @@ export function StickerItem({ sticker, onPress, rarityColor, isPurchasing }: Sti
       cancelAnimation(translateXAnim);
       cancelAnimation(opacityAnim);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sticker.animation]);
 
   // Animated style for sticker

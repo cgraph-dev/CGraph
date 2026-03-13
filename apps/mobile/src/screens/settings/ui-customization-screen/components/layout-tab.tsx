@@ -18,6 +18,7 @@ interface LayoutTabProps {
 }
 
 /**
+ * Layout Tab component.
  *
  */
 export function LayoutTab({ theme, updateTheme }: LayoutTabProps) {

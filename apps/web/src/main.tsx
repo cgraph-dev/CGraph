@@ -5,7 +5,9 @@
 // In production, suppress noisy third-party console messages
 if (!import.meta.env.DEV) {
   const _warn = console.warn.bind(console);
+  // eslint-disable-next-line no-console
   const _info = console.info.bind(console);
+  // eslint-disable-next-line no-console
   const _log = console.log.bind(console);
   const suppress = (msg: unknown) =>
     typeof msg === 'string' &&
@@ -13,9 +15,17 @@ if (!import.meta.env.DEV) {
       msg.includes('i18next') ||
       msg.includes('SES') ||
       msg.includes('unpermitted intrinsics'));
-  console.warn = (...args: unknown[]) => { if (!suppress(args[0])) _warn(...args); };
-  console.info = (...args: unknown[]) => { if (!suppress(args[0])) _info(...args); };
-  console.log = (...args: unknown[]) => { if (!suppress(args[0])) _log(...args); };
+  console.warn = (...args: unknown[]) => {
+    if (!suppress(args[0])) _warn(...args);
+  };
+  // eslint-disable-next-line no-console
+  console.info = (...args: unknown[]) => {
+    if (!suppress(args[0])) _info(...args);
+  };
+  // eslint-disable-next-line no-console
+  console.log = (...args: unknown[]) => {
+    if (!suppress(args[0])) _log(...args);
+  };
 }
 
 // Startup debug logging (only in development)

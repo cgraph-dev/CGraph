@@ -241,7 +241,9 @@ describe('friendStore', () => {
         response: { data: { message: 'User not found' } },
       });
 
-      await expect(useFriendStore.getState().sendRequest('nobody')).rejects.toThrow('User not found');
+      await expect(useFriendStore.getState().sendRequest('nobody')).rejects.toThrow(
+        'User not found'
+      );
       expect(useFriendStore.getState().error).toBe('User not found');
     });
 
@@ -294,7 +296,10 @@ describe('friendStore', () => {
   describe('removeFriend', () => {
     it('removes friend by id', async () => {
       useFriendStore.setState({
-        friends: [makeFriend({ id: 'f1', friendId: 'u2' }), makeFriend({ id: 'f2', friendId: 'u3' })],
+        friends: [
+          makeFriend({ id: 'f1', friendId: 'u2' }),
+          makeFriend({ id: 'f2', friendId: 'u3' }),
+        ],
       });
       mockApi.delete.mockResolvedValueOnce({});
 

@@ -1,11 +1,5 @@
 import React, { memo } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../ui/glass-card';
@@ -20,15 +14,14 @@ interface VideoEmbedProps {
   onExpand: () => void;
 }
 
-const VideoEmbed = memo(function VideoEmbed({ embed, onExpand }: VideoEmbedProps): React.ReactElement | null {
+const VideoEmbed = memo(function VideoEmbed({
+  embed,
+  onExpand,
+}: VideoEmbedProps): React.ReactElement | null {
   const isYouTube = embed.videoUrl?.includes('youtube');
 
   return (
-    <TouchableOpacity
-      style={styles.videoContainer}
-      onPress={onExpand}
-      activeOpacity={0.9}
-    >
+    <TouchableOpacity style={styles.videoContainer} onPress={onExpand} activeOpacity={0.9}>
       <GlassCard variant="crystal" intensity="medium" style={styles.videoCard}>
         {/* Video Thumbnail */}
         <View style={styles.videoThumbnail}>
@@ -50,12 +43,7 @@ const VideoEmbed = memo(function VideoEmbed({ embed, onExpand }: VideoEmbedProps
               colors={isYouTube ? ['#ff0000', '#cc0000'] : ['#10b981', '#059669']}
               style={styles.playButton}
             >
-              <Ionicons
-                name="play"
-                size={32}
-                color="#fff"
-                style={styles.playIcon}
-              />
+              <Ionicons name="play" size={32} color="#fff" style={styles.playIcon} />
             </LinearGradient>
           </View>
         </View>
@@ -68,9 +56,7 @@ const VideoEmbed = memo(function VideoEmbed({ embed, onExpand }: VideoEmbedProps
                 {embed.title}
               </Text>
             )}
-            {embed.siteName && (
-              <Text style={styles.videoSite}>{embed.siteName}</Text>
-            )}
+            {embed.siteName && <Text style={styles.videoSite}>{embed.siteName}</Text>}
           </View>
         )}
       </GlassCard>

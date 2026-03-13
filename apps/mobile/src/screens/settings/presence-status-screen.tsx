@@ -19,14 +19,29 @@ interface StatusOption {
 }
 
 const STATUS_OPTIONS: StatusOption[] = [
-  { value: 'online', label: 'Online', description: 'You will appear online to others', color: '#22c55e' },
+  {
+    value: 'online',
+    label: 'Online',
+    description: 'You will appear online to others',
+    color: '#22c55e',
+  },
   { value: 'idle', label: 'Idle', description: 'You will appear as away', color: '#eab308' },
-  { value: 'dnd', label: 'Do Not Disturb', description: 'Suppress all notifications', color: '#ef4444' },
-  { value: 'invisible', label: 'Invisible', description: 'Appear offline but stay connected', color: '#6b7280' },
+  {
+    value: 'dnd',
+    label: 'Do Not Disturb',
+    description: 'Suppress all notifications',
+    color: '#ef4444',
+  },
+  {
+    value: 'invisible',
+    label: 'Invisible',
+    description: 'Appear offline but stay connected',
+    color: '#6b7280',
+  },
 ];
 
- 
 /**
+ * Presence Status Screen component.
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,7 +74,10 @@ export default function PresenceStatusScreen({ navigation }: { navigation: any }
 
       <View style={styles.options}>
         {STATUS_OPTIONS.map((option, index) => (
-          <Animated.View key={option.value} entering={FadeInDown.springify().delay(100 + index * 50)}>
+          <Animated.View
+            key={option.value}
+            entering={FadeInDown.springify().delay(100 + index * 50)}
+          >
             <TouchableOpacity
               onPress={() => handleSelect(option.value)}
               disabled={updating}

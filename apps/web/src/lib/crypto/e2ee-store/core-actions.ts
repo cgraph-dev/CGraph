@@ -80,8 +80,7 @@ export const createInitialize = (set: Set, get: Get) => async (): Promise<void> 
         logger.error('Auto-bootstrap failed:', setupErr);
         set({
           isLoading: false,
-          error:
-            setupErr instanceof Error ? setupErr.message : 'Failed to auto-bootstrap E2EE',
+          error: setupErr instanceof Error ? setupErr.message : 'Failed to auto-bootstrap E2EE',
         });
       }
     }

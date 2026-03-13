@@ -27,6 +27,8 @@ interface SecretChatHeaderProps {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Description. */
+/** Secret Chat Header component. */
 export function SecretChatHeader({
   recipientName,
   themeColors,
@@ -34,7 +36,12 @@ export function SecretChatHeader({
   onBackPress,
 }: SecretChatHeaderProps) {
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.surface, borderBottomColor: themeColors.border }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: themeColors.surface, borderBottomColor: themeColors.border },
+      ]}
+    >
       {onBackPress && (
         <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={themeColors.text} />

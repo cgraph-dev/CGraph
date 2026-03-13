@@ -4,7 +4,12 @@
  */
 
 import { motion, AnimatePresence } from 'motion/react';
-import { XMarkIcon, HashtagIcon, SpeakerWaveIcon, MegaphoneIcon } from '@heroicons/react/24/outline';
+import {
+  XMarkIcon,
+  HashtagIcon,
+  SpeakerWaveIcon,
+  MegaphoneIcon,
+} from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 
 const channelIcons = {

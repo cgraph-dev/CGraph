@@ -37,6 +37,7 @@ export interface SubscriptionCardProps {
 }
 
 /**
+ * Subscription Card component.
  *
  */
 export function SubscriptionCard({
@@ -60,7 +61,7 @@ export function SubscriptionCard({
 
   if (variant === 'compact') {
     return (
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
       <GlassCard style={[styles.compactCard, tier.popular && styles.popularCard] as any}>
         <View style={styles.compactHeader}>
           <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
@@ -147,7 +148,7 @@ export function SubscriptionCard({
 
   // Default variant
   return (
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
     <GlassCard style={[styles.card, tier.popular && styles.popularCard] as any}>
       {/* Badge */}
       {tier.popular && (
@@ -200,7 +201,7 @@ export function SubscriptionCard({
       </Pressable>
     </GlassCard>
   );
-};
+}
 
 const styles = StyleSheet.create({
   // Compact variant

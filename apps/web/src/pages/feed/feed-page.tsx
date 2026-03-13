@@ -9,10 +9,14 @@ import { Link } from 'react-router-dom';
 import { FeedModeTabs, useFeed, useDiscoveryStore } from '@/modules/discovery';
 import { FeedPostCard } from './feed-post-card';
 
+/** Description. */
+/** Feed Page component. */
 export function FeedPage() {
   const { activeMode, selectedCommunityId, setMode } = useDiscoveryStore();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useFeed(activeMode, selectedCommunityId);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useFeed(
+    activeMode,
+    selectedCommunityId
+  );
 
   // Infinite scroll sentinel
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -46,7 +50,7 @@ export function FeedPage() {
         <h1 className="text-xl font-bold text-white">Feed</h1>
         <Link
           to="/settings/discovery"
-          className="text-xs text-white/40 hover:text-white/60 transition-colors"
+          className="text-xs text-white/40 transition-colors hover:text-white/60"
         >
           Customize
         </Link>
@@ -59,20 +63,14 @@ export function FeedPage() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-32 animate-pulse rounded-xl bg-white/5"
-            />
+            <div key={i} className="h-32 animate-pulse rounded-xl bg-white/5" />
           ))}
         </div>
       ) : allThreads.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-16 text-center">
           <span className="text-4xl">🔍</span>
           <p className="text-sm text-white/40">No posts found for this mode</p>
-          <Link
-            to="/settings/discovery"
-            className="text-sm text-indigo-400 hover:text-indigo-300"
-          >
+          <Link to="/settings/discovery" className="text-sm text-indigo-400 hover:text-indigo-300">
             Follow topics to see your feed
           </Link>
         </div>

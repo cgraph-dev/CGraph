@@ -56,7 +56,7 @@ export function AppearancePanel({
         <div
           className="overflow-hidden rounded-xl border border-white/[0.08]"
           style={
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             {
               '--primary': appearance.primaryColor,
               '--secondary': appearance.secondaryColor,

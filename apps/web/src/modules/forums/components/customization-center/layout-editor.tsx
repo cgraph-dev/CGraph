@@ -41,6 +41,8 @@ const CATEGORY_LAYOUTS = [
   { value: 'list', label: 'List' },
 ];
 
+/** Description. */
+/** Layout Editor component. */
 export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
   const [draft, setDraft] = useState<Record<string, unknown>>({});
 
@@ -56,13 +58,13 @@ export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
     <div className="space-y-6">
       {/* Sidebar Position */}
       <div>
-        <label className="block text-xs text-white/50 mb-2">Sidebar Position</label>
+        <label className="mb-2 block text-xs text-white/50">Sidebar Position</label>
         <div className="flex gap-2">
           {SIDEBAR_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => updateField('sidebar_position', opt.value)}
-              className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+              className={`rounded-lg px-4 py-2 text-sm transition-colors ${
                 draft.sidebar_position === opt.value
                   ? 'bg-blue-600 text-white'
                   : 'bg-white/5 text-white/60 hover:bg-white/10'
@@ -76,13 +78,13 @@ export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
 
       {/* Header Style */}
       <div>
-        <label className="block text-xs text-white/50 mb-2">Header Style</label>
+        <label className="mb-2 block text-xs text-white/50">Header Style</label>
         <div className="flex gap-2">
           {HEADER_STYLES.map((opt) => (
             <button
               key={opt.value}
               onClick={() => updateField('header_style', opt.value)}
-              className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+              className={`rounded-lg px-4 py-2 text-sm transition-colors ${
                 draft.header_style === opt.value
                   ? 'bg-blue-600 text-white'
                   : 'bg-white/5 text-white/60 hover:bg-white/10'
@@ -95,52 +97,64 @@ export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
       </div>
 
       {/* Thread / Post / Category / Board Layouts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label className="block text-xs text-white/50 mb-1">Thread Layout</label>
+          <label className="mb-1 block text-xs text-white/50">Thread Layout</label>
           <select
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             value={(draft.thread_layout as string) ?? 'classic'}
             onChange={(e) => updateField('thread_layout', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
+            className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
           >
             {LAYOUT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
             ))}
           </select>
         </div>
         <div>
-          <label className="block text-xs text-white/50 mb-1">Post Layout</label>
+          <label className="mb-1 block text-xs text-white/50">Post Layout</label>
           <select
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             value={(draft.post_layout as string) ?? 'classic'}
             onChange={(e) => updateField('post_layout', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
+            className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
           >
             {LAYOUT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
             ))}
           </select>
         </div>
         <div>
-          <label className="block text-xs text-white/50 mb-1">Category Layout</label>
+          <label className="mb-1 block text-xs text-white/50">Category Layout</label>
           <select
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             value={(draft.category_layout as string) ?? 'table'}
             onChange={(e) => updateField('category_layout', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
+            className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
           >
             {CATEGORY_LAYOUTS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
             ))}
           </select>
         </div>
         <div>
-          <label className="block text-xs text-white/50 mb-1">Board Layout</label>
+          <label className="mb-1 block text-xs text-white/50">Board Layout</label>
           <select
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             value={(draft.board_layout as string) ?? 'table'}
             onChange={(e) => updateField('board_layout', e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-sm text-white"
+            className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
           >
             {CATEGORY_LAYOUTS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
             ))}
           </select>
         </div>
@@ -155,12 +169,12 @@ export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
           <div key={key} className="flex items-center gap-3">
             <button
               onClick={() => updateField(key, !draft[key])}
-              className={`relative w-10 h-5 rounded-full transition-colors ${
+              className={`relative h-5 w-10 rounded-full transition-colors ${
                 draft[key] ? 'bg-green-500' : 'bg-white/20'
               }`}
             >
               <span
-                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
                   draft[key] ? 'left-5' : 'left-0.5'
                 }`}
               />
@@ -171,13 +185,13 @@ export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
       </div>
 
       {/* Save */}
-      <div className="flex justify-end pt-4 border-t border-white/10">
+      <div className="flex justify-end border-t border-white/10 pt-4">
         <button
           onClick={() => onSave(draft)}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-500 disabled:opacity-50"
         >
-          <CheckIcon className="w-4 h-4" />
+          <CheckIcon className="h-4 w-4" />
           {saving ? 'Saving...' : 'Save Layout'}
         </button>
       </div>

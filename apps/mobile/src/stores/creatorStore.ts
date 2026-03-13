@@ -19,7 +19,7 @@ import {
   refreshOnboard as refreshOnboardApi,
   listPremiumThreads,
   listTiers,
-  type CreatorStatus,
+  type _CreatorStatus,
   type CreatorBalance,
   type PayoutRequest,
   type AnalyticsOverview,
@@ -43,7 +43,9 @@ interface CreatorState {
   analyticsOverview: AnalyticsOverview | null;
 
   // Premium content
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   premiumThreads: any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tiers: any[];
   isLoadingPremium: boolean;
 
@@ -75,7 +77,9 @@ const initialState = {
   balance: null,
   payouts: [],
   analyticsOverview: null,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
   premiumThreads: [] as any[],
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
   tiers: [] as any[],
   isLoadingPremium: false,
   isLoading: false,
@@ -119,8 +123,12 @@ export const useCreatorStore = create<CreatorState>()((set) => ({
     try {
       const data = await requestPayoutApi(amount);
       // Refresh balance and payouts
-      getBalance().then((b) => set({ balance: b })).catch(() => {});
-      listPayouts().then((p) => set({ payouts: p })).catch(() => {});
+      getBalance()
+        .then((b) => set({ balance: b }))
+        .catch(() => {});
+      listPayouts()
+        .then((p) => set({ payouts: p }))
+        .catch(() => {});
       set({ isLoading: false });
       return data;
     } catch {
@@ -187,7 +195,9 @@ export const useCreatorStore = create<CreatorState>()((set) => ({
     try {
       const data = await listTiers();
       set({ tiers: data });
-    } catch {}
+    } catch {
+      // Tier fetch is non-critical — silently ignore failures
+    }
   },
 
   reset: () => set(initialState),

@@ -6,7 +6,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { PlusIcon, ChatBubbleLeftRightIcon, TicketIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import {
+  PlusIcon,
+  ChatBubbleLeftRightIcon,
+  TicketIcon,
+  GlobeAltIcon,
+} from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { CreateGroupModal } from '@/modules/groups/components/group-list/create-group-modal';
 import { useGroupStore } from '@/modules/groups/store';
@@ -126,10 +131,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
       </motion.button>
 
       {/* Explore public groups */}
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <NavLink
           to="/groups/explore"
           onClick={() => HapticFeedback.medium()}
@@ -148,10 +150,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
       {/* Create Group Modal */}
       <AnimatePresence>
         {showCreateModal && (
-          <CreateGroupModal
-            isOpen={showCreateModal}
-            onClose={() => setShowCreateModal(false)}
-          />
+          <CreateGroupModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
         )}
       </AnimatePresence>
 

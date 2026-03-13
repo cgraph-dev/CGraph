@@ -78,6 +78,7 @@ const FALLBACK_TITLES: Title[] = [
 ];
 
 /**
+ * Title Selection Screen component.
  *
  */
 export default function TitleSelectionScreen() {

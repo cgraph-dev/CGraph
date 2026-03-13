@@ -87,19 +87,13 @@ export default function BiometricGate({ children }: BiometricGateProps) {
   }, []);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener(
-      'change',
-      (nextAppState: AppStateStatus) => {
-        // Only trigger when transitioning TO active (foreground)
-        if (
-          appStateRef.current.match(/inactive|background/) &&
-          nextAppState === 'active'
-        ) {
-          void attemptUnlock();
-        }
-        appStateRef.current = nextAppState;
-      },
-    );
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      // Only trigger when transitioning TO active (foreground)
+      if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
+        void attemptUnlock();
+      }
+      appStateRef.current = nextAppState;
+    });
 
     return () => {
       subscription.remove();
@@ -110,10 +104,7 @@ export default function BiometricGate({ children }: BiometricGateProps) {
     <View style={styles.root}>
       {children}
       {isLocked && (
-        <BiometricLockOverlay
-          isAuthenticating={isAuthenticating}
-          onUnlock={handleManualUnlock}
-        />
+        <BiometricLockOverlay isAuthenticating={isAuthenticating} onUnlock={handleManualUnlock} />
       )}
     </View>
   );
@@ -132,22 +123,12 @@ function BiometricLockOverlay({ isAuthenticating, onUnlock }: LockOverlayProps) 
       <View style={styles.lockContent}>
         <Ionicons name="lock-closed" size={56} color="#10b981" />
         <Text style={styles.lockTitle}>CGraph is Locked</Text>
-        <Text style={styles.lockSubtitle}>
-          Authenticate to continue
-        </Text>
+        <Text style={styles.lockSubtitle}>Authenticate to continue</Text>
 
         {isAuthenticating ? (
-          <ActivityIndicator
-            size="large"
-            color="#10b981"
-            style={styles.unlockButton}
-          />
+          <ActivityIndicator size="large" color="#10b981" style={styles.unlockButton} />
         ) : (
-          <TouchableOpacity
-            style={styles.unlockButton}
-            onPress={onUnlock}
-            activeOpacity={0.7}
-          >
+          <TouchableOpacity style={styles.unlockButton} onPress={onUnlock} activeOpacity={0.7}>
             <Ionicons name="finger-print" size={28} color="#fff" />
             <Text style={styles.unlockButtonText}>Tap to Unlock</Text>
           </TouchableOpacity>

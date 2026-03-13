@@ -23,13 +23,7 @@ import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import { Buffer } from 'buffer';
 import api from '../../api';
-import {
-  getDeviceId,
-  loadIdentityKeyPair,
-  fingerprint,
-  sha256,
-  randomBytes,
-} from '../e2ee';
+import { getDeviceId, loadIdentityKeyPair, fingerprint, sha256, randomBytes } from '../e2ee';
 import { e2eeLogger as logger } from '../../logger';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -146,7 +140,7 @@ export async function crossSignDevice(newDeviceId: string): Promise<void> {
 
   // Sign using the identity key's signing capability
   // On mobile, use the raw private key bytes for Ed25519/ECDSA signing
-  const identityPublicKey = identityKey.publicKey;
+  const _identityPublicKey = identityKey.publicKey;
   const signatureBytes = await createCrossSignature(dataBytes, identityKey);
 
   const signatureB64 = Buffer.from(signatureBytes).toString('base64');
@@ -431,9 +425,10 @@ async function collectSessionData(): Promise<string | null> {
     if (!identityKey) return null;
 
     const publicKey = identityKey.publicKey;
-    const publicKeyB64 = publicKey instanceof Uint8Array
-      ? Buffer.from(publicKey).toString('base64')
-      : String(publicKey);
+    const publicKeyB64 =
+      publicKey instanceof Uint8Array
+        ? Buffer.from(publicKey).toString('base64')
+        : String(publicKey);
 
     const sessionInfo = {
       version: 1,
@@ -502,9 +497,7 @@ async function decryptWithIdentityKey(encryptedData: Buffer): Promise<Buffer> {
 /**
  * Import decrypted session data.
  */
-async function importSessionData(
-  sessionData: Record<string, unknown>
-): Promise<void> {
+async function importSessionData(sessionData: Record<string, unknown>): Promise<void> {
   if (sessionData.type !== 'cgraph-key-sync' || sessionData.version !== 1) {
     throw new Error(`Unknown sync data format: ${sessionData.type} v${sessionData.version}`);
   }

@@ -95,6 +95,7 @@ interface TabLayout {
 // ============================================================================
 
 /**
+ * Fluid Tabs component.
  *
  */
 export function FluidTabs({
@@ -166,6 +167,7 @@ export function FluidTabs({
       indicatorX.value = layout.x;
       indicatorWidth.value = layout.width;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, tabLayouts, animated, springCfg]);
 
   // Handle tab press
@@ -265,7 +267,7 @@ export function FluidTabs({
 
   // Calculate tab width for equal width mode
   const tabWidth = useMemo(() => {
-    return (!equalWidth || variant === 'scrollable') ? undefined : containerWidth / tabs.length;
+    return !equalWidth || variant === 'scrollable' ? undefined : containerWidth / tabs.length;
   }, [equalWidth, variant, containerWidth, tabs.length]);
 
   // Render tabs
@@ -288,6 +290,7 @@ export function FluidTabs({
         onLayout={(e) => handleTabLayout(tab.key, e)}
       />
     ));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     tabs,
     activeTab,
@@ -372,10 +375,12 @@ function TabButton({
 
   const handlePressIn = useCallback(() => {
     scale.value = withSpring(0.95, { damping: 15 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handlePressOut = useCallback(() => {
     scale.value = withSpring(1, { damping: 15 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -397,6 +402,7 @@ function TabButton({
   const textAnimatedStyle = useAnimatedStyle(() => {
     const fontWeight = isActive ? '600' : '400';
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return {
       color: isActive ? activeTextColor : inactiveTextColor,
       fontWeight,
@@ -457,6 +463,7 @@ export interface SimpleTabsProps {
 }
 
 /**
+ * Simple Tabs component.
  *
  */
 export function SimpleTabs({ tabs, activeIndex, onTabChange, style }: SimpleTabsProps) {
@@ -486,6 +493,7 @@ export interface IconTabsProps {
 }
 
 /**
+ * Icon Tabs component.
  *
  */
 export function IconTabs({
@@ -522,6 +530,7 @@ export interface SegmentedControlProps {
 }
 
 /**
+ * Segmented Control component.
  *
  */
 export function SegmentedControl({

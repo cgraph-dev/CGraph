@@ -10,6 +10,8 @@
 import { useCallback } from 'react';
 import { useCreatorStore } from '../store';
 
+/** Description. */
+/** Hook for creator dashboard. */
 export function useCreatorDashboard() {
   const balance = useCreatorStore((s) => s.balance);
   const payouts = useCreatorStore((s) => s.payouts);
@@ -35,17 +37,14 @@ export function useCreatorDashboard() {
     async (amount?: number) => {
       return requestPayoutAction(amount);
     },
-    [requestPayoutAction],
+    [requestPayoutAction]
   );
 
   const fetchAllAnalytics = useCallback(
     async (params?: { period?: string }) => {
-      await Promise.all([
-        fetchAnalyticsOverview(params),
-        fetchAnalyticsEarnings(params),
-      ]);
+      await Promise.all([fetchAnalyticsOverview(params), fetchAnalyticsEarnings(params)]);
     },
-    [fetchAnalyticsOverview, fetchAnalyticsEarnings],
+    [fetchAnalyticsOverview, fetchAnalyticsEarnings]
   );
 
   return {

@@ -19,6 +19,7 @@ interface EventsListProps {
 }
 
 /**
+ * Events List component.
  *
  */
 export function EventsList({ selectedDate, events, onEventPress, onCreateEvent }: EventsListProps) {

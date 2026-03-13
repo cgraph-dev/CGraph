@@ -51,6 +51,7 @@ const TYPE_THEMES: Record<NotificationType, HolographicConfig['colorTheme']> = {
 };
 
 /**
+ * Holographic Notification component.
  *
  */
 export function HolographicNotification({
@@ -87,7 +88,10 @@ export function HolographicNotification({
 
       // Glow pulse animation
       glowPulse.value = withRepeat(
-        withSequence(withTiming(1, { duration: durations.verySlow.ms }), withTiming(0, { duration: durations.verySlow.ms })),
+        withSequence(
+          withTiming(1, { duration: durations.verySlow.ms }),
+          withTiming(0, { duration: durations.verySlow.ms })
+        ),
         -1
       );
 
@@ -104,6 +108,7 @@ export function HolographicNotification({
       translateY.value = -100;
       opacity.value = 0;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, autoHide, duration]);
 
   const handleDismiss = () => {

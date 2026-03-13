@@ -1,9 +1,9 @@
 /**
  * VideoPlayerComponent
- * 
+ *
  * Full-featured video player using expo-video with custom controls.
  * Provides play/pause, progress tracking, and time display.
- * 
+ *
  * @module components/conversation/VideoPlayerComponent
  * @since v0.7.29
  */
@@ -24,7 +24,7 @@ export interface VideoPlayerComponentProps {
 
 /**
  * Formats seconds to MM:SS display format.
- * 
+ *
  * @param seconds - Time in seconds
  * @returns Formatted time string
  */
@@ -36,14 +36,14 @@ const formatTime = (seconds: number): string => {
 
 /**
  * Custom video player with overlay controls.
- * 
+ *
  * Features:
  * - Auto-plays on mount
  * - Tap to show/hide controls
  * - Play/pause toggle
  * - Progress bar with current time / duration
  * - Native video rendering via expo-video
- * 
+ *
  * @example
  * ```tsx
  * <VideoPlayerComponent
@@ -56,7 +56,7 @@ const formatTime = (seconds: number): string => {
 export const VideoPlayerComponent = memo(function VideoPlayerComponent({
   videoUrl,
   duration,
-  onClose,
+  _onClose,
 }: VideoPlayerComponentProps) {
   const player = useVideoPlayer(videoUrl, (p) => {
     p.loop = false;
@@ -129,9 +129,7 @@ export const VideoPlayerComponent = memo(function VideoPlayerComponent({
             <View style={styles.videoProgressBar}>
               <View style={[styles.videoProgressFill, { width: `${progressPercent}%` }]} />
             </View>
-            <Text style={styles.videoTimeText}>
-              {duration ? formatTime(duration) : '--:--'}
-            </Text>
+            <Text style={styles.videoTimeText}>{duration ? formatTime(duration) : '--:--'}</Text>
           </View>
         </View>
       )}

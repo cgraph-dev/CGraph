@@ -69,20 +69,17 @@ export function useAppLayout() {
         socketManager.joinUserChannel(user.id);
 
         // Initialize E2EE (non-blocking — runs in background)
-        useE2EEStore.getState().initialize().catch((err) => {
-          // eslint-disable-next-line no-console
-          console.warn('[AppLayout] E2EE initialization error:', err);
-        });
+        useE2EEStore
+          .getState()
+          .initialize()
+          .catch((err) => {
+            console.warn('[AppLayout] E2EE initialization error:', err);
+          });
 
         // Fire data fetches in parallel — errors are non-fatal
-        await Promise.allSettled([
-          fetchConversations(),
-          fetchGroups(),
-          fetchNotifications(),
-        ]);
+        await Promise.allSettled([fetchConversations(), fetchGroups(), fetchNotifications()]);
       } catch (err) {
         // Socket connect failure is non-fatal — app still works without real-time
-        // eslint-disable-next-line no-console
         console.warn('[AppLayout] initializeApp error:', err);
       }
     };

@@ -22,6 +22,7 @@ export interface NotificationHeaderProps {
 }
 
 /**
+ * Notification Header component.
  *
  */
 export function NotificationHeader({
@@ -42,12 +43,7 @@ export function NotificationHeader({
   }));
 
   return (
-    <Animated.View
-      style={[
-        styles.header,
-        headerAnimatedStyle,
-      ]}
-    >
+    <Animated.View style={[styles.header, headerAnimatedStyle]}>
       <SafeAreaView edges={['top']}>
         <View style={styles.content}>
           <View style={styles.titleRow}>

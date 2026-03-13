@@ -1,8 +1,8 @@
 /**
  * Enhanced UI Components - Index
- * 
+ *
  * Central export for all enhanced UI components.
- * 
+ *
  * @version 4.0.0
  * @since v0.7.36
  */
@@ -28,11 +28,7 @@ export {
   holoStyles,
 } from './holographic-ui-v4/index';
 
-export type {
-  HoloTheme,
-  HoloConfig,
-  HoloPreset,
-} from './holographic-ui-v4/index';
+export type { HoloTheme, HoloConfig, HoloPreset } from './holographic-ui-v4/index';
 
 // Legacy Holographic UI v3.0 (for backwards compatibility)
 export {
@@ -48,7 +44,4 @@ export {
   holographicStyles,
 } from './holographic-ui';
 
-export type {
-  HolographicTheme,
-  HolographicConfig,
-} from './holographic-ui';
+export type { HolographicTheme, HolographicConfig } from './holographic-ui';

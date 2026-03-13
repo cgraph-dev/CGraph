@@ -23,6 +23,8 @@ interface ActionButtonsProps {
   onShowFriendMenu: () => void;
 }
 
+/** Description. */
+/** Action Buttons component. */
 export function ActionButtons({
   user,
   actionLoading,
@@ -48,7 +50,10 @@ export function ActionButtons({
 
       {user.is_friend ? (
         <TouchableOpacity
-          style={[styles.friendButton, { backgroundColor: colors.success + '20', borderColor: colors.success }]}
+          style={[
+            styles.friendButton,
+            { backgroundColor: colors.success + '20', borderColor: colors.success },
+          ]}
           onPress={onShowFriendMenu}
         >
           <Ionicons name="checkmark-circle" size={20} color={colors.success} />
@@ -56,15 +61,33 @@ export function ActionButtons({
           <Ionicons name="chevron-down" size={18} color={colors.success} />
         </TouchableOpacity>
       ) : user.friend_request_sent ? (
-        <Button variant="secondary" fullWidth onPress={onCancelRequest} loading={actionLoading} style={{ marginTop: 12 }}>
+        <Button
+          variant="secondary"
+          fullWidth
+          onPress={onCancelRequest}
+          loading={actionLoading}
+          style={{ marginTop: 12 }}
+        >
           Cancel Friend Request
         </Button>
       ) : user.friend_request_received ? (
         <View style={styles.requestActions}>
-          <Button variant="primary" fullWidth onPress={onAcceptRequest} loading={actionLoading} style={{ flex: 1 }}>
+          <Button
+            variant="primary"
+            fullWidth
+            onPress={onAcceptRequest}
+            loading={actionLoading}
+            style={{ flex: 1 }}
+          >
             Accept Request
           </Button>
-          <Button variant="outline" fullWidth onPress={onDeclineRequest} loading={actionLoading} style={{ flex: 1 }}>
+          <Button
+            variant="outline"
+            fullWidth
+            onPress={onDeclineRequest}
+            loading={actionLoading}
+            style={{ flex: 1 }}
+          >
             Decline
           </Button>
         </View>
@@ -75,7 +98,14 @@ export function ActionButtons({
           onPress={onSendRequest}
           loading={actionLoading}
           style={{ marginTop: 12 }}
-          icon={<Ionicons name="person-add" size={18} color={colors.primary} style={{ marginRight: 8 }} />}
+          icon={
+            <Ionicons
+              name="person-add"
+              size={18}
+              color={colors.primary}
+              style={{ marginRight: 8 }}
+            />
+          }
         >
           Send Friend Request
         </Button>

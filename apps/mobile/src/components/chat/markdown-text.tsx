@@ -135,10 +135,7 @@ function renderSegment(segment: TextSegment, index: number, color: string) {
   if (segment.code) segStyle.push(styles.inlineCode);
 
   return (
-    <Text
-      key={index}
-      style={[{ color: segment.code ? '#f472b6' : color }, ...segStyle]}
-    >
+    <Text key={index} style={[{ color: segment.code ? '#f472b6' : color }, ...segStyle]}>
       {segment.text}
     </Text>
   );

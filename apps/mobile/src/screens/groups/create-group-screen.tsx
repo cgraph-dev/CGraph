@@ -54,7 +54,7 @@ export default function CreateGroupScreen({ navigation }: Props) {
           onPress: () => navigation.replace('Group', { groupId: group.id }),
         },
       ]);
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to create group. Please try again.');
     } finally {
       setIsCreating(false);
@@ -70,7 +70,10 @@ export default function CreateGroupScreen({ navigation }: Props) {
       {/* Name */}
       <Text style={[styles.label, { color: colors.textSecondary }]}>GROUP NAME</Text>
       <TextInput
-        style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border }]}
+        style={[
+          styles.input,
+          { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border },
+        ]}
         placeholder="My Awesome Group"
         placeholderTextColor={colors.textTertiary}
         value={name}
@@ -82,7 +85,11 @@ export default function CreateGroupScreen({ navigation }: Props) {
       {/* Description */}
       <Text style={[styles.label, { color: colors.textSecondary }]}>DESCRIPTION</Text>
       <TextInput
-        style={[styles.input, styles.textArea, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border }]}
+        style={[
+          styles.input,
+          styles.textArea,
+          { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border },
+        ]}
         placeholder="What is this group about?"
         placeholderTextColor={colors.textTertiary}
         value={description}
@@ -109,7 +116,10 @@ export default function CreateGroupScreen({ navigation }: Props) {
 
       {/* Create Button */}
       <TouchableOpacity
-        style={[styles.createButton, { backgroundColor: canCreate ? colors.primary : colors.surfaceHover }]}
+        style={[
+          styles.createButton,
+          { backgroundColor: canCreate ? colors.primary : colors.surfaceHover },
+        ]}
         onPress={handleCreate}
         disabled={!canCreate || isCreating}
         activeOpacity={0.8}
@@ -117,7 +127,9 @@ export default function CreateGroupScreen({ navigation }: Props) {
         {isCreating ? (
           <ActivityIndicator size="small" color="#fff" />
         ) : (
-          <Text style={[styles.createButtonText, { color: canCreate ? '#fff' : colors.textTertiary }]}>
+          <Text
+            style={[styles.createButtonText, { color: canCreate ? '#fff' : colors.textTertiary }]}
+          >
             Create Group
           </Text>
         )}

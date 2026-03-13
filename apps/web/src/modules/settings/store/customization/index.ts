@@ -81,8 +81,6 @@ export {
   useSyncState,
 } from './customizationStore.selectors';
 
-
-
 // Mappings
 export * from './mappings';
 

@@ -4,6 +4,8 @@
  */
 import { useForumStore } from '@/stores/forumStore';
 
+/** Description. */
+/** Hook for forum list. */
 export function useForumList() {
   const forums = useForumStore((s) => s.forums);
   const isLoading = useForumStore((s) => s.loading);

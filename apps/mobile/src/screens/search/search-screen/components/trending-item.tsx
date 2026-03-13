@@ -25,6 +25,7 @@ interface TrendingItemProps {
 }
 
 /**
+ * Trending Item component.
  *
  */
 export function TrendingItem({ item, onPress, isDark }: TrendingItemProps) {
@@ -98,7 +99,7 @@ export function TrendingItem({ item, onPress, isDark }: TrendingItemProps) {
           colors={[item.color, `${item.color}99`]}
           style={trendingStyles.iconContainer}
         >
-          { }
+          {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
           <Ionicons name={item.icon as keyof typeof Ionicons.glyphMap} size={16} color="#fff" />
         </LinearGradient>
         <View style={trendingStyles.textContainer}>

@@ -33,8 +33,14 @@ const HOURS = Array.from({ length: 24 }, (_, i) => ({
  */
 export default function DndScheduleScreen({ navigation: _navigation }: Props) {
   const { colors } = useThemeStore();
-  const { settings, updateNotificationSettings, updateLocaleSettings, isLoading, isSaving, fetchSettings } =
-    useSettingsStore();
+  const {
+    settings,
+    updateNotificationSettings,
+    updateLocaleSettings,
+    isLoading,
+    isSaving,
+    fetchSettings,
+  } = useSettingsStore();
   const [hasLoaded, setHasLoaded] = useState(false);
   const [quietHoursEnabled, setQuietHoursEnabled] = useState(false);
   const [startTime, setStartTime] = useState('22:00');
@@ -68,7 +74,14 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
     } catch {
       Alert.alert('Error', 'Failed to save quiet hours settings.');
     }
-  }, [quietHoursEnabled, startTime, endTime, timezone, updateNotificationSettings, updateLocaleSettings]);
+  }, [
+    quietHoursEnabled,
+    startTime,
+    endTime,
+    timezone,
+    updateNotificationSettings,
+    updateLocaleSettings,
+  ]);
 
   if (!hasLoaded && isLoading) {
     return (
@@ -82,9 +95,7 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Quiet Hours Toggle */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-          Quiet Hours
-        </Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Quiet Hours</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           <View style={[styles.settingItem, { borderBottomColor: colors.border }]}>
             <View style={styles.settingInfo}>
@@ -108,15 +119,14 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
       {/* Time Pickers */}
       {quietHoursEnabled && (
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-            Schedule
-          </Text>
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Schedule</Text>
           <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
             <View style={[styles.settingItem, { borderBottomColor: colors.border }]}>
               <Text style={[styles.settingTitle, { color: colors.text }]}>Start Time</Text>
               <Picker
                 selectedValue={startTime}
                 onValueChange={(v) => setStartTime(v)}
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
                 style={[styles.picker, { color: colors.text } as any]}
                 dropdownIconColor={colors.text}
               >
@@ -130,6 +140,7 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
               <Picker
                 selectedValue={endTime}
                 onValueChange={(v) => setEndTime(v)}
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
                 style={[styles.picker, { color: colors.text } as any]}
                 dropdownIconColor={colors.text}
               >
@@ -144,9 +155,7 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
 
       {/* Timezone */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-          Timezone
-        </Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Timezone</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
@@ -163,10 +172,14 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
       <View style={styles.buttonContainer}>
         <Text
           onPress={handleSave}
-          style={[
-            styles.saveButton,
-            { backgroundColor: colors.primary, opacity: isSaving ? 0.5 : 1 },
-          ] as any}
+          style={
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            [
+              styles.saveButton,
+              { backgroundColor: colors.primary, opacity: isSaving ? 0.5 : 1 },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ] as any
+          }
         >
           {isSaving ? 'Saving...' : 'Save Changes'}
         </Text>

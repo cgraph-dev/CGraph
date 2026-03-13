@@ -111,6 +111,7 @@ export function QrLogin() {
       setError('Failed to create QR session. Please try again.');
       setState('error');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── WebSocket channel connection ───────────────────────────────────
@@ -145,11 +146,13 @@ export function QrLogin() {
       // Listen for auth completion from mobile
       channel.on('auth_complete', (payload: unknown) => {
         logger.info('QR auth complete — storing tokens');
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const data = payload as { tokens: Record<string, string>; user: Record<string, unknown> };
         handleAuthComplete(data);
       });
     },
-    [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   const disconnectChannel = useCallback(() => {
@@ -174,6 +177,7 @@ export function QrLogin() {
       useAuthStore.setState({
         token: tokens.access_token ?? null,
         refreshToken: tokens.refresh_token ?? null,
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         user: user as unknown as ReturnType<typeof useAuthStore.getState>['user'],
         isAuthenticated: true,
       });
@@ -187,7 +191,7 @@ export function QrLogin() {
         navigate('/messages');
       }, 1200);
     },
-    [navigate, disconnectChannel],
+    [navigate, disconnectChannel]
   );
 
   // ── Lifecycle ──────────────────────────────────────────────────────
@@ -199,6 +203,7 @@ export function QrLogin() {
       disconnectChannel();
       if (expiryTimerRef.current) clearTimeout(expiryTimerRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Render ─────────────────────────────────────────────────────────
@@ -229,15 +234,13 @@ export function QrLogin() {
             className="flex flex-col items-center gap-4"
           >
             <div className="rounded-2xl bg-white p-4 shadow-lg">
-              <QRCodeSVG
-                value={session.qrPayload}
-                size={QR_SIZE}
-                level="M"
-                includeMargin={false}
-              />
+              <QRCodeSVG value={session.qrPayload} size={QR_SIZE} level="M" includeMargin={false} />
             </div>
             <p className="max-w-[260px] text-center text-sm text-foreground-muted">
-              {t('login.qr_scan_instructions', 'Open CGraph on your phone and scan this code to log in')}
+              {t(
+                'login.qr_scan_instructions',
+                'Open CGraph on your phone and scan this code to log in'
+              )}
             </p>
             <div className="flex items-center gap-2 text-xs text-foreground-muted">
               <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-green-500" />
@@ -256,8 +259,18 @@ export function QrLogin() {
             className="flex h-[320px] w-[300px] flex-col items-center justify-center gap-3"
           >
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20">
-              <svg className="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="h-8 w-8 text-green-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
             <p className="text-lg font-medium text-foreground">
@@ -279,8 +292,18 @@ export function QrLogin() {
             className="flex h-[320px] w-[300px] flex-col items-center justify-center gap-4"
           >
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/20">
-              <svg className="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="h-8 w-8 text-yellow-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <p className="text-sm text-foreground-muted">
@@ -305,8 +328,18 @@ export function QrLogin() {
             className="flex h-[320px] w-[300px] flex-col items-center justify-center gap-4"
           >
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500/20">
-              <svg className="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-8 w-8 text-red-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </div>
             <p className="text-sm text-foreground-muted">{error}</p>

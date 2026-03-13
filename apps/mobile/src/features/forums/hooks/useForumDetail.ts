@@ -4,6 +4,8 @@
  */
 import { useForumStore } from '@/stores/forumStore';
 
+/** Description. */
+/** Hook for forum detail. */
 export function useForumDetail(forumId: string) {
   const forum = useForumStore((s) => s.forums.find((f) => f.id === forumId));
   const threads = useForumStore((s) => s.threads);

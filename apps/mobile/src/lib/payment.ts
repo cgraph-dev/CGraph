@@ -282,7 +282,9 @@ class PaymentService {
     const product = this.products.get(productId);
     if (!product) {
       if (__DEV__) {
-        console.warn(`[PaymentService] Product '${productId}' not found. IAP products require App Store Connect / Google Play Console setup.`);
+        console.warn(
+          `[PaymentService] Product '${productId}' not found. IAP products require App Store Connect / Google Play Console setup.`
+        );
         return null;
       }
       throw new Error(`Product not found: ${productId}`);
@@ -360,7 +362,8 @@ class PaymentService {
       console.error('[PaymentService] Purchase failed:', error);
 
       // Show user-friendly error
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const axiosError = error as { response?: { data?: { message?: string; error?: string } } };
       Alert.alert(
         'Purchase Failed',
@@ -389,7 +392,9 @@ class PaymentService {
       if (status.isActive && status.tier !== 'free') {
         // User has an active subscription
         const productId =
-          status.tier === 'enterprise' ? PRODUCT_IDS.PREMIUM_PLUS_MONTHLY : PRODUCT_IDS.PREMIUM_MONTHLY;
+          status.tier === 'enterprise'
+            ? PRODUCT_IDS.PREMIUM_PLUS_MONTHLY
+            : PRODUCT_IDS.PREMIUM_MONTHLY;
 
         return [
           {
@@ -486,7 +491,7 @@ class PaymentService {
     } catch (error: unknown) {
       console.error('[PaymentService] Coin purchase failed:', error);
 
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const axiosError = error as { response?: { data?: { message?: string } } };
       Alert.alert(
         'Purchase Failed',
@@ -515,7 +520,7 @@ class PaymentService {
         nextClaimAt: response.data.next_claim_at || null,
       };
     } catch (error: unknown) {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const axiosError = error as { response?: { data?: { next_claim_at?: string } } };
       return {
         success: false,

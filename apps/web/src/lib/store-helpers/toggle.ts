@@ -31,7 +31,7 @@ export function createToggle<T extends BaseStoreState>(
   return () =>
     set(
       (state: T) =>
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         ({
           [field]: !state[field],
           ...(markDirty ? { isDirty: true } : {}),

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * Bubbles Tab Component
  *
@@ -5,7 +6,8 @@
  */
 
 import { motion } from 'motion/react';
- 
+
+// eslint-disable-next-line no-restricted-imports
 import { THEME_COLORS, type ThemeColorPreset } from '@/stores/theme';
 import { TierBadge } from '../premium-theme-gate';
 
@@ -74,21 +76,24 @@ export function BubblesTab({
       <div className="mb-6">
         <h4 className="mb-3 text-sm font-semibold text-gray-400">Bubble Color</h4>
         <div className="flex flex-wrap gap-2">
-          { }
-          {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map((preset) => ( // type assertion: Object.keys returns string[], narrowing to known keys
-            <motion.button
-              key={preset}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => onSelectColor(preset)}
-              className={`h-8 w-8 rounded-full ${
-                selectedColor === preset
-                  ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800'
-                  : ''
-              }`}
-              style={{ backgroundColor: THEME_COLORS[preset].primary }}
-            />
-          ))}
+          {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map(
+            (
+              preset // type assertion: Object.keys returns string[], narrowing to known keys
+            ) => (
+              <motion.button
+                key={preset}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => onSelectColor(preset)}
+                className={`h-8 w-8 rounded-full ${
+                  selectedColor === preset
+                    ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800'
+                    : ''
+                }`}
+                style={{ backgroundColor: THEME_COLORS[preset].primary }}
+              />
+            )
+          )}
         </div>
       </div>
 

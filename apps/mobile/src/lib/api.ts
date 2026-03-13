@@ -70,6 +70,7 @@ const api = createHttpClient({
     await SecureStore.deleteItemAsync('cgraph_auth_token');
     await SecureStore.deleteItemAsync('cgraph_refresh_token');
     // Sync Zustand store so RootNavigator shows auth screens
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { useAuthStore } = require('@/stores');
     useAuthStore.getState().reset();
   },
@@ -77,17 +78,19 @@ const api = createHttpClient({
     endpoint: '/api/v1/auth/refresh',
     buildBody: (rt) => ({ refresh_token: rt }),
     parseTokens: (data: unknown) => {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const payload = (data as Record<string, unknown>)?.data || data;
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const tokens = ((payload as Record<string, unknown>)?.tokens || payload || {}) as Record<
         string,
         unknown
       >;
       return {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         accessToken: ((tokens.access_token || tokens.token) as string | undefined) ?? '',
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         refreshToken: tokens.refresh_token as string | undefined,
       };
     },

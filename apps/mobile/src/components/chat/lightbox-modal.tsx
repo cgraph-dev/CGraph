@@ -27,12 +27,7 @@ function LightboxVideo({ url }: LightboxVideoProps): React.ReactElement | null {
   });
 
   return (
-    <VideoView
-      player={player}
-      style={styles.lightboxVideo}
-      nativeControls
-      contentFit="contain"
-    />
+    <VideoView player={player} style={styles.lightboxVideo} nativeControls contentFit="contain" />
   );
 }
 
@@ -45,27 +40,16 @@ interface LightboxModalProps {
   onClose: () => void;
 }
 
+/** Lightbox Modal component. */
 function LightboxModal({ media, onClose }: LightboxModalProps): React.ReactElement {
   return (
-    <Modal
-      visible={!!media}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={!!media} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.lightboxContainer}>
-        <Pressable
-          style={StyleSheet.absoluteFill}
-          onPress={onClose}
-        >
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose}>
           <BlurView intensity={95} style={StyleSheet.absoluteFill} tint="dark" />
         </Pressable>
 
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={onClose}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity style={styles.closeButton} onPress={onClose} activeOpacity={0.8}>
           <BlurView intensity={80} tint="dark" style={styles.closeButtonInner}>
             <Ionicons name="close" size={24} color="#fff" />
           </BlurView>

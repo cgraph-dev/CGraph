@@ -544,7 +544,10 @@ export const ChatBubbleStyles = {
 
 export type TypingIndicatorStyle = 'dots' | 'wave' | 'pulse' | 'bars' | 'bounce' | 'fade';
 
-export const TypingIndicatorConfig: Record<TypingIndicatorStyle, { duration: number; delay: number }> = {
+export const TypingIndicatorConfig: Record<
+  TypingIndicatorStyle,
+  { duration: number; delay: number }
+> = {
   dots: { duration: 600, delay: 100 },
   wave: { duration: 800, delay: 150 },
   pulse: { duration: 1000, delay: 0 },

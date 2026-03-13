@@ -105,10 +105,11 @@ export const useUIPreferences = create<UIPreferencesStore>()(
           HapticFeedback.error();
         }
       },
-  reset: () => set({
-    preferences: defaultPreferences,
-  }),
-}),
+      reset: () =>
+        set({
+          preferences: defaultPreferences,
+        }),
+    }),
     {
       name: 'cgraph-ui-preferences',
       storage: createJSONStorage(() => safeLocalStorage),

@@ -1,6 +1,6 @@
 /**
  * Groups Feature Module (Mobile)
- * 
+ *
  * @module @features/groups
  * @since v0.8.3
  */

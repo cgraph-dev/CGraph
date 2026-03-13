@@ -17,8 +17,15 @@ interface Props {
   onDecline: () => void;
 }
 
+/** Description. */
+/** Connecting View component. */
 export function ConnectingView({
-  callState, recipientName, recipientAvatar, fadeAnim, onAnswer, onDecline,
+  callState,
+  recipientName,
+  recipientAvatar,
+  fadeAnim,
+  onAnswer,
+  onDecline,
 }: Props) {
   return (
     <View style={styles.container}>
@@ -33,7 +40,8 @@ export function ConnectingView({
             source={
               recipientAvatar
                 ? { uri: recipientAvatar }
-                : require('@/assets/default-avatar.png')
+                : // eslint-disable-next-line @typescript-eslint/no-require-imports
+                  require('@/assets/default-avatar.png')
             }
             size={140}
             borderAnimation="pulse"
@@ -57,10 +65,7 @@ export function ConnectingView({
                   <Ionicons name="close" size={36} color="white" />
                 </LinearGradient>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.callButton, styles.answerButton]}
-                onPress={onAnswer}
-              >
+              <TouchableOpacity style={[styles.callButton, styles.answerButton]} onPress={onAnswer}>
                 <LinearGradient
                   colors={[Colors.primary[500], Colors.primary[600]]}
                   style={styles.callButtonGradient}

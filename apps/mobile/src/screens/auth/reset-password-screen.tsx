@@ -21,7 +21,7 @@ import {
   ActivityIndicator,
   Animated,
   Keyboard,
-  Alert,
+  _Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -91,6 +91,7 @@ function calculatePasswordStrength(password: string): PasswordStrength {
 // =============================================================================
 
 /**
+ * Reset Password Screen component.
  *
  */
 export default function ResetPasswordScreen({ navigation, route }: Props) {
@@ -133,7 +134,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
         await api.post('/api/v1/auth/reset-password/validate', { token });
         setState('form');
       } catch (error: unknown) {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const apiError = error as { response?: { status?: number } };
         if (apiError.response?.status === 410) {
           setState('expired');
@@ -149,10 +150,26 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
 
   const shake = useCallback(() => {
     Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: 10, duration: durations.stagger.ms, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -10, duration: durations.stagger.ms, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 10, duration: durations.stagger.ms, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0, duration: durations.stagger.ms, useNativeDriver: true }),
+      Animated.timing(shakeAnim, {
+        toValue: 10,
+        duration: durations.stagger.ms,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: -10,
+        duration: durations.stagger.ms,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 10,
+        duration: durations.stagger.ms,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnim, {
+        toValue: 0,
+        duration: durations.stagger.ms,
+        useNativeDriver: true,
+      }),
     ]).start();
   }, [shakeAnim]);
 
@@ -176,7 +193,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setState('success');
     } catch (error: unknown) {
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const apiError = error as { response?: { data?: { message?: string } } };
       setErrorMessage(
         apiError.response?.data?.message || 'Failed to reset password. Please try again.'
@@ -191,13 +208,14 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
   const handleBackToLogin = useCallback(() => {
     navigation.reset({
       index: 0,
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       routes: [{ name: 'Login' as never }],
     });
   }, [navigation]);
 
   const handleRequestNewLink = useCallback(() => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     navigation.navigate('ForgotPassword' as never);
   }, [navigation]);
 
@@ -259,23 +277,15 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
 
   // Render form
   const renderForm = () => (
-    <Animated.View 
-      style={[
-        styles.formContent, 
-        { opacity: fadeAnim, transform: [{ translateX: shakeAnim }] }
-      ]}
+    <Animated.View
+      style={[styles.formContent, { opacity: fadeAnim, transform: [{ translateX: shakeAnim }] }]}
     >
       {/* Header */}
       <View style={styles.header}>
-        <LinearGradient
-          colors={[colors.primary, colors.secondary]}
-          style={styles.headerIcon}
-        >
+        <LinearGradient colors={[colors.primary, colors.secondary]} style={styles.headerIcon}>
           <Text style={styles.headerEmoji}>🔐</Text>
         </LinearGradient>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Create New Password
-        </Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Create New Password</Text>
         <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
           Enter a strong password to secure your account
         </Text>
@@ -283,7 +293,12 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
 
       {/* Error Message */}
       {errorMessage ? (
-        <View style={[styles.errorBox, { backgroundColor: colors.error + '15', borderColor: colors.error + '40' }]}>
+        <View
+          style={[
+            styles.errorBox,
+            { backgroundColor: colors.error + '15', borderColor: colors.error + '40' },
+          ]}
+        >
           <Text style={[styles.errorText, { color: colors.error }]}>{errorMessage}</Text>
         </View>
       ) : null}
@@ -291,7 +306,12 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
       {/* Password Input */}
       <View style={styles.inputGroup}>
         <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>New Password</Text>
-        <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View
+          style={[
+            styles.inputContainer,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
           <TextInput
             value={password}
             onChangeText={setPassword}
@@ -301,10 +321,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
             autoCapitalize="none"
             style={[styles.input, { color: colors.text }]}
           />
-          <TouchableOpacity
-            onPress={() => setShowPassword(!showPassword)}
-            style={styles.eyeButton}
-          >
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
             <Text style={{ fontSize: 18 }}>{showPassword ? '👁️' : '🙈'}</Text>
           </TouchableOpacity>
         </View>
@@ -316,16 +333,14 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
               <View
                 style={[
                   styles.strengthFill,
-                  { 
+                  {
                     width: `${(strength.score / 5) * 100}%`,
                     backgroundColor: strength.color,
                   },
                 ]}
               />
             </View>
-            <Text style={[styles.strengthLabel, { color: strength.color }]}>
-              {strength.label}
-            </Text>
+            <Text style={[styles.strengthLabel, { color: strength.color }]}>{strength.label}</Text>
           </View>
         )}
 
@@ -340,9 +355,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
               { key: 'hasSpecial' as const, label: 'Special char' },
             ].map(({ key, label }) => (
               <View key={key} style={styles.requirementItem}>
-                <Text style={{ fontSize: 10 }}>
-                  {strength.requirements[key] ? '✅' : '⬜'}
-                </Text>
+                <Text style={{ fontSize: 10 }}>{strength.requirements[key] ? '✅' : '⬜'}</Text>
                 <Text
                   style={[
                     styles.requirementText,
@@ -359,9 +372,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
 
       {/* Confirm Password Input */}
       <View style={styles.inputGroup}>
-        <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>
-          Confirm Password
-        </Text>
+        <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Confirm Password</Text>
         <View
           style={[
             styles.inputContainer,
@@ -392,9 +403,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
           </TouchableOpacity>
         </View>
         {confirmPassword && !passwordsMatch && (
-          <Text style={[styles.errorHint, { color: colors.error }]}>
-            Passwords do not match
-          </Text>
+          <Text style={[styles.errorHint, { color: colors.error }]}>Passwords do not match</Text>
         )}
       </View>
 
@@ -417,8 +426,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
       {/* Back to Login */}
       <TouchableOpacity onPress={handleBackToLogin} style={styles.linkButton}>
         <Text style={[styles.linkText, { color: colors.textSecondary }]}>
-          Remember your password?{' '}
-          <Text style={{ color: colors.primary }}>Sign in</Text>
+          Remember your password? <Text style={{ color: colors.primary }}>Sign in</Text>
         </Text>
       </TouchableOpacity>
     </Animated.View>

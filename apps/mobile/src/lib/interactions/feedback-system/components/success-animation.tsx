@@ -22,6 +22,7 @@ import { SuccessAnimationProps } from '../types';
 import { styles } from '../styles';
 
 /**
+ * Success Animation component.
  *
  */
 export function SuccessAnimation({

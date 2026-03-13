@@ -293,9 +293,7 @@ describe('billingService', () => {
       await billingService.redirectToPortal();
 
       expect(mockApi.post).toHaveBeenCalledWith('/billing/portal');
-      expect(safeRedirect).toHaveBeenCalledWith(
-        'https://billing.stripe.com/p/session/portal_123'
-      );
+      expect(safeRedirect).toHaveBeenCalledWith('https://billing.stripe.com/p/session/portal_123');
     });
 
     it('should not redirect if portal creation fails', async () => {

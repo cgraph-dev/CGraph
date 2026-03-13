@@ -77,7 +77,11 @@ export function FriendSuggestions() {
               key={suggestion.id}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8, transition: { duration: durations.normal.ms / 1000 } }}
+              exit={{
+                opacity: 0,
+                scale: 0.8,
+                transition: { duration: durations.normal.ms / 1000 },
+              }}
               className="relative flex w-40 shrink-0 flex-col items-center rounded-xl bg-white/[0.04] p-4 ring-1 ring-gray-700/50"
             >
               {/* Dismiss button */}
@@ -111,11 +115,16 @@ export function FriendSuggestions() {
               {/* Mutual info */}
               <p className="mb-3 text-xs text-gray-500">
                 {suggestion.mutual_friends > 0 && (
-                  <span>{suggestion.mutual_friends} mutual friend{suggestion.mutual_friends > 1 ? 's' : ''}</span>
+                  <span>
+                    {suggestion.mutual_friends} mutual friend
+                    {suggestion.mutual_friends > 1 ? 's' : ''}
+                  </span>
                 )}
                 {suggestion.mutual_friends > 0 && suggestion.shared_groups > 0 && ' · '}
                 {suggestion.shared_groups > 0 && (
-                  <span>{suggestion.shared_groups} shared group{suggestion.shared_groups > 1 ? 's' : ''}</span>
+                  <span>
+                    {suggestion.shared_groups} shared group{suggestion.shared_groups > 1 ? 's' : ''}
+                  </span>
                 )}
               </p>
 

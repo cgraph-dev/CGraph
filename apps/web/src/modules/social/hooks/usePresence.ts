@@ -77,6 +77,7 @@ export function usePresence(): PresenceState {
 
       // Listen for real-time status message changes
       const handleStatusChanged = (rawPayload: unknown) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const payload = rawPayload as {
           user_id: string;
           status_message?: string;

@@ -10,14 +10,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useRef, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Easing,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Colors, Typography, Spacing, BorderRadius } from '@/lib/design/design-system';
@@ -58,6 +51,7 @@ const ANIMATION_CONFIG = {
 };
 
 /**
+ * Typing Indicator component.
  *
  */
 export default function TypingIndicator({
@@ -204,10 +198,10 @@ export default function TypingIndicator({
 
     // Start all animations
     const animationInstances = animations.map((_, i) => createAnimation(i));
-    animationInstances.forEach(anim => anim.start());
+    animationInstances.forEach((anim) => anim.start());
 
     return () => {
-      animationInstances.forEach(anim => anim.stop());
+      animationInstances.forEach((anim) => anim.stop());
     };
   }, [style, animations, animConfig]);
 
@@ -376,13 +370,12 @@ export default function TypingIndicator({
     );
   }
 
-  return (
-    <View style={[styles.container, styles.solidContainer, containerStyle]}>{content}</View>
-  );
+  return <View style={[styles.container, styles.solidContainer, containerStyle]}>{content}</View>;
 }
 
 // Compact version for inline use
 /**
+ * Typing Dots Compact component.
  *
  */
 export function TypingDotsCompact({
@@ -417,11 +410,12 @@ export function TypingDotsCompact({
       )
     );
 
-    animationInstances.forEach(anim => anim.start());
+    animationInstances.forEach((anim) => anim.start());
 
     return () => {
-      animationInstances.forEach(anim => anim.stop());
+      animationInstances.forEach((anim) => anim.stop());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

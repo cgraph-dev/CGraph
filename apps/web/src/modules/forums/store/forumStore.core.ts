@@ -7,7 +7,15 @@
  */
 
 import { api, ensureArray, ensureObject, mapForumFromApi } from './forumStore.utils';
-import type { Forum, Post, Comment, CreatePostData, ForumState, ForumSearchFilters, ForumSearchResult } from './forumStore.types';
+import type {
+  Forum,
+  Post,
+  Comment,
+  CreatePostData,
+  ForumState,
+  ForumSearchFilters,
+  ForumSearchResult,
+} from './forumStore.types';
 
 type Set = (
   partial: ForumState | Partial<ForumState> | ((s: ForumState) => ForumState | Partial<ForumState>)
@@ -309,7 +317,12 @@ export function createCoreActions(set: Set, get: Get) {
         const results = ensureArray<ForumSearchResult>(response.data, 'data');
         const cursor = response.data?.meta?.cursor;
         const hasMore = response.data?.meta?.has_more ?? false;
-        set({ searchResults: results, searchCursor: cursor, searchHasMore: hasMore, searchLoading: false });
+        set({
+          searchResults: results,
+          searchCursor: cursor,
+          searchHasMore: hasMore,
+          searchLoading: false,
+        });
       } catch (error) {
         set({ searchLoading: false });
         throw error;
@@ -322,7 +335,8 @@ export function createCoreActions(set: Set, get: Get) {
       set({ searchLoading: true });
       try {
         const params = new URLSearchParams({ q: searchQuery, cursor: searchCursor });
-        if (searchFilters?.type && searchFilters.type !== 'all') params.set('type', searchFilters.type);
+        if (searchFilters?.type && searchFilters.type !== 'all')
+          params.set('type', searchFilters.type);
         if (searchFilters?.forumId) params.set('forum_id', searchFilters.forumId);
         const response = await api.get(`/api/v1/search/forums?${params}`);
         const results = ensureArray<ForumSearchResult>(response.data, 'data');
@@ -340,7 +354,14 @@ export function createCoreActions(set: Set, get: Get) {
       }
     },
 
-    clearSearch: () => set({ searchResults: [], searchQuery: '', searchFilters: {}, searchCursor: undefined, searchHasMore: false }),
+    clearSearch: () =>
+      set({
+        searchResults: [],
+        searchQuery: '',
+        searchFilters: {},
+        searchCursor: undefined,
+        searchHasMore: false,
+      }),
 
     // ── Comment Edit/Delete ─────────────────────────────────────────
 
@@ -351,7 +372,9 @@ export function createCoreActions(set: Set, get: Get) {
         set((state) => ({
           comments: {
             ...state.comments,
-            [postId]: (state.comments[postId] || []).map((c) => c.id === commentId ? { ...c, ...updated } : c),
+            [postId]: (state.comments[postId] || []).map((c) =>
+              c.id === commentId ? { ...c, ...updated } : c
+            ),
           },
         }));
       }

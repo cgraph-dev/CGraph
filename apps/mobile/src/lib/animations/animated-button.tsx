@@ -28,6 +28,7 @@ export interface AnimatedButtonProps {
 }
 
 /**
+ * Animated Button component.
  *
  */
 export function AnimatedButton({
@@ -71,6 +72,7 @@ export function AnimatedButton({
     }
 
     runOnJS(triggerHaptic)();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pressStyle, disabled, triggerHaptic]);
 
   const handlePressOut = useCallback(() => {
@@ -86,6 +88,7 @@ export function AnimatedButton({
         opacity.value = withTiming(1, { duration: durations.instant.ms });
         break;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pressStyle, disabled]);
 
   const animatedStyle = useAnimatedStyle(() => ({

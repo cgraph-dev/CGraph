@@ -48,9 +48,10 @@ export function useChatInfoPanel({
   // Fetch conversation TTL on mount
   useEffect(() => {
     if (!conversationId) return;
-    api.get(`/api/v1/conversations/${conversationId}`)
+    api
+      .get(`/api/v1/conversations/${conversationId}`)
       .then((res) => {
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const data = (res as { data?: { data?: { message_ttl?: number | null } } })?.data?.data;
         if (data?.message_ttl !== undefined) {
           setMessageTTL(data.message_ttl);
@@ -62,19 +63,22 @@ export function useChatInfoPanel({
   }, [conversationId]);
 
   // Handle disappearing messages TTL update
-  const handleUpdateTTL = useCallback(async (ttl: number | null) => {
-    if (!conversationId) return;
-    const previousTTL = messageTTL;
-    setMessageTTL(ttl);
+  const handleUpdateTTL = useCallback(
+    async (ttl: number | null) => {
+      if (!conversationId) return;
+      const previousTTL = messageTTL;
+      setMessageTTL(ttl);
 
-    try {
-      await api.put(`/api/v1/conversations/${conversationId}/ttl`, { ttl });
-      HapticFeedback.light();
-    } catch (error) {
-      setMessageTTL(previousTTL);
-      logger.error('Failed to update message TTL:', error);
-    }
-  }, [conversationId, messageTTL]);
+      try {
+        await api.put(`/api/v1/conversations/${conversationId}/ttl`, { ttl });
+        HapticFeedback.light();
+      } catch (error) {
+        setMessageTTL(previousTTL);
+        logger.error('Failed to update message TTL:', error);
+      }
+    },
+    [conversationId, messageTTL]
+  );
 
   // Handle mute toggle with API call
   const handleMuteToggle = useCallback(async () => {

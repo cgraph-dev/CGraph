@@ -55,6 +55,7 @@ export interface SwipeableNotificationAnimations {
 }
 
 /**
+ * Hook for swipeable notification.
  *
  */
 export function useSwipeableNotification({
@@ -84,7 +85,10 @@ export function useSwipeableNotification({
   useEffect(() => {
     const delay = index * 60;
 
-    entryAnim.value = withDelay(delay, withTiming(1, { duration: durations.slower.ms, easing: Easing.out(Easing.back(1.5)) }));
+    entryAnim.value = withDelay(
+      delay,
+      withTiming(1, { duration: durations.slower.ms, easing: Easing.out(Easing.back(1.5)) })
+    );
     opacity.value = withDelay(delay, withTiming(1, { duration: durations.smooth.ms }));
 
     if (!isRead) {
@@ -97,6 +101,7 @@ export function useSwipeableNotification({
         false
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, isRead]);
 
   // Pan responder for swipe gestures

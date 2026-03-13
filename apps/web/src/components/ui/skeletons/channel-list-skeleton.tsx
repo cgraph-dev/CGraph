@@ -29,10 +29,7 @@ function ChannelItemSkeleton() {
 /**
  * Skeleton placeholder for the channel list / sidebar.
  */
-export function ChannelListSkeleton({
-  count = 10,
-  className = '',
-}: ChannelListSkeletonProps) {
+export function ChannelListSkeleton({ count = 10, className = '' }: ChannelListSkeletonProps) {
   return (
     <div className={`space-y-1 ${className}`}>
       <div className="flex items-center justify-between px-4 py-3">

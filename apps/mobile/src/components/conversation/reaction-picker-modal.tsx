@@ -9,15 +9,7 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  Pressable,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Modal, Pressable, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Message } from '../../types';
 import { EMOJI_CATEGORIES, EmojiCategory } from './constants';
@@ -109,7 +101,7 @@ export const ReactionPickerModal = memo(function ReactionPickerModal({
   // Early return after hooks
   if (!visible || !message) return null;
 
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const categoryKeys = Object.keys(EMOJI_CATEGORIES) as EmojiCategory[];
   const emojis = EMOJI_CATEGORIES[selectedCategory];
 

@@ -87,7 +87,7 @@ export function AuditTab() {
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {auditData?.entries.map((entry: AuditEntry) => (
-                  <tr key={entry.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.06]/50">
+                  <tr key={entry.id} className="dark:hover:bg-white/[0.06]/50 hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {format(new Date(entry.timestamp), 'MMM d, HH:mm:ss')}
                     </td>

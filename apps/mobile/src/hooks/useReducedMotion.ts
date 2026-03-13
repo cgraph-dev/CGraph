@@ -33,10 +33,7 @@ export function useAnimationIntensity(): number {
  * Get an appropriate spring config based on motion preferences.
  * Returns an instant config if reduced motion is enabled.
  */
-export function getMotionSpring(
-  reduced: boolean,
-  preset: keyof typeof SPRING_PRESETS = 'default',
-) {
+export function getMotionSpring(reduced: boolean, preset: keyof typeof SPRING_PRESETS = 'default') {
   if (reduced) {
     return SPRING_PRESETS.instant;
   }

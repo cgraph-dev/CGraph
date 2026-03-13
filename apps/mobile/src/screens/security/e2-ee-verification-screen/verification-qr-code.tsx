@@ -12,6 +12,8 @@ interface VerificationQRCodeProps {
   size: number;
 }
 
+/** Description. */
+/** Verification Q R Code component. */
 export function VerificationQRCode({ value, size }: VerificationQRCodeProps) {
   return (
     <View

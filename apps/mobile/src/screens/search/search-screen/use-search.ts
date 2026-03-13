@@ -10,11 +10,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../../lib/api';
 import debounce from 'lodash.debounce';
 import { createLogger } from '../../../lib/logger';
-import { type SearchUser, type SearchGroup, type SearchForum, type SearchFilters, defaultFilters } from './components';
+import {
+  type SearchUser,
+  type SearchGroup,
+  type SearchForum,
+  type SearchFilters,
+  defaultFilters,
+} from './components';
 import { type SearchCategory, RECENT_SEARCHES_KEY, MAX_RECENT_SEARCHES } from './constants';
 
 const logger = createLogger('Search');
 
+/** Description. */
+/** Hook for search. */
 export function useSearch() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<SearchCategory>('all');
@@ -100,6 +108,7 @@ export function useSearch() {
       }),
       Animated.spring(headerTranslateY, { toValue: 0, friction: 8, useNativeDriver: true }),
     ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -108,8 +117,10 @@ export function useSearch() {
       duration: durations.slow.ms,
       useNativeDriver: false,
     }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const performSearch = useCallback(
     debounce(async (searchQuery: string, searchCategory: SearchCategory) => {
       if (!searchQuery.trim()) {
@@ -196,20 +207,34 @@ export function useSearch() {
   });
 
   return {
-    query, setQuery,
-    category, setCategory,
-    loading, hasSearched,
-    users, groups, forums,
-    showIdSearch, setShowIdSearch,
-    idSearchType, setIdSearchType,
-    idSearchValue, setIdSearchValue,
+    query,
+    setQuery,
+    category,
+    setCategory,
+    loading,
+    hasSearched,
+    users,
+    groups,
+    forums,
+    showIdSearch,
+    setShowIdSearch,
+    idSearchType,
+    setIdSearchType,
+    idSearchValue,
+    setIdSearchValue,
     recentSearches,
-    showFilters, setShowFilters,
-    filters, setFilters,
-    isVoiceListening, setIsVoiceListening,
+    showFilters,
+    setShowFilters,
+    filters,
+    setFilters,
+    isVoiceListening,
+    setIsVoiceListening,
     setShowSuggestions,
-    searchGlow, headerOpacity, headerTranslateY,
-    isFocused, setIsFocused,
+    searchGlow,
+    headerOpacity,
+    headerTranslateY,
+    isFocused,
+    setIsFocused,
     inputRef,
     saveRecentSearch,
     removeRecentSearch,

@@ -166,12 +166,15 @@ export const useDiscoveryStore = create<DiscoveryStore>((set, get) => ({
         AsyncStorage.getItem(STORAGE_KEY_FILTERS),
       ]);
 
-      const validModes: readonly string[] = ['trending', 'fresh', 'following', 'recommended', 'nearby'];
+      const validModes: readonly string[] = [
+        'trending',
+        'fresh',
+        'following',
+        'recommended',
+        'nearby',
+      ];
       const isFeedMode = (v: string): v is FeedMode => validModes.includes(v);
-      const mode: FeedMode =
-        storedMode && isFeedMode(storedMode)
-          ? storedMode
-          : 'trending';
+      const mode: FeedMode = storedMode && isFeedMode(storedMode) ? storedMode : 'trending';
 
       const filters: FeedFilters = storedFilters ? JSON.parse(storedFilters) : {};
 

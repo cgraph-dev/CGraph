@@ -25,6 +25,7 @@ type Props = {
 };
 
 /**
+ * New Conversation Screen component.
  *
  */
 export default function NewConversationScreen({ navigation }: Props) {
@@ -33,13 +34,13 @@ export default function NewConversationScreen({ navigation }: Props) {
   const [users, setUsers] = useState<UserBasic[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  
+
   const searchUsers = async (query: string) => {
     if (query.length < 2) {
       setUsers([]);
       return;
     }
-    
+
     setIsSearching(true);
     try {
       const response = await api.get(`/api/v1/search/users?q=${encodeURIComponent(query)}`);
@@ -50,10 +51,10 @@ export default function NewConversationScreen({ navigation }: Props) {
       setIsSearching(false);
     }
   };
-  
+
   const startConversation = async (userId: string) => {
     if (isCreating) return;
-    
+
     setIsCreating(true);
     try {
       const response = await api.post('/api/v1/conversations', {
@@ -65,12 +66,12 @@ export default function NewConversationScreen({ navigation }: Props) {
       setIsCreating(false);
     }
   };
-  
+
   const renderUser = ({ item }: { item: UserBasic }) => {
     const displayName = item.display_name || item.username || 'Unknown';
     const handle = item.username || item.id?.slice(0, 8) || 'unknown';
     const initial = displayName.charAt(0).toUpperCase();
-    
+
     return (
       <TouchableOpacity
         style={[styles.userItem, { borderBottomColor: colors.border }]}
@@ -79,13 +80,10 @@ export default function NewConversationScreen({ navigation }: Props) {
       >
         <View style={styles.avatarContainer}>
           {getValidImageUrl(item.avatar_url) ? (
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             <Image source={{ uri: getValidImageUrl(item.avatar_url)! }} style={styles.avatar} />
           ) : (
             <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
-              <Text style={styles.avatarText}>
-                {initial}
-              </Text>
+              <Text style={styles.avatarText}>{initial}</Text>
             </View>
           )}
           <View
@@ -96,17 +94,13 @@ export default function NewConversationScreen({ navigation }: Props) {
           />
         </View>
         <View style={styles.userInfo}>
-          <Text style={[styles.displayName, { color: colors.text }]}>
-            {displayName}
-          </Text>
-          <Text style={[styles.username, { color: colors.textSecondary }]}>
-            @{handle}
-          </Text>
+          <Text style={[styles.displayName, { color: colors.text }]}>{displayName}</Text>
+          <Text style={[styles.username, { color: colors.textSecondary }]}>@{handle}</Text>
         </View>
       </TouchableOpacity>
     );
   };
-  
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.searchContainer, { backgroundColor: colors.surface }]}>
@@ -128,7 +122,7 @@ export default function NewConversationScreen({ navigation }: Props) {
           </TouchableOpacity>
         )}
       </View>
-      
+
       {isSearching ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={colors.primary} />
@@ -155,13 +149,11 @@ export default function NewConversationScreen({ navigation }: Props) {
           }
         />
       )}
-      
+
       {isCreating && (
         <View style={[styles.creatingOverlay, { backgroundColor: colors.overlay }]}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={[styles.creatingText, { color: '#fff' }]}>
-            Starting conversation...
-          </Text>
+          <Text style={[styles.creatingText, { color: '#fff' }]}>Starting conversation...</Text>
         </View>
       )}
     </View>

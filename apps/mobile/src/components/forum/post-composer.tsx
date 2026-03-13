@@ -59,6 +59,8 @@ function ToolBtn({
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Post Composer component. */
 export function PostComposer({
   visible,
   onClose,
@@ -88,10 +90,7 @@ export function PostComposer({
       presentationStyle="fullScreen"
       onRequestClose={onClose}
     >
-      <Animated.View
-        entering={SlideInUp.duration(300)}
-        style={styles.container}
-      >
+      <Animated.View entering={SlideInUp.duration(300)} style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={onClose} style={styles.headerBtn}>
@@ -103,9 +102,7 @@ export function PostComposer({
             disabled={!canSubmit}
             style={[styles.headerBtn, !canSubmit && styles.headerBtnDisabled]}
           >
-            <Text style={[styles.postText, !canSubmit && styles.postTextDisabled]}>
-              Post
-            </Text>
+            <Text style={[styles.postText, !canSubmit && styles.postTextDisabled]}>Post</Text>
           </Pressable>
         </View>
 
@@ -123,14 +120,14 @@ export function PostComposer({
               style={styles.titleInput}
               maxLength={MAX_TITLE}
             />
-            <Text style={styles.charCount}>{title.length}/{MAX_TITLE}</Text>
+            <Text style={styles.charCount}>
+              {title.length}/{MAX_TITLE}
+            </Text>
 
             {/* Content */}
             {showPreview ? (
               <Animated.View entering={FadeIn.duration(200)} style={styles.previewArea}>
-                <Text style={styles.previewText}>
-                  {content || 'Nothing to preview'}
-                </Text>
+                <Text style={styles.previewText}>{content || 'Nothing to preview'}</Text>
               </Animated.View>
             ) : (
               <TextInput
@@ -162,7 +159,9 @@ export function PostComposer({
                 size={16}
                 color={showPreview ? '#6366f1' : 'rgba(255,255,255,0.5)'}
               />
-              <Text style={[styles.previewToggleText, showPreview && styles.previewToggleTextActive]}>
+              <Text
+                style={[styles.previewToggleText, showPreview && styles.previewToggleTextActive]}
+              >
                 {showPreview ? 'Edit' : 'Preview'}
               </Text>
             </Pressable>

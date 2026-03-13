@@ -3,6 +3,8 @@
  * @module screens/security/e2-ee-verification-screen/utils
  */
 
+/** Description. */
+/** Generate fallback safety number. */
 export function generateFallbackSafetyNumber(): string {
   let number = '';
   for (let i = 0; i < 60; i++) {
@@ -11,6 +13,8 @@ export function generateFallbackSafetyNumber(): string {
   return number;
 }
 
+/** Description. */
+/** Formats safety number for share. */
 export function formatSafetyNumberForShare(number: string): string {
   const blocks = number.match(/.{1,5}/g) || [];
   const rows = [];
@@ -20,6 +24,8 @@ export function formatSafetyNumberForShare(number: string): string {
   return rows.join('\n');
 }
 
+/** Description. */
+/** Formats date. */
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleDateString(undefined, {

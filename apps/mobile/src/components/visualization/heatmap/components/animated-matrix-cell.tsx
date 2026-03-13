@@ -24,6 +24,8 @@ interface AnimatedMatrixCellProps {
   showValues: boolean;
 }
 
+/** Description. */
+/** Animated Matrix Cell component. */
 export function AnimatedMatrixCell({
   value,
   color,

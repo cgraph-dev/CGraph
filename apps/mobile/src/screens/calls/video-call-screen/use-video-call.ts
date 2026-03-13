@@ -8,17 +8,30 @@ import { HapticFeedback, SpringPresets } from '@/lib/animations/animation-engine
 import { getWebRTCManager } from '@/lib/webrtc/webrtcService';
 import { useCallStore } from '@/stores/callStore';
 import socketManager from '@/lib/socket';
-import { PIP_WIDTH, PIP_HEIGHT, PIP_MARGIN, type CallStackParamList, type CallState, type LayoutMode } from './types';
+import {
+  PIP_WIDTH,
+  PIP_HEIGHT,
+  PIP_MARGIN,
+  type CallStackParamList,
+  type CallState,
+  type LayoutMode,
+} from './types';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
+/** Description. */
+/** Hook for video call. */
 export function useVideoCall() {
   const navigation = useNavigation<NativeStackNavigationProp<CallStackParamList>>();
   const route = useRoute<RouteProp<CallStackParamList, 'VideoCall'>>();
   const insets = useSafeAreaInsets();
   const {
-    recipientId, recipientName, recipientAvatar,
-    isIncoming, isGroupCall, participants = [],
+    recipientId,
+    recipientName,
+    recipientAvatar,
+    isIncoming,
+    isGroupCall,
+    participants = [],
   } = route.params;
 
   // State
@@ -53,22 +66,44 @@ export function useVideoCall() {
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: () => {
         HapticFeedback.light();
-        Animated.spring(pipScale, { toValue: 1.05, ...SpringPresets.snappy, useNativeDriver: true }).start();
+        Animated.spring(pipScale, {
+          toValue: 1.05,
+          ...SpringPresets.snappy,
+          useNativeDriver: true,
+        }).start();
       },
       onPanResponderMove: (_, gesture) => {
-        const newX = Math.max(PIP_MARGIN, Math.min(SCREEN_WIDTH - PIP_WIDTH - PIP_MARGIN, pipPosition.x + gesture.dx));
-        const newY = Math.max(insets.top + PIP_MARGIN, Math.min(SCREEN_HEIGHT - PIP_HEIGHT - PIP_MARGIN - 100, pipPosition.y + gesture.dy));
+        const newX = Math.max(
+          PIP_MARGIN,
+          Math.min(SCREEN_WIDTH - PIP_WIDTH - PIP_MARGIN, pipPosition.x + gesture.dx)
+        );
+        const newY = Math.max(
+          insets.top + PIP_MARGIN,
+          Math.min(SCREEN_HEIGHT - PIP_HEIGHT - PIP_MARGIN - 100, pipPosition.y + gesture.dy)
+        );
         pipAnimX.setValue(newX);
         pipAnimY.setValue(newY);
       },
       onPanResponderRelease: (_, gesture) => {
         const midX = SCREEN_WIDTH / 2;
-        const finalX = pipPosition.x + gesture.dx < midX ? PIP_MARGIN : SCREEN_WIDTH - PIP_WIDTH - PIP_MARGIN;
-        const newY = Math.max(insets.top + PIP_MARGIN, Math.min(SCREEN_HEIGHT - PIP_HEIGHT - PIP_MARGIN - 100, pipPosition.y + gesture.dy));
+        const finalX =
+          pipPosition.x + gesture.dx < midX ? PIP_MARGIN : SCREEN_WIDTH - PIP_WIDTH - PIP_MARGIN;
+        const newY = Math.max(
+          insets.top + PIP_MARGIN,
+          Math.min(SCREEN_HEIGHT - PIP_HEIGHT - PIP_MARGIN - 100, pipPosition.y + gesture.dy)
+        );
         HapticFeedback.medium();
         Animated.parallel([
-          Animated.spring(pipAnimX, { toValue: finalX, ...SpringPresets.bouncy, useNativeDriver: true }),
-          Animated.spring(pipAnimY, { toValue: newY, ...SpringPresets.bouncy, useNativeDriver: true }),
+          Animated.spring(pipAnimX, {
+            toValue: finalX,
+            ...SpringPresets.bouncy,
+            useNativeDriver: true,
+          }),
+          Animated.spring(pipAnimY, {
+            toValue: newY,
+            ...SpringPresets.bouncy,
+            useNativeDriver: true,
+          }),
           Animated.spring(pipScale, { toValue: 1, ...SpringPresets.snappy, useNativeDriver: true }),
         ]).start();
         setPipPosition({ x: finalX, y: newY });
@@ -78,14 +113,24 @@ export function useVideoCall() {
 
   // Entry animation + connect via real WebRTC
   useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: durations.slow.ms, useNativeDriver: true }).start();
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: durations.slow.ms,
+      useNativeDriver: true,
+    }).start();
     if (callState === 'connecting') {
       const socket = socketManager.getSocket();
       if (socket) {
         const manager = getWebRTCManager(socket);
         manager.on({
-          onCallConnected: () => { HapticFeedback.success(); setCallState('connected'); },
-          onCallEnded: () => { setCallState('ended'); setTimeout(() => navigation.goBack(), 500); },
+          onCallConnected: () => {
+            HapticFeedback.success();
+            setCallState('connected');
+          },
+          onCallEnded: () => {
+            setCallState('ended');
+            setTimeout(() => navigation.goBack(), 500);
+          },
           onError: (err) => console.error('[VideoCall] WebRTC error:', err),
         });
         manager.startCall(recipientId, { video: true, audio: true });
@@ -95,13 +140,16 @@ export function useVideoCall() {
       if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
       if (callTimerRef.current) clearInterval(callTimerRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Call timer
   useEffect(() => {
     if (callState === 'connected') {
-      callTimerRef.current = setInterval(() => setCallDuration(prev => prev + 1), 1000);
-      return () => { if (callTimerRef.current) clearInterval(callTimerRef.current); };
+      callTimerRef.current = setInterval(() => setCallDuration((prev) => prev + 1), 1000);
+      return () => {
+        if (callTimerRef.current) clearInterval(callTimerRef.current);
+      };
     }
   }, [callState]);
 
@@ -110,17 +158,26 @@ export function useVideoCall() {
     if (controlsVisible && callState === 'connected') {
       if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
       controlsTimeoutRef.current = setTimeout(() => {
-        Animated.timing(controlsOpacity, { toValue: 0, duration: durations.slow.ms, useNativeDriver: true })
-          .start(() => setControlsVisible(false));
+        Animated.timing(controlsOpacity, {
+          toValue: 0,
+          duration: durations.slow.ms,
+          useNativeDriver: true,
+        }).start(() => setControlsVisible(false));
       }, 5000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [controlsVisible, callState]);
 
   const showControls = useCallback(() => {
     if (!controlsVisible) {
       setControlsVisible(true);
-      Animated.timing(controlsOpacity, { toValue: 1, duration: durations.normal.ms, useNativeDriver: true }).start();
+      Animated.timing(controlsOpacity, {
+        toValue: 1,
+        duration: durations.normal.ms,
+        useNativeDriver: true,
+      }).start();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [controlsVisible]);
 
   const formatDuration = (seconds: number): string => {
@@ -132,8 +189,16 @@ export function useVideoCall() {
   const handleFlipCamera = useCallback(() => {
     HapticFeedback.medium();
     Animated.sequence([
-      Animated.timing(cameraFlipAnim, { toValue: 0.5, duration: durations.fast.ms, useNativeDriver: true }),
-      Animated.timing(cameraFlipAnim, { toValue: 1, duration: durations.fast.ms, useNativeDriver: true }),
+      Animated.timing(cameraFlipAnim, {
+        toValue: 0.5,
+        duration: durations.fast.ms,
+        useNativeDriver: true,
+      }),
+      Animated.timing(cameraFlipAnim, {
+        toValue: 1,
+        duration: durations.fast.ms,
+        useNativeDriver: true,
+      }),
     ]).start(() => cameraFlipAnim.setValue(0));
     setIsFrontCamera(!isFrontCamera);
     // Use react-native-webrtc _switchCamera API
@@ -142,6 +207,7 @@ export function useVideoCall() {
       const manager = getWebRTCManager(socket);
       manager.switchCamera();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFrontCamera]);
 
   const handleEndCall = useCallback(() => {
@@ -163,7 +229,10 @@ export function useVideoCall() {
     if (socket) {
       const manager = getWebRTCManager(socket);
       manager.on({
-        onCallConnected: () => { HapticFeedback.success(); setCallState('connected'); },
+        onCallConnected: () => {
+          HapticFeedback.success();
+          setCallState('connected');
+        },
       });
     }
   }, []);
@@ -176,20 +245,49 @@ export function useVideoCall() {
 
   const toggleLayout = useCallback(() => {
     HapticFeedback.light();
-    setLayoutMode(prev => (prev === 'spotlight' ? 'grid' : 'spotlight'));
+    setLayoutMode((prev) => (prev === 'spotlight' ? 'grid' : 'spotlight'));
   }, []);
 
-  const cameraFlipRotate = cameraFlipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['0deg', '90deg', '0deg'] });
-  const cameraFlipScale = cameraFlipAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 0.8, 1] });
+  const cameraFlipRotate = cameraFlipAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['0deg', '90deg', '0deg'],
+  });
+  const cameraFlipScale = cameraFlipAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 0.8, 1],
+  });
 
   return {
-    navigation, recipientId, recipientName, recipientAvatar,
-    isIncoming, isGroupCall, participants,
-    callState, isMuted, setIsMuted, isVideoOff, setIsVideoOff,
-    isFrontCamera, controlsVisible, layoutMode, callDuration,
-    controlsOpacity, pipScale, pipAnimX, pipAnimY, fadeAnim,
-    cameraFlipRotate, cameraFlipScale,
-    pipPanResponder, showControls, formatDuration,
-    handleFlipCamera, handleEndCall, handleAnswer, handleDecline, toggleLayout,
+    navigation,
+    recipientId,
+    recipientName,
+    recipientAvatar,
+    isIncoming,
+    isGroupCall,
+    participants,
+    callState,
+    isMuted,
+    setIsMuted,
+    isVideoOff,
+    setIsVideoOff,
+    isFrontCamera,
+    controlsVisible,
+    layoutMode,
+    callDuration,
+    controlsOpacity,
+    pipScale,
+    pipAnimX,
+    pipAnimY,
+    fadeAnim,
+    cameraFlipRotate,
+    cameraFlipScale,
+    pipPanResponder,
+    showControls,
+    formatDuration,
+    handleFlipCamera,
+    handleEndCall,
+    handleAnswer,
+    handleDecline,
+    toggleLayout,
   };
 }

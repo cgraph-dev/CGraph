@@ -26,10 +26,7 @@ import {
   useSocketEventHandlers,
   useMessageActionWrappers,
 } from './index';
-import {
-  formatSimpleTime,
-  getMessageStatusInfo,
-} from '../utils';
+import { formatSimpleTime, getMessageStatusInfo } from '../utils';
 import { usePrivacySettings } from '../../../../stores/settingsStore';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { MessagesStackParamList, UserBasic } from '../../../../types';
@@ -58,7 +55,8 @@ interface SetupParams {
   };
 }
 
- 
+/** Description. */
+/** Hook for conversation setup. */
 export function useConversationSetup(params: SetupParams) {
   const {
     conversationId,
@@ -88,11 +86,15 @@ export function useConversationSetup(params: SetupParams) {
 
   useEffect(() => {
     isMountedRef.current = true;
-    return () => { isMountedRef.current = false; };
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   const scrollToBottom = useCallback(() => {
-    setTimeout(() => { flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, 100);
+    setTimeout(() => {
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    }, 100);
   }, []);
 
   // ── Privacy Settings ──────────────────────────────────────────
@@ -110,20 +112,31 @@ export function useConversationSetup(params: SetupParams) {
 
   const onMessagePinnedCallback = useCallback(
     (messageId: string, isPinned: boolean, pinnedAt?: string, pinnedById?: string) => {
-      setMessages((prev) => prev.map((m) => m.id === messageId ? { ...m, is_pinned: isPinned, pinned_at: pinnedAt, pinned_by_id: pinnedById } : m));
-    }, [setMessages]);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? { ...m, is_pinned: isPinned, pinned_at: pinnedAt, pinned_by_id: pinnedById }
+            : m
+        )
+      );
+    },
+    [setMessages]
+  );
 
-  const onMessageDeletedCallback = useCallback((messageId: string) => {
-    deletedMessageIdsRef.current.add(messageId);
-    // Soft-delete: mark as deleted instead of removing
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.id === messageId
-          ? { ...m, is_deleted: true, deleted_at: new Date().toISOString(), content: '' }
-          : m
-      )
-    );
-  }, [setMessages, deletedMessageIdsRef]);
+  const onMessageDeletedCallback = useCallback(
+    (messageId: string) => {
+      deletedMessageIdsRef.current.add(messageId);
+      // Soft-delete: mark as deleted instead of removing
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? { ...m, is_deleted: true, deleted_at: new Date().toISOString(), content: '' }
+            : m
+        )
+      );
+    },
+    [setMessages, deletedMessageIdsRef]
+  );
 
   const pinAndDelete = usePinAndDelete({
     conversationId,
@@ -135,22 +148,36 @@ export function useConversationSetup(params: SetupParams) {
 
   const handleStartCall = useCallback((type: 'audio' | 'video') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(`${type === 'video' ? 'Video' : 'Voice'} Call`, `${type === 'video' ? 'Video' : 'Voice'} calls are coming soon! Stay tuned for real-time encrypted calls.`, [{ text: 'Got it', style: 'default' }]);
+    Alert.alert(
+      `${type === 'video' ? 'Video' : 'Voice'} Call`,
+      `${type === 'video' ? 'Video' : 'Voice'} calls are coming soon! Stay tuned for real-time encrypted calls.`,
+      [{ text: 'Got it', style: 'default' }]
+    );
   }, []);
 
   const header = useConversationHeader({
-    navigation, colors: colors as { text: string; textSecondary: string; surface: string; surfaceHover: string },
+    navigation,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    colors: colors as {
+      text: string;
+      textSecondary: string;
+      surface: string;
+      surfaceHover: string;
+    },
     isOtherUserOnline: presence.isOtherUserOnline,
     isOtherUserTyping: showTypingIndicators && presence.isOtherUserTyping,
     otherParticipantLastSeen: presence.otherParticipantLastSeen,
     otherParticipantId,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     otherUser: null as UserBasic | null, // set from outside
     onStartCall: handleStartCall,
     onOpenDisappearingMessages: () => setShowDisappearingMessages(true),
   });
 
   const attachmentUpload = useAttachmentUpload({
-    conversationId, setIsSending, setMessages,
+    conversationId,
+    setIsSending,
+    setMessages,
     closeAttachmentPreview: attachments.closeAttachmentPreview,
     attachmentPreviewAnim: attachments.attachmentPreviewAnim,
     handleImagePicker: attachments.handleImagePicker,
@@ -158,46 +185,78 @@ export function useConversationSetup(params: SetupParams) {
   });
 
   const sendPendingAttachments = useCallback(async () => {
-    await attachmentUpload.sendPendingAttachments(attachments.pendingAttachments, attachments.attachmentCaption);
+    await attachmentUpload.sendPendingAttachments(
+      attachments.pendingAttachments,
+      attachments.attachmentCaption
+    );
   }, [attachmentUpload, attachments.pendingAttachments, attachments.attachmentCaption]);
 
   const voiceAndWave = useVoiceAndWave({
-    conversationId, setIsSending, setIsVoiceMode, setMessages, onScrollToBottom: scrollToBottom,
+    conversationId,
+    setIsSending,
+    setIsVoiceMode,
+    setMessages,
+    onScrollToBottom: scrollToBottom,
   });
 
   const textSending = useTextMessageSending({
-    conversationId, isSending, setIsSending, isE2EEInitialized, otherParticipantId, encryptMessage,
+    conversationId,
+    isSending,
+    setIsSending,
+    isE2EEInitialized,
+    otherParticipantId,
+    encryptMessage,
     replyingTo: messageActions.replyingTo,
     setReplyingTo: messageActions.setReplyingTo,
     stopTypingIndicator: presence.stopTypingIndicator,
-    setMessages, setNewMessageIds, onScrollToBottom: scrollToBottom,
+    setMessages,
+    setNewMessageIds,
+    onScrollToBottom: scrollToBottom,
   });
 
   // GIF handler
-  const handleGifSelect = useCallback(async (gif: GifResult) => {
-    if (isSending) return;
-    setIsSending(true);
-    try {
-      const response = await (await import('../../../../lib/api')).default.post(
-        `/api/v1/conversations/${conversationId}/messages`,
-        { content: gif.url, content_type: 'gif', metadata: { gif_id: gif.id, title: gif.title, preview_url: gif.previewUrl, width: gif.width, height: gif.height } }
-      );
-      if (response.data?.data) {
-        setMessages((prev: Message[]) => [...prev, response.data.data].slice(-500));
-        scrollToBottom();
+  const handleGifSelect = useCallback(
+    async (gif: GifResult) => {
+      if (isSending) return;
+      setIsSending(true);
+      try {
+        const response = await (
+          await import('../../../../lib/api')
+        ).default.post(`/api/v1/conversations/${conversationId}/messages`, {
+          content: gif.url,
+          content_type: 'gif',
+          metadata: {
+            gif_id: gif.id,
+            title: gif.title,
+            preview_url: gif.previewUrl,
+            width: gif.width,
+            height: gif.height,
+          },
+        });
+        if (response.data?.data) {
+          setMessages((prev: Message[]) => [...prev, response.data.data].slice(-500));
+          scrollToBottom();
+        }
+      } catch (error) {
+        logger.error('Failed to send GIF:', error);
+      } finally {
+        setIsSending(false);
       }
-    } catch (error) { logger.error('Failed to send GIF:', error); }
-    finally { setIsSending(false); }
-  }, [conversationId, isSending, setMessages, scrollToBottom]);
+    },
+    [conversationId, isSending, setMessages, scrollToBottom]
+  );
 
   const socketHandlers = useSocketEventHandlers({
-    userId: user?.id, setMessages, scrollToBottom,
+    userId: user?.id,
+    setMessages,
+    scrollToBottom,
     addReactionToMessage: messageReactions.addReactionToMessage,
     removeReactionFromMessage: messageReactions.removeReactionFromMessage,
   });
 
   const _socket = useConversationSocket({
-    conversationId, userId: user?.id,
+    conversationId,
+    userId: user?.id,
     showReadReceipts,
     onNewMessage: socketHandlers.handleSocketNewMessage,
     onMessageUpdated: socketHandlers.handleSocketMessageUpdated,
@@ -228,43 +287,97 @@ export function useConversationSetup(params: SetupParams) {
     handleUnsendBase: pinAndDelete.handleUnsend,
   });
 
-  const handleTextChange = useCallback((text: string) => {
-    if (showTypingIndicators) {
-      presence.handleTextChange(text, textSending.setInputText);
-    } else {
-      textSending.setInputText(text);
-    }
-  }, [presence, textSending.setInputText, showTypingIndicators]);
+  const handleTextChange = useCallback(
+    (text: string) => {
+      if (showTypingIndicators) {
+        presence.handleTextChange(text, textSending.setInputText);
+      } else {
+        textSending.setInputText(text);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [presence, textSending.setInputText, showTypingIndicators]
+  );
 
   const handleAttachmentPickerSelect = useCallback(
-    (assets: Array<{ uri: string; type: 'image' | 'video' | 'file'; name?: string; mimeType?: string; duration?: number }>) => {
+    (
+      assets: Array<{
+        uri: string;
+        type: 'image' | 'video' | 'file';
+        name?: string;
+        mimeType?: string;
+        duration?: number;
+      }>
+    ) => {
       if (assets.length === 0) return;
-      const newAttachments: AttachmentItem[] = assets.map((a) => ({ uri: a.uri, type: a.type as 'image' | 'file' | 'video', name: a.name, mimeType: a.mimeType, duration: a.duration }));
+      const newAttachments: AttachmentItem[] = assets.map((a) => ({
+        uri: a.uri,
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        type: a.type as 'image' | 'file' | 'video',
+        name: a.name,
+        mimeType: a.mimeType,
+        duration: a.duration,
+      }));
       attachments.setPendingAttachments((prev: AttachmentItem[]) => [...prev, ...newAttachments]);
       attachments.openAttachmentPreview();
-    }, [attachments]);
+    },
+    [attachments]
+  );
 
-  const getMessageStatus = useCallback((message: Message, isOwn: boolean) => {
-    if (!isOwn) return null;
-    const status = message.status || (message.read_at ? 'read' : message.delivered_at ? 'delivered' : 'sent');
-    return getMessageStatusInfo(status, colors as { textTertiary: string });
-  }, [colors]);
+  const getMessageStatus = useCallback(
+    (message: Message, isOwn: boolean) => {
+      if (!isOwn) return null;
+      const status =
+        message.status || (message.read_at ? 'read' : message.delivered_at ? 'delivered' : 'sent');
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return getMessageStatusInfo(status, colors as { textTertiary: string });
+    },
+    [colors]
+  );
 
-  const formatTime = useCallback((dateString: string | undefined | null): string => formatSimpleTime(dateString), []);
+  const formatTime = useCallback(
+    (dateString: string | undefined | null): string => formatSimpleTime(dateString),
+    []
+  );
 
   return {
     // state
-    isSending, isVoiceMode, setIsVoiceMode, showGifPicker, setShowGifPicker, newMessageIds,
-    showDisappearingMessages, setShowDisappearingMessages, conversationTTL, setConversationTTL,
+    isSending,
+    isVoiceMode,
+    setIsVoiceMode,
+    showGifPicker,
+    setShowGifPicker,
+    newMessageIds,
+    showDisappearingMessages,
+    setShowDisappearingMessages,
+    conversationTTL,
+    setConversationTTL,
     // refs
-    flatListRef, inputRef, isMountedRef,
+    flatListRef,
+    inputRef,
+    isMountedRef,
     // grouped hooks
-    presence, mediaViewer, messageActions, reactions, attachments,
-    messageReactions, pinAndDelete, header, attachmentUpload,
-    voiceAndWave, textSending, pinned, actionWrappers,
+    presence,
+    mediaViewer,
+    messageActions,
+    reactions,
+    attachments,
+    messageReactions,
+    pinAndDelete,
+    header,
+    attachmentUpload,
+    voiceAndWave,
+    textSending,
+    pinned,
+    actionWrappers,
     // handlers
-    scrollToBottom, handleStartCall, handleGifSelect, handleTextChange,
-    handleAttachmentPickerSelect, sendPendingAttachments,
-    getMessageStatus, formatTime,
+    scrollToBottom,
+    handleStartCall,
+    handleGifSelect,
+    handleTextChange,
+    handleAttachmentPickerSelect,
+    sendPendingAttachments,
+    getMessageStatus,
+    formatTime,
   };
 }

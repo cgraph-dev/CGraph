@@ -44,7 +44,11 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/groups/${groupId}/channels`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setChannels(
         data
           .map((c: Record<string, unknown>) => {
@@ -52,8 +56,11 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
             return {
               id: asString(c.id),
               name: asString(c.name),
-               
-              type: (channelType === 'voice' || channelType === 'announcement' ? channelType : 'text') as 'text' | 'voice' | 'announcement', // type assertion: narrowing validated string to union
+
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              type: (channelType === 'voice' || channelType === 'announcement'
+                ? channelType
+                : 'text') as 'text' | 'voice' | 'announcement', // type assertion: narrowing validated string to union
               topic: asString(c.topic) || null,
               position: asNumber(c.position),
               categoryId: asString(c.category_id) || asString(c.categoryId) || null,
@@ -170,9 +177,16 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
           </div>
         ) : channels.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">No channels yet. Create one to get started.</div>
+          <div className="p-8 text-center text-gray-500">
+            No channels yet. Create one to get started.
+          </div>
         ) : (
-          <Reorder.Group axis="y" values={channels} onReorder={setChannels} className="divide-y divide-gray-700/50">
+          <Reorder.Group
+            axis="y"
+            values={channels}
+            onReorder={setChannels}
+            className="divide-y divide-gray-700/50"
+          >
             {channels.map((channel, index) => (
               <Reorder.Item key={channel.id} value={channel}>
                 <ChannelListItem
@@ -208,9 +222,7 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
           <ChannelPermissionsPanel
             groupId={groupId}
             channelId={permissionsChannelId}
-            channelName={
-              channels.find((c) => c.id === permissionsChannelId)?.name ?? 'channel'
-            }
+            channelName={channels.find((c) => c.id === permissionsChannelId)?.name ?? 'channel'}
             onClose={() => setPermissionsChannelId(null)}
           />
         )}

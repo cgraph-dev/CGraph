@@ -33,7 +33,7 @@ export interface AuthResponse {
   requires2FA?: boolean;
 }
 
-export type AuthError = 
+export type AuthError =
   | 'INVALID_CREDENTIALS'
   | 'EMAIL_NOT_VERIFIED'
   | '2FA_REQUIRED'

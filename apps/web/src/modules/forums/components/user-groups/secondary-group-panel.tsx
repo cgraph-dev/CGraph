@@ -28,6 +28,8 @@ interface SecondaryGroupPanelProps {
   forumId: string;
 }
 
+/** Description. */
+/** Secondary Group Panel component. */
 export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
   const {
     groups,
@@ -55,7 +57,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
         fetchMembers(forumId, groupId);
       }
     },
-    [expandedGroupId, forumId, fetchMembers],
+    [expandedGroupId, forumId, fetchMembers]
   );
 
   const handleRemove = useCallback(
@@ -63,7 +65,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
       if (!window.confirm('Remove this secondary group assignment?')) return;
       await removeSecondaryGroup(forumId, membershipId);
     },
-    [forumId, removeSecondaryGroup],
+    [forumId, removeSecondaryGroup]
   );
 
   const isExpiringSoon = (expiresAt: string | null): boolean => {
@@ -78,7 +80,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
       acc[m.groupId]!.push(m);
       return acc;
     },
-    {},
+    {}
   );
 
   return (
@@ -91,7 +93,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
         </div>
         <button
           onClick={() => setShowAssignForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-white transition-colors hover:bg-purple-700"
         >
           <PlusIcon className="h-4 w-4" />
           Assign to User
@@ -99,10 +101,11 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
       </div>
 
       {/* OR-logic explanation */}
-      <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.08]">
+      <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-3">
         <p className="text-xs text-gray-400">
-          <strong className="text-gray-300">OR-logic stacking:</strong> Users with multiple secondary
-          groups inherit the <em>union</em> of all group permissions. Any &quot;allow&quot; from any group grants access.
+          <strong className="text-gray-300">OR-logic stacking:</strong> Users with multiple
+          secondary groups inherit the <em>union</em> of all group permissions. Any
+          &quot;allow&quot; from any group grants access.
         </p>
       </div>
 
@@ -112,15 +115,18 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
           const members = membersByGroup[group.id] || [];
           const isExpanded = expandedGroupId === group.id;
           return (
-            <div key={group.id} className="bg-white/[0.04] rounded-lg border border-white/[0.08] overflow-hidden">
+            <div
+              key={group.id}
+              className="overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.04]"
+            >
               {/* Group header */}
               <button
                 onClick={() => handleExpand(group.id)}
-                className="w-full flex items-center justify-between p-4 hover:bg-gray-750 transition-colors"
+                className="hover:bg-gray-750 flex w-full items-center justify-between p-4 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-3 h-3 rounded-full"
+                    className="h-3 w-3 rounded-full"
                     style={{ backgroundColor: group.color || '#6b7280' }}
                   />
                   <span className="font-medium text-white">{group.name}</span>
@@ -128,7 +134,9 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
                     {group.memberCount} member{group.memberCount !== 1 ? 's' : ''}
                   </span>
                   {group.type === 'system' && (
-                    <span className="px-1.5 py-0.5 text-xs bg-blue-900 text-blue-300 rounded">System</span>
+                    <span className="rounded bg-blue-900 px-1.5 py-0.5 text-xs text-blue-300">
+                      System
+                    </span>
                   )}
                 </div>
                 {isExpanded ? (
@@ -149,7 +157,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
                   >
                     {isLoadingMembers ? (
                       <div className="p-4 text-center">
-                        <div className="animate-spin h-5 w-5 border-2 border-purple-500 border-t-transparent rounded-full mx-auto" />
+                        <div className="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
                       </div>
                     ) : members.length === 0 ? (
                       <div className="p-4 text-center text-sm text-gray-400">
@@ -158,17 +166,22 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
                     ) : (
                       <div className="divide-y divide-gray-700">
                         {members.map((member) => (
-                          <div key={member.id} className="flex items-center justify-between px-4 py-3">
+                          <div
+                            key={member.id}
+                            className="flex items-center justify-between px-4 py-3"
+                          >
                             <div>
                               <span className="text-sm text-white">
                                 {member.displayName || member.username || member.userId}
                               </span>
                               {member.expiresAt && (
-                                <span className={`ml-2 inline-flex items-center gap-1 text-xs ${
-                                  isExpiringSoon(member.expiresAt)
-                                    ? 'text-amber-400'
-                                    : 'text-gray-400'
-                                }`}>
+                                <span
+                                  className={`ml-2 inline-flex items-center gap-1 text-xs ${
+                                    isExpiringSoon(member.expiresAt)
+                                      ? 'text-amber-400'
+                                      : 'text-gray-400'
+                                  }`}
+                                >
                                   {isExpiringSoon(member.expiresAt) ? (
                                     <ExclamationTriangleIcon className="h-3 w-3" />
                                   ) : (
@@ -178,12 +191,14 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
                                 </span>
                               )}
                               {member.reason && (
-                                <span className="ml-2 text-xs text-gray-500">— {member.reason}</span>
+                                <span className="ml-2 text-xs text-gray-500">
+                                  — {member.reason}
+                                </span>
                               )}
                             </div>
                             <button
                               onClick={() => handleRemove(member.id)}
-                              className="p-1.5 text-gray-400 hover:text-red-400 rounded transition-colors"
+                              className="rounded p-1.5 text-gray-400 transition-colors hover:text-red-400"
                               title="Remove"
                             >
                               <TrashIcon className="h-4 w-4" />
@@ -201,7 +216,7 @@ export function SecondaryGroupPanel({ forumId }: SecondaryGroupPanelProps) {
       </div>
 
       {groups.length === 0 && (
-        <div className="text-center py-8 text-gray-400">
+        <div className="py-8 text-center text-gray-400">
           No groups available. Create groups first.
         </div>
       )}
@@ -259,67 +274,79 @@ function AssignForm({ groups, onAssign, onClose }: AssignFormProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className="bg-white/[0.04] rounded-xl border border-white/[0.08] w-full max-w-md p-6"
+        className="w-full max-w-md rounded-xl border border-white/[0.08] bg-white/[0.04] p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-lg font-bold mb-4">Assign Secondary Group</h3>
+        <h3 className="mb-4 text-lg font-bold">Assign Secondary Group</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">User ID / Username</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">
+              User ID / Username
+            </label>
             <input
               type="text"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
               placeholder="Enter user ID or username"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Group</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">Group</label>
             <select
               value={groupId}
               onChange={(e) => setGroupId(e.target.value)}
-              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
             >
               {groups.map((g) => (
-                <option key={g.id} value={g.id}>{g.name}</option>
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Expires At (optional)</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">
+              Expires At (optional)
+            </label>
             <input
               type="datetime-local"
               value={expiresAt}
               onChange={(e) => setExpiresAt(e.target.value)}
-              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Reason (optional)</label>
+            <label className="mb-1 block text-sm font-medium text-gray-300">
+              Reason (optional)
+            </label>
             <input
               type="text"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full px-3 py-2 bg-[rgb(30,32,40)] border border-white/[0.08] rounded-lg text-white"
+              className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
               placeholder="e.g., Premium subscription"
             />
           </div>
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-gray-400 hover:text-white transition-colors">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-400 transition-colors hover:text-white"
+            >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving || !userId.trim()}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-purple-600 px-4 py-2 text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
             >
               {saving ? 'Assigning...' : 'Assign'}
             </button>

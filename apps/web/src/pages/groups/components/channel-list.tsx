@@ -50,10 +50,7 @@ export function ChannelList({
             transition={{ delay: 0.2 }}
             className="p-4 text-center"
           >
-            <motion.div
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={loop(tweens.glacial)}
-            >
+            <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={loop(tweens.glacial)}>
               <UserGroupIcon className="mx-auto mb-3 h-12 w-12 text-primary-400" />
             </motion.div>
             <p className="text-gray-400">Select a server to view channels</p>

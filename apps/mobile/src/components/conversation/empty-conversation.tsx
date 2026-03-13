@@ -94,9 +94,7 @@ export const EmptyConversation = memo(function EmptyConversation({
 
       {/* Cute message with animated emoji */}
       <View style={styles.messageRow}>
-        <Animated.Text style={[styles.waveEmoji, waveAnimatedStyle]}>
-          👋
-        </Animated.Text>
+        <Animated.Text style={[styles.waveEmoji, waveAnimatedStyle]}>👋</Animated.Text>
         <Text style={[styles.messageText, { color: colors.textSecondary }]}>
           This is the very beginning of your{'\n'}conversation with {otherName}
         </Text>

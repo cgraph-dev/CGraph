@@ -196,7 +196,7 @@ export function restoreFromBackup(): boolean {
       return false;
     }
 
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const backup = JSON.parse(backupData) as Record<string, string>; // safe downcast – structural boundary
 
     Object.entries(LEGACY_KEYS).forEach(([name, key]) => {

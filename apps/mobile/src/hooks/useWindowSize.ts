@@ -14,11 +14,11 @@ interface WindowSize {
 
 /**
  * Hook that returns the current window dimensions.
- * 
+ *
  * Automatically updates when the window size changes (orientation, etc.)
- * 
+ *
  * @returns current window dimensions
- * 
+ *
  * @example
  * const { width, height } = useWindowSize();
  * const isLandscape = width > height;

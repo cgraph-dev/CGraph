@@ -20,6 +20,7 @@ import { EmptyStateProps } from '../types';
 import { styles } from '../styles';
 
 /**
+ * Empty State component.
  *
  */
 export function EmptyState({

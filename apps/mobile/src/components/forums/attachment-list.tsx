@@ -4,15 +4,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Linking,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Linking, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { PostAttachment } from '@/types';
 
@@ -22,12 +14,10 @@ interface AttachmentListProps {
 }
 
 /**
+ * Attachment List component.
  *
  */
-export default function AttachmentList({
-  attachments,
-  onDownload,
-}: AttachmentListProps) {
+export default function AttachmentList({ attachments, onDownload }: AttachmentListProps) {
   if (!attachments || attachments.length === 0) return null;
 
   const formatFileSize = (bytes: number): string => {
@@ -64,9 +54,7 @@ export default function AttachmentList({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>
-        Attachments ({attachments.length})
-      </Text>
+      <Text style={styles.header}>Attachments ({attachments.length})</Text>
       <View style={styles.list}>
         {attachments.map((attachment) => (
           <TouchableOpacity
@@ -96,9 +84,7 @@ export default function AttachmentList({
                 {attachment.original_filename}
               </Text>
               <View style={styles.meta}>
-                <Text style={styles.metaText}>
-                  {formatFileSize(attachment.file_size)}
-                </Text>
+                <Text style={styles.metaText}>{formatFileSize(attachment.file_size)}</Text>
                 {attachment.downloads > 0 && (
                   <>
                     <Text style={styles.separator}>•</Text>

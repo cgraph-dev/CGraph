@@ -69,6 +69,7 @@ export interface AnimatedGradientState {
 // ============================================================================
 
 /**
+ * Interpolate color.
  *
  */
 export function interpolateColor(color1: string, color2: string, t: number): string {
@@ -80,6 +81,7 @@ export function interpolateColor(color1: string, color2: string, t: number): str
 }
 
 /**
+ * Lighten color.
  *
  */
 export function lightenColor(color: string, amount: number): string {
@@ -91,6 +93,7 @@ export function lightenColor(color: string, amount: number): string {
 }
 
 /**
+ * Darken color.
  *
  */
 export function darkenColor(color: string, amount: number): string {
@@ -102,6 +105,7 @@ export function darkenColor(color: string, amount: number): string {
 }
 
 /**
+ * Saturate color.
  *
  */
 export function saturateColor(color: string, amount: number): string {
@@ -113,6 +117,7 @@ export function saturateColor(color: string, amount: number): string {
 }
 
 /**
+ * Sets color alpha.
  *
  */
 export function setColorAlpha(color: string, alpha: number): string {
@@ -124,6 +129,7 @@ export function setColorAlpha(color: string, alpha: number): string {
 }
 
 /**
+ * Generate color scale.
  *
  */
 export function generateColorScale(baseColor: string, steps: number = 9): string[] {
@@ -414,6 +420,7 @@ export const SHADOW_PRESETS: Record<ShadowPreset, ShadowConfig> = {
 // ============================================================================
 
 /**
+ * Creates linear gradient.
  *
  */
 export function createLinearGradient(config: GradientConfig): {
@@ -444,6 +451,7 @@ export function createLinearGradient(config: GradientConfig): {
 }
 
 /**
+ * Creates radial gradient.
  *
  */
 export function createRadialGradient(config: GradientConfig): {
@@ -465,6 +473,7 @@ export function createRadialGradient(config: GradientConfig): {
 // ============================================================================
 
 /**
+ * Interpolate gradient stops.
  *
  */
 export function interpolateGradientStops(
@@ -490,6 +499,7 @@ export function interpolateGradientStops(
 }
 
 /**
+ * Rotate gradient stops.
  *
  */
 export function rotateGradientStops(stops: GradientStop[], offset: number): GradientStop[] {
@@ -502,6 +512,7 @@ export function rotateGradientStops(stops: GradientStop[], offset: number): Grad
 }
 
 /**
+ * Calculates animated angle.
  *
  */
 export function calculateAnimatedAngle(baseAngle: number, time: number, duration: number): number {
@@ -514,6 +525,7 @@ export function calculateAnimatedAngle(baseAngle: number, time: number, duration
 // ============================================================================
 
 /**
+ * Creates glow style.
  *
  */
 export function createGlowStyle(config: GlowConfig): ViewStyle {
@@ -529,6 +541,7 @@ export function createGlowStyle(config: GlowConfig): ViewStyle {
 }
 
 /**
+ * Creates multi layer glow.
  *
  */
 export function createMultiLayerGlow(config: GlowConfig, layers: number = 3): ViewStyle[] {
@@ -553,6 +566,7 @@ export function createMultiLayerGlow(config: GlowConfig, layers: number = 3): Vi
 // ============================================================================
 
 /**
+ * Creates shadow style.
  *
  */
 export function createShadowStyle(config: ShadowConfig): ViewStyle {
@@ -569,6 +583,7 @@ export function createShadowStyle(config: ShadowConfig): ViewStyle {
 }
 
 /**
+ * Gets elevation shadow.
  *
  */
 export function getElevationShadow(elevation: number): ViewStyle {
@@ -599,6 +614,7 @@ export interface BorderGradientConfig {
 }
 
 /**
+ * Creates border gradient colors.
  *
  */
 export function createBorderGradientColors(
@@ -618,7 +634,7 @@ export function createBorderGradientColors(
   const radians = (angle * Math.PI) / 180;
 
   return {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     colors: config.colors as [string, string, ...string[]],
     start: {
       x: 0.5 - Math.cos(radians) * 0.5,

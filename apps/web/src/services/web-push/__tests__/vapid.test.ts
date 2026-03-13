@@ -63,7 +63,8 @@ describe('urlBase64ToUint8Array', () => {
   it('should handle a real VAPID-sized key (65 bytes)', () => {
     // A typical VAPID public key is 65 bytes (uncompressed P-256 point)
     // base64url of 65 bytes = 88 chars (ceil(65*4/3))
-    const mockKey = 'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XkBBKkM5EzE7VqMv87kM9KY';
+    const mockKey =
+      'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XkBBKkM5EzE7VqMv87kM9KY';
     const result = urlBase64ToUint8Array(mockKey);
 
     expect(result).toBeInstanceOf(Uint8Array);

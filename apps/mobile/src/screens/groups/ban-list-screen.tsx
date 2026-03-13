@@ -46,30 +46,50 @@ export default function BanListScreen({ route }: Props) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchBans = useCallback(async (isRefresh = false) => {
-    try {
-      if (!isRefresh) setLoading(true);
-      const res = await api.get(`/api/v1/groups/${groupId}/bans`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
-      setBans(
-        data.map((b: Record<string, unknown>) => ({
-          id: (b.id ?? b.user_id ?? '') as string,
-          userId: (b.user_id ?? b.userId ?? '') as string,
-          username: (b.username ?? (b.user as Record<string, unknown>)?.username ?? 'unknown') as string,
-          avatarUrl: (b.avatar_url ?? (b.user as Record<string, unknown>)?.avatar_url ?? null) as string | null,
-          reason: (b.reason ?? null) as string | null,
-          bannedBy: (b.banned_by_username ?? b.bannedBy ?? null) as string | null,
-          bannedAt: (b.banned_at ?? b.bannedAt ?? b.inserted_at ?? '') as string,
-          expiresAt: (b.expires_at ?? b.expiresAt ?? null) as string | null,
-        }))
-      );
-    } catch {
-      if (!isRefresh) Alert.alert('Error', 'Failed to load ban list');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [groupId]);
+  const fetchBans = useCallback(
+    async (isRefresh = false) => {
+      try {
+        if (!isRefresh) setLoading(true);
+        const res = await api.get(`/api/v1/groups/${groupId}/bans`);
+        const data = Array.isArray(res.data?.data)
+          ? res.data.data
+          : Array.isArray(res.data)
+            ? res.data
+            : [];
+        setBans(
+          data.map((b: Record<string, unknown>) => ({
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            id: (b.id ?? b.user_id ?? '') as string,
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            userId: (b.user_id ?? b.userId ?? '') as string,
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            username: (b.username ??
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              (b.user as Record<string, unknown>)?.username ??
+              'unknown') as string,
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            avatarUrl: (b.avatar_url ?? (b.user as Record<string, unknown>)?.avatar_url ?? null) as
+              | string
+              | null,
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            reason: (b.reason ?? null) as string | null,
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            bannedBy: (b.banned_by_username ?? b.bannedBy ?? null) as string | null,
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            bannedAt: (b.banned_at ?? b.bannedAt ?? b.inserted_at ?? '') as string,
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            expiresAt: (b.expires_at ?? b.expiresAt ?? null) as string | null,
+          }))
+        );
+      } catch {
+        if (!isRefresh) Alert.alert('Error', 'Failed to load ban list');
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [groupId]
+  );
 
   useEffect(() => {
     fetchBans();
@@ -142,17 +162,19 @@ export default function BanListScreen({ route }: Props) {
         )}
 
         <View style={styles.banFooter}>
-          <View style={[styles.expiryBadge, { backgroundColor: item.expiresAt ? colors.warning + '20' : colors.error + '15' }]}>
+          <View
+            style={[
+              styles.expiryBadge,
+              { backgroundColor: item.expiresAt ? colors.warning + '20' : colors.error + '15' },
+            ]}
+          >
             <Ionicons
               name={item.expiresAt ? 'time-outline' : 'infinite-outline'}
               size={14}
               color={item.expiresAt ? colors.warning : colors.error}
             />
             <Text
-              style={[
-                styles.expiryText,
-                { color: item.expiresAt ? colors.warning : colors.error },
-              ]}
+              style={[styles.expiryText, { color: item.expiresAt ? colors.warning : colors.error }]}
             >
               {formatExpiry(item.expiresAt)}
             </Text>

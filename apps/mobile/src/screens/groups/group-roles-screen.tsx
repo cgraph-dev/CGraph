@@ -70,7 +70,7 @@ const PERMISSION_BITS: Record<string, number> = {
   manage_nicknames: 1 << 21,
   manage_emojis: 1 << 22,
   manage_automod: 1 << 23,
-  administrator: 1 << 31 >>> 0, // unsigned shift for bit 31
+  administrator: (1 << 31) >>> 0, // unsigned shift for bit 31
 };
 
 interface PermissionDef {
@@ -83,10 +83,26 @@ const PERMISSION_CATEGORIES: { title: string; data: PermissionDef[] }[] = [
   {
     title: 'General',
     data: [
-      { key: 'view_channels', label: 'View Channels', description: 'Allows viewing text and voice channels' },
-      { key: 'manage_channels', label: 'Manage Channels', description: 'Create, edit, and delete channels' },
-      { key: 'manage_group', label: 'Manage Group', description: 'Edit group name, icon, and settings' },
-      { key: 'administrator', label: 'Administrator', description: 'Full access — bypasses all permission checks' },
+      {
+        key: 'view_channels',
+        label: 'View Channels',
+        description: 'Allows viewing text and voice channels',
+      },
+      {
+        key: 'manage_channels',
+        label: 'Manage Channels',
+        description: 'Create, edit, and delete channels',
+      },
+      {
+        key: 'manage_group',
+        label: 'Manage Group',
+        description: 'Edit group name, icon, and settings',
+      },
+      {
+        key: 'administrator',
+        label: 'Administrator',
+        description: 'Full access — bypasses all permission checks',
+      },
     ],
   },
   {
@@ -96,17 +112,33 @@ const PERMISSION_CATEGORIES: { title: string; data: PermissionDef[] }[] = [
       { key: 'ban_members', label: 'Ban Members', description: 'Permanently ban members' },
       { key: 'create_invites', label: 'Create Invites', description: 'Create invite links' },
       { key: 'change_nickname', label: 'Change Nickname', description: 'Change own nickname' },
-      { key: 'manage_nicknames', label: 'Manage Nicknames', description: "Change other members' nicknames" },
+      {
+        key: 'manage_nicknames',
+        label: 'Manage Nicknames',
+        description: "Change other members' nicknames",
+      },
     ],
   },
   {
     title: 'Text',
     data: [
-      { key: 'send_messages', label: 'Send Messages', description: 'Send messages in text channels' },
+      {
+        key: 'send_messages',
+        label: 'Send Messages',
+        description: 'Send messages in text channels',
+      },
       { key: 'send_files', label: 'Send Files', description: 'Upload files and images' },
       { key: 'embed_links', label: 'Embed Links', description: 'Links will show previews' },
-      { key: 'manage_messages', label: 'Manage Messages', description: 'Delete or pin messages by others' },
-      { key: 'read_message_history', label: 'Read Message History', description: 'View older messages' },
+      {
+        key: 'manage_messages',
+        label: 'Manage Messages',
+        description: 'Delete or pin messages by others',
+      },
+      {
+        key: 'read_message_history',
+        label: 'Read Message History',
+        description: 'View older messages',
+      },
     ],
   },
   {
@@ -115,19 +147,39 @@ const PERMISSION_CATEGORIES: { title: string; data: PermissionDef[] }[] = [
       { key: 'connect_voice', label: 'Connect', description: 'Join voice channels' },
       { key: 'speak_voice', label: 'Speak', description: 'Speak in voice channels' },
       { key: 'mute_members', label: 'Mute Members', description: 'Mute other members in voice' },
-      { key: 'deafen_members', label: 'Deafen Members', description: 'Deafen other members in voice' },
-      { key: 'move_members', label: 'Move Members', description: 'Move members between voice channels' },
+      {
+        key: 'deafen_members',
+        label: 'Deafen Members',
+        description: 'Deafen other members in voice',
+      },
+      {
+        key: 'move_members',
+        label: 'Move Members',
+        description: 'Move members between voice channels',
+      },
     ],
   },
   {
     title: 'Advanced',
     data: [
       { key: 'add_reactions', label: 'Add Reactions', description: 'React to messages' },
-      { key: 'use_external_emojis', label: 'Use External Emojis', description: 'Use emojis from other groups' },
-      { key: 'mention_everyone', label: 'Mention Everyone', description: 'Use @everyone and @here' },
+      {
+        key: 'use_external_emojis',
+        label: 'Use External Emojis',
+        description: 'Use emojis from other groups',
+      },
+      {
+        key: 'mention_everyone',
+        label: 'Mention Everyone',
+        description: 'Use @everyone and @here',
+      },
       { key: 'manage_emojis', label: 'Manage Emojis', description: 'Add and remove custom emojis' },
       { key: 'manage_roles', label: 'Manage Roles', description: 'Create and edit roles' },
-      { key: 'manage_automod', label: 'Manage Automod', description: 'Configure automatic moderation rules' },
+      {
+        key: 'manage_automod',
+        label: 'Manage Automod',
+        description: 'Configure automatic moderation rules',
+      },
     ],
   },
 ];
@@ -149,10 +201,24 @@ function togglePermission(bitmask: number, bit: number): number {
 // ============================================================================
 
 const PRESET_COLORS = [
-  '#99AAB5', '#1ABC9C', '#2ECC71', '#3498DB', '#9B59B6',
-  '#E91E63', '#F1C40F', '#E67E22', '#E74C3C', '#11806A',
-  '#1F8B4C', '#206694', '#71368A', '#AD1457', '#C27C0E',
-  '#A84300', '#992D22', '#FFFFFF',
+  '#99AAB5',
+  '#1ABC9C',
+  '#2ECC71',
+  '#3498DB',
+  '#9B59B6',
+  '#E91E63',
+  '#F1C40F',
+  '#E67E22',
+  '#E74C3C',
+  '#11806A',
+  '#1F8B4C',
+  '#206694',
+  '#71368A',
+  '#AD1457',
+  '#C27C0E',
+  '#A84300',
+  '#992D22',
+  '#FFFFFF',
 ];
 
 // ============================================================================
@@ -160,9 +226,10 @@ const PRESET_COLORS = [
 // ============================================================================
 
 /**
+ * Group Roles Screen component.
  *
  */
-export default function GroupRolesScreen({ navigation, route }: Props) {
+export default function GroupRolesScreen({ _navigation, route }: Props) {
   const { groupId } = route.params;
   const { colors } = useThemeStore();
   const [roles, setRoles] = useState<Role[]>([]);
@@ -180,7 +247,11 @@ export default function GroupRolesScreen({ navigation, route }: Props) {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/groups/${groupId}/roles`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setRoles(data.sort((a: Role, b: Role) => b.position - a.position));
     } catch {
       Alert.alert('Error', 'Failed to load roles');
@@ -210,7 +281,7 @@ export default function GroupRolesScreen({ navigation, route }: Props) {
         permissions: editedPermissions,
       });
       setRoles((prev) =>
-        prev.map((r) => (r.id === selectedRole.id ? { ...r, permissions: editedPermissions } : r)),
+        prev.map((r) => (r.id === selectedRole.id ? { ...r, permissions: editedPermissions } : r))
       );
       setSelectedRole((prev) => (prev ? { ...prev, permissions: editedPermissions } : null));
       Alert.alert('Saved', 'Permissions updated successfully');
@@ -284,10 +355,18 @@ export default function GroupRolesScreen({ navigation, route }: Props) {
           <TouchableOpacity onPress={() => setSelectedRole(null)} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <View style={[styles.roleColorDot, { backgroundColor: selectedRole.color || colors.textSecondary }]} />
+          <View
+            style={[
+              styles.roleColorDot,
+              { backgroundColor: selectedRole.color || colors.textSecondary },
+            ]}
+          />
           <Text style={[styles.editorTitle, { color: colors.text }]}>{selectedRole.name}</Text>
           {!selectedRole.is_default && (
-            <TouchableOpacity onPress={() => handleDeleteRole(selectedRole)} style={styles.deleteBtn}>
+            <TouchableOpacity
+              onPress={() => handleDeleteRole(selectedRole)}
+              style={styles.deleteBtn}
+            >
               <Ionicons name="trash-outline" size={20} color="#E74C3C" />
             </TouchableOpacity>
           )}
@@ -309,7 +388,9 @@ export default function GroupRolesScreen({ navigation, route }: Props) {
               <View style={[styles.permRow, { backgroundColor: colors.surface }]}>
                 <View style={styles.permInfo}>
                   <Text style={[styles.permLabel, { color: colors.text }]}>{item.label}</Text>
-                  <Text style={[styles.permDesc, { color: colors.textSecondary }]}>{item.description}</Text>
+                  <Text style={[styles.permDesc, { color: colors.textSecondary }]}>
+                    {item.description}
+                  </Text>
                 </View>
                 <Switch
                   value={enabled}
@@ -357,7 +438,10 @@ export default function GroupRolesScreen({ navigation, route }: Props) {
 
           <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>Name</Text>
           <TextInput
-            style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border }]}
+            style={[
+              styles.input,
+              { backgroundColor: colors.surface, color: colors.text, borderColor: colors.border },
+            ]}
             value={newRoleName}
             onChangeText={setNewRoleName}
             placeholder="Role name"
@@ -365,14 +449,19 @@ export default function GroupRolesScreen({ navigation, route }: Props) {
             maxLength={100}
           />
 
-          <Text style={[styles.fieldLabel, { color: colors.textSecondary, marginTop: 16 }]}>Color</Text>
+          <Text style={[styles.fieldLabel, { color: colors.textSecondary, marginTop: 16 }]}>
+            Color
+          </Text>
           <View style={styles.colorGrid}>
             {PRESET_COLORS.map((c) => (
               <TouchableOpacity
                 key={c}
                 style={[
                   styles.colorSwatch,
-                  { backgroundColor: c, borderColor: newRoleColor === c ? colors.primary : 'transparent' },
+                  {
+                    backgroundColor: c,
+                    borderColor: newRoleColor === c ? colors.primary : 'transparent',
+                  },
                 ]}
                 onPress={() => setNewRoleColor(c)}
               />
@@ -425,9 +514,13 @@ export default function GroupRolesScreen({ navigation, route }: Props) {
               onPress={() => handleSelectRole(item)}
               onLongPress={() => handleDeleteRole(item)}
             >
-              <View style={[styles.roleColor, { backgroundColor: item.color || colors.textSecondary }]} />
+              <View
+                style={[styles.roleColor, { backgroundColor: item.color || colors.textSecondary }]}
+              />
               <View style={styles.roleInfo}>
-                <Text style={[styles.roleName, { color: item.color || colors.text }]}>{item.name}</Text>
+                <Text style={[styles.roleName, { color: item.color || colors.text }]}>
+                  {item.name}
+                </Text>
                 {item.memberCount !== undefined && (
                   <Text style={[styles.roleMeta, { color: colors.textSecondary }]}>
                     {item.memberCount} member{item.memberCount !== 1 ? 's' : ''}
@@ -442,7 +535,9 @@ export default function GroupRolesScreen({ navigation, route }: Props) {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="shield-outline" size={48} color={colors.textTertiary} />
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No custom roles yet</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              No custom roles yet
+            </Text>
           </View>
         }
       />

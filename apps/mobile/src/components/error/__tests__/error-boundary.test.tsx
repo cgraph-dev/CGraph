@@ -24,7 +24,7 @@ jest.mock('expo-haptics', () => ({
 
 // Mock expo-linear-gradient
 jest.mock('expo-linear-gradient', () => {
-   
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View } = require('react-native');
   return {
     LinearGradient: ({ children, style }: { children: React.ReactNode; style?: object }) => (

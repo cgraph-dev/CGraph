@@ -44,7 +44,9 @@ const initialState = {
   isLoadingPayouts: false,
   isLoadingAnalytics: false,
   error: null,
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
   premiumThreads: [] as any[],
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
   tiers: [] as any[],
   isLoadingPremium: false,
 };
@@ -67,7 +69,7 @@ export const useCreatorStore = create<CreatorState>()(
             stripeAccountId: data.stripeAccountId ?? null,
             isLoading: false,
           });
-        } catch (err) {
+        } catch (_err) {
           set({ isLoading: false, error: 'Failed to fetch creator status' });
         }
       },
@@ -87,8 +89,14 @@ export const useCreatorStore = create<CreatorState>()(
         try {
           const data = await creatorService.requestPayout(amount);
           // Refresh balance and payouts after payout request
-          creatorService.getBalance().then((b) => set({ balance: b })).catch(() => {});
-          creatorService.listPayouts().then((p) => set({ payouts: p })).catch(() => {});
+          creatorService
+            .getBalance()
+            .then((b) => set({ balance: b }))
+            .catch(() => {});
+          creatorService
+            .listPayouts()
+            .then((p) => set({ payouts: p }))
+            .catch(() => {});
           set({ isLoading: false });
           return data;
         } catch {
@@ -199,6 +207,6 @@ export const useCreatorStore = create<CreatorState>()(
         onboardingComplete: state.onboardingComplete,
         creatorStatus: state.creatorStatus,
       }),
-    },
-  ),
+    }
+  )
 );

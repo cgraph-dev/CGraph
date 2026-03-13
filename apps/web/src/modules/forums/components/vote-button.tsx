@@ -57,7 +57,13 @@ function AnimatedCount({ value, className }: { value: number; className?: string
 
 function UpArrow({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className={cn('h-4 w-4', className)}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      className={cn('h-4 w-4', className)}
+    >
       <path d="M12 4l-7 7h4v9h6v-9h4l-7-7z" fill="currentColor" stroke="none" />
     </svg>
   );
@@ -65,7 +71,13 @@ function UpArrow({ className }: { className?: string }) {
 
 function DownArrow({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className={cn('h-4 w-4', className)}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      className={cn('h-4 w-4', className)}
+    >
       <path d="M12 20l7-7h-4v-9h-6v9h-4l7 7z" fill="currentColor" stroke="none" />
     </svg>
   );
@@ -73,6 +85,8 @@ function DownArrow({ className }: { className?: string }) {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Vote Button component. */
 export function VoteButton({
   count,
   userVote = null,
@@ -107,7 +121,7 @@ export function VoteButton({
       setLocalCount((prev) => prev + delta);
       onVote?.(newVote);
     },
-    [localVote, onVote],
+    [localVote, onVote]
   );
 
   const sizeClasses = size === 'sm' ? 'text-xs' : 'text-sm';
@@ -121,7 +135,7 @@ export function VoteButton({
           whileTap={{ scale: 0.85, rotate: -15 }}
           className={cn(
             'rounded p-1 transition-colors',
-            localVote === 'up' ? 'text-primary-400' : 'text-gray-500 hover:text-gray-300',
+            localVote === 'up' ? 'text-primary-400' : 'text-gray-500 hover:text-gray-300'
           )}
         >
           <UpArrow className={size === 'sm' ? 'h-3 w-3' : 'h-4 w-4'} />
@@ -133,7 +147,7 @@ export function VoteButton({
             'min-w-[20px] font-bold',
             localVote === 'up' && 'text-primary-400',
             localVote === 'down' && 'text-red-400',
-            !localVote && 'text-gray-400',
+            !localVote && 'text-gray-400'
           )}
         />
 
@@ -143,7 +157,7 @@ export function VoteButton({
           whileTap={{ scale: 0.85, rotate: 15 }}
           className={cn(
             'rounded p-1 transition-colors',
-            localVote === 'down' ? 'text-red-400' : 'text-gray-500 hover:text-gray-300',
+            localVote === 'down' ? 'text-red-400' : 'text-gray-500 hover:text-gray-300'
           )}
         >
           <DownArrow className={size === 'sm' ? 'h-3 w-3' : 'h-4 w-4'} />
@@ -163,7 +177,7 @@ export function VoteButton({
           'rounded-md p-1 transition-colors',
           localVote === 'up'
             ? 'bg-primary-600/20 text-primary-400'
-            : 'text-gray-500 hover:bg-white/[0.06] hover:text-gray-300',
+            : 'text-gray-500 hover:bg-white/[0.06] hover:text-gray-300'
         )}
       >
         <UpArrow className={size === 'sm' ? 'h-3.5 w-3.5' : 'h-5 w-5'} />
@@ -175,7 +189,7 @@ export function VoteButton({
           'min-w-[24px] font-bold',
           localVote === 'up' && 'text-primary-400',
           localVote === 'down' && 'text-red-400',
-          !localVote && 'text-gray-400',
+          !localVote && 'text-gray-400'
         )}
       />
 
@@ -187,7 +201,7 @@ export function VoteButton({
           'rounded-md p-1 transition-colors',
           localVote === 'down'
             ? 'bg-red-500/20 text-red-400'
-            : 'text-gray-500 hover:bg-white/[0.06] hover:text-gray-300',
+            : 'text-gray-500 hover:bg-white/[0.06] hover:text-gray-300'
         )}
       >
         <DownArrow className={size === 'sm' ? 'h-3.5 w-3.5' : 'h-5 w-5'} />

@@ -45,8 +45,7 @@ export const LottieRenderer = memo(function LottieRenderer({
   }, [autoplay, play]);
 
   // Build fallback URI
-  const fallback =
-    fallbackSrc || (codepoint ? getWebPFallbackUrl(codepoint) : undefined);
+  const fallback = fallbackSrc || (codepoint ? getWebPFallbackUrl(codepoint) : undefined);
 
   // Show fallback for reduced motion, missing source, or while loading
   if (reducedMotion || (!source && !isLoading)) {

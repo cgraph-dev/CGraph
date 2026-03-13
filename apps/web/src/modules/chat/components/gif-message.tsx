@@ -40,15 +40,20 @@ export function GifMessage({
   const [showFullscreen, setShowFullscreen] = useState(false);
 
   // Extract GIF metadata
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const gifUrl = (message.metadata?.gifUrl as string) || message.metadata?.url || message.content; // type assertion: message metadata field
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const gifPreviewUrl = message.metadata?.gifPreviewUrl as string; // type assertion: message metadata field
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const gifTitle = (message.metadata?.gifTitle as string) || 'GIF'; // type assertion: message metadata field
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const gifWidth = message.metadata?.gifWidth as number; // type assertion: message metadata field
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const gifHeight = message.metadata?.gifHeight as number; // type assertion: message metadata field
 
   // Calculate aspect ratio for proper sizing
@@ -210,7 +215,7 @@ export function GifMessage({
               />
 
               {/* GIF Info */}
-              <div className="mt-4 rounded-lg bg-white/[0.04]/90 p-3 text-center backdrop-blur-sm">
+              <div className="bg-white/[0.04]/90 mt-4 rounded-lg p-3 text-center backdrop-blur-sm">
                 <p className="text-sm font-medium text-white">{gifTitle}</p>
                 {gifWidth && gifHeight && (
                   <p className="mt-1 text-xs text-gray-400">

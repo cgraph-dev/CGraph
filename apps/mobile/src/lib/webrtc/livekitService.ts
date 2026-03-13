@@ -17,7 +17,7 @@ import {
   ConnectionState,
   type RemoteParticipant,
   type RemoteTrackPublication,
-  type LocalParticipant,
+  type _LocalParticipant,
   type Participant,
   type RoomOptions,
 } from 'livekit-client';
@@ -68,11 +68,7 @@ class MobileLiveKitServiceImpl {
    * @param opts - Optional room configuration
    * @returns Connected Room instance
    */
-  async connect(
-    url: string,
-    token: string,
-    opts?: Partial<RoomOptions>
-  ): Promise<Room> {
+  async connect(url: string, token: string, opts?: Partial<RoomOptions>): Promise<Room> {
     const room = new Room({
       adaptiveStream: true,
       dynacast: true,
@@ -97,10 +93,7 @@ class MobileLiveKitServiceImpl {
    *
    * @param cameraFacing - 'front' or 'back' camera
    */
-  async publishVideoTrack(
-    room: Room,
-    cameraFacing: 'front' | 'back' = 'front'
-  ): Promise<void> {
+  async publishVideoTrack(room: Room, _cameraFacing: 'front' | 'back' = 'front'): Promise<void> {
     await room.localParticipant.setCameraEnabled(true);
   }
 
@@ -125,10 +118,7 @@ class MobileLiveKitServiceImpl {
   /**
    * Register event handlers on a room.
    */
-  attachEventHandlers(
-    room: Room,
-    handlers: MobileLiveKitEventHandler
-  ): () => void {
+  attachEventHandlers(room: Room, handlers: MobileLiveKitEventHandler): () => void {
     const cleanups: (() => void)[] = [];
 
     if (handlers.onParticipantConnected) {
@@ -144,49 +134,31 @@ class MobileLiveKitServiceImpl {
         handlers.onParticipantDisconnected?.(participant.identity);
       };
       room.on(RoomEvent.ParticipantDisconnected, handler);
-      cleanups.push(() =>
-        room.off(RoomEvent.ParticipantDisconnected, handler)
-      );
+      cleanups.push(() => room.off(RoomEvent.ParticipantDisconnected, handler));
     }
 
     if (handlers.onTrackSubscribed) {
       room.on(RoomEvent.TrackSubscribed, handlers.onTrackSubscribed);
-      cleanups.push(() =>
-        room.off(RoomEvent.TrackSubscribed, handlers.onTrackSubscribed!)
-      );
+      cleanups.push(() => room.off(RoomEvent.TrackSubscribed, handlers.onTrackSubscribed!));
     }
 
     if (handlers.onActiveSpeakersChanged) {
-      room.on(
-        RoomEvent.ActiveSpeakersChanged,
-        handlers.onActiveSpeakersChanged
-      );
+      room.on(RoomEvent.ActiveSpeakersChanged, handlers.onActiveSpeakersChanged);
       cleanups.push(() =>
-        room.off(
-          RoomEvent.ActiveSpeakersChanged,
-          handlers.onActiveSpeakersChanged!
-        )
+        room.off(RoomEvent.ActiveSpeakersChanged, handlers.onActiveSpeakersChanged!)
       );
     }
 
     if (handlers.onConnectionStateChanged) {
-      room.on(
-        RoomEvent.ConnectionStateChanged,
-        handlers.onConnectionStateChanged
-      );
+      room.on(RoomEvent.ConnectionStateChanged, handlers.onConnectionStateChanged);
       cleanups.push(() =>
-        room.off(
-          RoomEvent.ConnectionStateChanged,
-          handlers.onConnectionStateChanged!
-        )
+        room.off(RoomEvent.ConnectionStateChanged, handlers.onConnectionStateChanged!)
       );
     }
 
     if (handlers.onDisconnected) {
       room.on(RoomEvent.Disconnected, handlers.onDisconnected);
-      cleanups.push(() =>
-        room.off(RoomEvent.Disconnected, handlers.onDisconnected!)
-      );
+      cleanups.push(() => room.off(RoomEvent.Disconnected, handlers.onDisconnected!));
     }
 
     return () => {
@@ -224,9 +196,7 @@ class MobileLiveKitServiceImpl {
    * Disconnect from all rooms.
    */
   async disconnectAll(): Promise<void> {
-    const promises = Array.from(this.rooms.values()).map((room) =>
-      room.disconnect(true)
-    );
+    const promises = Array.from(this.rooms.values()).map((room) => room.disconnect(true));
     await Promise.all(promises);
     this.rooms.clear();
   }
@@ -248,9 +218,7 @@ function mapParticipant(participant: RemoteParticipant): MobileLiveKitParticipan
   };
 }
 
-function mapConnectionQuality(
-  quality: number
-): 'excellent' | 'good' | 'poor' | 'unknown' {
+function mapConnectionQuality(quality: number): 'excellent' | 'good' | 'poor' | 'unknown' {
   switch (quality) {
     case 3:
       return 'excellent';

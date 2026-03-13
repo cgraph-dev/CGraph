@@ -12,7 +12,12 @@ export { AnimatedText } from './animated-text';
 export type { AnimatedTextProps } from './animated-text';
 export { AnimatedButton } from './animated-button';
 export type { AnimatedButtonProps } from './animated-button';
-export { AnimatedList, AnimatedImage, AnimatedCounter, AnimatedProgress } from './animated-data-components';
+export {
+  AnimatedList,
+  AnimatedImage,
+  AnimatedCounter,
+  AnimatedProgress,
+} from './animated-data-components';
 export type {
   AnimatedListProps,
   AnimatedImageProps,
@@ -23,7 +28,12 @@ export type {
 import { AnimatedView } from './animated-view';
 import { AnimatedText } from './animated-text';
 import { AnimatedButton } from './animated-button';
-import { AnimatedList, AnimatedImage, AnimatedCounter, AnimatedProgress } from './animated-data-components';
+import {
+  AnimatedList,
+  AnimatedImage,
+  AnimatedCounter,
+  AnimatedProgress,
+} from './animated-data-components';
 import { ENTERING_PRESETS, EXITING_PRESETS, LAYOUT_PRESETS } from './animation-presets';
 
 const AnimatedComponents = {

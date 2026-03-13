@@ -68,6 +68,8 @@ const statusColors: Record<string, string> = {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Navigation Sidebar component. */
 export function NavigationSidebar({
   user,
   privateChannels = [],
@@ -84,14 +86,14 @@ export function NavigationSidebar({
   const [deafened, setDeafened] = useState(false);
 
   return (
-    <div className="w-[240px] h-full bg-[#2b2d31] flex flex-col">
+    <div className="flex h-full w-[240px] flex-col bg-[#2b2d31]">
       {/* Header — Search */}
-      <button className="h-12 px-3 flex items-center border-b border-black/20 hover:bg-white/[0.04] transition-colors">
+      <button className="flex h-12 items-center border-b border-black/20 px-3 transition-colors hover:bg-white/[0.04]">
         <span className="text-sm text-white/30">Find or start a conversation</span>
       </button>
 
       {/* Nav items */}
-      <div className="px-2 pt-2 space-y-0.5">
+      <div className="space-y-0.5 px-2 pt-2">
         {/* Friends */}
         <NavButton
           icon={<UserGroupIcon className="h-5 w-5" />}
@@ -101,27 +103,21 @@ export function NavigationSidebar({
         />
 
         {/* Nitro / Shop (placeholder) */}
-        <NavButton
-          icon={<SignalIcon className="h-5 w-5" />}
-          label="Shop"
-        />
+        <NavButton icon={<SignalIcon className="h-5 w-5" />} label="Shop" />
       </div>
 
       {/* Direct Messages header */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-1">
-        <span className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">
+      <div className="flex items-center justify-between px-4 pb-1 pt-4">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-white/30">
           Direct Messages
         </span>
-        <button
-          onClick={onNewDm}
-          className="text-white/30 hover:text-white/60 transition-colors"
-        >
+        <button onClick={onNewDm} className="text-white/30 transition-colors hover:text-white/60">
           <PlusIcon className="h-4 w-4" />
         </button>
       </div>
 
       {/* Channel list */}
-      <div className="flex-1 overflow-y-auto px-2 space-y-0.5">
+      <div className="flex-1 space-y-0.5 overflow-y-auto px-2">
         <AnimatePresence initial={false}>
           {privateChannels.map((ch) => (
             <motion.button
@@ -132,10 +128,10 @@ export function NavigationSidebar({
               exit={{ opacity: 0, x: -8 }}
               onClick={() => onChannelClick?.(ch.id)}
               className={cn(
-                'w-full flex items-center gap-3 px-2 py-1.5 rounded-md text-left transition-colors group',
+                'group flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors',
                 activeChannelId === ch.id
                   ? 'bg-white/[0.08] text-white'
-                  : 'text-white/40 hover:bg-white/[0.04] hover:text-white/60',
+                  : 'text-white/40 hover:bg-white/[0.04] hover:text-white/60'
               )}
             >
               {/* Avatar */}
@@ -143,7 +139,7 @@ export function NavigationSidebar({
                 {ch.avatar ? (
                   <img src={ch.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
                 ) : (
-                  <div className="h-8 w-8 rounded-full bg-white/[0.08] flex items-center justify-center text-xs font-semibold">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.08] text-xs font-semibold">
                     {ch.isGroup ? (
                       <UserGroupIcon className="h-4 w-4" />
                     ) : (
@@ -152,26 +148,26 @@ export function NavigationSidebar({
                   </div>
                 )}
                 {ch.isOnline && !ch.isGroup && (
-                  <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-[#2b2d31]" />
+                  <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#2b2d31] bg-green-500" />
                 )}
               </div>
 
               {/* Info */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1">
-                  <span className="text-sm font-medium truncate">{ch.name}</span>
+                  <span className="truncate text-sm font-medium">{ch.name}</span>
                   {ch.isGroup && ch.memberCount && (
                     <span className="text-[10px] text-white/20">{ch.memberCount}</span>
                   )}
                 </div>
                 {ch.lastMessage && (
-                  <p className="text-[11px] text-white/20 truncate">{ch.lastMessage}</p>
+                  <p className="truncate text-[11px] text-white/20">{ch.lastMessage}</p>
                 )}
               </div>
 
               {/* Unread badge */}
               {ch.unreadCount != null && ch.unreadCount > 0 && (
-                <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center shrink-0">
+                <span className="min-w-[16px] shrink-0 rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white">
                   {ch.unreadCount}
                 </span>
               )}
@@ -181,28 +177,28 @@ export function NavigationSidebar({
       </div>
 
       {/* User area */}
-      <div className="h-[52px] px-2 flex items-center gap-1 bg-[#232428] border-t border-black/20">
+      <div className="flex h-[52px] items-center gap-1 border-t border-black/20 bg-[#232428] px-2">
         {/* Avatar + name */}
-        <div className="flex items-center gap-2 flex-1 min-w-0 px-1 py-1 rounded hover:bg-white/[0.04] cursor-pointer">
+        <div className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded px-1 py-1 hover:bg-white/[0.04]">
           <div className="relative shrink-0">
             {user?.avatar ? (
               <img src={user.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
             ) : (
-              <div className="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center text-xs font-bold text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white">
                 {user?.name?.charAt(0)?.toUpperCase() || '?'}
               </div>
             )}
             <div
               className={cn(
                 'absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#232428]',
-                statusColors[user?.status || 'offline'],
+                statusColors[user?.status || 'offline']
               )}
             />
           </div>
           <div className="min-w-0">
-            <p className="text-[13px] font-semibold text-white truncate">{user?.name || 'User'}</p>
+            <p className="truncate text-[13px] font-semibold text-white">{user?.name || 'User'}</p>
             {user?.customStatus && (
-              <p className="text-[10px] text-white/30 truncate">{user.customStatus}</p>
+              <p className="truncate text-[10px] text-white/30">{user.customStatus}</p>
             )}
           </div>
         </div>
@@ -211,29 +207,29 @@ export function NavigationSidebar({
         <button
           onClick={() => setMuted((m) => !m)}
           className={cn(
-            'p-1.5 rounded hover:bg-white/[0.08] transition-colors',
-            muted ? 'text-red-400' : 'text-white/40',
+            'rounded p-1.5 transition-colors hover:bg-white/[0.08]',
+            muted ? 'text-red-400' : 'text-white/40'
           )}
         >
           <MicrophoneIcon className="h-4 w-4" />
           {muted && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[2px] h-5 bg-red-400 rotate-45 rounded-full" />
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <div className="h-5 w-[2px] rotate-45 rounded-full bg-red-400" />
             </div>
           )}
         </button>
         <button
           onClick={() => setDeafened((d) => !d)}
           className={cn(
-            'p-1.5 rounded hover:bg-white/[0.08] transition-colors',
-            deafened ? 'text-red-400' : 'text-white/40',
+            'rounded p-1.5 transition-colors hover:bg-white/[0.08]',
+            deafened ? 'text-red-400' : 'text-white/40'
           )}
         >
           <SpeakerWaveIcon className="h-4 w-4" />
         </button>
         <button
           onClick={onSettingsClick}
-          className="p-1.5 rounded text-white/40 hover:bg-white/[0.08] hover:text-white/60 transition-colors"
+          className="rounded p-1.5 text-white/40 transition-colors hover:bg-white/[0.08] hover:text-white/60"
         >
           <Cog6ToothIcon className="h-4 w-4" />
         </button>
@@ -258,12 +254,12 @@ function NavButton({
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-2 py-2 rounded-md text-white/50 hover:bg-white/[0.04] hover:text-white/80 transition-colors"
+      className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-white/50 transition-colors hover:bg-white/[0.04] hover:text-white/80"
     >
       {icon}
-      <span className="text-sm font-medium flex-1 text-left">{label}</span>
+      <span className="flex-1 text-left text-sm font-medium">{label}</span>
       {badge != null && badge > 0 && (
-        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
+        <span className="min-w-[16px] rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white">
           {badge}
         </span>
       )}

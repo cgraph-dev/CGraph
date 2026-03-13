@@ -14,8 +14,18 @@ import { socketManager } from '@/lib/socket';
 const PRESENCE_MODES = [
   { id: 'online', label: 'Online', color: 'bg-green-500', description: 'Visible to everyone' },
   { id: 'away', label: 'Away', color: 'bg-yellow-500', description: 'Show as idle' },
-  { id: 'dnd', label: 'Do Not Disturb', color: 'bg-red-500', description: 'Suppress notifications' },
-  { id: 'invisible', label: 'Invisible', color: 'bg-gray-500', description: 'Appear offline to others' },
+  {
+    id: 'dnd',
+    label: 'Do Not Disturb',
+    color: 'bg-red-500',
+    description: 'Suppress notifications',
+  },
+  {
+    id: 'invisible',
+    label: 'Invisible',
+    color: 'bg-gray-500',
+    description: 'Appear offline to others',
+  },
 ] as const;
 
 interface CustomStatusModalProps {
@@ -38,8 +48,22 @@ const STATUS_PRESETS = [
 ];
 
 const QUICK_EMOJIS = [
-  '😊', '😎', '🤔', '😢', '🎉', '🔥', '💪', '🎮',
-  '💻', '📚', '🎵', '☕', '🌙', '✨', '💜', '🚀',
+  '😊',
+  '😎',
+  '🤔',
+  '😢',
+  '🎉',
+  '🔥',
+  '💪',
+  '🎮',
+  '💻',
+  '📚',
+  '🎵',
+  '☕',
+  '🌙',
+  '✨',
+  '💜',
+  '🚀',
 ];
 
 const EXPIRY_OPTIONS = [
@@ -186,7 +210,10 @@ export function CustomStatusModal({
             {/* Header */}
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-bold text-white">Set Custom Status</h2>
-              <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:bg-white/[0.08]">
+              <button
+                onClick={onClose}
+                className="rounded-lg p-1 text-gray-400 hover:bg-white/[0.08]"
+              >
                 <XMarkIcon className="h-5 w-5" />
               </button>
             </div>
@@ -201,7 +228,7 @@ export function CustomStatusModal({
                     onClick={() => setPresenceMode(mode.id)}
                     className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all ${
                       presenceMode === mode.id
-                        ? 'bg-white/[0.06] ring-1 ring-primary-500/40 text-white'
+                        ? 'bg-white/[0.06] text-white ring-1 ring-primary-500/40'
                         : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.08] hover:text-gray-300'
                     }`}
                   >

@@ -52,4 +52,4 @@ export function AuthCardHeader({
       )}
     </div>
   );
-};
+}

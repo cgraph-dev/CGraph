@@ -24,10 +24,7 @@ import {
   VideoCameraIcon,
   ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
-import {
-  UserPlusIcon,
-  Cog6ToothIcon,
-} from '@heroicons/react/24/solid';
+import { UserPlusIcon, Cog6ToothIcon } from '@heroicons/react/24/solid';
 import Tooltip from '@/components/ui/tooltip';
 import { springs } from '@/lib/animation-presets';
 import { cn } from '@/lib/utils';
@@ -59,6 +56,8 @@ const typeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Channel List Item component. */
 export function ChannelListItem({ channel, className }: ChannelListItemProps) {
   const { groupId } = useParams();
   const [hovered, setHovered] = useState(false);
@@ -80,7 +79,7 @@ export function ChannelListItem({ channel, className }: ChannelListItemProps) {
           className={cn(
             'relative flex items-center gap-1.5 rounded-md px-2 py-[5px] transition-colors',
             isActive && 'bg-white/[0.08]',
-            channel.isMuted && 'opacity-40',
+            channel.isMuted && 'opacity-40'
           )}
         >
           {/* Unread left dot */}
@@ -106,7 +105,7 @@ export function ChannelListItem({ channel, className }: ChannelListItemProps) {
             className={cn(
               'relative h-4 w-4 flex-shrink-0',
               isActive ? 'text-white' : 'text-gray-500',
-              hasUnread && !isActive && 'text-gray-300',
+              hasUnread && !isActive && 'text-gray-300'
             )}
           />
 
@@ -116,7 +115,7 @@ export function ChannelListItem({ channel, className }: ChannelListItemProps) {
               'relative flex-1 truncate text-[15px]',
               isActive ? 'font-semibold text-white' : 'font-medium text-gray-500',
               hasUnread && !isActive && 'font-semibold text-gray-200',
-              channel.isMuted && 'text-gray-600',
+              channel.isMuted && 'text-gray-600'
             )}
           >
             {channel.name}

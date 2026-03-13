@@ -83,21 +83,18 @@ export function ForwardMessageModal({
     });
   }, [conversations, searchQuery]);
 
-  const handleToggle = useCallback(
-    (id: string) => {
-      setSelectedIds((prev) => {
-        const next = new Set(prev);
-        if (next.has(id)) {
-          next.delete(id);
-        } else if (next.size < 5) {
-          next.add(id);
-        }
-        return next;
-      });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    },
-    []
-  );
+  const handleToggle = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else if (next.size < 5) {
+        next.add(id);
+      }
+      return next;
+    });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, []);
 
   const handleForward = useCallback(async () => {
     if (!message || selectedIds.size === 0 || isForwarding) return;
@@ -115,6 +112,7 @@ export function ForwardMessageModal({
     } finally {
       setIsForwarding(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message, selectedIds, isForwarding, onSuccess]);
 
   const handleClose = useCallback(() => {
@@ -153,12 +151,12 @@ export function ForwardMessageModal({
         >
           {/* Avatar */}
           <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
+            {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
             {(item as any).avatar_url ? (
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
               <Image source={{ uri: (item as any).avatar_url }} style={styles.avatarImage} />
             ) : (
-              <Text style={styles.avatarText}>
-                {(item.name || '?').charAt(0).toUpperCase()}
-              </Text>
+              <Text style={styles.avatarText}>{(item.name || '?').charAt(0).toUpperCase()}</Text>
             )}
           </View>
 
@@ -237,7 +235,12 @@ export function ForwardMessageModal({
           </View>
 
           {/* Message preview */}
-          <View style={[styles.preview, { borderColor: `${colors.primary}40`, backgroundColor: `${colors.primary}10` }]}>
+          <View
+            style={[
+              styles.preview,
+              { borderColor: `${colors.primary}40`, backgroundColor: `${colors.primary}10` },
+            ]}
+          >
             <Text style={[styles.previewLabel, { color: colors.primary }]}>MESSAGE PREVIEW</Text>
             <Text style={[styles.previewText, { color: colors.text }]} numberOfLines={3}>
               {getMessagePreview()}
@@ -245,7 +248,12 @@ export function ForwardMessageModal({
           </View>
 
           {/* Search */}
-          <View style={[styles.searchContainer, { backgroundColor: colors.input, borderColor: colors.border }]}>
+          <View
+            style={[
+              styles.searchContainer,
+              { backgroundColor: colors.input, borderColor: colors.border },
+            ]}
+          >
             <Ionicons name="search" size={18} color={colors.textSecondary} />
             <TextInput
               style={[styles.searchInput, { color: colors.text }]}

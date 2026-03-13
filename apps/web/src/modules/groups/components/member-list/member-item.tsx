@@ -58,10 +58,11 @@ export function RoleSection({ role, members, onMemberClick }: RoleSectionProps) 
  */
 export function MemberItem({ member, roleColor, onClick }: MemberItemProps) {
   const validStatuses: StatusType[] = ['online', 'idle', 'dnd', 'offline'];
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const status: StatusType = validStatuses.includes(member.user.status as StatusType)
-     
-    ? (member.user.status as StatusType) // type assertion: validated by includes() check above
+    ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      (member.user.status as StatusType) // type assertion: validated by includes() check above
     : 'offline';
   const displayName = member.nickname || member.user.displayName || member.user.username;
 

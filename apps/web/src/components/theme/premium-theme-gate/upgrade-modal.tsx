@@ -95,7 +95,7 @@ export function UpgradeModal({ requiredTier, onClose }: UpgradeModalProps) {
                   className={`relative rounded-2xl border-2 p-6 ${
                     plan.highlighted
                       ? `${config.borderColor} bg-white/[0.06]`
-                      : 'border-gray-700 bg-white/[0.04]/40'
+                      : 'bg-white/[0.04]/40 border-gray-700'
                   }`}
                 >
                   {plan.highlighted && (

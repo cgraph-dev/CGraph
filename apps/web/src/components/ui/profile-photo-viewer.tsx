@@ -6,13 +6,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
-import {
-  createContext,
-  use,
-  useState,
-  useCallback,
-  type ReactNode,
-} from 'react';
+import { createContext, use, useState, useCallback, type ReactNode } from 'react';
 import { tweens, springs } from '@/lib/animation-presets';
 
 // ── Types ──────────────────────────────────────────────────
@@ -30,8 +24,7 @@ interface ProfilePhotoViewerContextValue {
 }
 
 // ── Context ────────────────────────────────────────────────
-const ProfilePhotoViewerContext =
-  createContext<ProfilePhotoViewerContextValue | null>(null);
+const ProfilePhotoViewerContext = createContext<ProfilePhotoViewerContextValue | null>(null);
 
 /**
  * unknown for the ui module.
@@ -42,9 +35,7 @@ const ProfilePhotoViewerContext =
 export function useProfilePhotoViewer() {
   const ctx = use(ProfilePhotoViewerContext);
   if (!ctx) {
-    throw new Error(
-      'useProfilePhotoViewer must be used within ProfilePhotoViewerProvider',
-    );
+    throw new Error('useProfilePhotoViewer must be used within ProfilePhotoViewerProvider');
   }
   return ctx;
 }
@@ -56,11 +47,7 @@ export function useProfilePhotoViewer() {
 /**
  * Profile Photo Viewer Provider — context provider wrapper.
  */
-export function ProfilePhotoViewerProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function ProfilePhotoViewerProvider({ children }: { children: ReactNode }) {
   const [activePhoto, setActivePhoto] = useState<ProfilePhoto | null>(null);
 
   const open = useCallback((photo: ProfilePhoto) => {
@@ -74,9 +61,7 @@ export function ProfilePhotoViewerProvider({
   }, []);
 
   return (
-    <ProfilePhotoViewerContext.Provider
-      value={{ open, close, activeId: activePhoto?.id ?? null }}
-    >
+    <ProfilePhotoViewerContext.Provider value={{ open, close, activeId: activePhoto?.id ?? null }}>
       {children}
 
       {/* Fullscreen overlay */}
@@ -100,7 +85,7 @@ export function ProfilePhotoViewerProvider({
 
             {/* Close button */}
             <motion.button
-              className="absolute right-4 top-4 z-10 rounded-full bg-white/[0.08] backdrop-blur-md p-2.5 text-white transition-colors hover:bg-white/[0.16]"
+              className="absolute right-4 top-4 z-10 rounded-full bg-white/[0.08] p-2.5 text-white backdrop-blur-md transition-colors hover:bg-white/[0.16]"
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
               onClick={close}
@@ -194,21 +179,16 @@ export function ClickableAvatar({
       transition={springs.snappy}
       style={{ width: size, height: size }}
     >
-      {children ?? (
-        src ? (
-          <img
-            src={src}
-            alt={alt}
-            className="h-full w-full rounded-full object-cover"
-          />
+      {children ??
+        (src ? (
+          <img src={src} alt={alt} className="h-full w-full rounded-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700">
             <span className="font-semibold text-white">
               {fallback ?? alt.charAt(0).toUpperCase()}
             </span>
           </div>
-        )
-      )}
+        ))}
     </motion.div>
   );
 }

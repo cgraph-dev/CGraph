@@ -64,6 +64,7 @@ const DEFAULT_COLORS = [
 ];
 
 /**
+ * Confetti Celebration component.
  *
  */
 export default function ConfettiCelebration({
@@ -93,8 +94,12 @@ export default function ConfettiCelebration({
         opacity: new Animated.Value(1),
         color: colors[Math.floor(Math.random() * colors.length)],
         size: 8 + Math.random() * 8,
-         
-        shape: ['square', 'rectangle', 'circle'][Math.floor(Math.random() * 3)] as 'square' | 'rectangle' | 'circle',
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        shape: ['square', 'rectangle', 'circle'][Math.floor(Math.random() * 3)] as
+          | 'square'
+          | 'rectangle'
+          | 'circle',
       }));
 
       setPieces(newPieces);
@@ -102,7 +107,7 @@ export default function ConfettiCelebration({
       // Animate based on pattern
       const animations = newPieces.map((piece, index) => {
         const delay = index * (duration / count / 3);
-        
+
         let xTarget: number;
         let yTarget: number;
         let startX = SCREEN_WIDTH / 2;

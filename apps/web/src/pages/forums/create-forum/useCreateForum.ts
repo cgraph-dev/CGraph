@@ -109,7 +109,8 @@ export function useCreateForum() {
       navigate(`/forums/${forum.slug}`);
     } catch (err: unknown) {
       logger.error('[CreateForum] Error:', err);
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const errorObj = err as {
         response?: {
           data?: {

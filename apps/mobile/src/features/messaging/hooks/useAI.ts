@@ -22,21 +22,20 @@ import type {
   SentimentResult,
 } from '@/services/aiService';
 
+/** Description. */
+/** Hook for a i. */
 export function useAI() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const summarize = useCallback(
-    async (
-      conversationId: string,
-      messageIds?: string[]
-    ): Promise<ConversationSummary | null> => {
+    async (conversationId: string, messageIds?: string[]): Promise<ConversationSummary | null> => {
       setIsLoading(true);
       setError(null);
       try {
         const result = await aiService.summarizeConversation(conversationId, messageIds);
         return result;
-      } catch (e) {
+      } catch (_e) {
         setError('Failed to summarize conversation');
         return null;
       } finally {
@@ -46,56 +45,47 @@ export function useAI() {
     []
   );
 
-  const smartReplies = useCallback(
-    async (messageId: string): Promise<SmartReply[] | null> => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const result = await aiService.generateSmartReplies(messageId);
-        return result;
-      } catch (e) {
-        setError('Failed to generate smart replies');
-        return null;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+  const smartReplies = useCallback(async (messageId: string): Promise<SmartReply[] | null> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await aiService.generateSmartReplies(messageId);
+      return result;
+    } catch (_e) {
+      setError('Failed to generate smart replies');
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  const moderate = useCallback(
-    async (content: string): Promise<ModerationResult | null> => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const result = await aiService.moderateContent(content);
-        return result;
-      } catch (e) {
-        setError('Failed to moderate content');
-        return null;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+  const moderate = useCallback(async (content: string): Promise<ModerationResult | null> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await aiService.moderateContent(content);
+      return result;
+    } catch (_e) {
+      setError('Failed to moderate content');
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-  const analyzeSentiment = useCallback(
-    async (content: string): Promise<SentimentResult | null> => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const result = await aiService.analyzeSentiment(content);
-        return result;
-      } catch (e) {
-        setError('Failed to analyze sentiment');
-        return null;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+  const analyzeSentiment = useCallback(async (content: string): Promise<SentimentResult | null> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await aiService.analyzeSentiment(content);
+      return result;
+    } catch (_e) {
+      setError('Failed to analyze sentiment');
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   return {
     isLoading,

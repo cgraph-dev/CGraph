@@ -51,6 +51,8 @@ const TABS: { key: MediaTab; label: string }[] = [
   { key: 'links', label: 'Links' },
 ];
 
+/** Description. */
+/** Shared Media Grid component. */
 export function SharedMediaGrid({
   media = [],
   files = [],
@@ -76,7 +78,7 @@ export function SharedMediaGrid({
               'flex-1 rounded-md py-1.5 text-xs font-medium transition-colors',
               activeTab === tab.key
                 ? 'bg-white/[0.08] text-white'
-                : 'text-white/40 hover:text-white/60',
+                : 'text-white/40 hover:text-white/60'
             )}
           >
             {tab.label}
@@ -180,11 +182,7 @@ export function SharedMediaGrid({
                   className="flex items-center gap-2 rounded-md px-2 py-2 transition-colors hover:bg-white/[0.04]"
                 >
                   {link.thumbnailUrl ? (
-                    <img
-                      src={link.thumbnailUrl}
-                      alt=""
-                      className="h-8 w-8 rounded object-cover"
-                    />
+                    <img src={link.thumbnailUrl} alt="" className="h-8 w-8 rounded object-cover" />
                   ) : (
                     <div className="flex h-8 w-8 items-center justify-center rounded bg-white/[0.06] text-xs text-white/40">
                       🔗
@@ -207,9 +205,7 @@ export function SharedMediaGrid({
 }
 
 function EmptyTab({ label }: { label: string }) {
-  return (
-    <p className="py-8 text-center text-xs text-white/20">{label}</p>
-  );
+  return <p className="py-8 text-center text-xs text-white/20">{label}</p>;
 }
 
 function getFileIcon(type: string): string {

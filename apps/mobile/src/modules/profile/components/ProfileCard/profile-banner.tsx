@@ -46,6 +46,7 @@ export function ProfileBanner({ bannerUrl, theme, width, height }: ProfileBanner
   }
 
   const palette = BORDER_THEME_PALETTES[theme ?? 'COSMIC'];
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const colors = [palette[0], palette[1] ?? palette[0]] as [string, string];
 
   return (

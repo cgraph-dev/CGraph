@@ -46,7 +46,7 @@ interface PermTemplate {
   is_system: boolean;
 }
 
-interface Board {
+interface _Board {
   id: string;
   name: string;
 }
@@ -57,10 +57,21 @@ type Props = {
 };
 
 const PERM_KEYS = [
-  'can_view', 'can_view_threads', 'can_create_threads', 'can_reply',
-  'can_edit_own_posts', 'can_delete_own_posts', 'can_upload_attachments',
-  'can_create_polls', 'can_vote_polls', 'can_moderate', 'can_edit_posts',
-  'can_delete_posts', 'can_move_threads', 'can_lock_threads', 'can_pin_threads',
+  'can_view',
+  'can_view_threads',
+  'can_create_threads',
+  'can_reply',
+  'can_edit_own_posts',
+  'can_delete_own_posts',
+  'can_upload_attachments',
+  'can_create_polls',
+  'can_vote_polls',
+  'can_moderate',
+  'can_edit_posts',
+  'can_delete_posts',
+  'can_move_threads',
+  'can_lock_threads',
+  'can_pin_threads',
 ];
 
 const LEVEL_COLORS: Record<PermLevel, { bg: string; text: string }> = {
@@ -71,6 +82,7 @@ const LEVEL_COLORS: Record<PermLevel, { bg: string; text: string }> = {
 
 // ── Screen ───────────────────────────────────────────────────────────────
 
+/** Board Permissions Screen component. */
 export default function BoardPermissionsScreen({ route }: Props) {
   const { forumId, boardId, boardName } = route.params;
   const { colors } = useThemeStore();
@@ -89,7 +101,9 @@ export default function BoardPermissionsScreen({ route }: Props) {
         api.get(`/api/v1/boards/${boardId}/permissions`),
         api.get(`/api/v1/forums/${forumId}/permission-templates`),
       ]);
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       setPerms((permsRes.data?.permissions || []) as BoardPerm[]);
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       setTemplates((templatesRes.data?.templates || []) as PermTemplate[]);
     } catch {
       // silent
@@ -99,52 +113,61 @@ export default function BoardPermissionsScreen({ route }: Props) {
     }
   }, [boardId, forumId]);
 
-  useEffect(() => { fetchPerms(); }, [fetchPerms]);
+  useEffect(() => {
+    fetchPerms();
+  }, [fetchPerms]);
 
-  const handleRefresh = () => { setRefreshing(true); fetchPerms(); };
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchPerms();
+  };
 
-  const handleTogglePerm = useCallback(async (groupId: string, key: string, current: PermLevel) => {
-    const cycle: PermLevel[] = ['inherit', 'allow', 'deny'];
-    const nextIdx = (cycle.indexOf(current) + 1) % cycle.length;
-    const next = cycle[nextIdx];
+  const handleTogglePerm = useCallback(
+    async (groupId: string, key: string, current: PermLevel) => {
+      const cycle: PermLevel[] = ['inherit', 'allow', 'deny'];
+      const nextIdx = (cycle.indexOf(current) + 1) % cycle.length;
+      const next = cycle[nextIdx];
 
-    // Optimistic update
-    setPerms((prev) =>
-      prev.map((p) =>
-        p.group_id === groupId
-          ? { ...p, permissions: { ...p.permissions, [key]: next } }
-          : p,
-      ),
-    );
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      // Optimistic update
+      setPerms((prev) =>
+        prev.map((p) =>
+          p.group_id === groupId ? { ...p, permissions: { ...p.permissions, [key]: next } } : p
+        )
+      );
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    try {
-      const perm = perms.find((p) => p.group_id === groupId);
-      const updatedPerms = { ...perm?.permissions, [key]: next };
-      await api.put(`/api/v1/boards/${boardId}/permissions`, {
-        group_id: groupId,
-        permissions: updatedPerms,
-      });
-    } catch {
-      fetchPerms(); // revert
-    }
-  }, [boardId, perms, fetchPerms]);
+      try {
+        const perm = perms.find((p) => p.group_id === groupId);
+        const updatedPerms = { ...perm?.permissions, [key]: next };
+        await api.put(`/api/v1/boards/${boardId}/permissions`, {
+          group_id: groupId,
+          permissions: updatedPerms,
+        });
+      } catch {
+        fetchPerms(); // revert
+      }
+    },
+    [boardId, perms, fetchPerms]
+  );
 
-  const handleApplyTemplate = useCallback(async (templateId: string) => {
-    setSaving(true);
-    try {
-      await api.post(`/api/v1/boards/${boardId}/permissions/apply-template`, {
-        template_id: templateId,
-      });
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setShowTemplateModal(false);
-      fetchPerms();
-    } catch {
-      Alert.alert('Error', 'Failed to apply template');
-    } finally {
-      setSaving(false);
-    }
-  }, [boardId, fetchPerms]);
+  const handleApplyTemplate = useCallback(
+    async (templateId: string) => {
+      setSaving(true);
+      try {
+        await api.post(`/api/v1/boards/${boardId}/permissions/apply-template`, {
+          template_id: templateId,
+        });
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        setShowTemplateModal(false);
+        fetchPerms();
+      } catch {
+        Alert.alert('Error', 'Failed to apply template');
+      } finally {
+        setSaving(false);
+      }
+    },
+    [boardId, fetchPerms]
+  );
 
   if (loading) {
     return (
@@ -157,7 +180,13 @@ export default function BoardPermissionsScreen({ route }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={colors.primary} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+          />
+        }
       >
         {/* Board header */}
         <View style={styles.boardHeader}>
@@ -175,6 +204,7 @@ export default function BoardPermissionsScreen({ route }: Props) {
 
         {/* Legend */}
         <View style={styles.legend}>
+          {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
           {(['inherit', 'allow', 'deny'] as PermLevel[]).map((level) => (
             <View key={level} style={styles.legendItem}>
               <View style={[styles.legendDot, { backgroundColor: LEVEL_COLORS[level].bg }]} />
@@ -187,13 +217,23 @@ export default function BoardPermissionsScreen({ route }: Props) {
 
         {/* Group list with expandable permissions */}
         {perms.map((perm) => (
-          <View key={perm.group_id} style={[styles.groupCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View
+            key={perm.group_id}
+            style={[
+              styles.groupCard,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
             <TouchableOpacity
-              onPress={() => setExpandedGroupId(expandedGroupId === perm.group_id ? null : perm.group_id)}
+              onPress={() =>
+                setExpandedGroupId(expandedGroupId === perm.group_id ? null : perm.group_id)
+              }
               style={styles.groupRow}
             >
               <View style={styles.groupInfo}>
-                <View style={[styles.colorDot, { backgroundColor: perm.group_color || '#6b7280' }]} />
+                <View
+                  style={[styles.colorDot, { backgroundColor: perm.group_color || '#6b7280' }]}
+                />
                 <Text style={[styles.groupName, { color: colors.text }]}>{perm.group_name}</Text>
               </View>
               <Ionicons
@@ -214,6 +254,7 @@ export default function BoardPermissionsScreen({ route }: Props) {
                       </Text>
                       {/* Segmented control */}
                       <View style={styles.segmented}>
+                        {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
                         {(['inherit', 'allow', 'deny'] as PermLevel[]).map((l) => (
                           <TouchableOpacity
                             key={l}
@@ -226,7 +267,9 @@ export default function BoardPermissionsScreen({ route }: Props) {
                             <Text
                               style={[
                                 styles.segText,
-                                { color: level === l ? LEVEL_COLORS[l].text : colors.textSecondary },
+                                {
+                                  color: level === l ? LEVEL_COLORS[l].text : colors.textSecondary,
+                                },
                               ]}
                             >
                               {l === 'inherit' ? '—' : l === 'allow' ? '✓' : '✗'}
@@ -256,7 +299,9 @@ export default function BoardPermissionsScreen({ route }: Props) {
       <Modal visible={showTemplateModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Apply Permission Template</Text>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>
+              Apply Permission Template
+            </Text>
             <FlatList
               data={templates}
               keyExtractor={(t) => t.id}
@@ -276,14 +321,18 @@ export default function BoardPermissionsScreen({ route }: Props) {
                       )}
                     </View>
                     {item.description && (
-                      <Text style={[styles.tmplDesc, { color: colors.textSecondary }]}>{item.description}</Text>
+                      <Text style={[styles.tmplDesc, { color: colors.textSecondary }]}>
+                        {item.description}
+                      </Text>
                     )}
                   </View>
                   <Ionicons name="arrow-forward" size={18} color={colors.textSecondary} />
                 </TouchableOpacity>
               )}
               ListEmptyComponent={
-                <Text style={[styles.emptyText, { color: colors.textSecondary, padding: 16 }]}>No templates available</Text>
+                <Text style={[styles.emptyText, { color: colors.textSecondary, padding: 16 }]}>
+                  No templates available
+                </Text>
               }
             />
             <TouchableOpacity onPress={() => setShowTemplateModal(false)} style={styles.cancelBtn}>
@@ -301,31 +350,76 @@ export default function BoardPermissionsScreen({ route }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  boardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, paddingBottom: 8 },
+  boardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    paddingBottom: 8,
+  },
   boardName: { fontSize: 18, fontWeight: '700', flex: 1 },
-  templateBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
+  templateBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
   templateBtnText: { color: '#fff', fontSize: 13, fontWeight: '600' },
   legend: { flexDirection: 'row', gap: 16, paddingHorizontal: 16, paddingBottom: 12 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   legendDot: { width: 10, height: 10, borderRadius: 5 },
   legendText: { fontSize: 11 },
-  groupCard: { marginHorizontal: 16, marginBottom: 8, borderRadius: 12, borderWidth: 1, overflow: 'hidden' },
-  groupRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14 },
+  groupCard: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  groupRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 14,
+  },
   groupInfo: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   colorDot: { width: 10, height: 10, borderRadius: 5 },
   groupName: { fontSize: 15, fontWeight: '600' },
   permsList: { borderTopWidth: 1, paddingHorizontal: 14, paddingVertical: 8 },
-  permRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8 },
+  permRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
   permLabel: { fontSize: 13, textTransform: 'capitalize', flex: 1 },
   segmented: { flexDirection: 'row', borderRadius: 8, overflow: 'hidden', gap: 2 },
-  segBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: '#1f2937' },
+  segBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: '#1f2937',
+  },
   segText: { fontSize: 13, fontWeight: '600' },
   empty: { alignItems: 'center', paddingVertical: 48 },
   emptyText: { marginTop: 12, fontSize: 15 },
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' },
-  modalContent: { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '60%' },
+  modalContent: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    maxHeight: '60%',
+  },
   modalTitle: { fontSize: 18, fontWeight: '700', marginBottom: 16 },
-  tmplItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 14, borderBottomWidth: 1 },
+  tmplItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 14,
+    borderBottomWidth: 1,
+  },
   tmplNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   tmplName: { fontSize: 15, fontWeight: '600' },
   tmplDesc: { fontSize: 12, marginTop: 2 },

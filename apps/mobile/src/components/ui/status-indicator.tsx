@@ -3,7 +3,7 @@
  * @module components/ui/status-indicator
  */
 import React, { useEffect } from 'react';
-import { View, StyleSheet, type ViewStyle } from 'react-native';
+import { View, type ViewStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -30,7 +30,14 @@ const STATUS_COLORS: Record<StatusType, string> = {
 
 const SIZE_PX = { sm: 8, md: 10, lg: 12 };
 
-export function StatusIndicator({ status, pulse = false, size = 'md', style }: StatusIndicatorProps) {
+/** Description. */
+/** Status Indicator component. */
+export function StatusIndicator({
+  status,
+  pulse = false,
+  size = 'md',
+  style,
+}: StatusIndicatorProps) {
   const px = SIZE_PX[size];
   const scale = useSharedValue(1);
   const opacity = useSharedValue(0.4);

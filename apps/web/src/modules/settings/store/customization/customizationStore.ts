@@ -46,10 +46,7 @@ export {
 // Import selectors from './customizationStore.selectors' directly, or via the barrel './index'.
 
 import type { CustomizationStore } from './customizationStore.types';
-import {
-  THEME_COLORS,
-  DEFAULT_STATE,
-} from './customizationStore.types';
+import { THEME_COLORS, DEFAULT_STATE } from './customizationStore.types';
 import { apiSchemaMapper, debouncedSave, PERSIST_PARTIALIZE } from './customizationStore.schema';
 
 const logger = createLogger('customizationStore');

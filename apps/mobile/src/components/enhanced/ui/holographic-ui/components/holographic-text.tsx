@@ -5,7 +5,15 @@
 import { durations } from '@cgraph/animation-constants';
 import React, { ReactNode, useEffect } from 'react';
 import { TextStyle } from 'react-native';
-import Animated, { useSharedValue, withTiming, withRepeat, withSequence, useAnimatedStyle, Easing, interpolate } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withRepeat,
+  withSequence,
+  useAnimatedStyle,
+  Easing,
+  interpolate,
+} from 'react-native-reanimated';
 import { HolographicConfig, getTheme } from '../types';
 
 interface HolographicTextProps {
@@ -18,6 +26,7 @@ interface HolographicTextProps {
 }
 
 /**
+ * Holographic Text component.
  *
  */
 export function HolographicText({
@@ -41,6 +50,7 @@ export function HolographicText({
       ),
       -1
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animate]);
 
   const variantStyles: Record<string, TextStyle> = {

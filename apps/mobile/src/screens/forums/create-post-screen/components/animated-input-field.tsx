@@ -5,13 +5,21 @@
 import { durations } from '@cgraph/animation-constants';
 import React from 'react';
 import { View, Text, TextInput } from 'react-native';
-import Animated, { useSharedValue, withTiming, withSpring, useAnimatedStyle, interpolate, interpolateColor } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withSpring,
+  useAnimatedStyle,
+  interpolate,
+  interpolateColor,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
 import { AnimatedInputProps } from '../types';
 import { styles } from '../styles';
 
 /**
+ * Animated Input Field component.
  *
  */
 export function AnimatedInputField({
@@ -55,9 +63,7 @@ export function AnimatedInputField({
 
   const inputBorderAnimStyle = useAnimatedStyle(() => ({
     borderColor: interpolateColor(focusAnim.value, [0, 1], ['rgba(255,255,255,0.1)', '#8B5CF6']),
-    transform: [
-      { translateX: interpolate(shakeAnim.value, [-1, 1], [-4, 4]) },
-    ],
+    transform: [{ translateX: interpolate(shakeAnim.value, [-1, 1], [-4, 4]) }],
   }));
 
   const charProgress = maxLength ? (value.length / maxLength) * 100 : 0;
@@ -66,30 +72,15 @@ export function AnimatedInputField({
   return (
     <Animated.View style={styles.inputContainer}>
       {/* Label */}
-      <Animated.View
-        style={[
-          styles.labelContainer,
-          labelAnimStyle,
-        ]}
-      >
+      <Animated.View style={[styles.labelContainer, labelAnimStyle]}>
         <Text style={styles.inputLabel}>{label}</Text>
       </Animated.View>
 
       {/* Input wrapper with glow */}
       <View style={styles.inputWrapper}>
-        <Animated.View
-          style={[
-            styles.inputGlow,
-            glowAnimStyle,
-          ]}
-        />
+        <Animated.View style={[styles.inputGlow, glowAnimStyle]} />
 
-        <Animated.View
-          style={[
-            styles.inputBorder,
-            inputBorderAnimStyle,
-          ]}
-        >
+        <Animated.View style={[styles.inputBorder, inputBorderAnimStyle]}>
           <TextInput
             style={[
               styles.textInput,

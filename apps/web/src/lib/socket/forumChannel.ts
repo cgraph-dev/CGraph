@@ -111,7 +111,8 @@ export function subscribeToForum(
   return new Promise((resolve, reject) => {
     channel
       .push('subscribe', {})
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .receive('ok', (resp: unknown) => resolve(resp as { subscribed: boolean }))
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -132,7 +133,8 @@ export function unsubscribeFromForum(
   return new Promise((resolve, reject) => {
     channel
       .push('unsubscribe', {})
-       
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       .receive('ok', (resp: unknown) => resolve(resp as { subscribed: boolean }))
       .receive('error', (resp: unknown) => reject(resp));
   });

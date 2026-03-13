@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * unknown.
  * AI Theme Demo Section
@@ -51,13 +52,11 @@ export function ThemeDemo() {
                   <div
                     className="mb-2 h-16 w-full rounded-lg border border-white/10"
                     style={{
-                       
                       background: color as string /* type assertion: theme color value is string */,
                     }}
                   />
                   <p className="text-xs capitalize text-gray-400">{name}</p>
                   <p className="font-mono text-xs text-gray-500">
-                    { }
                     {color as string /* type assertion: theme color value is string */}
                   </p>
                 </div>

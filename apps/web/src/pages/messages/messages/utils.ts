@@ -48,7 +48,8 @@ export function getConversationAvatarBorderId(
 ): string | null {
   if (conv.type === 'direct') {
     const otherParticipant = conv.participants.find((p) => p.userId !== currentUserId);
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const user = (otherParticipant as Record<string, unknown> | undefined)?.user; // safe downcast – structural boundary
     return getAvatarBorderId(user);
   }

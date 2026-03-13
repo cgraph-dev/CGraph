@@ -27,6 +27,8 @@ interface FileUnlockModalProps {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** File Unlock Modal component. */
 export function FileUnlockModal({
   isOpen,
   onClose,
@@ -48,11 +50,11 @@ export function FileUnlockModal({
       role="dialog"
       aria-modal="true"
     >
-      <div className="mx-4 w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-xl">
+      <div className="border-border bg-card mx-4 w-full max-w-md rounded-xl border p-6 shadow-xl">
         <h2 className="mb-4 text-lg font-semibold">Unlock File</h2>
 
         {/* File info */}
-        <div className="mb-4 space-y-2 rounded-lg bg-muted p-3 text-sm">
+        <div className="bg-muted mb-4 space-y-2 rounded-lg p-3 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">File</span>
             <span className="truncate pl-4 font-medium">{file.fileName}</span>
@@ -75,7 +77,7 @@ export function FileUnlockModal({
 
         {/* Insufficient balance warning */}
         {insufficientBalance && (
-          <div className="mb-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <div className="bg-destructive/10 text-destructive mb-4 rounded-md px-3 py-2 text-sm">
             Insufficient balance. You need {file.price - userBalance} more Nodes.
           </div>
         )}
@@ -85,7 +87,7 @@ export function FileUnlockModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
+            className="border-border hover:bg-muted rounded-md border px-4 py-2 text-sm font-medium"
           >
             Cancel
           </button>
@@ -93,7 +95,7 @@ export function FileUnlockModal({
             type="button"
             disabled={insufficientBalance}
             onClick={handleConfirm}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            className="text-primary-foreground rounded-md bg-primary px-4 py-2 text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
           >
             Confirm Unlock
           </button>

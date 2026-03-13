@@ -19,7 +19,9 @@ import { tweens, loop } from '@/lib/animation-presets';
 
 // Lazy-load Lottie renderer to avoid bundling lottie-web when not needed
 const LottieBorderRenderer = lazy(() =>
-  import('@/lib/lottie/lottie-border-renderer').then((m) => ({ default: m.default ?? m.LottieBorderRenderer }))
+  import('@/lib/lottie/lottie-border-renderer').then((m) => ({
+    default: m.default ?? m.LottieBorderRenderer,
+  }))
 );
 
 /** Avatar size in px for each card size */
@@ -39,6 +41,7 @@ export default function ThemedBorderCard({
   const config = SIZE_CONFIG[size];
   // type assertion: border.rarity is a valid BorderRarity value from API
   // Fallback for unknown rarity values to prevent crash
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const rarityColor = RARITY_COLORS[border.rarity as BorderRarity] ?? RARITY_COLORS.common;
   const isLocked = !border.unlocked && !allowPreview;
   const canInteract = !isLocked;
@@ -47,7 +50,7 @@ export default function ThemedBorderCard({
   const showParticles =
     showAnimation &&
     PARTICLE_ANIMATION_TYPES.includes(
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       border.animationType as (typeof PARTICLE_ANIMATION_TYPES)[number] // safe downcast – data-driven animation type
     );
 
@@ -98,11 +101,11 @@ export default function ThemedBorderCard({
             ...borderAnimation.style,
           }}
           animate={
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             borderAnimation.animate as TargetAndTransition /* safe downcast – framer-motion typing */
           }
           transition={
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             borderAnimation.transition as Transition /* safe downcast – framer-motion typing */
           }
         >

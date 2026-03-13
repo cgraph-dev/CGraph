@@ -13,6 +13,7 @@ export interface FallbackData {
 }
 
 /**
+ * Generate fallback data.
  *
  */
 export function generateFallbackData(): FallbackData {

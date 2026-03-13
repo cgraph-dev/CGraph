@@ -32,13 +32,7 @@ interface VoiceChannelUsersProps {
 
 // ── Avatar ─────────────────────────────────────────────────────────────
 
-function VoiceAvatar({
-  user,
-  onPress,
-}: {
-  user: VoiceUser;
-  onPress: () => void;
-}) {
+function VoiceAvatar({ user, onPress }: { user: VoiceUser; onPress: () => void }) {
   return (
     <Animated.View
       entering={FadeIn.duration(200)}
@@ -52,43 +46,25 @@ function VoiceAvatar({
         }}
         style={styles.avatarContainer}
       >
-        <View
-          style={[
-            styles.avatar,
-            user.isSpeaking && styles.avatarSpeaking,
-          ]}
-        >
+        <View style={[styles.avatar, user.isSpeaking && styles.avatarSpeaking]}>
           {user.avatarUrl ? (
-            <Animated.Image
-              source={{ uri: user.avatarUrl }}
-              style={styles.avatarImage}
-            />
+            <Animated.Image source={{ uri: user.avatarUrl }} style={styles.avatarImage} />
           ) : (
-            <Text style={styles.avatarInitial}>
-              {user.displayName.charAt(0).toUpperCase()}
-            </Text>
+            <Text style={styles.avatarInitial}>{user.displayName.charAt(0).toUpperCase()}</Text>
           )}
         </View>
 
         {/* Muted indicator */}
         {user.isMuted && (
           <View style={styles.muteIndicator}>
-            <MaterialCommunityIcons
-              name="microphone-off"
-              size={8}
-              color="#EF4444"
-            />
+            <MaterialCommunityIcons name="microphone-off" size={8} color="#EF4444" />
           </View>
         )}
 
         {/* Deafened indicator */}
         {user.isDeafened && (
           <View style={styles.deafIndicator}>
-            <MaterialCommunityIcons
-              name="headphones-off"
-              size={8}
-              color="#EF4444"
-            />
+            <MaterialCommunityIcons name="headphones-off" size={8} color="#EF4444" />
           </View>
         )}
       </Pressable>
@@ -98,13 +74,13 @@ function VoiceAvatar({
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Voice Channel Users component. */
 export function VoiceChannelUsers({
   users,
   onJoinChannel,
   onUserPress,
 }: VoiceChannelUsersProps): React.ReactElement | null {
-  if (users.length === 0) return null;
-
   const handleJoin = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onJoinChannel?.();
@@ -114,19 +90,17 @@ export function VoiceChannelUsers({
     (userId: string) => {
       onUserPress?.(userId);
     },
-    [onUserPress],
+    [onUserPress]
   );
+
+  if (users.length === 0) return null;
 
   return (
     <View style={styles.container}>
       {/* User avatars */}
       <View style={styles.avatarRow}>
         {users.slice(0, 8).map((user) => (
-          <VoiceAvatar
-            key={user.id}
-            user={user}
-            onPress={() => handleUserPress(user.id)}
-          />
+          <VoiceAvatar key={user.id} user={user} onPress={() => handleUserPress(user.id)} />
         ))}
         {users.length > 8 && (
           <View style={styles.overflowBadge}>

@@ -31,7 +31,7 @@ function MockFileAttachment({
       </div>
 
       {/* File info */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-white">{fileName}</p>
         <p className="text-xs text-gray-500">{fileSize}</p>
         {progress !== undefined && (

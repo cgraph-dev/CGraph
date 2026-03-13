@@ -81,13 +81,13 @@ export async function encryptAES(
 
   const cryptoKey = await importAESKey(key);
   const ciphertext = await crypto.subtle.encrypt(
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     { name: 'AES-GCM', iv: new Uint8Array(nonce.buffer as ArrayBuffer) }, // safe downcast – structural boundary
     cryptoKey,
     data
   );
 
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return { ciphertext, nonce: nonce.buffer as ArrayBuffer }; // safe downcast – structural boundary
 }
 

@@ -9,7 +9,12 @@
 import { durations } from '@cgraph/animation-constants';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
-import { useSharedValue, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  withSequence,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import * as FileSystem from 'expo-file-system/legacy';
 import api from '../../../../lib/api';
@@ -64,7 +69,8 @@ export function useVoiceAndWave({
       try {
         // Create form data for upload
         const formData = new FormData();
-         
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         formData.append('audio', {
           uri: voiceData.uri,
           name: `voice_${Date.now()}.m4a`,

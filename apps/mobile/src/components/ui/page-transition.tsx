@@ -10,12 +10,7 @@
 
 import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeOut,
-  SlideInRight,
-  SlideOutLeft,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { rnTransitions } from '@cgraph/animation-constants';
 
 // ── Types ───────────────────────────────────────────────────────────────

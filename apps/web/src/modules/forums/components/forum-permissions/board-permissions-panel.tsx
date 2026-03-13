@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * Board Permissions Panel
  *
@@ -26,14 +27,11 @@ import { BOARD_PERMISSIONS, type PermissionDef } from '../forum-permissions/type
 // ── Permission keys ──────────────────────────────────────────────────────
 
 const PERM_KEYS = BOARD_PERMISSIONS.map((p) => p.key);
-const PERM_BY_CATEGORY = BOARD_PERMISSIONS.reduce<Record<string, PermissionDef[]>>(
-  (acc, p) => {
-    if (!acc[p.category]) acc[p.category] = [];
-    acc[p.category]!.push(p);
-    return acc;
-  },
-  {},
-);
+const PERM_BY_CATEGORY = BOARD_PERMISSIONS.reduce<Record<string, PermissionDef[]>>((acc, p) => {
+  if (!acc[p.category]) acc[p.category] = [];
+  acc[p.category]!.push(p);
+  return acc;
+}, {});
 
 interface BoardPermissionsPanelProps {
   forumId: string;
@@ -41,6 +39,8 @@ interface BoardPermissionsPanelProps {
   boardName?: string;
 }
 
+/** Description. */
+/** Board Permissions Panel component. */
 export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPermissionsPanelProps) {
   const {
     boardPermissions,
@@ -103,7 +103,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
         const perm = boardPermissions.find((p: BoardPermissionLocal) => p.groupId === group.id);
         // Check if anything changed
         const changed = PERM_KEYS.some(
-          (k) => (perms[k] || 'inherit') !== (perm?.permissions[k] || 'inherit'),
+          (k) => (perms[k] || 'inherit') !== (perm?.permissions[k] || 'inherit')
         );
         if (changed) {
           promises.push(updateBoardPermission(boardId, group.id, perms));
@@ -129,7 +129,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
   if (isLoadingBoardPerms && boardPermissions.length === 0) {
     return (
       <div className="flex items-center justify-center p-12">
-        <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
       </div>
     );
   }
@@ -149,7 +149,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
           <button
             onClick={handleResetAll}
             disabled={resetting}
-            className="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white border border-white/[0.08] rounded-lg transition-colors"
+            className="flex items-center gap-2 rounded-lg border border-white/[0.08] px-3 py-2 text-gray-400 transition-colors hover:text-white"
           >
             <ArrowPathIcon className={`h-4 w-4 ${resetting ? 'animate-spin' : ''}`} />
             Reset to Inherit All
@@ -157,7 +157,7 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
           <button
             onClick={handleSaveAll}
             disabled={!hasChanges || saving}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
           >
             <CheckIcon className="h-4 w-4" />
             {saving ? 'Saving...' : 'Save Changes'}
@@ -168,27 +168,34 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
       {/* Legend */}
       <div className="flex items-center gap-6 text-xs text-gray-400">
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-gray-600 inline-block" /> Inherit
+          <span className="inline-block h-3 w-3 rounded bg-gray-600" /> Inherit
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-green-600 inline-block" /> Allow
+          <span className="inline-block h-3 w-3 rounded bg-green-600" /> Allow
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded bg-red-600 inline-block" /> Deny
+          <span className="inline-block h-3 w-3 rounded bg-red-600" /> Deny
         </span>
       </div>
 
       {/* Permissions Grid by Category */}
       {Object.entries(PERM_BY_CATEGORY).map(([category, perms]) => (
         <div key={category} className="space-y-2">
-          <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wide">{category}</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-300">
+            {category}
+          </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/[0.08]">
-                  <th className="text-left py-2 px-3 font-medium text-gray-400 min-w-[160px]">Group</th>
+                  <th className="min-w-[160px] px-3 py-2 text-left font-medium text-gray-400">
+                    Group
+                  </th>
                   {perms.map((p) => (
-                    <th key={p.key} className="py-2 px-2 font-medium text-gray-400 text-center min-w-[100px]">
+                    <th
+                      key={p.key}
+                      className="min-w-[100px] px-2 py-2 text-center font-medium text-gray-400"
+                    >
                       <span className="text-xs">{p.label}</span>
                     </th>
                   ))}
@@ -196,26 +203,26 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
               </thead>
               <tbody>
                 {groups.map((group) => (
-                  <tr key={group.id} className="border-b border-gray-800 hover:bg-white/[0.04]/30">
-                    <td className="py-2 px-3">
+                  <tr key={group.id} className="hover:bg-white/[0.04]/30 border-b border-gray-800">
+                    <td className="px-3 py-2">
                       <div className="flex items-center gap-2">
                         <div
-                          className="w-2.5 h-2.5 rounded-full"
+                          className="h-2.5 w-2.5 rounded-full"
                           style={{ backgroundColor: group.color || '#6b7280' }}
                         />
-                        <span className="text-white text-sm">{group.name}</span>
+                        <span className="text-sm text-white">{group.name}</span>
                       </div>
                     </td>
                     {perms.map((perm) => {
                       const val = localPerms[group.id]?.[perm.key] || 'inherit';
                       return (
-                        <td key={perm.key} className="py-2 px-2">
+                        <td key={perm.key} className="px-2 py-2">
                           <div className="flex items-center justify-center gap-1">
                             {(['inherit', 'allow', 'deny'] as PermLevel[]).map((level) => (
                               <button
                                 key={level}
                                 onClick={() => setPermValue(group.id, perm.key, level)}
-                                className={`w-6 h-6 rounded text-xs font-medium transition-all ${
+                                className={`h-6 w-6 rounded text-xs font-medium transition-all ${
                                   val === level
                                     ? level === 'allow'
                                       ? 'bg-green-600 text-white'
@@ -242,12 +249,12 @@ export function BoardPermissionsPanel({ forumId, boardId, boardName }: BoardPerm
       ))}
 
       {/* Effective permissions note */}
-      <div className="bg-white/[0.04] rounded-lg p-3 border border-white/[0.08] flex items-start gap-2">
-        <InformationCircleIcon className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+      <div className="flex items-start gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] p-3">
+        <InformationCircleIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-400" />
         <p className="text-xs text-gray-400">
-          <strong className="text-gray-300">Inheritance:</strong> &quot;Inherit&quot; means the permission falls through
-          to the forum-level setting. &quot;Allow&quot; explicitly grants access. &quot;Deny&quot; overrides all other permissions
-          for this board.
+          <strong className="text-gray-300">Inheritance:</strong> &quot;Inherit&quot; means the
+          permission falls through to the forum-level setting. &quot;Allow&quot; explicitly grants
+          access. &quot;Deny&quot; overrides all other permissions for this board.
         </p>
       </div>
     </div>

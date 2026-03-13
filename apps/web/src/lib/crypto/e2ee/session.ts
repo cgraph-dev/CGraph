@@ -55,7 +55,7 @@ export async function generateSafetyNumber(
     combined.set(new Uint8Array(ourIdentityKey), offset);
   }
 
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const hash = await sha256(combined.buffer as ArrayBuffer); // safe downcast – structural boundary
   const hashBytes = new Uint8Array(hash);
 

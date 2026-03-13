@@ -19,6 +19,8 @@ interface UseProfileActionsParams {
   navigation: Pick<NavigationProp<ParamListBase>, 'goBack' | 'dispatch'>;
 }
 
+/** Description. */
+/** Hook for profile actions. */
 export function useProfileActions({
   user,
   setUser,
@@ -32,7 +34,10 @@ export function useProfileActions({
       const response = await api.post('/api/v1/conversations', { participant_ids: [user.id] });
       const conversationId = response.data.data?.id || response.data.id;
       navigation.dispatch(
-        CommonActions.navigate({ name: 'MessagesTab', params: { screen: 'Conversation', params: { conversationId } } })
+        CommonActions.navigate({
+          name: 'MessagesTab',
+          params: { screen: 'Conversation', params: { conversationId } },
+        })
       );
     } catch {
       Alert.alert('Error', 'Could not start conversation');
@@ -47,9 +52,12 @@ export function useProfileActions({
       setUser({ ...user, friend_request_sent: true });
       Alert.alert('Success', 'Friend request sent!');
     } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
-      let errorMessage = typeof error.response?.data?.error === 'object'
-        ? error.response?.data?.error?.message : error.response?.data?.error;
+      let errorMessage =
+        typeof error.response?.data?.error === 'object'
+          ? error.response?.data?.error?.message
+          : error.response?.data?.error;
       if (errorMessage?.includes('Idempotency-Key') || errorMessage?.includes('idempotency')) {
         errorMessage = 'Please wait a moment before trying again';
       }
@@ -67,8 +75,12 @@ export function useProfileActions({
       setUser({ ...user, friend_request_sent: false, friend_request_received: false });
       Alert.alert('Cancelled', 'Friend request cancelled');
     } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const error = err as { response?: { data?: { error?: string; message?: string } } };
-      Alert.alert('Error', error.response?.data?.message || error.response?.data?.error || 'Failed to cancel request');
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || error.response?.data?.error || 'Failed to cancel request'
+      );
     } finally {
       setActionLoading(false);
     }
@@ -82,9 +94,12 @@ export function useProfileActions({
       setUser({ ...user, is_friend: true, friend_request_received: false });
       Alert.alert('Success', 'Friend request accepted!');
     } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
-      const errorMessage = typeof error.response?.data?.error === 'object'
-        ? error.response?.data?.error?.message : error.response?.data?.error;
+      const errorMessage =
+        typeof error.response?.data?.error === 'object'
+          ? error.response?.data?.error?.message
+          : error.response?.data?.error;
       Alert.alert('Error', errorMessage || 'Failed to accept request');
     } finally {
       setActionLoading(false);
@@ -99,8 +114,12 @@ export function useProfileActions({
       setUser({ ...user, friend_request_received: false });
       Alert.alert('Declined', 'Friend request declined');
     } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const error = err as { response?: { data?: { error?: string; message?: string } } };
-      Alert.alert('Error', error.response?.data?.message || error.response?.data?.error || 'Failed to decline request');
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || error.response?.data?.error || 'Failed to decline request'
+      );
     } finally {
       setActionLoading(false);
     }
@@ -115,14 +134,18 @@ export function useProfileActions({
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Remove', style: 'destructive',
+          text: 'Remove',
+          style: 'destructive',
           onPress: async () => {
             setActionLoading(true);
             try {
               await api.delete(`/api/v1/friends/${user.id}`);
               setUser({ ...user, is_friend: false });
-            } catch { Alert.alert('Error', 'Failed to remove friend'); }
-            finally { setActionLoading(false); }
+            } catch {
+              Alert.alert('Error', 'Failed to remove friend');
+            } finally {
+              setActionLoading(false);
+            }
           },
         },
       ]
@@ -138,15 +161,19 @@ export function useProfileActions({
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Block', style: 'destructive',
+          text: 'Block',
+          style: 'destructive',
           onPress: async () => {
             setActionLoading(true);
             try {
               await api.post(`/api/v1/friends/${user.id}/block`);
               Alert.alert('Blocked', 'User has been blocked');
               navigation.goBack();
-            } catch { Alert.alert('Error', 'Failed to block user'); }
-            finally { setActionLoading(false); }
+            } catch {
+              Alert.alert('Error', 'Failed to block user');
+            } finally {
+              setActionLoading(false);
+            }
           },
         },
       ]
@@ -156,7 +183,10 @@ export function useProfileActions({
   const handleMuteUser = useCallback(() => {
     if (!user) return;
     setShowFriendMenu(false);
-    Alert.alert('Muted', `${user.display_name || user.username} has been muted. You won't receive notifications from them.`);
+    Alert.alert(
+      'Muted',
+      `${user.display_name || user.username} has been muted. You won't receive notifications from them.`
+    );
   }, [user, setShowFriendMenu]);
 
   const handleInviteToForum = useCallback(() => {

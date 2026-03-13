@@ -87,7 +87,7 @@ export const BOARD_PERMISSIONS: readonly PermissionDef[] = [
  */
 export function extractPermissions(
   raw: Record<string, unknown>,
-  permDefs: readonly PermissionDef[],
+  permDefs: readonly PermissionDef[]
 ): Record<string, PermValue> {
   const result: Record<string, PermValue> = {};
   for (const p of permDefs) {

@@ -37,6 +37,7 @@ const COOLDOWN_DAYS_STANDARD = 30;
 const COOLDOWN_DAYS_PREMIUM = 7;
 
 /**
+ * Username Change Screen component.
  *
  */
 export function UsernameChangeScreen({
@@ -47,7 +48,7 @@ export function UsernameChangeScreen({
 }: Props): React.ReactElement {
   const navigation = useNavigation();
   const { colors } = useThemeStore();
-  
+
   const [newUsername, setNewUsername] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,10 +58,10 @@ export function UsernameChangeScreen({
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<UsernameHistory[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
-  
+
   const debouncedUsername = useDebounce(newUsername, 500);
   const cooldownDays = isPremium ? COOLDOWN_DAYS_PREMIUM : COOLDOWN_DAYS_STANDARD;
-  
+
   // Calculate remaining cooldown days
   const getRemainingDays = useCallback((): number => {
     if (!lastChangeDate) return 0;
@@ -70,15 +71,15 @@ export function UsernameChangeScreen({
     );
     return Math.max(0, cooldownDays - daysSinceChange);
   }, [lastChangeDate, cooldownDays]);
-  
+
   const remainingDays = getRemainingDays();
   const canChange = remainingDays === 0;
-  
+
   // Username validation
   const isValidFormat = (username: string): boolean => {
     return /^[a-zA-Z0-9_-]{3,32}$/.test(username);
   };
-  
+
   // Check username availability
   useEffect(() => {
     if (!debouncedUsername || debouncedUsername === currentUsername) {
@@ -86,26 +87,27 @@ export function UsernameChangeScreen({
       setAvailabilityMessage('');
       return;
     }
-    
+
     if (!isValidFormat(debouncedUsername)) {
       setIsAvailable(false);
       setAvailabilityMessage('3-32 characters, letters, numbers, _ and - only');
       return;
     }
-    
+
     const checkAvailability = async () => {
       setIsChecking(true);
       try {
         const response = await fetch(
           `/api/users/check-username?username=${encodeURIComponent(debouncedUsername)}`
         );
-         
-        const data = await response.json() as { available: boolean; reason?: string };
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const data = (await response.json()) as { available: boolean; reason?: string };
         setIsAvailable(data.available);
         setAvailabilityMessage(
           data.available ? 'Username is available!' : data.reason || 'Username is not available'
         );
-        
+
         if (data.available) {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         } else {
@@ -118,17 +120,18 @@ export function UsernameChangeScreen({
         setIsChecking(false);
       }
     };
-    
+
     checkAvailability();
   }, [debouncedUsername, currentUsername]);
-  
+
   // Load history
   const loadHistory = async () => {
     setLoadingHistory(true);
     try {
       const response = await fetch('/api/users/me/username-history');
-       
-      const data = await response.json() as { history?: UsernameHistory[] };
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const data = (await response.json()) as { history?: UsernameHistory[] };
       setHistory(data.history || []);
     } catch {
       console.error('Failed to load username history');
@@ -136,28 +139,28 @@ export function UsernameChangeScreen({
       setLoadingHistory(false);
     }
   };
-  
+
   // Handle submit
   const handleSubmit = async () => {
     if (!canChange || !isAvailable) return;
-    
+
     setIsSubmitting(true);
     setError(null);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
+
     try {
       const response = await fetch('/api/users/me/change-username', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: newUsername }),
       });
-      
+
       if (!response.ok) {
-         
-        const data = await response.json() as { message?: string };
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const data = (await response.json()) as { message?: string };
         throw new Error(data.message || 'Failed to change username');
       }
-      
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       onSuccess?.(newUsername);
       navigation.goBack();
@@ -168,7 +171,7 @@ export function UsernameChangeScreen({
       setIsSubmitting(false);
     }
   };
-  
+
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -381,10 +384,7 @@ export function UsernameChangeScreen({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Change Username</Text>
@@ -470,9 +470,7 @@ export function UsernameChangeScreen({
           <Text style={styles.requirementItem}>
             • Letters, numbers, underscores, and hyphens only
           </Text>
-          <Text style={styles.requirementItem}>
-            • Cannot be a recently released username
-          </Text>
+          <Text style={styles.requirementItem}>• Cannot be a recently released username</Text>
         </View>
 
         {/* Error */}
@@ -552,6 +550,6 @@ export function UsernameChangeScreen({
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 export default UsernameChangeScreen;

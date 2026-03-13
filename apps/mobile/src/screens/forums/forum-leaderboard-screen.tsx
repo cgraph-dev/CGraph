@@ -19,14 +19,7 @@
 
 import { durations } from '@cgraph/animation-constants';
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  RefreshControl,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, FlatList, StyleSheet, RefreshControl, ActivityIndicator } from 'react-native';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -93,6 +86,7 @@ export type LeaderboardItem = LeaderboardForum | TopContributor;
 // =============================================================================
 
 /**
+ * Forum Leaderboard Screen component.
  *
  */
 export default function ForumLeaderboardScreen({ navigation, route }: Props) {
@@ -134,10 +128,14 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
       },
     });
 
-    headerOpacity.value = withTiming(1, { duration: durations.smooth.ms, easing: Easing.out(Easing.ease) });
+    headerOpacity.value = withTiming(1, {
+      duration: durations.smooth.ms,
+      easing: Easing.out(Easing.ease),
+    });
     headerSlide.value = withSpring(0, { damping: 12, stiffness: 100 });
 
     fetchLeaderboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forumId, activeTab, timePeriod]);
 
   const fetchLeaderboardData = async () => {
@@ -174,8 +172,24 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
           setMyRankData({
             position: d.position,
             score: d.score ?? 0,
-            currentRank: cr ? { name: cr.name, color: cr.color, imageUrl: cr.image_url, minScore: cr.min_score, maxScore: cr.max_score } : { name: 'Newcomer', color: '#9CA3AF', minScore: 0 },
-            nextRank: nr ? { name: nr.name, color: nr.color, imageUrl: nr.image_url, minScore: nr.min_score, maxScore: nr.max_score } : null,
+            currentRank: cr
+              ? {
+                  name: cr.name,
+                  color: cr.color,
+                  imageUrl: cr.image_url,
+                  minScore: cr.min_score,
+                  maxScore: cr.max_score,
+                }
+              : { name: 'Newcomer', color: '#9CA3AF', minScore: 0 },
+            nextRank: nr
+              ? {
+                  name: nr.name,
+                  color: nr.color,
+                  imageUrl: nr.image_url,
+                  minScore: nr.min_score,
+                  maxScore: nr.max_score,
+                }
+              : null,
             progressPercent: d.progress.progress_percent ?? 0,
             scoreToNextRank: d.progress.score_to_next_rank ?? null,
           });
@@ -190,6 +204,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
     setRefreshing(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     fetchLeaderboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, timePeriod, forumId]);
 
   const handleTabChange = (tab: LeaderboardType) => {
@@ -238,7 +253,12 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
 
       {/* Tab bar */}
       {!forumId && (
-        <AnimatedTabBar activeTab={activeTab} onTabChange={handleTabChange} colors={colors as unknown as Record<string, string>} />
+        <AnimatedTabBar
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          colors={colors as unknown as Record<string, string>}
+        />
       )}
 
       <FlatList<LeaderboardItem>
@@ -251,11 +271,12 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
             type={activeTab}
             onPress={() =>
               activeTab === 'forums'
-                 
-                ? handleForumPress(item as LeaderboardForum)
-                 
-                : handleContributorPress(item as TopContributor)
+                ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                  handleForumPress(item as LeaderboardForum)
+                : // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                  handleContributorPress(item as TopContributor)
             }
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             colors={colors as unknown as Record<string, string>}
           />
         )}
@@ -282,10 +303,10 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
                 type={activeTab}
                 onItemPress={(item) =>
                   activeTab === 'forums'
-                     
-                    ? handleForumPress(item as LeaderboardForum)
-                     
-                    : handleContributorPress(item as TopContributor)
+                    ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                      handleForumPress(item as LeaderboardForum)
+                    : // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                      handleContributorPress(item as TopContributor)
                 }
               />
             )}

@@ -3,13 +3,7 @@
  * @module screens/settings/appearance-screen
  */
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useThemeStore } from '@/stores';
@@ -20,17 +14,18 @@ type Props = {
 };
 
 /**
+ * Appearance Screen component.
  *
  */
 export default function AppearanceScreen({ navigation: _navigation }: Props) {
   const { colors, themePreference, setThemePreference } = useThemeStore();
-  
+
   const themes = [
     { value: 'light' as const, label: 'Light', icon: 'sunny-outline' as const },
     { value: 'dark' as const, label: 'Dark', icon: 'moon-outline' as const },
     { value: 'system' as const, label: 'System', icon: 'phone-portrait-outline' as const },
   ];
-  
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.section}>
@@ -49,9 +44,7 @@ export default function AppearanceScreen({ navigation: _navigation }: Props) {
               onPress={() => setThemePreference(theme.value)}
             >
               <Ionicons name={theme.icon} size={22} color={colors.textSecondary} />
-              <Text style={[styles.themeLabel, { color: colors.text }]}>
-                {theme.label}
-              </Text>
+              <Text style={[styles.themeLabel, { color: colors.text }]}>{theme.label}</Text>
               {themePreference === theme.value && (
                 <Ionicons name="checkmark" size={22} color={colors.primary} />
               )}
@@ -59,11 +52,11 @@ export default function AppearanceScreen({ navigation: _navigation }: Props) {
           ))}
         </View>
       </View>
-      
+
       <View style={styles.section}>
         <Text style={[styles.description, { color: colors.textSecondary }]}>
-          Choose how CGraph looks to you. Select "System" to automatically switch
-          between light and dark themes based on your device settings.
+          Choose how CGraph looks to you. Select "System" to automatically switch between light and
+          dark themes based on your device settings.
         </Text>
       </View>
     </ScrollView>

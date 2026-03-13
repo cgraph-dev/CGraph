@@ -17,6 +17,8 @@ interface TierCardProps {
   onSubscribe: (tier: PremiumTier) => void;
 }
 
+/** Description. */
+/** Tier Card component. */
 export function TierCard({
   tier,
   billingCycle,
@@ -29,11 +31,7 @@ export function TierCard({
   const pricePerMonth = billingCycle === 'yearly' ? price / 12 : price;
 
   return (
-    <TouchableOpacity
-      style={styles.tierCard}
-      onPress={() => onSelect(tier.id)}
-      activeOpacity={0.9}
-    >
+    <TouchableOpacity style={styles.tierCard} onPress={() => onSelect(tier.id)} activeOpacity={0.9}>
       <GlassCard
         variant={isSelected ? 'neon' : 'crystal'}
         intensity="medium"
@@ -66,11 +64,7 @@ export function TierCard({
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <Ionicons
-              name={tier.id === 'free' ? 'people' : 'diamond'}
-              size={28}
-              color="#fff"
-            />
+            <Ionicons name={tier.id === 'free' ? 'people' : 'diamond'} size={28} color="#fff" />
           </LinearGradient>
 
           <View style={styles.tierInfo}>
@@ -96,9 +90,7 @@ export function TierCard({
                 </Text>
               </View>
               {billingCycle === 'yearly' && (
-                <Text style={styles.tierPricePerMonth}>
-                  Just ${pricePerMonth.toFixed(2)}/month
-                </Text>
+                <Text style={styles.tierPricePerMonth}>Just ${pricePerMonth.toFixed(2)}/month</Text>
               )}
             </>
           )}
@@ -113,9 +105,7 @@ export function TierCard({
                 size={18}
                 color={feature.included ? '#10b981' : '#6b7280'}
               />
-              <Text
-                style={[styles.featureText, !feature.included && styles.featureTextDisabled]}
-              >
+              <Text style={[styles.featureText, !feature.included && styles.featureTextDisabled]}>
                 {feature.text}
               </Text>
             </View>
@@ -153,29 +143,45 @@ const styles = StyleSheet.create({
   tierCardPopular: { position: 'relative' },
   popularBadge: { position: 'absolute', top: 12, right: 12, zIndex: 1 },
   popularBadgeGradient: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
   },
   popularBadgeText: { fontSize: 10, fontWeight: '700', color: '#fff' },
   tierHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 16,
   },
   tierIconGradient: {
-    width: 56, height: 56, borderRadius: 28,
-    justifyContent: 'center', alignItems: 'center',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   tierInfo: { flex: 1 },
   tierName: { fontSize: 20, fontWeight: '700', color: '#fff', marginBottom: 4 },
   currentBadge: {
-    alignSelf: 'flex-start', backgroundColor: 'rgba(16, 185, 129, 0.2)',
-    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6,
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
   currentBadgeText: { fontSize: 11, fontWeight: '600', color: '#10b981' },
   tierPricing: { marginBottom: 20 },
   tierPriceRow: { flexDirection: 'row', alignItems: 'baseline' },
   tierPrice: { fontSize: 32, fontWeight: '800', color: '#fff' },
   tierPriceCycle: {
-    fontSize: 18, fontWeight: '600', color: 'rgba(255, 255, 255, 0.6)', marginLeft: 4,
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginLeft: 4,
   },
   tierPricePerMonth: { fontSize: 13, color: 'rgba(255, 255, 255, 0.6)', marginTop: 4 },
   tierFeatures: { gap: 12, marginBottom: 20 },

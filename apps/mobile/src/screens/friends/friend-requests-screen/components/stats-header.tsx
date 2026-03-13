@@ -12,6 +12,7 @@ import GlassCard from '../../../../components/ui/glass-card';
 import type { StatsHeaderProps } from '../types';
 
 /**
+ * Stats Header component.
  *
  */
 export function StatsHeader({ incomingCount, outgoingCount }: StatsHeaderProps) {

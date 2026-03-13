@@ -114,7 +114,7 @@ export const ExportModal = memo(function ExportModal({
           {/* Content */}
           <div className="max-h-[60vh] overflow-y-auto px-6 py-4">
             {/* Thread Preview */}
-            <div className="mb-4 rounded-lg bg-gray-50 p-3 dark:bg-white/[0.06]/50">
+            <div className="dark:bg-white/[0.06]/50 mb-4 rounded-lg bg-gray-50 p-3">
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{thread.title}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {thread.posts.length} replies • By {thread.author.name}

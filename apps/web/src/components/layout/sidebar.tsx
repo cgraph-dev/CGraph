@@ -117,7 +117,7 @@ export function Sidebar({
       {/* Toggle button */}
       <button
         onClick={toggleCollapsed}
-        className="absolute -right-3 top-6 z-10 rounded-full border border-white/[0.10] bg-[rgb(30,32,40)]/[0.85] p-1.5 backdrop-blur-[12px] hover:bg-white/[0.12] transition-colors"
+        className="absolute -right-3 top-6 z-10 rounded-full border border-white/[0.10] bg-[rgb(30,32,40)]/[0.85] p-1.5 backdrop-blur-[12px] transition-colors hover:bg-white/[0.12]"
       >
         {isCollapsed ? (
           <ChevronRightIcon className="h-3 w-3 text-white" />

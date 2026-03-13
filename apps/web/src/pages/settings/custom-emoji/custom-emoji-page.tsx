@@ -25,9 +25,10 @@ function EmojiCard({ emoji, onDelete }: { emoji: CustomEmoji; onDelete: (id: str
           className="h-12 w-12 object-contain"
           loading="lazy"
           onError={(e) => {
-             
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             (e.target as HTMLImageElement).src = ''; // safe downcast – DOM element
-             
+
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             (e.target as HTMLImageElement).style.display = 'none'; // safe downcast – DOM element
           }}
         />

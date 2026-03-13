@@ -10,13 +10,7 @@
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  SectionList,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, SectionList } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
@@ -56,6 +50,7 @@ const CHANNEL_ICONS: Record<Channel['type'], keyof typeof MaterialCommunityIcons
 };
 
 /**
+ * Channel List component.
  *
  */
 export function ChannelList({
@@ -68,24 +63,30 @@ export function ChannelList({
 }: ChannelListProps): React.ReactElement | null {
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
-  const handleCategoryToggle = useCallback((categoryId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setCollapsedCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(categoryId)) {
-        newSet.delete(categoryId);
-      } else {
-        newSet.add(categoryId);
-      }
-      return newSet;
-    });
-    onCategoryToggle?.(categoryId);
-  }, [onCategoryToggle]);
+  const handleCategoryToggle = useCallback(
+    (categoryId: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setCollapsedCategories((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(categoryId)) {
+          newSet.delete(categoryId);
+        } else {
+          newSet.add(categoryId);
+        }
+        return newSet;
+      });
+      onCategoryToggle?.(categoryId);
+    },
+    [onCategoryToggle]
+  );
 
-  const handleChannelPress = useCallback((channel: Channel) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onChannelPress?.(channel);
-  }, [onChannelPress]);
+  const handleChannelPress = useCallback(
+    (channel: Channel) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onChannelPress?.(channel);
+    },
+    [onChannelPress]
+  );
 
   // Build SectionList data from categories + channels
   const sections = useMemo(() => {
@@ -115,104 +116,108 @@ export function ChannelList({
   const CHANNEL_ITEM_HEIGHT = 40;
   const _SECTION_HEADER_HEIGHT = 36;
 
-  const renderChannel = useCallback(({ item: channel }: { item: Channel }) => {
-    const isActive = channel.id === activeChannelId;
-    const hasUnread = (channel.unreadCount || 0) > 0;
+  const renderChannel = useCallback(
+    ({ item: channel }: { item: Channel }) => {
+      const isActive = channel.id === activeChannelId;
+      const hasUnread = (channel.unreadCount || 0) > 0;
 
-    return (
-      <Pressable
-        onPress={() => handleChannelPress(channel)}
-        style={({ pressed }) => [
-          styles.channelItem,
-          isActive && styles.channelItemActive,
-          pressed && { opacity: 0.7 },
-        ]}
-      >
-        <View style={styles.channelContent}>
-          {/* Unread indicator */}
-          {hasUnread && !isActive && (
-            <View style={styles.unreadIndicator} />
-          )}
+      return (
+        <Pressable
+          onPress={() => handleChannelPress(channel)}
+          style={({ pressed }) => [
+            styles.channelItem,
+            isActive && styles.channelItemActive,
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <View style={styles.channelContent}>
+            {/* Unread indicator */}
+            {hasUnread && !isActive && <View style={styles.unreadIndicator} />}
 
-          {/* Lock icon for private */}
-          {channel.isPrivate ? (
-            <MaterialCommunityIcons 
-              name="lock" 
-              size={16} 
-              color={isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)'} 
-            />
-          ) : (
-            <MaterialCommunityIcons
-              name={CHANNEL_ICONS[channel.type]}
-              size={18}
-              color={isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)'}
-            />
-          )}
+            {/* Lock icon for private */}
+            {channel.isPrivate ? (
+              <MaterialCommunityIcons
+                name="lock"
+                size={16}
+                color={isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)'}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name={CHANNEL_ICONS[channel.type]}
+                size={18}
+                color={isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)'}
+              />
+            )}
 
-          {/* Channel name */}
-          <Text
-            style={[
-              styles.channelName,
-              isActive && styles.channelNameActive,
-              hasUnread && !isActive && styles.channelNameUnread,
-            ]}
-            numberOfLines={1}
-          >
-            {channel.name}
-          </Text>
-
-          {/* Voice channel member count */}
-          {channel.type === 'voice' && showVoiceMembers && channel.memberCount !== undefined && channel.memberCount > 0 && (
-            <View style={styles.voiceMemberBadge}>
-              <MaterialCommunityIcons name="account" size={12} color="#10B981" />
-              <Text style={styles.voiceMemberCount}>{channel.memberCount}</Text>
-            </View>
-          )}
-
-          {/* Unread count badge */}
-          {hasUnread && !isActive && (
-            <View
+            {/* Channel name */}
+            <Text
               style={[
-                styles.unreadBadge,
-                channel.hasUnreadMention && styles.mentionBadge,
+                styles.channelName,
+                isActive && styles.channelNameActive,
+                hasUnread && !isActive && styles.channelNameUnread,
               ]}
+              numberOfLines={1}
             >
-              <Text style={styles.unreadBadgeText}>
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                {channel.unreadCount! > 99 ? '99+' : channel.unreadCount}
-              </Text>
-            </View>
-          )}
-        </View>
-      </Pressable>
-    );
-  }, [activeChannelId, handleChannelPress, showVoiceMembers]);
+              {channel.name}
+            </Text>
 
-  const renderSectionHeader = useCallback(({ section }: { section: { title: string; categoryId: string | null } }) => {
-    if (!section.categoryId) return null;
+            {/* Voice channel member count */}
+            {channel.type === 'voice' &&
+              showVoiceMembers &&
+              channel.memberCount !== undefined &&
+              channel.memberCount > 0 && (
+                <View style={styles.voiceMemberBadge}>
+                  <MaterialCommunityIcons name="account" size={12} color="#10B981" />
+                  <Text style={styles.voiceMemberCount}>{channel.memberCount}</Text>
+                </View>
+              )}
 
-    const isCollapsed = collapsedCategories.has(section.categoryId);
-    return (
-      <Pressable
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        onPress={() => handleCategoryToggle(section.categoryId!)}
-        style={styles.categoryHeader}
-      >
-        <MaterialCommunityIcons
-          name={isCollapsed ? 'chevron-right' : 'chevron-down'}
-          size={14}
-          color="rgba(255, 255, 255, 0.5)"
-        />
-        <Text style={styles.categoryName}>{section.title.toUpperCase()}</Text>
-      </Pressable>
-    );
-  }, [collapsedCategories, handleCategoryToggle]);
+            {/* Unread count badge */}
+            {hasUnread && !isActive && (
+              <View style={[styles.unreadBadge, channel.hasUnreadMention && styles.mentionBadge]}>
+                <Text style={styles.unreadBadgeText}>
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  {channel.unreadCount! > 99 ? '99+' : channel.unreadCount}
+                </Text>
+              </View>
+            )}
+          </View>
+        </Pressable>
+      );
+    },
+    [activeChannelId, handleChannelPress, showVoiceMembers]
+  );
 
-  const getItemLayout = useCallback((_data: unknown, index: number) => ({
-    length: CHANNEL_ITEM_HEIGHT,
-    offset: CHANNEL_ITEM_HEIGHT * index,
-    index,
-  }), []);
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: { title: string; categoryId: string | null } }) => {
+      if (!section.categoryId) return null;
+
+      const isCollapsed = collapsedCategories.has(section.categoryId);
+      return (
+        <Pressable
+          onPress={() => handleCategoryToggle(section.categoryId!)}
+          style={styles.categoryHeader}
+        >
+          <MaterialCommunityIcons
+            name={isCollapsed ? 'chevron-right' : 'chevron-down'}
+            size={14}
+            color="rgba(255, 255, 255, 0.5)"
+          />
+          <Text style={styles.categoryName}>{section.title.toUpperCase()}</Text>
+        </Pressable>
+      );
+    },
+    [collapsedCategories, handleCategoryToggle]
+  );
+
+  const getItemLayout = useCallback(
+    (_data: unknown, index: number) => ({
+      length: CHANNEL_ITEM_HEIGHT,
+      offset: CHANNEL_ITEM_HEIGHT * index,
+      index,
+    }),
+    []
+  );
 
   const keyExtractor = useCallback((item: Channel) => item.id, []);
 
@@ -232,7 +237,7 @@ export function ChannelList({
       initialNumToRender={20}
     />
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

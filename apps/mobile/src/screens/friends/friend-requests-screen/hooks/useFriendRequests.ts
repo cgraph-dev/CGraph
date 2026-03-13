@@ -13,6 +13,7 @@ import api from '../../../../lib/api';
 import type { FriendRequest, TabType } from '../types';
 
 /**
+ * Hook for friend requests.
  *
  */
 export function useFriendRequests() {
@@ -45,19 +46,23 @@ export function useFriendRequests() {
         incomingRes.data?.data || incomingRes.data?.requests || incomingRes.data || [];
       const normalizedIncoming = (Array.isArray(incomingData) ? incomingData : []).map(
         (r: Record<string, unknown>) => ({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: r.id as string,
           user: r.from
             ? {
-                 
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 id: (r.from as Record<string, unknown>).id as string,
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 username: ((r.from as Record<string, unknown>).username as string) || 'Unknown',
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 display_name: (r.from as Record<string, unknown>).display_name as string | null,
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 avatar_url: (r.from as Record<string, unknown>).avatar_url as string | null,
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 status: ((r.from as Record<string, unknown>).status as string) || 'offline',
               }
             : {
@@ -68,7 +73,8 @@ export function useFriendRequests() {
                 status: 'offline',
               },
           type: 'incoming' as const,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           created_at: r.sent_at as string,
         })
       );
@@ -78,19 +84,23 @@ export function useFriendRequests() {
         outgoingRes.data?.data || outgoingRes.data?.requests || outgoingRes.data || [];
       const normalizedOutgoing = (Array.isArray(outgoingData) ? outgoingData : []).map(
         (r: Record<string, unknown>) => ({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: r.id as string,
           user: r.to
             ? {
-                 
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 id: (r.to as Record<string, unknown>).id as string,
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 username: ((r.to as Record<string, unknown>).username as string) || 'Unknown',
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 display_name: (r.to as Record<string, unknown>).display_name as string | null,
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 avatar_url: (r.to as Record<string, unknown>).avatar_url as string | null,
-                 
+
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                 status: ((r.to as Record<string, unknown>).status as string) || 'offline',
               }
             : {
@@ -101,7 +111,8 @@ export function useFriendRequests() {
                 status: 'offline',
               },
           type: 'outgoing' as const,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           created_at: r.sent_at as string,
         })
       );

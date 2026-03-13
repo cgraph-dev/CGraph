@@ -51,6 +51,7 @@ export function MemberList({ groupId, className = '' }: MemberListProps) {
     if (groupId && members.length === 0) {
       fetchMembers(groupId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupId]);
 
   // Filter members by search

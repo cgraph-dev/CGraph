@@ -1,6 +1,6 @@
 /**
  * Forums Feature Module (Mobile)
- * 
+ *
  * @module @features/forums
  * @since v0.8.3
  */

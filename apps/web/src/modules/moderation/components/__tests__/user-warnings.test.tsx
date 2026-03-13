@@ -48,7 +48,7 @@ describe('UserWarnings', () => {
       currentUserStats: { warningPoints: 15, activeWarnings: 2 },
       fetchUserWarnings: mockFetchUserWarnings,
       revokeWarning: mockRevokeWarning,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     render(<UserWarnings userId="user-1" />);
@@ -78,7 +78,7 @@ describe('UserWarnings', () => {
       currentUserStats: null,
       fetchUserWarnings: mockFetchUserWarnings,
       revokeWarning: mockRevokeWarning,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     render(<UserWarnings userId="user-1" />);
@@ -111,7 +111,7 @@ describe('UserWarnings', () => {
       currentUserStats: null,
       fetchUserWarnings: mockFetchUserWarnings,
       revokeWarning: mockRevokeWarning,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     render(<UserWarnings userId="user-1" />);

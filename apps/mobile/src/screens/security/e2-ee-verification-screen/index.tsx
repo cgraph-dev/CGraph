@@ -4,8 +4,14 @@
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity,
-  ActivityIndicator, Alert, Share, ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  Share,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -35,7 +41,11 @@ export default function E2EEVerificationScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchSafetyNumber = useCallback(async () => {
-    if (!userId) { setError('No user ID provided'); setIsLoading(false); return; }
+    if (!userId) {
+      setError('No user ID provided');
+      setIsLoading(false);
+      return;
+    }
     try {
       setIsLoading(true);
       setError(null);
@@ -52,17 +62,21 @@ export default function E2EEVerificationScreen() {
     } catch (err) {
       console.error('[E2EEVerification] API error, using fallback:', err);
       setSafetyData({
-        userId, partnerId: 'current-user',
+        userId,
+        partnerId: 'current-user',
         safetyNumber: generateFallbackSafetyNumber(),
         fingerprint: 'abc123def456',
-        isVerified: false, lastUpdated: new Date().toISOString(),
+        isVerified: false,
+        lastUpdated: new Date().toISOString(),
       });
     } finally {
       setIsLoading(false);
     }
   }, [userId]);
 
-  useEffect(() => { fetchSafetyNumber(); }, [fetchSafetyNumber]);
+  useEffect(() => {
+    fetchSafetyNumber();
+  }, [fetchSafetyNumber]);
 
   const handleVerify = async () => {
     if (!safetyData) return;
@@ -120,10 +134,19 @@ export default function E2EEVerificationScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#111827', '#0f172a', '#111827']} style={StyleSheet.absoluteFillObject} />
+      <LinearGradient
+        colors={['#111827', '#0f172a', '#111827']}
+        style={StyleSheet.absoluteFillObject}
+      />
 
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => { HapticFeedback.light(); navigation.goBack(); }}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => {
+            HapticFeedback.light();
+            navigation.goBack();
+          }}
+        >
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
@@ -158,9 +181,15 @@ export default function E2EEVerificationScreen() {
               <Text style={styles.userName}>{username}</Text>
               <View style={styles.verifiedBadge}>
                 {safetyData.isVerified ? (
-                  <><Ionicons name="shield-checkmark" size={16} color="#10b981" /><Text style={styles.verifiedText}>Verified</Text></>
+                  <>
+                    <Ionicons name="shield-checkmark" size={16} color="#10b981" />
+                    <Text style={styles.verifiedText}>Verified</Text>
+                  </>
                 ) : (
-                  <><Ionicons name="shield-outline" size={16} color="#f59e0b" /><Text style={styles.unverifiedText}>Not Verified</Text></>
+                  <>
+                    <Ionicons name="shield-outline" size={16} color="#f59e0b" />
+                    <Text style={styles.unverifiedText}>Not Verified</Text>
+                  </>
                 )}
               </View>
             </View>
@@ -169,7 +198,8 @@ export default function E2EEVerificationScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Safety Number</Text>
             <Text style={styles.sectionDescription}>
-              Compare these numbers with {username} to verify the security of your end-to-end encrypted conversation.
+              Compare these numbers with {username} to verify the security of your end-to-end
+              encrypted conversation.
             </Text>
             <SafetyNumberBlock number={safetyData.safetyNumber} />
             <View style={styles.actionButtons}>
@@ -204,7 +234,11 @@ export default function E2EEVerificationScreen() {
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <>
-                <Ionicons name={safetyData.isVerified ? 'shield-checkmark' : 'shield'} size={24} color="#fff" />
+                <Ionicons
+                  name={safetyData.isVerified ? 'shield-checkmark' : 'shield'}
+                  size={24}
+                  color="#fff"
+                />
                 <Text style={styles.verifyButtonText}>
                   {safetyData.isVerified ? 'Mark as Unverified' : 'Mark as Verified'}
                 </Text>
@@ -224,7 +258,9 @@ export default function E2EEVerificationScreen() {
             </View>
           </View>
 
-          <Text style={styles.lastUpdated}>Key generated: {formatDate(safetyData.lastUpdated)}</Text>
+          <Text style={styles.lastUpdated}>
+            Key generated: {formatDate(safetyData.lastUpdated)}
+          </Text>
         </ScrollView>
       ) : null}
     </View>

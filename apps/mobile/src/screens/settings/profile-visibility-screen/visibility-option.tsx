@@ -15,6 +15,8 @@ interface VisibilityOptionProps {
   onSelect: () => void;
 }
 
+/** Description. */
+/** Visibility Option component. */
 export function VisibilityOption({ option, isSelected, onSelect }: VisibilityOptionProps) {
   return (
     <TouchableOpacity

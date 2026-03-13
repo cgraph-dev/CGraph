@@ -21,8 +21,8 @@ import {
   Particle,
   ParticleType,
   ParticleBehavior,
-  ParticleConfig,
-  EmitterConfig,
+  _ParticleConfig,
+  _EmitterConfig,
 } from './particle-system';
 import BlurEngine from './blur-engine';
 
@@ -288,6 +288,7 @@ function renderParticle(particle: Particle) {
 // ============================================================================
 
 /**
+ * Particle View component.
  *
  */
 export default function ParticleView({
@@ -354,6 +355,7 @@ export default function ParticleView({
     return () => {
       engineRef.current?.clear();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, behavior, maxParticles, burst, continuous, emitterShape, width, height]);
 
   // Update engine properties
@@ -395,6 +397,7 @@ export default function ParticleView({
     if (burst && enabled) {
       triggerBurst(maxParticles);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst, enabled, maxParticles]);
 
   if (!enabled) return null;
@@ -413,6 +416,7 @@ export default function ParticleView({
 // ============================================================================
 
 /**
+ * Sparkles View component.
  *
  */
 export function SparklesView(props: Omit<ParticleViewProps, 'type'>) {
@@ -420,6 +424,7 @@ export function SparklesView(props: Omit<ParticleViewProps, 'type'>) {
 }
 
 /**
+ * Confetti View component.
  *
  */
 export function ConfettiView(props: Omit<ParticleViewProps, 'type' | 'burst'>) {
@@ -427,6 +432,7 @@ export function ConfettiView(props: Omit<ParticleViewProps, 'type' | 'burst'>) {
 }
 
 /**
+ * Snow View component.
  *
  */
 export function SnowView(props: Omit<ParticleViewProps, 'type'>) {
@@ -442,6 +448,7 @@ export function SnowView(props: Omit<ParticleViewProps, 'type'>) {
 }
 
 /**
+ * Rain View component.
  *
  */
 export function RainView(props: Omit<ParticleViewProps, 'type'>) {
@@ -457,6 +464,7 @@ export function RainView(props: Omit<ParticleViewProps, 'type'>) {
 }
 
 /**
+ * Fireflies View component.
  *
  */
 export function FirefliesView(props: Omit<ParticleViewProps, 'type'>) {
@@ -464,6 +472,7 @@ export function FirefliesView(props: Omit<ParticleViewProps, 'type'>) {
 }
 
 /**
+ * Bubbles View component.
  *
  */
 export function BubblesView(props: Omit<ParticleViewProps, 'type'>) {
@@ -479,6 +488,7 @@ export function BubblesView(props: Omit<ParticleViewProps, 'type'>) {
 }
 
 /**
+ * Stars View component.
  *
  */
 export function StarsView(props: Omit<ParticleViewProps, 'type'>) {

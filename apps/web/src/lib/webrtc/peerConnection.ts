@@ -93,7 +93,7 @@ export function setupChannelHandlers(
 
   // Handle new participant joining
   channel.on('user_joined', async (data: unknown) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const payload = data as { user_id: string; user: CallParticipant };
     state.participants.push(payload.user);
     eventHandlers.onParticipantJoined?.(payload.user);
@@ -112,7 +112,7 @@ export function setupChannelHandlers(
 
   // Handle participant leaving
   channel.on('user_left', (data: unknown) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const payload = data as { user_id: string };
     state.participants = state.participants.filter((p) => p.userId !== payload.user_id);
     peerConnections.get(payload.user_id)?.close();
@@ -123,7 +123,7 @@ export function setupChannelHandlers(
 
   // Handle incoming offer
   channel.on('offer', async (data: unknown) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const payload = data as { from: string; sdp: RTCSessionDescriptionInit };
     const pc = await createPeerConnection(
       payload.from,
@@ -142,7 +142,7 @@ export function setupChannelHandlers(
 
   // Handle incoming answer
   channel.on('answer', async (data: unknown) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const payload = data as { from: string; sdp: RTCSessionDescriptionInit };
     const pc = peerConnections.get(payload.from);
     if (pc) {
@@ -152,7 +152,7 @@ export function setupChannelHandlers(
 
   // Handle ICE candidate
   channel.on('ice_candidate', async (data: unknown) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const payload = data as { from: string; candidate: RTCIceCandidateInit };
     const pc = peerConnections.get(payload.from);
     if (pc && payload.candidate) {
@@ -162,7 +162,7 @@ export function setupChannelHandlers(
 
   // Handle call ended
   channel.on('call_ended', (data: unknown) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const payload = data as { reason: string };
     endCallFn();
     eventHandlers.onCallEnded?.(payload.reason);

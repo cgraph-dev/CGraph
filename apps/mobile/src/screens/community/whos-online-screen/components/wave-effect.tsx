@@ -38,11 +38,7 @@ export function WaveEffect({ scrollY }: WaveEffectProps) {
       false
     );
 
-    wave2.value = withRepeat(
-      withTiming(1, { duration: 4000, easing: Easing.linear }),
-      -1,
-      false
-    );
+    wave2.value = withRepeat(withTiming(1, { duration: 4000, easing: Easing.linear }), -1, false);
   }, [wave1, wave2]);
 
   const containerStyle = useAnimatedStyle(() => ({
@@ -67,9 +63,7 @@ export function WaveEffect({ scrollY }: WaveEffectProps) {
           style={styles.waveGradient}
         />
       </Animated.View>
-      <Animated.View
-        style={[styles.wave, styles.wave2, wave2Style]}
-      >
+      <Animated.View style={[styles.wave, styles.wave2, wave2Style]}>
         <LinearGradient
           colors={['transparent', 'rgba(139, 92, 246, 0.15)', 'transparent']}
           start={{ x: 0, y: 0 }}

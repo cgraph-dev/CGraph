@@ -26,6 +26,7 @@ interface EmptyStateProps {
 }
 
 /**
+ * Empty State component.
  *
  */
 export default function EmptyState({
@@ -48,9 +49,7 @@ export default function EmptyState({
       ) : null}
       <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
       {description && (
-        <Text style={[styles.description, { color: colors.textSecondary }]}>
-          {description}
-        </Text>
+        <Text style={[styles.description, { color: colors.textSecondary }]}>{description}</Text>
       )}
       {actionText && onAction && (
         <Button onPress={onAction} style={styles.button}>

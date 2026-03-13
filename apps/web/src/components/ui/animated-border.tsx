@@ -1,6 +1,6 @@
 /**
  * AnimatedBorder Component
- * 
+ *
  * Gradient animated border with glow effects.
  * Creates eye-catching containers with gaming-style borders.
  */
@@ -66,11 +66,15 @@ export default function AnimatedBorder({
           padding: borderWidth,
         }}
         animate={animate ? { rotate: 360 } : undefined}
-        transition={animate ? {
-          duration: animationSpeed,
-          repeat: Infinity,
-          ease: 'linear',
-        } : undefined}
+        transition={
+          animate
+            ? {
+                duration: animationSpeed,
+                repeat: Infinity,
+                ease: 'linear',
+              }
+            : undefined
+        }
       />
 
       {/* Glow effect */}
@@ -84,11 +88,15 @@ export default function AnimatedBorder({
             opacity: glowIntensity * 0.6,
           }}
           animate={animate ? { rotate: 360 } : undefined}
-          transition={animate ? {
-            duration: animationSpeed,
-            repeat: Infinity,
-            ease: 'linear',
-          } : undefined}
+          transition={
+            animate
+              ? {
+                  duration: animationSpeed,
+                  repeat: Infinity,
+                  ease: 'linear',
+                }
+              : undefined
+          }
         />
       )}
 

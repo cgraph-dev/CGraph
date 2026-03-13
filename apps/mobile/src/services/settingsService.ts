@@ -259,7 +259,8 @@ export async function uploadAvatar(file: {
   name: string;
 }): Promise<string> {
   const formData = new FormData();
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   formData.append('avatar', file as unknown as Blob);
 
   const response = await api.post('/api/v1/users/me/avatar/upload', formData, {
@@ -330,7 +331,8 @@ export async function uploadCustomEmoji(
   category: string
 ): Promise<CustomEmoji> {
   const formData = new FormData();
-   
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   formData.append('image', file as unknown as Blob);
   formData.append('shortcode', shortcode);
   formData.append('category', category);

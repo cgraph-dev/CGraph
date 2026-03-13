@@ -49,7 +49,7 @@ export function ReactionPickerModal({
 }: ReactionPickerModalProps) {
   if (!visible || !message) return null;
 
-   
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const categoryKeys = Object.keys(EMOJI_CATEGORIES) as EmojiCategoryKey[];
   const emojis = EMOJI_CATEGORIES[selectedCategory];
 

@@ -1,13 +1,13 @@
 /**
  * Matrix Cipher Background Animation System - Type Definitions
- * 
+ *
  * @description Comprehensive type system for the Matrix rain animation engine.
  * Supports multiple color themes, character sets, and dynamic transitions.
- * 
+ *
  * @version 1.0.0
  * @since v0.6.3
  * @author CGraph Development Team
- * 
+ *
  * Architecture:
  * - MatrixConfig: Master configuration for entire animation
  * - MatrixTheme: Color and visual style definitions
@@ -34,56 +34,56 @@ export type DeepPartial<T> = {
  * Character set identifiers for the matrix rain
  * Each set provides different visual aesthetics
  */
-export type CharacterSetType = 
-  | 'latin'           // Extended Latin (A-Z, a-z, accented)
-  | 'katakana'        // Japanese Katakana (カタカナ)
-  | 'cyrillic'        // Russian/Slavic characters
-  | 'greek'           // Greek alphabet
-  | 'numbers'         // 0-9 and mathematical symbols
-  | 'symbols'         // Special symbols and punctuation
-  | 'binary'          // Binary 0 and 1
-  | 'hex'             // Hexadecimal 0-9, A-F
-  | 'mixed'           // Combination of all sets
-  | 'custom';         // User-defined character set
+export type CharacterSetType =
+  | 'latin' // Extended Latin (A-Z, a-z, accented)
+  | 'katakana' // Japanese Katakana (カタカナ)
+  | 'cyrillic' // Russian/Slavic characters
+  | 'greek' // Greek alphabet
+  | 'numbers' // 0-9 and mathematical symbols
+  | 'symbols' // Special symbols and punctuation
+  | 'binary' // Binary 0 and 1
+  | 'hex' // Hexadecimal 0-9, A-F
+  | 'mixed' // Combination of all sets
+  | 'custom'; // User-defined character set
 
 /**
  * Predefined color theme identifiers
  */
-export type ThemePreset = 
-  | 'matrix-green'    // Classic Matrix green (#00ff41)
-  | 'cyber-blue'      // Electric blue (#00d4ff)
-  | 'blood-red'       // Deep crimson (#ff1744)
-  | 'golden'          // Gold/amber (#ffc107)
-  | 'purple-haze'     // Violet/purple (#9c27b0)
-  | 'neon-pink'       // Hot pink (#ff4081)
-  | 'ice'             // Cold blue-white (#e0f7fa)
-  | 'fire'            // Orange-red gradient (#ff5722)
-  | 'custom';         // User-defined colors
+export type ThemePreset =
+  | 'matrix-green' // Classic Matrix green (#00ff41)
+  | 'cyber-blue' // Electric blue (#00d4ff)
+  | 'blood-red' // Deep crimson (#ff1744)
+  | 'golden' // Gold/amber (#ffc107)
+  | 'purple-haze' // Violet/purple (#9c27b0)
+  | 'neon-pink' // Hot pink (#ff4081)
+  | 'ice' // Cold blue-white (#e0f7fa)
+  | 'fire' // Orange-red gradient (#ff5722)
+  | 'custom'; // User-defined colors
 
 /**
  * Animation state for lifecycle management
  */
-export type AnimationState = 
-  | 'idle'            // Not started
-  | 'starting'        // Initializing
-  | 'running'         // Active animation
-  | 'paused'          // Temporarily stopped
-  | 'transitioning'   // Theme/config transition
-  | 'stopping'        // Graceful shutdown
-  | 'stopped';        // Completely stopped
+export type AnimationState =
+  | 'idle' // Not started
+  | 'starting' // Initializing
+  | 'running' // Active animation
+  | 'paused' // Temporarily stopped
+  | 'transitioning' // Theme/config transition
+  | 'stopping' // Graceful shutdown
+  | 'stopped'; // Completely stopped
 
 /**
  * Blend mode for layered effects
  */
-export type BlendMode = 
-  | 'source-over'     // Standard overlay
-  | 'multiply'        // Darken blend
-  | 'screen'          // Lighten blend
-  | 'overlay'         // Contrast blend
-  | 'hard-light'      // Strong contrast
-  | 'soft-light'      // Gentle contrast
-  | 'color-dodge'     // Brighten highlights
-  | 'difference';     // Invert colors
+export type BlendMode =
+  | 'source-over' // Standard overlay
+  | 'multiply' // Darken blend
+  | 'screen' // Lighten blend
+  | 'overlay' // Contrast blend
+  | 'hard-light' // Strong contrast
+  | 'soft-light' // Gentle contrast
+  | 'color-dodge' // Brighten highlights
+  | 'difference'; // Invert colors
 
 // =============================================================================
 // THEME CONFIGURATION
@@ -130,7 +130,7 @@ export interface MatrixTheme {
   name: string;
   /** Theme preset or 'custom' */
   preset: ThemePreset;
-  
+
   /** Primary character color (brightest, head of stream) */
   primaryColor: string;
   /** Secondary color (mid-stream characters) */
@@ -139,25 +139,25 @@ export interface MatrixTheme {
   tertiaryColor: string;
   /** Background color */
   backgroundColor: string;
-  
+
   /** Optional gradient for character trail */
   trailGradient?: ColorStop[];
-  
+
   /** Glow effect settings */
   glow: GlowConfig;
-  
+
   /** Depth layers color variation (darker = further back) */
   depthColors?: {
-    near: string;      // Front layer
-    mid: string;       // Middle layer
-    far: string;       // Back layer
+    near: string; // Front layer
+    mid: string; // Middle layer
+    far: string; // Back layer
   };
-  
+
   /** Character opacity settings */
   opacity: {
-    head: number;      // Lead character (0-1)
-    body: number;      // Middle characters (0-1)
-    tail: number;      // Fading tail (0-1)
+    head: number; // Lead character (0-1)
+    body: number; // Middle characters (0-1)
+    tail: number; // Fading tail (0-1)
     background: number; // Trail fade (0-1)
   };
 }
@@ -380,25 +380,25 @@ export interface MatrixConfig {
   version: string;
   /** Configuration name/identifier */
   name: string;
-  
+
   /** Active theme */
   theme: MatrixTheme;
-  
+
   /** Performance settings */
   performance: PerformanceConfig;
-  
+
   /** Character set settings */
   characters: CharacterSetConfig;
-  
+
   /** Column behavior */
   columns: ColumnConfig;
-  
+
   /** Visual effects */
   effects: EffectsConfig;
-  
+
   /** Font settings */
   font: FontConfig;
-  
+
   /** Responsive breakpoints */
   responsive: {
     /** Mobile config overrides (< 768px) */
@@ -408,7 +408,7 @@ export interface MatrixConfig {
     /** Desktop config overrides (> 1024px) */
     desktop?: DeepPartial<Omit<MatrixConfig, 'responsive' | 'version' | 'name' | 'debug'>>;
   };
-  
+
   /** Debug settings */
   debug: {
     /** Show FPS counter */

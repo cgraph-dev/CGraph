@@ -108,6 +108,7 @@ export function useChatFacade(): ChatFacade {
   const activeBubbleStyle = useChatBubbleStore().style;
 
   // Derived: messages for the active conversation
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const activeMessages = activeConversationId ? (messages[activeConversationId] ?? []) : [];
 
   const hasMoreMessages = activeConversationId

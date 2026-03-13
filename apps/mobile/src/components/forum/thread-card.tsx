@@ -63,6 +63,8 @@ function formatRelativeTime(dateStr: string): string {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Thread Card component. */
 export function ThreadCard({
   thread,
   index = 0,
@@ -70,7 +72,11 @@ export function ThreadCard({
   onVote,
 }: ThreadCardProps): React.ReactElement {
   return (
-    <Animated.View entering={FadeInDown.delay(index * 50).duration(300).springify()}>
+    <Animated.View
+      entering={FadeInDown.delay(index * 50)
+        .duration(300)
+        .springify()}
+    >
       <Pressable
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -136,7 +142,9 @@ export function ThreadCard({
               <Text style={styles.authorName}>{thread.author.displayName}</Text>
               <Text style={styles.timestamp}>{formatRelativeTime(thread.createdAt)}</Text>
               {thread.isPinned && <MaterialCommunityIcons name="pin" size={12} color="#6366f1" />}
-              {thread.isLocked && <MaterialCommunityIcons name="lock" size={12} color="rgba(255,255,255,0.3)" />}
+              {thread.isLocked && (
+                <MaterialCommunityIcons name="lock" size={12} color="rgba(255,255,255,0.3)" />
+              )}
               {thread.isHot && <MaterialCommunityIcons name="fire" size={12} color="#F97316" />}
             </View>
 
@@ -152,11 +160,15 @@ export function ThreadCard({
             )}
 
             {/* Title */}
-            <Text style={styles.title} numberOfLines={2}>{thread.title}</Text>
+            <Text style={styles.title} numberOfLines={2}>
+              {thread.title}
+            </Text>
 
             {/* Preview */}
             {thread.preview && (
-              <Text style={styles.preview} numberOfLines={2}>{thread.preview}</Text>
+              <Text style={styles.preview} numberOfLines={2}>
+                {thread.preview}
+              </Text>
             )}
 
             {/* Thumbnail */}
@@ -171,11 +183,19 @@ export function ThreadCard({
             {/* Stats bar */}
             <View style={styles.statsBar}>
               <View style={styles.statItem}>
-                <MaterialCommunityIcons name="comment-outline" size={14} color="rgba(255,255,255,0.4)" />
+                <MaterialCommunityIcons
+                  name="comment-outline"
+                  size={14}
+                  color="rgba(255,255,255,0.4)"
+                />
                 <Text style={styles.statText}>{thread.replyCount}</Text>
               </View>
               <View style={styles.statItem}>
-                <MaterialCommunityIcons name="eye-outline" size={14} color="rgba(255,255,255,0.4)" />
+                <MaterialCommunityIcons
+                  name="eye-outline"
+                  size={14}
+                  color="rgba(255,255,255,0.4)"
+                />
                 <Text style={styles.statText}>{thread.viewCount}</Text>
               </View>
             </View>

@@ -75,6 +75,7 @@ export interface CarouselProps<T extends CarouselItem> {
 }
 
 /**
+ * Carousel component.
  *
  */
 export default function Carousel<T extends CarouselItem>({
@@ -93,7 +94,7 @@ export default function Carousel<T extends CarouselItem>({
   peekAmount = 30,
   hapticFeedback = true,
 }: CarouselProps<T>) {
-  const { colors } = useThemeStore();
+  const { _colors } = useThemeStore();
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(initialIndex);
@@ -117,6 +118,7 @@ export default function Carousel<T extends CarouselItem>({
         }
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoPlay, autoPlayInterval, activeIndex, data.length]);
 
   const scrollToIndex = useCallback(
@@ -131,16 +133,15 @@ export default function Carousel<T extends CarouselItem>({
     [snapInterval]
   );
 
-  const handleScroll = Animated.event(
-    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-    { useNativeDriver: true }
-  );
+  const handleScroll = Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+    useNativeDriver: true,
+  });
 
   const handleMomentumScrollEnd = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const offsetX = event.nativeEvent.contentOffset.x;
       const newIndex = Math.round(offsetX / snapInterval);
-      
+
       if (newIndex !== activeIndex && newIndex >= 0 && newIndex < data.length) {
         if (hapticFeedback) {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -260,6 +261,7 @@ export default function Carousel<T extends CarouselItem>({
 
 // Parallax image helper component
 /**
+ * Parallax Image component.
  *
  */
 export function ParallaxImage({
@@ -307,6 +309,7 @@ export function ParallaxImage({
 
 // Scale animation helper for items
 /**
+ * Scale Item component.
  *
  */
 export function ScaleItem({
@@ -337,9 +340,7 @@ export function ScaleItem({
   });
 
   return (
-    <Animated.View style={[{ transform: [{ scale }], opacity }, style]}>
-      {children}
-    </Animated.View>
+    <Animated.View style={[{ transform: [{ scale }], opacity }, style]}>{children}</Animated.View>
   );
 }
 

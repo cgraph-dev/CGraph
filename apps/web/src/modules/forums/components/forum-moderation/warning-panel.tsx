@@ -92,7 +92,7 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
           placeholder="Enter user ID…"
-          className="flex-1 rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
+          className="flex-1 rounded border p-2 text-sm dark:border-white/[0.08] dark:bg-white/[0.06]"
         />
         <button
           onClick={loadWarnings}
@@ -125,14 +125,14 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
 
       {/* Issue Warning Form */}
       {userId.trim() && (
-        <div className="rounded-lg border p-4 dark:border-white/[0.08] space-y-3">
+        <div className="space-y-3 rounded-lg border p-4 dark:border-white/[0.08]">
           <h4 className="font-medium text-gray-900 dark:text-white">Issue Warning</h4>
           <textarea
             value={warnReason}
             onChange={(e) => setWarnReason(e.target.value)}
             placeholder="Warning reason…"
             rows={3}
-            className="w-full rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
+            className="w-full rounded border p-2 text-sm dark:border-white/[0.08] dark:bg-white/[0.06]"
           />
           <div className="flex items-center gap-4">
             <div>
@@ -143,7 +143,7 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
                 max={5}
                 value={warnPoints}
                 onChange={(e) => setWarnPoints(Math.min(5, Math.max(1, Number(e.target.value))))}
-                className="w-20 rounded border p-2 text-sm dark:bg-white/[0.06] dark:border-white/[0.08]"
+                className="w-20 rounded border p-2 text-sm dark:border-white/[0.08] dark:bg-white/[0.06]"
               />
             </div>
             <button
@@ -173,7 +173,7 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
                   {w.reason}
                 </span>
                 <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                  className={`rounded-full px-2 py-0.5 text-xs font-bold ${
                     w.revoked
                       ? 'bg-gray-200 text-gray-500'
                       : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
@@ -182,7 +182,7 @@ export default function WarningPanel({ forumId }: WarningPanelProps) {
                   {w.revoked ? 'Revoked' : `${w.points} pt${w.points > 1 ? 's' : ''}`}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="mt-1 text-xs text-gray-500">
                 {new Date(w.inserted_at).toLocaleString()}
                 {w.expires_at && ` · Expires ${new Date(w.expires_at).toLocaleDateString()}`}
               </p>

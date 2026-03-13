@@ -9,7 +9,12 @@
 
 import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import Animated, { useSharedValue, withSpring, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withSpring,
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -32,21 +37,34 @@ interface TabBarProps {
 // =============================================================================
 
 /**
+ * Animated Tab Bar component.
  *
  */
-export function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) {
+export function AnimatedTabBar({ activeTab, onTabChange, _colors }: TabBarProps) {
   const indicatorAnim = useSharedValue(activeTab === 'forums' ? 0 : 1);
   const forumsScale = useSharedValue(activeTab === 'forums' ? 1.1 : 1);
   const contributorsScale = useSharedValue(activeTab === 'contributors' ? 1.1 : 1);
 
   useEffect(() => {
-    indicatorAnim.value = withSpring(activeTab === 'forums' ? 0 : 1, { damping: 8, stiffness: 100 });
-    forumsScale.value = withSpring(activeTab === 'forums' ? 1.1 : 1, { damping: 8, stiffness: 100 });
-    contributorsScale.value = withSpring(activeTab === 'contributors' ? 1.1 : 1, { damping: 8, stiffness: 100 });
+    indicatorAnim.value = withSpring(activeTab === 'forums' ? 0 : 1, {
+      damping: 8,
+      stiffness: 100,
+    });
+    forumsScale.value = withSpring(activeTab === 'forums' ? 1.1 : 1, {
+      damping: 8,
+      stiffness: 100,
+    });
+    contributorsScale.value = withSpring(activeTab === 'contributors' ? 1.1 : 1, {
+      damping: 8,
+      stiffness: 100,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const indicatorAnimStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: interpolate(indicatorAnim.value, [0, 1], [0, (SCREEN_WIDTH - 32) / 2]) }],
+    transform: [
+      { translateX: interpolate(indicatorAnim.value, [0, 1], [0, (SCREEN_WIDTH - 32) / 2]) },
+    ],
   }));
 
   const forumsScaleStyle = useAnimatedStyle(() => ({
@@ -60,12 +78,7 @@ export function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) 
   return (
     <View style={styles.tabBarContainer}>
       {/* Animated indicator */}
-      <Animated.View
-        style={[
-          styles.tabIndicator,
-          indicatorAnimStyle,
-        ]}
-      >
+      <Animated.View style={[styles.tabIndicator, indicatorAnimStyle]}>
         <LinearGradient
           colors={['#8B5CF6', '#7C3AED']}
           start={{ x: 0, y: 0 }}

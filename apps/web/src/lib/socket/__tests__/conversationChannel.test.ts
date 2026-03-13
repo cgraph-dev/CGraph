@@ -83,8 +83,12 @@ function createMockChannel(state = 'initialized') {
     leave: vi.fn(),
     _handlers: handlers,
     _receivers: receivers,
-    _trigger(event: string, payload: unknown) { handlers[event]?.(payload); },
-    _triggerJoin(event: string, resp: unknown) { receivers[event]?.(resp); },
+    _trigger(event: string, payload: unknown) {
+      handlers[event]?.(payload);
+    },
+    _triggerJoin(event: string, resp: unknown) {
+      receivers[event]?.(resp);
+    },
   };
 }
 
@@ -123,9 +127,16 @@ describe('joinConversation', () => {
 
   it('returns null when socket is null (triggers connectFn)', () => {
     const ch = joinConversation(
-      null, 'conv1', args.channels as never, args.presences as never,
-      args.onlineUsers, args.channelHandlersSetUp, args.lastJoinAttempts,
-      args.joinDebounceMs, args.notifyStatusChange, args.connectFn
+      null,
+      'conv1',
+      args.channels as never,
+      args.presences as never,
+      args.onlineUsers,
+      args.channelHandlersSetUp,
+      args.lastJoinAttempts,
+      args.joinDebounceMs,
+      args.notifyStatusChange,
+      args.connectFn
     );
     expect(ch).toBeNull();
     expect(args.connectFn).toHaveBeenCalled();
@@ -136,9 +147,16 @@ describe('joinConversation', () => {
     socket.isConnected.mockReturnValue(false);
 
     const ch = joinConversation(
-      socket as never, 'conv1', args.channels as never, args.presences as never,
-      args.onlineUsers, args.channelHandlersSetUp, args.lastJoinAttempts,
-      args.joinDebounceMs, args.notifyStatusChange, args.connectFn
+      socket as never,
+      'conv1',
+      args.channels as never,
+      args.presences as never,
+      args.onlineUsers,
+      args.channelHandlersSetUp,
+      args.lastJoinAttempts,
+      args.joinDebounceMs,
+      args.notifyStatusChange,
+      args.connectFn
     );
     expect(ch).toBeNull();
   });
@@ -146,9 +164,16 @@ describe('joinConversation', () => {
   it('creates channel and joins for new conversation', () => {
     const socket = createMockSocket();
     const ch = joinConversation(
-      socket as never, 'conv1', args.channels as never, args.presences as never,
-      args.onlineUsers, args.channelHandlersSetUp, args.lastJoinAttempts,
-      args.joinDebounceMs, args.notifyStatusChange, args.connectFn
+      socket as never,
+      'conv1',
+      args.channels as never,
+      args.presences as never,
+      args.onlineUsers,
+      args.channelHandlersSetUp,
+      args.lastJoinAttempts,
+      args.joinDebounceMs,
+      args.notifyStatusChange,
+      args.connectFn
     );
     expect(ch).not.toBeNull();
     expect(socket.channel).toHaveBeenCalledWith('conversation:conv1', {});
@@ -161,9 +186,16 @@ describe('joinConversation', () => {
 
     const socket = createMockSocket();
     const ch = joinConversation(
-      socket as never, 'conv1', args.channels as never, args.presences as never,
-      args.onlineUsers, args.channelHandlersSetUp, args.lastJoinAttempts,
-      args.joinDebounceMs, args.notifyStatusChange, args.connectFn
+      socket as never,
+      'conv1',
+      args.channels as never,
+      args.presences as never,
+      args.onlineUsers,
+      args.channelHandlersSetUp,
+      args.lastJoinAttempts,
+      args.joinDebounceMs,
+      args.notifyStatusChange,
+      args.connectFn
     );
     expect(ch).toBe(existing);
     expect(socket.channel).not.toHaveBeenCalled();
@@ -174,9 +206,16 @@ describe('joinConversation', () => {
     args.lastJoinAttempts.set('conversation:conv1', Date.now());
 
     const ch = joinConversation(
-      socket as never, 'conv1', args.channels as never, args.presences as never,
-      args.onlineUsers, args.channelHandlersSetUp, args.lastJoinAttempts,
-      args.joinDebounceMs, args.notifyStatusChange, args.connectFn
+      socket as never,
+      'conv1',
+      args.channels as never,
+      args.presences as never,
+      args.onlineUsers,
+      args.channelHandlersSetUp,
+      args.lastJoinAttempts,
+      args.joinDebounceMs,
+      args.notifyStatusChange,
+      args.connectFn
     );
     // Should not create a new channel
     expect(socket.channel).not.toHaveBeenCalled();
@@ -190,9 +229,16 @@ describe('joinConversation', () => {
 
     const socket = createMockSocket();
     const ch = joinConversation(
-      socket as never, 'conv1', args.channels as never, args.presences as never,
-      args.onlineUsers, args.channelHandlersSetUp, args.lastJoinAttempts,
-      args.joinDebounceMs, args.notifyStatusChange, args.connectFn
+      socket as never,
+      'conv1',
+      args.channels as never,
+      args.presences as never,
+      args.onlineUsers,
+      args.channelHandlersSetUp,
+      args.lastJoinAttempts,
+      args.joinDebounceMs,
+      args.notifyStatusChange,
+      args.connectFn
     );
     expect(ch).not.toBe(old);
     expect(ch).not.toBeNull();
@@ -201,9 +247,16 @@ describe('joinConversation', () => {
   it('registers all events on new channel', () => {
     const socket = createMockSocket();
     joinConversation(
-      socket as never, 'conv1', args.channels as never, args.presences as never,
-      args.onlineUsers, args.channelHandlersSetUp, args.lastJoinAttempts,
-      args.joinDebounceMs, args.notifyStatusChange, args.connectFn
+      socket as never,
+      'conv1',
+      args.channels as never,
+      args.presences as never,
+      args.onlineUsers,
+      args.channelHandlersSetUp,
+      args.lastJoinAttempts,
+      args.joinDebounceMs,
+      args.notifyStatusChange,
+      args.connectFn
     );
 
     const ch = socket._lastChannel;
@@ -227,9 +280,16 @@ describe('joinConversation', () => {
     args.channelHandlersSetUp.delete('conversation:conv1');
 
     joinConversation(
-      socket as never, 'conv1', args.channels as never, args.presences as never,
-      args.onlineUsers, args.channelHandlersSetUp, args.lastJoinAttempts,
-      args.joinDebounceMs, args.notifyStatusChange, args.connectFn
+      socket as never,
+      'conv1',
+      args.channels as never,
+      args.presences as never,
+      args.onlineUsers,
+      args.channelHandlersSetUp,
+      args.lastJoinAttempts,
+      args.joinDebounceMs,
+      args.notifyStatusChange,
+      args.connectFn
     );
 
     // First join sets up handlers
@@ -239,9 +299,16 @@ describe('joinConversation', () => {
   it('cleans up on join error', () => {
     const socket = createMockSocket();
     joinConversation(
-      socket as never, 'conv1', args.channels as never, args.presences as never,
-      args.onlineUsers, args.channelHandlersSetUp, args.lastJoinAttempts,
-      args.joinDebounceMs, args.notifyStatusChange, args.connectFn
+      socket as never,
+      'conv1',
+      args.channels as never,
+      args.presences as never,
+      args.onlineUsers,
+      args.channelHandlersSetUp,
+      args.lastJoinAttempts,
+      args.joinDebounceMs,
+      args.notifyStatusChange,
+      args.connectFn
     );
 
     const ch = socket._lastChannel;
@@ -262,7 +329,14 @@ describe('leaveConversation', () => {
     const onlineUsers = new Map([['conv1', new Set(['u1'])]]);
     const lastJoinAttempts = new Map([['conversation:conv1', 1000]]);
 
-    leaveConversation('conv1', channels as never, handlers, presences as never, onlineUsers, lastJoinAttempts);
+    leaveConversation(
+      'conv1',
+      channels as never,
+      handlers,
+      presences as never,
+      onlineUsers,
+      lastJoinAttempts
+    );
 
     expect(ch.leave).toHaveBeenCalled();
     expect(channels.has('conversation:conv1')).toBe(false);
@@ -275,7 +349,14 @@ describe('leaveConversation', () => {
   it('does nothing for unknown conversation', () => {
     const channels = new Map();
     expect(() =>
-      leaveConversation('unknown', channels as never, new Set(), new Map() as never, new Map(), new Map())
+      leaveConversation(
+        'unknown',
+        channels as never,
+        new Set(),
+        new Map() as never,
+        new Map(),
+        new Map()
+      )
     ).not.toThrow();
   });
 });

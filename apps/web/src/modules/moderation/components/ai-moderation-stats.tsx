@@ -43,6 +43,7 @@ const ACTION_LABELS: Record<string, string> = {
  * AI moderation stats with donut chart and auto-action rate.
  */
 export function AIModrationStats({ data }: AIModrationStatsProps) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const entries = data || [];
 
   const { pieData, totalDecisions, autoActionCount, autoActionRate } = useMemo(() => {

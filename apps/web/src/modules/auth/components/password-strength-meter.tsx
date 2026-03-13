@@ -198,6 +198,6 @@ export function PasswordStrengthMeter({
       )}
     </motion.div>
   );
-};
+}
 
 export default PasswordStrengthMeter;

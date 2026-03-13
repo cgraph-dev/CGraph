@@ -13,6 +13,7 @@ export interface OverviewTabProps {
 }
 
 /**
+ * Overview Tab component.
  *
  */
 export function OverviewTab({ stats, recentUsers }: OverviewTabProps) {

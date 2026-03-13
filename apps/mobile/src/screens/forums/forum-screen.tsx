@@ -28,6 +28,7 @@ type Props = {
 };
 
 /**
+ * Forum Screen component.
  *
  */
 export default function ForumScreen({ navigation, route }: Props) {
@@ -37,12 +38,13 @@ export default function ForumScreen({ navigation, route }: Props) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
+
   useEffect(() => {
     fetchForum();
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forumId]);
-  
+
   const fetchForum = async () => {
     try {
       const response = await api.get(`/api/v1/forums/${forumId}`);
@@ -63,7 +65,7 @@ export default function ForumScreen({ navigation, route }: Props) {
       console.error('Error fetching forum:', error);
     }
   };
-  
+
   const fetchPosts = async () => {
     try {
       const response = await api.get(`/api/v1/forums/${forumId}/posts`);
@@ -74,13 +76,13 @@ export default function ForumScreen({ navigation, route }: Props) {
       setIsLoading(false);
     }
   };
-  
+
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchPosts();
     setRefreshing(false);
   };
-  
+
   const handleVote = async (postId: string, value: 1 | -1) => {
     // Haptic feedback on vote
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -104,7 +106,7 @@ export default function ForumScreen({ navigation, route }: Props) {
       console.error('Error voting:', error);
     }
   };
-  
+
   const renderPost = ({ item }: { item: Post }) => (
     <TouchableOpacity
       style={[styles.postItem, { backgroundColor: colors.surface }]}
@@ -113,18 +115,19 @@ export default function ForumScreen({ navigation, route }: Props) {
       {/* Vote buttons */}
       <VoteButtons
         voteCount={item.vote_count}
-         
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         myVote={(item.my_vote || 0) as 0 | 1 | -1}
         onVote={(dir) => handleVote(item.id, dir)}
         size={24}
         colors={colors}
       />
-      
+
       {/* Post content */}
       <View style={styles.postContent}>
         <View style={styles.postMeta}>
           <Text style={[styles.author, { color: colors.textSecondary }]}>
-            u/{item.author?.username || item.author?.display_name || 'unknown'} • {safeFormatMessageTime(item.inserted_at)}
+            u/{item.author?.username || item.author?.display_name || 'unknown'} •{' '}
+            {safeFormatMessageTime(item.inserted_at)}
           </Text>
           {item.flair && (
             <View style={[styles.flair, { backgroundColor: item.flair.color }]}>
@@ -132,11 +135,11 @@ export default function ForumScreen({ navigation, route }: Props) {
             </View>
           )}
         </View>
-        
+
         <Text style={[styles.postTitle, { color: colors.text }]} numberOfLines={3}>
           {item.title}
         </Text>
-        
+
         <View style={styles.postStats}>
           <TouchableOpacity style={styles.statItem}>
             <Ionicons name="chatbubble-outline" size={16} color={colors.textSecondary} />
@@ -152,7 +155,7 @@ export default function ForumScreen({ navigation, route }: Props) {
       </View>
     </TouchableOpacity>
   );
-  
+
   if (isLoading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
@@ -160,16 +163,14 @@ export default function ForumScreen({ navigation, route }: Props) {
       </View>
     );
   }
-  
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
         data={posts}
         renderItem={renderPost}
         keyExtractor={(item) => item.id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.emptyState}>

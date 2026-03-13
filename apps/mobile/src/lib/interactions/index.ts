@@ -51,21 +51,17 @@ export {
   default as HapticPatterns,
 } from './haptic-patterns';
 
-export type {
-  HapticIntensity,
-  HapticPattern,
-  HapticConfig,
-  PatternStep,
-} from './haptic-patterns';
+export type { HapticIntensity, HapticPattern, HapticConfig, PatternStep } from './haptic-patterns';
 
 // ============================================================================
 // Default Export
 // ============================================================================
 
 const Interactions = {
-   
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   FeedbackSystem: require('./feedback-system').default,
-   
+
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   HapticPatterns: require('./haptic-patterns').default,
 };
 

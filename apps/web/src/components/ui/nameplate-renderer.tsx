@@ -26,11 +26,38 @@ import type {
 
 type NameplateSize = 'xs' | 'sm' | 'md' | 'lg';
 
-const SIZE_CONFIG: Record<NameplateSize, { height: string; fontSize: string; px: string; emblemSize: string; rounded: string }> = {
-  xs: { height: 'h-6',  fontSize: 'text-[10px]', px: 'px-2',   emblemSize: 'text-[10px]', rounded: 'rounded' },
-  sm: { height: 'h-8',  fontSize: 'text-xs',     px: 'px-2.5', emblemSize: 'text-xs',     rounded: 'rounded-md' },
-  md: { height: 'h-10', fontSize: 'text-sm',     px: 'px-3',   emblemSize: 'text-sm',     rounded: 'rounded-lg' },
-  lg: { height: 'h-12', fontSize: 'text-base',   px: 'px-4',   emblemSize: 'text-base',   rounded: 'rounded-lg' },
+const SIZE_CONFIG: Record<
+  NameplateSize,
+  { height: string; fontSize: string; px: string; emblemSize: string; rounded: string }
+> = {
+  xs: {
+    height: 'h-6',
+    fontSize: 'text-[10px]',
+    px: 'px-2',
+    emblemSize: 'text-[10px]',
+    rounded: 'rounded',
+  },
+  sm: {
+    height: 'h-8',
+    fontSize: 'text-xs',
+    px: 'px-2.5',
+    emblemSize: 'text-xs',
+    rounded: 'rounded-md',
+  },
+  md: {
+    height: 'h-10',
+    fontSize: 'text-sm',
+    px: 'px-3',
+    emblemSize: 'text-sm',
+    rounded: 'rounded-lg',
+  },
+  lg: {
+    height: 'h-12',
+    fontSize: 'text-base',
+    px: 'px-4',
+    emblemSize: 'text-base',
+    rounded: 'rounded-lg',
+  },
 };
 
 // ─── Text Effect CSS ─────────────────────────────────────────────────────────
@@ -38,7 +65,7 @@ const SIZE_CONFIG: Record<NameplateSize, { height: string; fontSize: string; px:
 function getTextEffectStyles(
   effect: NameplateTextEffect,
   primaryColor: string,
-  secondaryColor: string | null,
+  secondaryColor: string | null
 ): React.CSSProperties {
   switch (effect) {
     case 'glow':
@@ -108,10 +135,7 @@ function getTextEffectStyles(
 
 // ─── Border Style CSS ────────────────────────────────────────────────────────
 
-function getBorderStyles(
-  style: NameplateBorderStyle,
-  color: string | null,
-): React.CSSProperties {
+function getBorderStyles(style: NameplateBorderStyle, color: string | null): React.CSSProperties {
   if (!color || style === 'none') return {};
 
   switch (style) {
@@ -233,13 +257,14 @@ export const NameplateRenderer = memo(function NameplateRenderer({
   }, [nameplate.barGradient]);
 
   const textStyles = useMemo(
-    () => getTextEffectStyles(nameplate.textEffect, nameplate.textColor, nameplate.textColorSecondary),
-    [nameplate.textEffect, nameplate.textColor, nameplate.textColorSecondary],
+    () =>
+      getTextEffectStyles(nameplate.textEffect, nameplate.textColor, nameplate.textColorSecondary),
+    [nameplate.textEffect, nameplate.textColor, nameplate.textColorSecondary]
   );
 
   const borderStyles = useMemo(
     () => getBorderStyles(nameplate.borderStyle, nameplate.borderColor),
-    [nameplate.borderStyle, nameplate.borderColor],
+    [nameplate.borderStyle, nameplate.borderColor]
   );
 
   // "None" selected — render plain text only
@@ -273,7 +298,7 @@ export const NameplateRenderer = memo(function NameplateRenderer({
 
       {/* Username text with effects */}
       <span
-        className={`relative z-10 ${sizeConfig.fontSize} font-bold whitespace-nowrap`}
+        className={`relative z-10 ${sizeConfig.fontSize} whitespace-nowrap font-bold`}
         style={{
           color: nameplate.textColor,
           ...textStyles,

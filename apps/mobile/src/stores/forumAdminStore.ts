@@ -75,10 +75,9 @@ export const useForumAdminStore = create<ForumAdminState>((set, _get) => ({
       set({ moderationLogs: logs, isLoading: false });
 
       // Persist to AsyncStorage
-      await AsyncStorage.setItem(
-        `${STORAGE_KEY}:logs:${forumId}`,
-        JSON.stringify(logs),
-      ).catch(() => {});
+      await AsyncStorage.setItem(`${STORAGE_KEY}:logs:${forumId}`, JSON.stringify(logs)).catch(
+        () => {}
+      );
     } catch (err) {
       console.error('[forumAdminStore] fetchModerationLogs error:', err);
       set({ isLoading: false, error: 'Failed to load moderation logs' });

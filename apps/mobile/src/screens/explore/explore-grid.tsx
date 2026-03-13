@@ -55,7 +55,11 @@ const GRID_GAP = 4;
 const NUM_COLUMNS = 3;
 const ITEM_WIDTH = (SCREEN_WIDTH - GRID_GAP * (NUM_COLUMNS + 1)) / NUM_COLUMNS;
 
-const categories: { value: Category; label: string; icon: keyof typeof MaterialCommunityIcons.glyphMap }[] = [
+const categories: {
+  value: Category;
+  label: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+}[] = [
   { value: 'all', label: 'All', icon: 'compass-outline' },
   { value: 'groups', label: 'Groups', icon: 'account-group-outline' },
   { value: 'forums', label: 'Forums', icon: 'forum-outline' },
@@ -72,6 +76,8 @@ const typeOverlayIcons: Record<ContentType, keyof typeof MaterialCommunityIcons.
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Explore Grid component. */
 export function ExploreGrid({
   items = [],
   onItemPress,
@@ -84,7 +90,7 @@ export function ExploreGrid({
       setActiveCategory(cat);
       onCategoryChange?.(cat);
     },
-    [onCategoryChange],
+    [onCategoryChange]
   );
 
   const renderItem = useCallback(
@@ -93,9 +99,7 @@ export function ExploreGrid({
       const height = isTall ? ITEM_WIDTH * 1.6 : ITEM_WIDTH;
 
       return (
-        <Animated.View
-          entering={FadeInUp.delay(index * 30).duration(250)}
-        >
+        <Animated.View entering={FadeInUp.delay(index * 30).duration(250)}>
           <Pressable
             onPress={() => onItemPress?.(item)}
             style={[styles.gridItem, { width: ITEM_WIDTH, height }]}
@@ -124,15 +128,13 @@ export function ExploreGrid({
               <Text style={styles.gridTitle} numberOfLines={2}>
                 {item.title}
               </Text>
-              {item.stats && (
-                <Text style={styles.gridStats}>{item.stats}</Text>
-              )}
+              {item.stats && <Text style={styles.gridStats}>{item.stats}</Text>}
             </View>
           </Pressable>
         </Animated.View>
       );
     },
-    [onItemPress],
+    [onItemPress]
   );
 
   return (
@@ -147,10 +149,7 @@ export function ExploreGrid({
           <Pressable
             key={cat.value}
             onPress={() => handleCategory(cat.value)}
-            style={[
-              styles.categoryPill,
-              activeCategory === cat.value && styles.categoryPillActive,
-            ]}
+            style={[styles.categoryPill, activeCategory === cat.value && styles.categoryPillActive]}
           >
             <MaterialCommunityIcons
               name={cat.icon}
@@ -180,7 +179,11 @@ export function ExploreGrid({
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <Animated.View entering={FadeIn.duration(300)} style={styles.emptyState}>
-            <MaterialCommunityIcons name="compass-outline" size={48} color="rgba(255,255,255,0.1)" />
+            <MaterialCommunityIcons
+              name="compass-outline"
+              size={48}
+              color="rgba(255,255,255,0.1)"
+            />
             <Text style={styles.emptyText}>Nothing to explore yet</Text>
           </Animated.View>
         }

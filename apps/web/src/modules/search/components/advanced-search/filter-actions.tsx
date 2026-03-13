@@ -38,7 +38,7 @@ export function FilterActions({
           <select
             value={filters.resultsPerPage}
             onChange={
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               (e) => updateFilter('resultsPerPage', parseInt(e.target.value) as 10 | 25 | 50) // type assertion: select options are constrained to 10, 25, or 50
             }
             className="rounded border border-white/[0.10] bg-white/[0.06] px-2 py-1 text-gray-200"

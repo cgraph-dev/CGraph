@@ -1,18 +1,18 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_API_URL: string
-  readonly VITE_WS_URL: string
-  readonly VITE_SOCKET_URL: string
-  readonly VITE_WALLETCONNECT_PROJECT_ID: string
-  readonly DEV: boolean
-  readonly PROD: boolean
-  readonly MODE: string
-  readonly SSR: boolean
+  readonly VITE_API_URL: string;
+  readonly VITE_WS_URL: string;
+  readonly VITE_SOCKET_URL: string;
+  readonly VITE_WALLETCONNECT_PROJECT_ID: string;
+  readonly DEV: boolean;
+  readonly PROD: boolean;
+  readonly MODE: string;
+  readonly SSR: boolean;
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv
+  readonly env: ImportMetaEnv;
 }
 
 // Ethereum/Web3 types for wallet integration
@@ -35,40 +35,43 @@ declare module 'phoenix' {
    * Socket class.
    */
   export class Socket {
-    constructor(endPoint: string, opts?: {
-      params?: Record<string, unknown> | (() => Record<string, unknown>)
-      transport?: unknown
-      timeout?: number
-      heartbeatIntervalMs?: number
-      longpollerTimeout?: number
-      binaryType?: string
-      logger?: (kind: string, msg: string, data: unknown) => void
-      reconnectAfterMs?: (tries: number) => number
-      rejoinAfterMs?: (tries: number) => number
-      vsn?: string
-    })
+    constructor(
+      endPoint: string,
+      opts?: {
+        params?: Record<string, unknown> | (() => Record<string, unknown>);
+        transport?: unknown;
+        timeout?: number;
+        heartbeatIntervalMs?: number;
+        longpollerTimeout?: number;
+        binaryType?: string;
+        logger?: (kind: string, msg: string, data: unknown) => void;
+        reconnectAfterMs?: (tries: number) => number;
+        rejoinAfterMs?: (tries: number) => number;
+        vsn?: string;
+      }
+    );
     /**
      * connect.
      * @returns The result.
      */
-    connect(): void
+    connect(): void;
     /**
      * disconnect.
      *
      * @param callback - Callback function.
      * @returns The result.
      */
-    disconnect(callback?: () => void, code?: number, reason?: string): void
+    disconnect(callback?: () => void, code?: number, reason?: string): void;
     /**
      * Checks whether connected.
      * @returns True if the condition is met.
      */
-    isConnected(): boolean
+    isConnected(): boolean;
     /**
      * connection State.
      * @returns The result.
      */
-    connectionState(): string
+    connectionState(): string;
     /**
      * channel.
      *
@@ -77,28 +80,28 @@ declare module 'phoenix' {
      * @param unknown - The unknown.
      * @returns The result.
      */
-    channel(topic: string, chanParams?: Record<string, unknown>): Channel
+    channel(topic: string, chanParams?: Record<string, unknown>): Channel;
     /**
      * Handles open.
      *
      * @param callback - Callback function.
      * @returns The result.
      */
-    onOpen(callback: () => void): number
+    onOpen(callback: () => void): number;
     /**
      * Handles close.
      *
      * @param callback - Callback function.
      * @returns The result.
      */
-    onClose(callback: () => void): number
+    onClose(callback: () => void): number;
     /**
      * Handles error.
      *
      * @param callback - Callback function.
      * @returns The result.
      */
-    onError(callback: (error: unknown) => void): number
+    onError(callback: (error: unknown) => void): number;
     /**
      * Handles message.
      *
@@ -106,52 +109,52 @@ declare module 'phoenix' {
      * @param unknown - The unknown.
      * @returns The result.
      */
-    onMessage(callback: (msg: Record<string, unknown>) => void): number
+    onMessage(callback: (msg: Record<string, unknown>) => void): number;
     /**
      * Removes the specified item.
      *
      * @param channel - The channel.
      * @returns The result.
      */
-    remove(channel: Channel): void
+    remove(channel: Channel): void;
     /**
      * push.
      *
      * @param data - Input data.
      * @returns The result.
      */
-    push(data: unknown): void
+    push(data: unknown): void;
     /**
      * protocol.
      * @returns The result.
      */
-    protocol(): string
+    protocol(): string;
     /**
      * end Point U R L.
      * @returns The result.
      */
-    endPointURL(): string
+    endPointURL(): string;
   }
 
   /**
    * Channel class.
    */
   export class Channel {
-    constructor(topic: string, params?: Record<string, unknown>, socket?: Socket)
+    constructor(topic: string, params?: Record<string, unknown>, socket?: Socket);
     /**
      * join.
      *
      * @param timeout - The timeout.
      * @returns The result.
      */
-    join(timeout?: number): Push
+    join(timeout?: number): Push;
     /**
      * leave.
      *
      * @param timeout - The timeout.
      * @returns The result.
      */
-    leave(timeout?: number): Push
+    leave(timeout?: number): Push;
     /**
      * push.
      *
@@ -161,7 +164,7 @@ declare module 'phoenix' {
      * @param timeout - The timeout.
      * @returns The result.
      */
-    push(event: string, payload?: Record<string, unknown>, timeout?: number): Push
+    push(event: string, payload?: Record<string, unknown>, timeout?: number): Push;
     /**
      * Handles the event.
      *
@@ -170,14 +173,17 @@ declare module 'phoenix' {
      * @param joinRef - The join ref.
      * @returns The result.
      */
-    on(event: string, callback: (payload?: unknown, ref?: string, joinRef?: string) => void): number
+    on(
+      event: string,
+      callback: (payload?: unknown, ref?: string, joinRef?: string) => void
+    ): number;
     /**
      * off.
      *
      * @param event - The event object.
      * @returns The result.
      */
-    off(event: string, ref?: number): void
+    off(event: string, ref?: number): void;
     /**
      * Handles close.
      *
@@ -185,21 +191,21 @@ declare module 'phoenix' {
      * @param joinRef - The join ref.
      * @returns The result.
      */
-    onClose(callback: (payload?: unknown, ref?: string, joinRef?: string) => void): void
+    onClose(callback: (payload?: unknown, ref?: string, joinRef?: string) => void): void;
     /**
      * Handles error.
      *
      * @param callback - Callback function.
      * @returns The result.
      */
-    onError(callback: (reason?: string) => void): void
+    onError(callback: (reason?: string) => void): void;
     /**
      * rejoin.
      *
      * @param timeout - The timeout.
      * @returns The result.
      */
-    rejoin(timeout?: number): void
+    rejoin(timeout?: number): void;
     /**
      * Checks whether member.
      *
@@ -209,28 +215,33 @@ declare module 'phoenix' {
      * @param joinRef - The join ref.
      * @returns True if the condition is met.
      */
-    isMember(topic: string, event: string, payload?: unknown, joinRef?: string): boolean
-    topic: string
-    state: string
+    isMember(topic: string, event: string, payload?: unknown, joinRef?: string): boolean;
+    topic: string;
+    state: string;
   }
 
   /**
    * Push class.
    */
   export class Push {
-    constructor(channel: Channel, event: string, payload?: Record<string, unknown>, timeout?: number)
+    constructor(
+      channel: Channel,
+      event: string,
+      payload?: Record<string, unknown>,
+      timeout?: number
+    );
     /**
      * resend.
      *
      * @param timeout - The timeout.
      * @returns The result.
      */
-    resend(timeout: number): void
+    resend(timeout: number): void;
     /**
      * Dispatches the event.
      * @returns The result.
      */
-    send(): void
+    send(): void;
     /**
      * receive.
      *
@@ -238,19 +249,22 @@ declare module 'phoenix' {
      * @param callback - Callback function.
      * @returns The result.
      */
-    receive(status: string, callback: (response?: unknown) => void): Push
+    receive(status: string, callback: (response?: unknown) => void): Push;
   }
 
   /**
    * Presence class.
    */
   export class Presence {
-    constructor(channel: Channel, opts?: {
-      events?: {
-        state: string
-        diff: string
+    constructor(
+      channel: Channel,
+      opts?: {
+        events?: {
+          state: string;
+          diff: string;
+        };
       }
-    })
+    );
     /**
      * Handles join.
      *
@@ -259,7 +273,7 @@ declare module 'phoenix' {
      * @param newPres - The new pres.
      * @returns The result.
      */
-    onJoin(callback: (key: string, current: unknown, newPres: unknown) => void): void
+    onJoin(callback: (key: string, current: unknown, newPres: unknown) => void): void;
     /**
      * Handles leave.
      *
@@ -268,14 +282,14 @@ declare module 'phoenix' {
      * @param leftPres - The left pres.
      * @returns The result.
      */
-    onLeave(callback: (key: string, current: unknown, leftPres: unknown) => void): void
+    onLeave(callback: (key: string, current: unknown, leftPres: unknown) => void): void;
     /**
      * Handles sync.
      *
      * @param callback - Callback function.
      * @returns The result.
      */
-    onSync(callback: () => void): void
+    onSync(callback: () => void): void;
     /**
      * unknown.
      *
@@ -283,12 +297,12 @@ declare module 'phoenix' {
      * @param pres - The pres.
      * @returns The result.
      */
-    list<T>(chooser?: (key: string, pres: unknown) => T): T[]
+    list<T>(chooser?: (key: string, pres: unknown) => T): T[];
     /**
      * in Pending Sync State.
      * @returns The result.
      */
-    inPendingSyncState(): boolean
+    inPendingSyncState(): boolean;
     /**
      * sync State.
      *
@@ -305,7 +319,7 @@ declare module 'phoenix' {
       newState: Record<string, unknown>,
       onJoin?: (key: string, current: T | undefined, newPres: unknown) => void,
       onLeave?: (key: string, current: T | undefined, leftPres: unknown) => void
-    ): Record<string, T>
+    ): Record<string, T>;
     /**
      * sync Diff.
      *
@@ -323,7 +337,7 @@ declare module 'phoenix' {
       diff: { joins?: Record<string, unknown>; leaves?: Record<string, unknown> },
       onJoin?: (key: string, current: T | undefined, newPres: unknown) => void,
       onLeave?: (key: string, current: T | undefined, leftPres: unknown) => void
-    ): Record<string, T>
+    ): Record<string, T>;
     /**
      * list.
      *
@@ -335,53 +349,53 @@ declare module 'phoenix' {
     static list<T>(
       presences: Record<string, unknown>,
       chooser?: (key: string, pres: unknown) => T
-    ): T[]
+    ): T[];
   }
 
   export const Serializer: {
-    encode(msg: unknown, callback: (encoded: string) => void): void
-    decode(rawPayload: string, callback: (decoded: unknown) => void): void
-  }
+    encode(msg: unknown, callback: (encoded: string) => void): void;
+    decode(rawPayload: string, callback: (decoded: unknown) => void): void;
+  };
 
   /**
    * Long Poll class.
    */
   export class LongPoll {
-    constructor(endPoint: string)
+    constructor(endPoint: string);
     /**
      * normalize Endpoint.
      *
      * @param endPoint - The end point.
      * @returns The result.
      */
-    normalizeEndpoint(endPoint: string): string
+    normalizeEndpoint(endPoint: string): string;
     /**
      * endpoint U R L.
      * @returns The result.
      */
-    endpointURL(): string
+    endpointURL(): string;
     /**
      * close And Retry.
      * @returns The result.
      */
-    closeAndRetry(): void
+    closeAndRetry(): void;
     /**
      * Handles timeout.
      * @returns The result.
      */
-    ontimeout(): void
+    ontimeout(): void;
     /**
      * poll.
      * @returns The result.
      */
-    poll(): void
+    poll(): void;
     /**
      * Dispatches the event.
      *
      * @param body - The body.
      * @returns The result.
      */
-    send(body: string): void
+    send(body: string): void;
     /**
      * close.
      *
@@ -389,7 +403,7 @@ declare module 'phoenix' {
      * @param reason - The reason.
      * @returns The result.
      */
-    close(code?: number, reason?: string): void
+    close(code?: number, reason?: string): void;
   }
 
   export const Ajax: {
@@ -401,7 +415,7 @@ declare module 'phoenix' {
       timeout: number,
       ontimeout: () => void,
       callback: (response: unknown) => void
-    ): void
+    ): void;
     xdomainRequest(
       req: unknown,
       method: string,
@@ -410,7 +424,7 @@ declare module 'phoenix' {
       timeout: number,
       ontimeout: () => void,
       callback: (response: unknown) => void
-    ): void
+    ): void;
     xhrRequest(
       req: unknown,
       method: string,
@@ -420,9 +434,9 @@ declare module 'phoenix' {
       timeout: number,
       ontimeout: () => void,
       callback: (response: unknown) => void
-    ): void
-    parseJSON(resp: string): unknown
-    serialize(obj: Record<string, unknown>, parentKey?: string): string
-    appendParams(url: string, params: Record<string, unknown>): string
-  }
+    ): void;
+    parseJSON(resp: string): unknown;
+    serialize(obj: Record<string, unknown>, parentKey?: string): string;
+    appendParams(url: string, params: Record<string, unknown>): string;
+  };
 }

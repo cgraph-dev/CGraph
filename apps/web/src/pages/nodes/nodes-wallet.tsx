@@ -3,7 +3,7 @@
  *
  * Shows balance, transaction history, and withdrawal.
  */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNodeWallet, useNodeTransactions } from '@/modules/nodes/hooks/useNodes';
 import { TransactionRow } from '@/modules/nodes/components/transaction-row';
@@ -20,7 +20,9 @@ const filterTabs: Array<{ label: string; value: TransactionType | undefined }> =
   { label: 'Withdrawals', value: 'withdrawal' },
 ];
 
-export const NodesWalletPage: React.FC = () => {
+/** Description. */
+/** Nodes Wallet Page component. */
+export function NodesWalletPage(): React.ReactElement {
   const [activeFilter, setActiveFilter] = useState<TransactionType | undefined>(undefined);
   const [showWithdrawal, setShowWithdrawal] = useState(false);
 
@@ -99,7 +101,7 @@ export const NodesWalletPage: React.FC = () => {
                 'rounded-full px-3 py-1 text-xs font-medium transition-colors',
                 activeFilter === tab.value
                   ? 'bg-purple-600 text-white'
-                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700',
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
               )}
             >
               {tab.label}
@@ -129,7 +131,7 @@ export const NodesWalletPage: React.FC = () => {
       />
     </div>
   );
-};
+}
 
 NodesWalletPage.displayName = 'NodesWalletPage';
 export default NodesWalletPage;

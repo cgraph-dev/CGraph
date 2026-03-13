@@ -61,8 +61,9 @@ export default function Select({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-       
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) { // type assertion: EventTarget to Node for contains check
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        // type assertion: EventTarget to Node for contains check
         setIsOpen(false);
         setSearchQuery('');
       }
@@ -106,7 +107,9 @@ export default function Select({
       </button>
 
       {isOpen && (
-        <div className={`absolute z-20 mt-1 max-h-60 w-full overflow-hidden rounded-lg ${glassSurfaceElevated} shadow-xl`}>
+        <div
+          className={`absolute z-20 mt-1 max-h-60 w-full overflow-hidden rounded-lg ${glassSurfaceElevated} shadow-xl`}
+        >
           {searchable && (
             <div className="border-b border-white/[0.06] p-2">
               <input
@@ -220,7 +223,9 @@ export function SelectValue({ placeholder }: { placeholder?: string }) {
  */
 export function SelectContent({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-1 shadow-xl">{children}</div>
+    <div className="rounded-lg border border-white/[0.08] bg-white/[0.04] p-1 shadow-xl">
+      {children}
+    </div>
   );
 }
 

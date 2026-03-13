@@ -14,6 +14,8 @@ import type { ForumSearchFilters } from '@/modules/forums/store/forumStore.types
 
 const DEBOUNCE_MS = 300;
 
+/** Description. */
+/** Hook for forum search. */
 export function useForumSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
   const {
@@ -39,7 +41,9 @@ export function useForumSearch() {
       const sort = searchParams.get('sort');
       const dateFrom = searchParams.get('date_from');
       const dateTo = searchParams.get('date_to');
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (type) filters.type = type as ForumSearchFilters['type'];
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (sort) filters.sort = sort as ForumSearchFilters['sort'];
       if (dateFrom) filters.dateFrom = dateFrom;
       if (dateTo) filters.dateTo = dateTo;
@@ -64,7 +68,8 @@ export function useForumSearch() {
         const mergedFilters = { ...searchFilters, ...filters };
         // Update URL
         const params = new URLSearchParams({ q: query });
-        if (mergedFilters.type && mergedFilters.type !== 'all') params.set('type', mergedFilters.type);
+        if (mergedFilters.type && mergedFilters.type !== 'all')
+          params.set('type', mergedFilters.type);
         if (mergedFilters.sort) params.set('sort', mergedFilters.sort);
         if (mergedFilters.dateFrom) params.set('date_from', mergedFilters.dateFrom);
         if (mergedFilters.dateTo) params.set('date_to', mergedFilters.dateTo);

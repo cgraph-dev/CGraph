@@ -49,8 +49,8 @@ export type HapticType =
   | 'selection';
 
 export interface UnifiedIconConfig {
-  ios: string;      // SF Symbol name
-  android: string;  // Material icon name
+  ios: string; // SF Symbol name
+  android: string; // Material icon name
   fallback: string; // Ionicons name
 }
 
@@ -66,6 +66,7 @@ export interface BottomSheetConfig {
 // ============================================================================
 
 /**
+ * Gets platform.
  *
  */
 export function getPlatform(): PlatformType {
@@ -76,6 +77,7 @@ export function getPlatform(): PlatformType {
 }
 
 /**
+ * Checks if i o s.
  *
  */
 export function isIOS(): boolean {
@@ -83,6 +85,7 @@ export function isIOS(): boolean {
 }
 
 /**
+ * Checks if android.
  *
  */
 export function isAndroid(): boolean {
@@ -90,6 +93,7 @@ export function isAndroid(): boolean {
 }
 
 /**
+ * Checks if web.
  *
  */
 export function isWeb(): boolean {
@@ -97,6 +101,7 @@ export function isWeb(): boolean {
 }
 
 /**
+ * Gets platform version.
  *
  */
 export function getPlatformVersion(): number {
@@ -279,7 +284,7 @@ class PlatformAdapterManager {
       return {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: elevation / 2 },
-        shadowOpacity: 0.1 + (elevation * 0.02),
+        shadowOpacity: 0.1 + elevation * 0.02,
         shadowRadius: elevation,
       };
     }
@@ -415,6 +420,7 @@ export const platformAdapter = new PlatformAdapterManager();
 import { useState, useEffect, useCallback } from 'react';
 
 /**
+ * Hook for platform capabilities.
  *
  */
 export function usePlatformCapabilities(): UnifiedCapabilities {
@@ -430,6 +436,7 @@ export function usePlatformCapabilities(): UnifiedCapabilities {
 }
 
 /**
+ * Hook for unified haptic.
  *
  */
 export function useUnifiedHaptic(): (type: HapticType) => Promise<void> {
@@ -437,6 +444,7 @@ export function useUnifiedHaptic(): (type: HapticType) => Promise<void> {
 }
 
 /**
+ * Hook for system colors.
  *
  */
 export function useSystemColors(): ReturnType<typeof platformAdapter.getSystemColors> {
@@ -444,7 +452,8 @@ export function useSystemColors(): ReturnType<typeof platformAdapter.getSystemCo
 
   useEffect(() => {
     // Refresh colors when theme changes
-     
+
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { Appearance } = require('react-native');
     const listener = Appearance.addChangeListener(() => {
       setColors(platformAdapter.getSystemColors());
@@ -457,6 +466,7 @@ export function useSystemColors(): ReturnType<typeof platformAdapter.getSystemCo
 }
 
 /**
+ * Hook for platform styles.
  *
  */
 export function usePlatformStyles(): {
@@ -476,13 +486,10 @@ export function usePlatformStyles(): {
 // ============================================================================
 
 /**
+ * Select platform.
  *
  */
-export function selectPlatform<T>(options: {
-  ios?: T;
-  android?: T;
-  default: T;
-}): T {
+export function selectPlatform<T>(options: { ios?: T; android?: T; default: T }): T {
   if (isIOS() && options.ios !== undefined) {
     return options.ios;
   }

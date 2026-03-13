@@ -11,6 +11,7 @@ import { SliderRowProps } from '../types';
 import { styles } from '../styles';
 
 /**
+ * Slider Row component.
  *
  */
 export function SliderRow({ label, value, min, max, step = 1, onValueChange }: SliderRowProps) {

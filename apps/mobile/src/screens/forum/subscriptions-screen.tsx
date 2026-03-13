@@ -37,12 +37,13 @@ interface Subscription {
 }
 
 /**
+ * Subscriptions Screen component.
  *
  */
 export function SubscriptionsScreen(): React.ReactElement {
   const navigation = useNavigation();
   const { colors } = useThemeStore();
-  
+
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -51,8 +52,9 @@ export function SubscriptionsScreen(): React.ReactElement {
   const fetchSubscriptions = useCallback(async () => {
     try {
       const response = await fetch('/api/forum/subscriptions');
-       
-      const data = await response.json() as { subscriptions?: Subscription[] };
+
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const data = (await response.json()) as { subscriptions?: Subscription[] };
       setSubscriptions(data.subscriptions || []);
     } catch (error) {
       console.error('Failed to fetch subscriptions:', error);
@@ -110,9 +112,7 @@ export function SubscriptionsScreen(): React.ReactElement {
   };
 
   const filteredSubscriptions =
-    activeTab === 'all'
-      ? subscriptions
-      : subscriptions.filter((sub) => sub.type === activeTab);
+    activeTab === 'all' ? subscriptions : subscriptions.filter((sub) => sub.type === activeTab);
 
   const counts = {
     all: subscriptions.length,
@@ -293,13 +293,9 @@ export function SubscriptionsScreen(): React.ReactElement {
   const renderSubscription = ({ item }: { item: Subscription }) => (
     <View style={styles.subscriptionItem}>
       <View style={styles.iconContainer}>
-        <Ionicons
-          name={getTypeIcon(item.type)}
-          size={20}
-          color={colors.primary}
-        />
+        <Ionicons name={getTypeIcon(item.type)} size={20} color={colors.primary} />
       </View>
-      
+
       <View style={styles.itemContent}>
         <View style={styles.itemHeader}>
           <Text style={styles.itemName} numberOfLines={1}>
@@ -311,13 +307,13 @@ export function SubscriptionsScreen(): React.ReactElement {
             </View>
           )}
         </View>
-        
+
         {item.targetPath && (
           <Text style={styles.itemPath} numberOfLines={1}>
             {item.targetPath}
           </Text>
         )}
-        
+
         <View style={styles.itemMeta}>
           <Text style={styles.itemMode}>{getModeLabel(item.notificationMode)}</Text>
           <Text style={styles.itemDate}>
@@ -326,10 +322,7 @@ export function SubscriptionsScreen(): React.ReactElement {
         </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => handleDelete(item.id)}
-      >
+      <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
         <Ionicons name="trash-outline" size={20} color={colors.error} />
       </TouchableOpacity>
     </View>
@@ -364,17 +357,12 @@ export function SubscriptionsScreen(): React.ReactElement {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Subscriptions</Text>
-          <Text style={styles.headerSubtitle}>
-            {subscriptions.length} subscriptions
-          </Text>
+          <Text style={styles.headerSubtitle}>{subscriptions.length} subscriptions</Text>
         </View>
         {totalUnread > 0 && (
           <View style={styles.unreadBadge}>
@@ -391,9 +379,7 @@ export function SubscriptionsScreen(): React.ReactElement {
             style={[styles.tab, activeTab === tab && styles.tabActive]}
             onPress={() => setActiveTab(tab)}
           >
-            <Text
-              style={[styles.tabText, activeTab === tab && styles.tabTextActive]}
-            >
+            <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </Text>
             <Text style={styles.tabCount}>({counts[tab]})</Text>
@@ -407,9 +393,7 @@ export function SubscriptionsScreen(): React.ReactElement {
         keyExtractor={(item) => item.id}
         renderItem={renderSubscription}
         contentContainerStyle={
-          filteredSubscriptions.length === 0
-            ? { flex: 1 }
-            : styles.listContent
+          filteredSubscriptions.length === 0 ? { flex: 1 } : styles.listContent
         }
         ListEmptyComponent={renderEmpty}
         refreshControl={
@@ -422,6 +406,6 @@ export function SubscriptionsScreen(): React.ReactElement {
       />
     </SafeAreaView>
   );
-};
+}
 
 export default SubscriptionsScreen;

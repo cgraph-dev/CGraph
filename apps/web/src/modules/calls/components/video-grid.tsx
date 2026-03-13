@@ -58,9 +58,7 @@ function VideoTile({ stream, participant, isLocal = false, isSpeaking = false }:
 
       {/* Name label */}
       <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1">
-        {participant.isMuted && (
-          <MicrophoneIcon className="h-3.5 w-3.5 text-red-400" />
-        )}
+        {participant.isMuted && <MicrophoneIcon className="h-3.5 w-3.5 text-red-400" />}
         <span className="text-xs font-medium text-white">
           {isLocal ? 'You' : participant.username}
         </span>

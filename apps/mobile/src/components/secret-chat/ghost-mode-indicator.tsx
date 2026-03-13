@@ -45,23 +45,16 @@ function formatCountdown(totalSeconds: number): string {
 // Component
 // ---------------------------------------------------------------------------
 
+/** Description. */
+/** Ghost Mode Indicator component. */
 export function GhostModeIndicator({ seconds, themeColors }: GhostModeIndicatorProps) {
   const timeStr = useMemo(() => formatCountdown(seconds), [seconds]);
   const isUrgent = seconds <= 10;
 
   return (
     <View style={[styles.container, { backgroundColor: `${themeColors.accent}18` }]}>
-      <Ionicons
-        name="timer-outline"
-        size={14}
-        color={isUrgent ? '#dc2626' : themeColors.accent}
-      />
-      <Text
-        style={[
-          styles.label,
-          { color: isUrgent ? '#dc2626' : themeColors.accent },
-        ]}
-      >
+      <Ionicons name="timer-outline" size={14} color={isUrgent ? '#dc2626' : themeColors.accent} />
+      <Text style={[styles.label, { color: isUrgent ? '#dc2626' : themeColors.accent }]}>
         Ghost Mode
       </Text>
       <Text

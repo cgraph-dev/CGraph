@@ -14,9 +14,17 @@ interface AvatarGroupProps {
 }
 
 const SIZE_PX: Record<AvatarSize, number> = {
-  xs: 16, sm: 24, md: 32, lg: 40, xl: 56, '2xl': 80, '3xl': 120,
+  xs: 16,
+  sm: 24,
+  md: 32,
+  lg: 40,
+  xl: 56,
+  '2xl': 80,
+  '3xl': 120,
 };
 
+/** Description. */
+/** Avatar Group component. */
 export function AvatarGroup({ children, max = 3, size = 'md', style }: AvatarGroupProps) {
   const items = React.Children.toArray(children);
   const visible = items.slice(0, max);
@@ -29,10 +37,7 @@ export function AvatarGroup({ children, max = 3, size = 'md', style }: AvatarGro
       {visible.map((child, i) => (
         <View
           key={i}
-          style={[
-            styles.item,
-            { marginLeft: i > 0 ? overlap : 0, zIndex: visible.length - i },
-          ]}
+          style={[styles.item, { marginLeft: i > 0 ? overlap : 0, zIndex: visible.length - i }]}
         >
           {child}
         </View>

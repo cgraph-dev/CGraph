@@ -76,6 +76,7 @@ const DRAG_THRESHOLD = 50;
 const VELOCITY_THRESHOLD = 0.5;
 
 /**
+ * Bottom Sheet component.
  *
  */
 export default function BottomSheet({
@@ -217,15 +218,8 @@ export default function BottomSheet({
     >
       <View style={styles.container}>
         {/* Backdrop */}
-        <TouchableWithoutFeedback
-          onPress={backdropDismiss ? handleClose : undefined}
-        >
-          <Animated.View
-            style={[
-              styles.backdrop,
-              { opacity: backdropOpacity },
-            ]}
-          >
+        <TouchableWithoutFeedback onPress={backdropDismiss ? handleClose : undefined}>
+          <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
             <BlurView
               intensity={backdropBlur}
               tint={isDark ? 'dark' : 'light'}
@@ -244,9 +238,7 @@ export default function BottomSheet({
               styles.sheet,
               {
                 height: SNAP_POINTS.full,
-                backgroundColor: isDark
-                  ? 'rgba(17, 24, 39, 0.95)'
-                  : 'rgba(255, 255, 255, 0.95)',
+                backgroundColor: isDark ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                 transform: [{ translateY }],
                 paddingBottom: insets.bottom,
               },
@@ -266,9 +258,7 @@ export default function BottomSheet({
                   style={[
                     styles.handle,
                     {
-                      backgroundColor: isDark
-                        ? 'rgba(255, 255, 255, 0.3)'
-                        : 'rgba(0, 0, 0, 0.2)',
+                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.2)',
                     },
                   ]}
                 />
@@ -278,9 +268,7 @@ export default function BottomSheet({
             {/* Header with title */}
             {title && (
               <View style={styles.header}>
-                <Text style={[styles.title, { color: colors.text }]}>
-                  {title}
-                </Text>
+                <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
               </View>
             )}
 

@@ -47,7 +47,9 @@ const QueueItemCard = memo(function QueueItemCard({
   onReject,
 }: QueueItemCardProps) {
   return (
-    <div className={`rounded-lg border ${isSelected ? 'border-blue-500 bg-blue-500/10' : 'border-white/[0.08] bg-white/[0.04]'} p-4`}>
+    <div
+      className={`rounded-lg border ${isSelected ? 'border-blue-500 bg-blue-500/10' : 'border-white/[0.08] bg-white/[0.04]'} p-4`}
+    >
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {item.status === 'pending' && (
@@ -152,10 +154,7 @@ export function ModerationQueue() {
   );
 
   // Bulk selection handlers
-  const pendingItems = useMemo(
-    () => queue.filter((item) => item.status === 'pending'),
-    [queue]
-  );
+  const pendingItems = useMemo(() => queue.filter((item) => item.status === 'pending'), [queue]);
 
   const handleToggleSelect = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -239,7 +238,7 @@ export function ModerationQueue() {
         )}
         <select
           value={statusFilter}
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           onChange={(e) => setStatusFilter(e.target.value as FilterStatus)} // safe downcast – select event value
           className="rounded bg-white/[0.04] px-3 py-1.5 text-sm text-gray-300"
         >
@@ -248,7 +247,7 @@ export function ModerationQueue() {
         </select>
         <select
           value={priorityFilter}
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           onChange={(e) => setPriorityFilter(e.target.value as FilterPriority)} // safe downcast – select event value
           className="rounded bg-white/[0.04] px-3 py-1.5 text-sm text-gray-300"
         >
@@ -263,9 +262,7 @@ export function ModerationQueue() {
       {/* Floating bulk action bar */}
       {selectedIds.size > 0 && (
         <div className="sticky top-0 z-10 flex items-center gap-3 rounded-lg border border-blue-500/30 bg-blue-900/80 px-4 py-3 backdrop-blur-sm">
-          <span className="text-sm font-medium text-blue-200">
-            {selectedIds.size} selected
-          </span>
+          <span className="text-sm font-medium text-blue-200">{selectedIds.size} selected</span>
           <div className="ml-auto flex gap-2">
             <button
               type="button"
@@ -299,8 +296,8 @@ export function ModerationQueue() {
       {showBatchConfirm && (
         <div className="rounded-lg border border-yellow-500/30 bg-yellow-900/30 p-4">
           <p className="mb-3 text-sm text-yellow-200">
-            Are you sure you want to <strong>{showBatchConfirm}</strong>{' '}
-            {selectedIds.size} report{selectedIds.size > 1 ? 's' : ''}?
+            Are you sure you want to <strong>{showBatchConfirm}</strong> {selectedIds.size} report
+            {selectedIds.size > 1 ? 's' : ''}?
           </p>
           <div className="flex gap-2">
             <button
@@ -320,9 +317,7 @@ export function ModerationQueue() {
             </button>
           </div>
           {batchReviewMutation.isError && (
-            <p className="mt-2 text-xs text-red-400">
-              Batch action failed. Please try again.
-            </p>
+            <p className="mt-2 text-xs text-red-400">Batch action failed. Please try again.</p>
           )}
         </div>
       )}
@@ -331,7 +326,7 @@ export function ModerationQueue() {
       {isLoadingQueue && <div className="py-8 text-center text-gray-500">Loading queue…</div>}
 
       {!isLoadingQueue && filteredQueue.length === 0 && (
-        <div className="rounded-lg border border-white/[0.08] bg-white/[0.04]/30 py-8 text-center text-gray-500">
+        <div className="bg-white/[0.04]/30 rounded-lg border border-white/[0.08] py-8 text-center text-gray-500">
           No items in queue
         </div>
       )}

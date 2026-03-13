@@ -107,10 +107,11 @@ const createUIStub = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const comp = (name: string) => (props: Record<string, unknown> & { ref?: any }) => {
     const { children, ref, ...rest } = props;
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
     return createElement(
       'div',
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
       { ...rest, ref, 'data-testid': `ui-${name}` } as any,
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
       children as any
     );
   };

@@ -49,7 +49,7 @@ export function useHolographicTheme() {
       enableGlow: theme.animations.enableGlow,
       enableParallax: theme.animations.enableParallax,
     }),
-    [theme],
+    [theme]
   );
 }
 

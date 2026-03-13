@@ -39,6 +39,8 @@ export interface RankProgressBarProps {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Rank Progress Bar component. */
 export function RankProgressBar({
   currentScore,
   currentRank,
@@ -53,6 +55,7 @@ export function RankProgressBar({
       duration: durations.smooth.ms,
       easing: Easing.out(Easing.ease),
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progressPercent]);
 
   const animatedFillStyle = useAnimatedStyle(() => ({
@@ -65,16 +68,12 @@ export function RankProgressBar({
       <View style={styles.labelRow}>
         <View style={styles.rankLabel}>
           <View style={[styles.rankDot, { backgroundColor: currentRank.color }]} />
-          <Text style={[styles.rankName, { color: currentRank.color }]}>
-            {currentRank.name}
-          </Text>
+          <Text style={[styles.rankName, { color: currentRank.color }]}>{currentRank.name}</Text>
         </View>
 
         {nextRank && (
           <View style={styles.rankLabel}>
-            <Text style={[styles.rankName, { color: nextRank.color }]}>
-              {nextRank.name}
-            </Text>
+            <Text style={[styles.rankName, { color: nextRank.color }]}>{nextRank.name}</Text>
             <View style={[styles.rankDot, { backgroundColor: nextRank.color }]} />
           </View>
         )}

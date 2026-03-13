@@ -1,6 +1,6 @@
 /**
  * Premium Hooks (Mobile)
- * 
+ *
  * Connects to backend for premium subscriptions and coin management.
  * @module features/premium/hooks
  * @version 0.8.6
@@ -23,7 +23,7 @@ export function usePremiumStatus() {
   const [status, setStatus] = useState<SubscriptionStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const fetchStatus = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -44,27 +44,33 @@ export function usePremiumStatus() {
 
   const isPremium = status?.isActive ?? false;
   const tier = status?.tier ?? 'free';
-  
-  const hasFeature = useCallback((feature: keyof typeof TIER_FEATURES.free) => {
-     
-    const tierFeatures = TIER_FEATURES[tier as TierName] || TIER_FEATURES.free;
-    const value = tierFeatures[feature];
-    
-    // Handle boolean features
-    if (typeof value === 'boolean') return value;
-    
-    // Handle numeric features (-1 means unlimited)
-    if (typeof value === 'number') return value > 0 || value === -1;
-    
-    return false;
-  }, [tier]);
 
-  const getFeatureLimit = useCallback((feature: keyof typeof TIER_FEATURES.free) => {
-     
-    const tierFeatures = TIER_FEATURES[tier as TierName] || TIER_FEATURES.free;
-    return tierFeatures[feature];
-  }, [tier]);
-  
+  const hasFeature = useCallback(
+    (feature: keyof typeof TIER_FEATURES.free) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const tierFeatures = TIER_FEATURES[tier as TierName] || TIER_FEATURES.free;
+      const value = tierFeatures[feature];
+
+      // Handle boolean features
+      if (typeof value === 'boolean') return value;
+
+      // Handle numeric features (-1 means unlimited)
+      if (typeof value === 'number') return value > 0 || value === -1;
+
+      return false;
+    },
+    [tier]
+  );
+
+  const getFeatureLimit = useCallback(
+    (feature: keyof typeof TIER_FEATURES.free) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const tierFeatures = TIER_FEATURES[tier as TierName] || TIER_FEATURES.free;
+      return tierFeatures[feature];
+    },
+    [tier]
+  );
+
   return {
     isPremium,
     tier,
@@ -90,7 +96,7 @@ export function useSubscription() {
     const init = async () => {
       await paymentService.initialize();
       const allProducts = paymentService.getProducts();
-      setProducts(allProducts.filter(p => p.type === 'subscription'));
+      setProducts(allProducts.filter((p) => p.type === 'subscription'));
     };
     init();
   }, []);
@@ -99,7 +105,7 @@ export function useSubscription() {
     setIsSubscribing(true);
     setError(null);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    
+
     try {
       const purchase = await paymentService.purchaseProduct(productId);
       if (purchase) {
@@ -120,7 +126,7 @@ export function useSubscription() {
   const cancel = useCallback(async () => {
     setIsCanceling(true);
     setError(null);
-    
+
     try {
       await api.post('/api/v1/premium/cancel');
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -263,7 +269,7 @@ export function useCoins() {
   const [isLoading, setIsLoading] = useState(true);
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const fetchBalance = useCallback(async () => {
     try {
       const response = await api.get('/api/v1/coins/balance');
@@ -279,58 +285,64 @@ export function useCoins() {
       setIsLoading(true);
       await paymentService.initialize();
       const allProducts = paymentService.getProducts();
-      setPackages(allProducts.filter(p => p.type === 'consumable'));
+      setPackages(allProducts.filter((p) => p.type === 'consumable'));
       await fetchBalance();
       setIsLoading(false);
     };
     init();
   }, [fetchBalance]);
-  
-  const spend = useCallback(async (amount: number, itemId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setError(null);
-    
-    try {
-      const response = await api.post('/api/v1/coins/spend', { 
-        amount, 
-        item_id: itemId 
-      });
-      
-      const data = response.data?.data || response.data;
-      setBalance(data.new_balance || balance - amount);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return true;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to spend coins';
-      setError(message);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return false;
-    }
-  }, [balance]);
-  
-  const purchase = useCallback(async (packageId: string) => {
-    setIsPurchasing(true);
-    setError(null);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    
-    try {
-      const purchaseResult = await paymentService.purchaseProduct(packageId);
-      if (purchaseResult?.purchaseState === 'purchased') {
-        await fetchBalance();
+
+  const spend = useCallback(
+    async (amount: number, itemId: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      setError(null);
+
+      try {
+        const response = await api.post('/api/v1/coins/spend', {
+          amount,
+          item_id: itemId,
+        });
+
+        const data = response.data?.data || response.data;
+        setBalance(data.new_balance || balance - amount);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         return true;
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to spend coins';
+        setError(message);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return false;
       }
-      return false;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Purchase failed';
-      setError(message);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return false;
-    } finally {
-      setIsPurchasing(false);
-    }
-  }, [fetchBalance]);
-  
+    },
+    [balance]
+  );
+
+  const purchase = useCallback(
+    async (packageId: string) => {
+      setIsPurchasing(true);
+      setError(null);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
+      try {
+        const purchaseResult = await paymentService.purchaseProduct(packageId);
+        if (purchaseResult?.purchaseState === 'purchased') {
+          await fetchBalance();
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          return true;
+        }
+        return false;
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Purchase failed';
+        setError(message);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return false;
+      } finally {
+        setIsPurchasing(false);
+      }
+    },
+    [fetchBalance]
+  );
+
   return {
     balance,
     packages,
@@ -347,14 +359,16 @@ export function useCoins() {
  * Hook for the premium shop (cosmetics, badges, etc.)
  */
 export function useShop() {
-  const [items, setItems] = useState<Array<{
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    category: string;
-    preview_url?: string;
-  }>>([]);
+  const [items, setItems] = useState<
+    Array<{
+      id: string;
+      name: string;
+      description: string;
+      price: number;
+      category: string;
+      preview_url?: string;
+    }>
+  >([]);
   const [inventory, setInventory] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -374,7 +388,10 @@ export function useShop() {
       }
 
       if (inventoryRes.status === 'fulfilled') {
-        const data = inventoryRes.value.data?.data || inventoryRes.value.data?.items || inventoryRes.value.data;
+        const data =
+          inventoryRes.value.data?.data ||
+          inventoryRes.value.data?.items ||
+          inventoryRes.value.data;
         setInventory(Array.isArray(data) ? data.map((i: { id: string }) => i.id) : []);
       }
     } catch (err: unknown) {
@@ -395,7 +412,7 @@ export function useShop() {
 
     try {
       await api.post(`/api/v1/premium/shop/${itemId}/purchase`);
-      setInventory(prev => [...prev, itemId]);
+      setInventory((prev) => [...prev, itemId]);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       return true;
     } catch (err: unknown) {
@@ -408,9 +425,12 @@ export function useShop() {
     }
   }, []);
 
-  const isOwned = useCallback((itemId: string) => {
-    return inventory.includes(itemId);
-  }, [inventory]);
+  const isOwned = useCallback(
+    (itemId: string) => {
+      return inventory.includes(itemId);
+    },
+    [inventory]
+  );
 
   return {
     items,
@@ -431,7 +451,7 @@ export function usePremiumHaptics() {
   const onPurchase = useCallback(() => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, []);
-  
+
   const onUnlock = useCallback(() => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, []);
@@ -439,7 +459,7 @@ export function usePremiumHaptics() {
   const onSubscribe = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }, []);
-  
+
   return {
     onPurchase,
     onUnlock,

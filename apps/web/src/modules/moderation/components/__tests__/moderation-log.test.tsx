@@ -26,7 +26,7 @@ describe('ModerationLog', () => {
       moderationLog: [],
       isLoadingLog: false,
       fetchModerationLog: mockFetchModerationLog,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
   });
 
@@ -45,7 +45,7 @@ describe('ModerationLog', () => {
       moderationLog: [],
       isLoadingLog: true,
       fetchModerationLog: mockFetchModerationLog,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     render(<ModerationLog />);
@@ -74,7 +74,7 @@ describe('ModerationLog', () => {
       ],
       isLoadingLog: false,
       fetchModerationLog: mockFetchModerationLog,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     render(<ModerationLog />);

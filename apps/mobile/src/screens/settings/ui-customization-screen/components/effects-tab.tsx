@@ -17,6 +17,7 @@ interface EffectsTabProps {
 }
 
 /**
+ * Effects Tab component.
  *
  */
 export function EffectsTab({ theme, updateTheme }: EffectsTabProps) {

@@ -103,7 +103,8 @@ export function useForumAdminInit(deps: InitDeps) {
 
       // Fetch analytics from API
       if (forumSlug) {
-        api.get(`/api/v1/forums/${forumSlug}/analytics`)
+        api
+          .get(`/api/v1/forums/${forumSlug}/analytics`)
           .then((res) => {
             const data = res.data?.data || res.data?.analytics || res.data;
             setAnalytics({
@@ -133,7 +134,8 @@ export function useForumAdminInit(deps: InitDeps) {
           });
 
         // Fetch rules from API
-        api.get(`/api/v1/forums/${forumSlug}/rules`)
+        api
+          .get(`/api/v1/forums/${forumSlug}/rules`)
           .then((res) => {
             const rules = res.data?.data || res.data?.rules || [];
             setRules(rules);
@@ -144,7 +146,8 @@ export function useForumAdminInit(deps: InitDeps) {
           });
 
         // Fetch mod queue from API
-        api.get(`/api/v1/forums/${forumSlug}/moderation/queue`)
+        api
+          .get(`/api/v1/forums/${forumSlug}/moderation/queue`)
           .then((res) => {
             const items = res.data?.data || res.data?.items || [];
             setModQueue(items);
@@ -155,7 +158,8 @@ export function useForumAdminInit(deps: InitDeps) {
           });
 
         // Fetch members from API
-        api.get(`/api/v1/forums/${forumSlug}/members`)
+        api
+          .get(`/api/v1/forums/${forumSlug}/members`)
           .then((res) => {
             const members = res.data?.data || res.data?.members || [];
             setMembers(members);
@@ -166,6 +170,7 @@ export function useForumAdminInit(deps: InitDeps) {
           });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forum]);
 
   // Redirect if not owner/moderator

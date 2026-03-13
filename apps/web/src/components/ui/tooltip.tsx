@@ -40,7 +40,8 @@ export default function Tooltip({
     timeoutRef.current = setTimeout(() => {
       if (triggerRef.current) {
         const rect = triggerRef.current.getBoundingClientRect();
-        let x = 0, y = 0;
+        let x = 0,
+          y = 0;
 
         switch (resolvedSide) {
           case 'top':
@@ -80,19 +81,26 @@ export default function Tooltip({
 
   const getTransformClass = () => {
     switch (resolvedSide) {
-      case 'top':    return '-translate-x-1/2 -translate-y-full';
-      case 'bottom': return '-translate-x-1/2';
-      case 'left':   return '-translate-x-full -translate-y-1/2';
-      case 'right':  return '-translate-y-1/2';
-      default:       return '';
+      case 'top':
+        return '-translate-x-1/2 -translate-y-full';
+      case 'bottom':
+        return '-translate-x-1/2';
+      case 'left':
+        return '-translate-x-full -translate-y-1/2';
+      case 'right':
+        return '-translate-y-1/2';
+      default:
+        return '';
     }
   };
 
   const arrowClasses: Record<TooltipSide, string> = {
     top: 'left-1/2 -translate-x-1/2 -bottom-1 border-l-transparent border-r-transparent border-b-transparent border-t-[rgb(24,24,32)]',
-    bottom: 'left-1/2 -translate-x-1/2 -top-1 border-l-transparent border-r-transparent border-t-transparent border-b-[rgb(24,24,32)]',
+    bottom:
+      'left-1/2 -translate-x-1/2 -top-1 border-l-transparent border-r-transparent border-t-transparent border-b-[rgb(24,24,32)]',
     left: 'top-1/2 -translate-y-1/2 -right-1 border-t-transparent border-b-transparent border-r-transparent border-l-[rgb(24,24,32)]',
-    right: 'top-1/2 -translate-y-1/2 -left-1 border-t-transparent border-b-transparent border-l-transparent border-r-[rgb(24,24,32)]',
+    right:
+      'top-1/2 -translate-y-1/2 -left-1 border-t-transparent border-b-transparent border-l-transparent border-r-[rgb(24,24,32)]',
   };
 
   return (
@@ -118,17 +126,15 @@ export default function Tooltip({
               className={`pointer-events-none fixed z-[var(--z-tooltip,700)] ${getTransformClass()} ${className ?? ''}`}
               style={{ left: coords.x, top: coords.y }}
             >
-              <div className="relative rounded-md bg-[rgb(24,24,32)] px-2.5 py-1.5 text-xs font-medium text-white shadow-lg border border-white/[0.06]">
+              <div className="relative rounded-md border border-white/[0.06] bg-[rgb(24,24,32)] px-2.5 py-1.5 text-xs font-medium text-white shadow-lg">
                 {content}
                 {/* Arrow */}
-                <span
-                  className={`absolute h-0 w-0 border-4 ${arrowClasses[resolvedSide]}`}
-                />
+                <span className={`absolute h-0 w-0 border-4 ${arrowClasses[resolvedSide]}`} />
               </div>
             </motion.div>
           )}
         </AnimatePresence>,
-        document.body,
+        document.body
       )}
     </>
   );

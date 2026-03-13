@@ -3,15 +3,7 @@
  * @version 4.0.0
  */
 
-import {
-  ReactNode,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-  createContext,
-  use,
-} from 'react';
+import { ReactNode, useState, useCallback, useMemo, useEffect, createContext, use } from 'react';
 import { HoloTheme, HoloConfig, HOLO_PRESETS, DEFAULT_CONFIG } from './types';
 
 interface HoloContextValue {

@@ -25,7 +25,10 @@ const errorIconVariants = {
     opacity: 1,
     scale: 1,
     x: [0, -5, 5, -3, 3, 0],
-    transition: { x: { duration: durations.smooth.ms / 1000, delay: 0.3 }, scale: { duration: durations.slow.ms / 1000 } },
+    transition: {
+      x: { duration: durations.smooth.ms / 1000, delay: 0.3 },
+      scale: { duration: durations.slow.ms / 1000 },
+    },
   },
 };
 
@@ -53,23 +56,30 @@ export default function ErrorState({
     <motion.div
       role="alert"
       aria-live="polite"
-      className={`flex flex-col items-center justify-center py-12 px-4 text-center ${className}`}
+      className={`flex flex-col items-center justify-center px-4 py-12 text-center ${className}`}
       variants={containerVariants}
       initial="hidden"
       animate="show"
     >
-      <motion.div variants={errorIconVariants} className="flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-4">
+      <motion.div
+        variants={errorIconVariants}
+        className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10"
+      >
         {icon || <ExclamationTriangleIcon className="h-8 w-8 text-red-500" />}
       </motion.div>
-      <motion.h3 variants={itemVariants} className="text-lg font-semibold text-white mb-2">{title}</motion.h3>
-      <motion.p variants={itemVariants} className="text-gray-400 text-sm max-w-md mb-6">{message}</motion.p>
+      <motion.h3 variants={itemVariants} className="mb-2 text-lg font-semibold text-white">
+        {title}
+      </motion.h3>
+      <motion.p variants={itemVariants} className="mb-6 max-w-md text-sm text-gray-400">
+        {message}
+      </motion.p>
       {onRetry && (
         <motion.button
           variants={itemVariants}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.97 }}
           onClick={onRetry}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900"
+          className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900"
           aria-label={retryLabel}
         >
           <ArrowPathIcon className="h-4 w-4" />
@@ -120,10 +130,7 @@ export function NotFoundError({ type = 'Content' }: { type?: string }) {
  */
 export function PermissionError() {
   return (
-    <ErrorState
-      title="Access Denied"
-      message="You don't have permission to view this content."
-    />
+    <ErrorState title="Access Denied" message="You don't have permission to view this content." />
   );
 }
 

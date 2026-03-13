@@ -102,7 +102,9 @@ export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps
 
           {activeTab === 'emoji' && <EmojiTab key="emoji" groupId={groupId} />}
 
-          {activeTab === 'notifications' && <NotificationsTab key="notifications" groupId={groupId} />}
+          {activeTab === 'notifications' && (
+            <NotificationsTab key="notifications" groupId={groupId} />
+          )}
 
           {activeTab === 'audit-log' && <AuditLogTab key="audit-log" groupId={groupId} />}
 

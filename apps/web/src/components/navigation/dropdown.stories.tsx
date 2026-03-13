@@ -24,23 +24,37 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
-    <Dropdown trigger={<button className="rounded bg-white/[0.06] px-4 py-2 text-white">Menu</button>}>
+    <Dropdown
+      trigger={<button className="rounded bg-white/[0.06] px-4 py-2 text-white">Menu</button>}
+    >
       <DropdownItem onClick={() => {}}>Profile</DropdownItem>
       <DropdownItem onClick={() => {}}>Settings</DropdownItem>
       <DropdownDivider />
-      <DropdownItem onClick={() => {}} danger>Sign Out</DropdownItem>
+      <DropdownItem onClick={() => {}} danger>
+        Sign Out
+      </DropdownItem>
     </Dropdown>
   ),
 };
 
 export const WithIcons: Story = {
   render: () => (
-    <Dropdown trigger={<button className="rounded bg-white/[0.06] px-4 py-2 text-white">Actions</button>}>
-      <DropdownItem onClick={() => {}} icon={<span>📝</span>}>Edit</DropdownItem>
-      <DropdownItem onClick={() => {}} icon={<span>📋</span>}>Copy</DropdownItem>
-      <DropdownItem onClick={() => {}} icon={<span>📌</span>}>Pin</DropdownItem>
+    <Dropdown
+      trigger={<button className="rounded bg-white/[0.06] px-4 py-2 text-white">Actions</button>}
+    >
+      <DropdownItem onClick={() => {}} icon={<span>📝</span>}>
+        Edit
+      </DropdownItem>
+      <DropdownItem onClick={() => {}} icon={<span>📋</span>}>
+        Copy
+      </DropdownItem>
+      <DropdownItem onClick={() => {}} icon={<span>📌</span>}>
+        Pin
+      </DropdownItem>
       <DropdownDivider />
-      <DropdownItem onClick={() => {}} icon={<span>🗑️</span>} danger>Delete</DropdownItem>
+      <DropdownItem onClick={() => {}} icon={<span>🗑️</span>} danger>
+        Delete
+      </DropdownItem>
     </Dropdown>
   ),
 };
@@ -61,9 +75,13 @@ export const RightAligned: Story = {
 
 export const WithDisabledItems: Story = {
   render: () => (
-    <Dropdown trigger={<button className="rounded bg-white/[0.06] px-4 py-2 text-white">Menu</button>}>
+    <Dropdown
+      trigger={<button className="rounded bg-white/[0.06] px-4 py-2 text-white">Menu</button>}
+    >
       <DropdownItem onClick={() => {}}>Active Item</DropdownItem>
-      <DropdownItem onClick={() => {}} disabled>Disabled Item</DropdownItem>
+      <DropdownItem onClick={() => {}} disabled>
+        Disabled Item
+      </DropdownItem>
       <DropdownItem onClick={() => {}}>Another Active</DropdownItem>
     </Dropdown>
   ),

@@ -110,7 +110,10 @@ export function DndQuickToggle() {
             setOpen(true);
           }
         }}
-        style={[styles.toggleButton, { backgroundColor: dndState.active ? colors.primary : colors.surface }]}
+        style={[
+          styles.toggleButton,
+          { backgroundColor: dndState.active ? colors.primary : colors.surface },
+        ]}
       >
         <Text style={[styles.toggleIcon, { color: dndState.active ? '#fff' : colors.text }]}>
           {dndState.active ? '🌙' : '🔔'}
@@ -120,12 +123,7 @@ export function DndQuickToggle() {
         </Text>
       </TouchableOpacity>
 
-      <Modal
-        visible={open}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setOpen(false)}
-      >
+      <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <Pressable style={styles.overlay} onPress={() => setOpen(false)}>
           <View style={[styles.sheet, { backgroundColor: colors.surface }]}>
             <View style={[styles.handle, { backgroundColor: colors.border }]} />

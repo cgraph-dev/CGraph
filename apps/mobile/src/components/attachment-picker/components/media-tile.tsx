@@ -16,6 +16,7 @@ interface MediaTileProps {
 }
 
 /**
+ * Media Tile component.
  *
  */
 export function MediaTile({ item, isSelected, selectionOrder, onPress }: MediaTileProps) {

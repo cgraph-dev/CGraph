@@ -21,13 +21,14 @@ export const glowColors: Record<OnlineStatus, string> = {
   invisible: 'transparent',
 };
 
-export const statusConfig: Record<OnlineStatus, { color: string; bgColor: string; label: string }> = {
-  online: { color: 'bg-green-500', bgColor: 'bg-green-500/20', label: 'Online' },
-  idle: { color: 'bg-yellow-500', bgColor: 'bg-yellow-500/20', label: 'Away' },
-  dnd: { color: 'bg-red-500', bgColor: 'bg-red-500/20', label: 'Do Not Disturb' },
-  offline: { color: 'bg-gray-400', bgColor: 'bg-gray-400/20', label: 'Offline' },
-  invisible: { color: 'bg-gray-400', bgColor: 'bg-gray-400/20', label: 'Invisible' },
-};
+export const statusConfig: Record<OnlineStatus, { color: string; bgColor: string; label: string }> =
+  {
+    online: { color: 'bg-green-500', bgColor: 'bg-green-500/20', label: 'Online' },
+    idle: { color: 'bg-yellow-500', bgColor: 'bg-yellow-500/20', label: 'Away' },
+    dnd: { color: 'bg-red-500', bgColor: 'bg-red-500/20', label: 'Do Not Disturb' },
+    offline: { color: 'bg-gray-400', bgColor: 'bg-gray-400/20', label: 'Offline' },
+    invisible: { color: 'bg-gray-400', bgColor: 'bg-gray-400/20', label: 'Invisible' },
+  };
 
 export const sizeConfig = {
   xs: { dot: 'w-2 h-2', ring: 'w-3 h-3', text: 'text-xs' },

@@ -8,7 +8,14 @@
 
 import { durations } from '@cgraph/animation-constants';
 import { useState, useCallback } from 'react';
-import { useSharedValue, withTiming, withSpring, withSequence, Easing, type SharedValue } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  withTiming,
+  withSpring,
+  withSequence,
+  Easing,
+  type SharedValue,
+} from 'react-native-reanimated';
 import * as Crypto from 'expo-crypto';
 import * as Haptics from 'expo-haptics';
 import api from '../../../../lib/api';

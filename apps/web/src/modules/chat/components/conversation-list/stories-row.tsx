@@ -24,22 +24,12 @@ interface StoriesRowProps {
 /**
  * Horizontal scrollable story ring row like Instagram DMs.
  */
-export function StoriesRow({
-  stories,
-  onStoryPress,
-  onCreateStory,
-  className,
-}: StoriesRowProps) {
+export function StoriesRow({ stories, onStoryPress, onCreateStory, className }: StoriesRowProps) {
   if (stories.length === 0) return null;
 
   return (
-    <div
-      className={cn(
-        'border-b border-white/[0.06] px-3 py-3',
-        className,
-      )}
-    >
-      <div className="flex gap-4 overflow-x-auto scrollbar-none">
+    <div className={cn('border-b border-white/[0.06] px-3 py-3', className)}>
+      <div className="scrollbar-none flex gap-4 overflow-x-auto">
         {/* Your story — always first */}
         <button
           type="button"
@@ -51,18 +41,23 @@ export function StoriesRow({
             <div
               className={cn(
                 'absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center',
-                'rounded-full bg-[#5865F2] text-white ring-2 ring-[rgb(18,18,24)]',
+                'rounded-full bg-[#5865F2] text-white ring-2 ring-[rgb(18,18,24)]'
               )}
             >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+              >
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
             </div>
           </div>
-          <span className="max-w-[52px] truncate text-[10px] text-white/40">
-            Your story
-          </span>
+          <span className="max-w-[52px] truncate text-[10px] text-white/40">Your story</span>
         </button>
 
         {/* Friend stories */}

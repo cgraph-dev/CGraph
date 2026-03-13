@@ -15,6 +15,7 @@ export interface StatCardProps {
 }
 
 /**
+ * Stat Card component.
  *
  */
 export function StatCard({ label, value, icon, color, trend }: StatCardProps) {

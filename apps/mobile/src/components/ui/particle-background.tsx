@@ -44,6 +44,7 @@ interface ParticleBackgroundProps {
 }
 
 /**
+ * Particle Background component.
  *
  */
 export default function ParticleBackground({
@@ -76,8 +77,10 @@ export default function ParticleBackground({
   useEffect(() => {
     initParticles();
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       animationsRef.current.forEach((anim) => anim.stop());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, count, speed]);
 
   const initParticles = () => {
@@ -143,11 +146,13 @@ export default function ParticleBackground({
           }),
           Animated.sequence([
             Animated.timing(particle.x, {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               toValue: (particle.x as unknown as number) + 30,
               duration: duration / 2,
               useNativeDriver: true,
             }),
             Animated.timing(particle.x, {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               toValue: (particle.x as unknown as number) - 30,
               duration: duration / 2,
               useNativeDriver: true,

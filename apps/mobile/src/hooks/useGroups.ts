@@ -89,6 +89,7 @@ interface UseGroupsReturn extends GroupsState {
 }
 
 /**
+ * Hook for groups.
  *
  */
 export function useGroups(options: UseGroupsOptions = {}): UseGroupsReturn {

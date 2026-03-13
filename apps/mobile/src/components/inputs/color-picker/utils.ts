@@ -5,6 +5,8 @@
 import chroma from 'chroma-js';
 import type { HSL } from './types';
 
+/** Description. */
+/** Hex to h s l. */
 export function hexToHSL(hex: string): HSL {
   try {
     const [h, s, l] = chroma(hex).hsl();
@@ -18,6 +20,8 @@ export function hexToHSL(hex: string): HSL {
   }
 }
 
+/** Description. */
+/** Hsl to hex. */
 export function hslToHex(hsl: HSL): string {
   try {
     return chroma.hsl(hsl.h, hsl.s / 100, hsl.l / 100).hex();

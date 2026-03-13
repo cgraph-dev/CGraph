@@ -3,13 +3,7 @@
  * @module components/forum/SubscriptionButton
  */
 import React from 'react';
-import {
-  _View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import { _View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
@@ -26,6 +20,7 @@ interface SubscriptionButtonProps {
 }
 
 /**
+ * Subscription Button component.
  *
  */
 export function SubscriptionButton({
@@ -105,6 +100,6 @@ export function SubscriptionButton({
       )}
     </TouchableOpacity>
   );
-};
+}
 
 export default SubscriptionButton;

@@ -1,6 +1,6 @@
 /**
  * UserBadge - Displays user identity with unique ID, username, and status badges
- * 
+ *
  * Features:
  * - Unique user ID display (#0001)
  * - Optional username (can be null for new users)
@@ -9,14 +9,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ViewStyle,
-  StyleProp,
-} from 'react-native';
+import { View, Text, Image, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import { useThemeStore } from '@/stores';
 
 interface UserBadgeProps {
@@ -34,6 +27,7 @@ interface UserBadgeProps {
 }
 
 /**
+ * User Badge component.
  *
  */
 export default function UserBadge({
@@ -79,9 +73,7 @@ export default function UserBadge({
             style={[styles.avatarImage, { width: currentSize.avatar, height: currentSize.avatar }]}
           />
         ) : (
-          <Text style={[styles.avatarText, { fontSize: currentSize.fontSize }]}>
-            {initial}
-          </Text>
+          <Text style={[styles.avatarText, { fontSize: currentSize.fontSize }]}>{initial}</Text>
         )}
       </View>
 
@@ -94,44 +86,34 @@ export default function UserBadge({
           >
             {displayText}
           </Text>
-          
+
           {/* Badges */}
           {isVerified && (
             <View style={[styles.badge, { backgroundColor: colors.primary + '30' }]}>
-              <Text style={[styles.badgeIcon, { fontSize: currentSize.badgeSize - 4 }]}>
-                ✓
-              </Text>
+              <Text style={[styles.badgeIcon, { fontSize: currentSize.badgeSize - 4 }]}>✓</Text>
             </View>
           )}
           {isPremium && (
             <View style={[styles.badge, { backgroundColor: '#fbbf2430' }]}>
-              <Text style={[styles.badgeIcon, { fontSize: currentSize.badgeSize - 4 }]}>
-                ✦
-              </Text>
+              <Text style={[styles.badgeIcon, { fontSize: currentSize.badgeSize - 4 }]}>✦</Text>
             </View>
           )}
         </View>
 
         <View style={styles.metaRow}>
           {showId && (
-            <View style={[styles.idBadge, { backgroundColor: colors.card, borderColor: colors.border }]}>
-              <Text style={[styles.idText, { color: colors.primary }]}>
-                {userIdDisplay}
-              </Text>
+            <View
+              style={[styles.idBadge, { backgroundColor: colors.card, borderColor: colors.border }]}
+            >
+              <Text style={[styles.idText, { color: colors.primary }]}>{userIdDisplay}</Text>
             </View>
           )}
-          
+
           {username && (
-            <Text style={[styles.username, { color: colors.textSecondary }]}>
-              @{username}
-            </Text>
+            <Text style={[styles.username, { color: colors.textSecondary }]}>@{username}</Text>
           )}
-          
-          {karma > 0 && (
-            <Text style={styles.karma}>
-              ⚡ {karma.toLocaleString()}
-            </Text>
-          )}
+
+          {karma > 0 && <Text style={styles.karma}>⚡ {karma.toLocaleString()}</Text>}
         </View>
       </View>
     </View>

@@ -130,7 +130,7 @@ export function SubscriptionButton({
         {isLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : isSubscribed ? (
-          <Bell className="text-primary mr-2 h-4 w-4" />
+          <Bell className="mr-2 h-4 w-4 text-primary" />
         ) : (
           <BellOff className="mr-2 h-4 w-4" />
         )}
@@ -174,9 +174,10 @@ export function SubscriptionButton({
                   </Label>
                   <Select
                     value={settings.notificationMode}
-                    onValueChange={(value: string) =>
-                       
-                      handleSettingsChange({ notificationMode: value as NotificationMode }) // safe downcast – select event value
+                    onValueChange={
+                      (value: string) =>
+                        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                        handleSettingsChange({ notificationMode: value as NotificationMode }) // safe downcast – select event value
                     }
                   >
                     <SelectTrigger id="notification-mode" className="mt-1.5">
@@ -262,6 +263,6 @@ export function SubscriptionButton({
       )}
     </div>
   );
-};
+}
 
 export default SubscriptionButton;

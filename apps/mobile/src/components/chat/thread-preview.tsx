@@ -34,12 +34,12 @@ export const ThreadPreview = memo(function ThreadPreview({
   hasUnread = false,
   onPress,
 }: ThreadPreviewProps) {
-  if (replyCount === 0) return null;
-
   const handlePress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress?.();
   }, [onPress]);
+
+  if (replyCount === 0) return null;
 
   const visible = participants.slice(0, maxAvatars);
   const timeLabel = lastReplyAt ? formatRelative(lastReplyAt) : '';
@@ -55,7 +55,10 @@ export const ThreadPreview = memo(function ThreadPreview({
       {/* Avatar stack */}
       <View style={styles.avatarStack}>
         {visible.map((user, i) => (
-          <View key={user.id} style={[styles.avatarWrap, { marginLeft: i > 0 ? -6 : 0, zIndex: visible.length - i }]}>
+          <View
+            key={user.id}
+            style={[styles.avatarWrap, { marginLeft: i > 0 ? -6 : 0, zIndex: visible.length - i }]}
+          >
             <Avatar size="xs" name={user.name} src={user.avatarUrl} />
           </View>
         ))}

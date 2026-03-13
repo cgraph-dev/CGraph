@@ -10,6 +10,7 @@ import { OptionGridProps } from '../types';
 import { styles } from '../styles';
 
 /**
+ * Option Grid component.
  *
  */
 export function OptionGrid({ options, selected, onSelect, columns = 4 }: OptionGridProps) {

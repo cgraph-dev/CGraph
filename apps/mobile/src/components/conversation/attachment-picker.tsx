@@ -1,24 +1,16 @@
 /**
  * AttachmentPicker Component
- * 
+ *
  * Bottom sheet with options for attaching media to messages.
  * Provides quick access to camera, gallery, and file picker.
- * 
+ *
  * @module components/conversation/AttachmentPicker
  * @since v0.7.29
  */
 
 import { durations } from '@cgraph/animation-constants';
 import React, { memo, useCallback, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  Animated,
-  StyleSheet,
-  Platform,
-} from 'react-native';
+import { View, Text, Modal, TouchableOpacity, Animated, StyleSheet, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export type AttachmentType = 'camera' | 'gallery' | 'file';
@@ -74,14 +66,14 @@ const ATTACHMENT_OPTIONS: AttachmentOption[] = [
 
 /**
  * Attachment picker bottom sheet.
- * 
+ *
  * Features:
  * - Slide-up animation from bottom
  * - Three options: Camera, Gallery, File
  * - Visual icons with descriptions
  * - Tap backdrop to dismiss
  * - Accessible with proper labels
- * 
+ *
  * @example
  * ```tsx
  * <AttachmentPicker
@@ -100,7 +92,7 @@ export const AttachmentPicker = memo(function AttachmentPicker({
   backgroundColor,
   textColor,
   mutedColor,
-  accentColor,
+  _accentColor,
   onSelect,
   onClose,
 }: AttachmentPickerProps) {
@@ -157,19 +149,12 @@ export const AttachmentPicker = memo(function AttachmentPicker({
       <View style={styles.container}>
         {/* Backdrop */}
         <Animated.View style={[styles.backdrop, { opacity: fadeAnim }]}>
-          <TouchableOpacity
-            style={StyleSheet.absoluteFill}
-            activeOpacity={1}
-            onPress={onClose}
-          />
+          <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
         </Animated.View>
 
         {/* Bottom sheet */}
         <Animated.View
-          style={[
-            styles.sheet,
-            { backgroundColor, transform: [{ translateY: slideAnim }] },
-          ]}
+          style={[styles.sheet, { backgroundColor, transform: [{ translateY: slideAnim }] }]}
         >
           {/* Handle indicator */}
           <View style={styles.handleContainer}>
@@ -178,10 +163,11 @@ export const AttachmentPicker = memo(function AttachmentPicker({
 
           {/* Header */}
           <View style={styles.header}>
-            <Text style={[styles.title, { color: textColor }]}>
-              Add Attachment
-            </Text>
-            <TouchableOpacity onPress={onClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Text style={[styles.title, { color: textColor }]}>Add Attachment</Text>
+            <TouchableOpacity
+              onPress={onClose}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <Ionicons name="close" size={24} color={mutedColor} />
             </TouchableOpacity>
           </View>
@@ -201,9 +187,7 @@ export const AttachmentPicker = memo(function AttachmentPicker({
                   <Ionicons name={option.icon} size={26} color={option.color} />
                 </View>
                 <View style={styles.optionText}>
-                  <Text style={[styles.optionLabel, { color: textColor }]}>
-                    {option.label}
-                  </Text>
+                  <Text style={[styles.optionLabel, { color: textColor }]}>{option.label}</Text>
                   <Text style={[styles.optionDescription, { color: mutedColor }]}>
                     {option.description}
                   </Text>

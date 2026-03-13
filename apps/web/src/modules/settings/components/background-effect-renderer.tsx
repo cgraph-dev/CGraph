@@ -257,10 +257,7 @@ export const BackgroundEffectRenderer = memo(function BackgroundEffectRenderer()
   if (prefersReducedMotion) return null;
 
   return (
-    <div
-      className="pointer-events-none fixed inset-0 z-[1] overflow-hidden"
-      aria-hidden="true"
-    >
+    <div className="pointer-events-none fixed inset-0 z-[1] overflow-hidden" aria-hidden="true">
       {particles.map((particle) => (
         <ParticleElement
           key={particle.id}

@@ -9,14 +9,7 @@
  */
 
 import React, { useState, useCallback, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeStore } from '@/stores';
@@ -46,15 +39,11 @@ type VerificationResult = 'pending' | 'matched' | 'mismatched';
  * Opens the camera with barcode scanning mode, then compares the scanned
  * QR payload against the expected safety number.
  */
-export function QRCodeScanner({
-  expectedSafetyNumber,
-  onScanResult,
-  onClose,
-}: QRCodeScannerProps) {
+export function QRCodeScanner({ expectedSafetyNumber, onScanResult, onClose }: QRCodeScannerProps) {
   const { colors } = useThemeStore();
   const [permission, requestPermission] = useCameraPermissions();
   const [result, setResult] = useState<VerificationResult>('pending');
-  const [scannedData, setScannedData] = useState<string | null>(null);
+  const [_scannedData, setScannedData] = useState<string | null>(null);
   const hasScannedRef = useRef(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -71,7 +60,7 @@ export function QRCodeScanner({
 
       onScanResult({ matched, scannedValue: value });
     },
-    [fadeAnim, onScanResult],
+    [fadeAnim, onScanResult]
   );
 
   /**
@@ -112,7 +101,7 @@ export function QRCodeScanner({
       const matched = scannedNumber === expectedSafetyNumber;
       showResult(matched, scannedNumber);
     },
-    [expectedSafetyNumber, showResult],
+    [expectedSafetyNumber, showResult]
   );
 
   // Permission not determined yet
@@ -141,9 +130,7 @@ export function QRCodeScanner({
           <Text style={styles.permissionButtonText}>Grant Access</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-          <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>
-            Cancel
-          </Text>
+          <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>Cancel</Text>
         </TouchableOpacity>
       </View>
     );
@@ -160,17 +147,12 @@ export function QRCodeScanner({
             size={64}
             color={isMatch ? '#22c55e' : '#ef4444'}
           />
-          <Text
-            style={[
-              styles.resultTitle,
-              { color: isMatch ? '#22c55e' : '#ef4444' },
-            ]}
-          >
-            {isMatch ? 'Verified ✓' : 'Numbers Don\'t Match'}
+          <Text style={[styles.resultTitle, { color: isMatch ? '#22c55e' : '#ef4444' }]}>
+            {isMatch ? 'Verified ✓' : "Numbers Don't Match"}
           </Text>
           <Text style={[styles.resultDescription, { color: colors.textSecondary }]}>
             {isMatch
-              ? 'The safety numbers match. This contact\'s identity is verified.'
+              ? "The safety numbers match. This contact's identity is verified."
               : 'The scanned safety number does not match — this may not be your contact.'}
           </Text>
           <TouchableOpacity

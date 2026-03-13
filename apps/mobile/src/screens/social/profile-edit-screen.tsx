@@ -40,15 +40,14 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
   const { user, updateUser } = useAuthStore();
 
   // Form state — pre-populated from current user
-  const [displayName, setDisplayName] = useState(
-    user?.display_name ?? user?.displayName ?? '',
-  );
+  const [displayName, setDisplayName] = useState(user?.display_name ?? user?.displayName ?? '');
   const [bio, setBio] = useState(user?.bio ?? '');
   const [signature, setSignature] = useState(
-    (user as Record<string, unknown>)?.signature as string ?? '',
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    ((user as Record<string, unknown>)?.signature as string) ?? ''
   );
   const [avatarUri, setAvatarUri] = useState<string | null>(
-    user?.avatar_url ?? user?.avatarUrl ?? null,
+    user?.avatar_url ?? user?.avatarUrl ?? null
   );
 
   // Loading states
@@ -65,7 +64,7 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
     if (!permission.granted) {
       Alert.alert(
         'Permission Required',
-        'Please allow photo library access to change your avatar.',
+        'Please allow photo library access to change your avatar.'
       );
       return;
     }
@@ -101,6 +100,7 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
       if (pendingAvatarUri.current) {
         setUploadingAvatar(true);
         const formData = new FormData();
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         formData.append('file', {
           uri: pendingAvatarUri.current,
           type: 'image/jpeg',
@@ -158,10 +158,7 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
         keyboardShouldPersistTaps="handled"
       >
         {/* ---- Avatar ---- */}
-        <Animated.View
-          entering={FadeInDown.springify().delay(50)}
-          style={styles.avatarSection}
-        >
+        <Animated.View entering={FadeInDown.springify().delay(50)} style={styles.avatarSection}>
           <TouchableOpacity
             onPress={pickAvatar}
             disabled={busy}
@@ -171,12 +168,7 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
             {avatarUri ? (
               <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
             ) : (
-              <View
-                style={[
-                  styles.avatarPlaceholder,
-                  { backgroundColor: colors.card },
-                ]}
-              >
+              <View style={[styles.avatarPlaceholder, { backgroundColor: colors.card }]}>
                 <Text style={[styles.avatarInitial, { color: colors.textSecondary }]}>
                   {displayName?.[0]?.toUpperCase() ?? '?'}
                 </Text>
@@ -189,17 +181,12 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
             )}
           </TouchableOpacity>
           <TouchableOpacity onPress={pickAvatar} disabled={busy}>
-            <Text style={[styles.changePhotoText, { color: colors.primary }]}>
-              Change Photo
-            </Text>
+            <Text style={[styles.changePhotoText, { color: colors.primary }]}>Change Photo</Text>
           </TouchableOpacity>
         </Animated.View>
 
         {/* ---- Display Name ---- */}
-        <Animated.View
-          entering={FadeInDown.springify().delay(100)}
-          style={styles.fieldGroup}
-        >
+        <Animated.View entering={FadeInDown.springify().delay(100)} style={styles.fieldGroup}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>
             DISPLAY NAME <Text style={{ color: '#ef4444' }}>*</Text>
           </Text>
@@ -225,10 +212,7 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
         </Animated.View>
 
         {/* ---- Bio ---- */}
-        <Animated.View
-          entering={FadeInDown.springify().delay(150)}
-          style={styles.fieldGroup}
-        >
+        <Animated.View entering={FadeInDown.springify().delay(150)} style={styles.fieldGroup}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>BIO</Text>
           <TextInput
             style={[
@@ -250,16 +234,11 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
             textAlignVertical="top"
             editable={!busy}
           />
-          <Text style={[styles.charCount, { color: colors.textSecondary }]}>
-            {bio.length}/500
-          </Text>
+          <Text style={[styles.charCount, { color: colors.textSecondary }]}>{bio.length}/500</Text>
         </Animated.View>
 
         {/* ---- Signature ---- */}
-        <Animated.View
-          entering={FadeInDown.springify().delay(200)}
-          style={styles.fieldGroup}
-        >
+        <Animated.View entering={FadeInDown.springify().delay(200)} style={styles.fieldGroup}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>SIGNATURE</Text>
           <TextInput
             style={[
@@ -283,10 +262,7 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
         </Animated.View>
 
         {/* ---- Actions ---- */}
-        <Animated.View
-          entering={FadeInDown.springify().delay(250)}
-          style={styles.actions}
-        >
+        <Animated.View entering={FadeInDown.springify().delay(250)} style={styles.actions}>
           <TouchableOpacity
             onPress={handleSave}
             disabled={busy || !displayName.trim()}
@@ -310,9 +286,7 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
             disabled={busy}
             style={[styles.cancelButton, { borderColor: colors.border }]}
           >
-            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>
-              Cancel
-            </Text>
+            <Text style={[styles.cancelText, { color: colors.textSecondary }]}>Cancel</Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>

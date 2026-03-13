@@ -1,6 +1,6 @@
 /**
  * Auth Hooks (Mobile)
- * 
+ *
  * Wraps AuthContext with additional features like biometrics and 2FA.
  * @module features/auth/hooks
  * @version 0.8.6
@@ -20,13 +20,13 @@ export function useBiometricAuth() {
     const hasHardware = await LocalAuthentication.hasHardwareAsync();
     const isEnrolled = await LocalAuthentication.isEnrolledAsync();
     const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
-    
+
     return {
       isSupported: hasHardware && isEnrolled,
       supportedTypes,
     };
   }, []);
-  
+
   const authenticate = useCallback(async (reason?: string) => {
     try {
       const result = await LocalAuthentication.authenticateAsync({
@@ -35,19 +35,19 @@ export function useBiometricAuth() {
         fallbackLabel: 'Use passcode',
         disableDeviceFallback: false,
       });
-      
+
       if (result.success) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       } else {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
-      
+
       return result.success;
     } catch {
       return false;
     }
   }, []);
-  
+
   return {
     checkBiometricSupport,
     authenticate,
@@ -59,40 +59,42 @@ export function useBiometricAuth() {
  */
 export function useAuthWithHaptics() {
   const auth = useAuthStore();
-  
-  const loginWithHaptics = useCallback(async (email: string, password: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      await auth.login(email, password);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return true;
-    } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      throw error;
-    }
-  }, [auth]);
-  
+
+  const loginWithHaptics = useCallback(
+    async (email: string, password: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      try {
+        await auth.login(email, password);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return true;
+      } catch (error) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        throw error;
+      }
+    },
+    [auth]
+  );
+
   const logoutWithHaptics = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     await auth.logout();
   }, [auth]);
-  
-  const registerWithHaptics = useCallback(async (data: {
-    email: string;
-    username: string;
-    password: string;
-  }) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      await auth.register(data.email, data.username, data.password);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return true;
-    } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      throw error;
-    }
-  }, [auth]);
-  
+
+  const registerWithHaptics = useCallback(
+    async (data: { email: string; username: string; password: string }) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      try {
+        await auth.register(data.email, data.username, data.password);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return true;
+      } catch (error) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        throw error;
+      }
+    },
+    [auth]
+  );
+
   return {
     ...auth,
     login: loginWithHaptics,
@@ -181,13 +183,15 @@ export function useTwoFactor() {
  * Hook for session management
  */
 export function useSessions() {
-  const [sessions, setSessions] = useState<Array<{
-    id: string;
-    device: string;
-    ip: string;
-    lastActive: string;
-    isCurrent: boolean;
-  }>>([]);
+  const [sessions, setSessions] = useState<
+    Array<{
+      id: string;
+      device: string;
+      ip: string;
+      lastActive: string;
+      isCurrent: boolean;
+    }>
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -211,7 +215,7 @@ export function useSessions() {
   const revokeSession = useCallback(async (sessionId: string) => {
     try {
       await api.delete(`/api/v1/auth/sessions/${sessionId}`);
-      setSessions(prev => prev.filter(s => s.id !== sessionId));
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       return true;
     } catch (err: unknown) {
@@ -225,7 +229,7 @@ export function useSessions() {
   const revokeAllOtherSessions = useCallback(async () => {
     try {
       await api.delete('/api/v1/auth/sessions');
-      setSessions(prev => prev.filter(s => s.isCurrent));
+      setSessions((prev) => prev.filter((s) => s.isCurrent));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       return true;
     } catch (err: unknown) {

@@ -20,13 +20,19 @@ import { WEEKDAYS, MONTHS, DEFAULT_COLOR_SCALE } from './heatmap/constants';
 import { styles } from './heatmap/styles';
 
 // Re-export types and sub-components for consumers
-export type { HeatmapData, HeatmapProps, CalendarHeatmapProps, MatrixHeatmapProps } from './heatmap/types';
+export type {
+  HeatmapData,
+  HeatmapProps,
+  CalendarHeatmapProps,
+  MatrixHeatmapProps,
+} from './heatmap/types';
 export { CalendarHeatmap } from './heatmap/calendar-heatmap';
 export { MatrixHeatmap } from './heatmap/matrix-heatmap';
 
 import type { HeatmapData, HeatmapProps } from './heatmap/types';
 
 /**
+ * Heatmap component.
  *
  */
 export function Heatmap({
@@ -49,14 +55,16 @@ export function Heatmap({
 }: HeatmapProps) {
   const [selectedCell, setSelectedCell] = useState<HeatmapData | null>(null);
 
-  const { startDate, endDate, weeks } = useMemo(() => {
+  const { startDate, _endDate, weeks } = useMemo(() => {
     const end = propEndDate || new Date();
     const start = propStartDate || new Date(end.getTime() - 365 * 24 * 60 * 60 * 1000);
     const adjustedStart = new Date(start);
     adjustedStart.setDate(adjustedStart.getDate() - adjustedStart.getDay());
     const adjustedEnd = new Date(end);
     adjustedEnd.setDate(adjustedEnd.getDate() + (6 - adjustedEnd.getDay()));
-    const weekCount = Math.ceil((adjustedEnd.getTime() - adjustedStart.getTime()) / (7 * 24 * 60 * 60 * 1000));
+    const weekCount = Math.ceil(
+      (adjustedEnd.getTime() - adjustedStart.getTime()) / (7 * 24 * 60 * 60 * 1000)
+    );
     return { startDate: adjustedStart, endDate: adjustedEnd, weeks: weekCount };
   }, [propStartDate, propEndDate]);
 
@@ -65,7 +73,6 @@ export function Heatmap({
     data.forEach((item) => {
       const date = typeof item.date === 'string' ? new Date(item.date) : item.date;
       const key = date.toISOString().split('T')[0];
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       map.set(key!, item);
     });
     return map;
@@ -83,22 +90,38 @@ export function Heatmap({
     (value: number) => {
       if (value <= 0) return emptyColor;
       const normalizedValue = (value - minValue) / (maxValue - minValue || 1);
-      const index = Math.min(Math.floor(normalizedValue * (colorScale.length - 1)) + 1, colorScale.length - 1);
+      const index = Math.min(
+        Math.floor(normalizedValue * (colorScale.length - 1)) + 1,
+        colorScale.length - 1
+      );
       return colorScale[index];
     },
     [minValue, maxValue, colorScale, emptyColor]
   );
 
   const cells = useMemo(() => {
-    const result: Array<{ date: Date; value: number; color: string; weekIndex: number; dayIndex: number; data?: HeatmapData }> = [];
+    const result: Array<{
+      date: Date;
+      value: number;
+      color: string;
+      weekIndex: number;
+      dayIndex: number;
+      data?: HeatmapData;
+    }> = [];
     const currentDate = new Date(startDate);
     for (let week = 0; week < weeks; week++) {
       for (let day = 0; day < 7; day++) {
         const dateKey = currentDate.toISOString().split('T')[0];
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const cellData = dataMap.get(dateKey!);
         const value = cellData?.value || 0;
-        result.push({ date: new Date(currentDate), value, color: getColor(value), weekIndex: week, dayIndex: day, data: cellData });
+        result.push({
+          date: new Date(currentDate),
+          value,
+          color: getColor(value),
+          weekIndex: week,
+          dayIndex: day,
+          data: cellData,
+        });
         currentDate.setDate(currentDate.getDate() + 1);
       }
     }
@@ -112,7 +135,6 @@ export function Heatmap({
     cells.forEach((cell) => {
       const month = cell.date.getMonth();
       if (month !== lastMonth && cell.dayIndex === 0) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         labels.push({ month: MONTHS[month]!, weekIndex: cell.weekIndex });
         lastMonth = month;
       }
@@ -122,7 +144,10 @@ export function Heatmap({
 
   const handleCellPress = useCallback(
     (cellData: HeatmapData | undefined) => {
-      if (cellData) { setSelectedCell(cellData); onCellPress?.(cellData); }
+      if (cellData) {
+        setSelectedCell(cellData);
+        onCellPress?.(cellData);
+      }
     },
     [onCellPress]
   );
@@ -142,7 +167,10 @@ export function Heatmap({
         {showMonthLabels && (
           <View style={[styles.monthLabels, { marginLeft: labelWidth, height: labelHeight }]}>
             {monthLabels.map((label, index) => (
-              <Animated.Text key={`month-${index}`} style={[styles.monthLabel, { left: label.weekIndex * (cellSize + cellGap) }]}>
+              <Animated.Text
+                key={`month-${index}`}
+                style={[styles.monthLabel, { left: label.weekIndex * (cellSize + cellGap) }]}
+              >
                 {label.month}
               </Animated.Text>
             ))}
@@ -153,7 +181,10 @@ export function Heatmap({
           {showWeekdayLabels && (
             <View style={[styles.weekdayLabels, { width: labelWidth }]}>
               {[1, 3, 5].map((day) => (
-                <Animated.Text key={`weekday-${day}`} style={[styles.weekdayLabel, { top: day * (cellSize + cellGap) + cellSize / 4 }]}>
+                <Animated.Text
+                  key={`weekday-${day}`}
+                  style={[styles.weekdayLabel, { top: day * (cellSize + cellGap) + cellSize / 4 }]}
+                >
                   {WEEKDAYS[day]}
                 </Animated.Text>
               ))}

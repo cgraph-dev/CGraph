@@ -42,6 +42,7 @@ type PayoutMethodId = (typeof PAYOUT_METHODS)[number]['id'];
 // Component
 // ---------------------------------------------------------------------------
 
+/** Withdrawal Screen component. */
 export default function WithdrawalScreen(): React.ReactElement {
   const { colors } = useThemeStore();
   const { balance, withdraw, isLoading: _isLoading } = useNodesStore();
@@ -58,7 +59,8 @@ export default function WithdrawalScreen(): React.ReactElement {
   // ─── Validation ───────────────────────────────────────────────────
   const validationError = useMemo((): string | null => {
     if (amount === 0) return null; // No input yet
-    if (amount < MIN_WITHDRAWAL) return `Minimum withdrawal is ${MIN_WITHDRAWAL.toLocaleString()} Nodes`;
+    if (amount < MIN_WITHDRAWAL)
+      return `Minimum withdrawal is ${MIN_WITHDRAWAL.toLocaleString()} Nodes`;
     if (amount > balance) return 'Exceeds available balance';
     return null;
   }, [amount, balance]);
@@ -84,7 +86,7 @@ export default function WithdrawalScreen(): React.ReactElement {
               await withdraw(amount, payoutMethod);
               Alert.alert(
                 'Withdrawal Requested',
-                'Your withdrawal is being processed. You\'ll receive funds within 5-7 business days.',
+                "Your withdrawal is being processed. You'll receive funds within 5-7 business days."
               );
               setAmountStr('');
             } catch {
@@ -94,7 +96,7 @@ export default function WithdrawalScreen(): React.ReactElement {
             }
           },
         },
-      ],
+      ]
     );
   }, [canSubmit, amount, creatorReceiveEur, payoutMethod, withdraw]);
 
@@ -112,7 +114,9 @@ export default function WithdrawalScreen(): React.ReactElement {
     >
       {/* Available balance */}
       <View style={[styles.balanceCard, { backgroundColor: colors.surface }]}>
-        <Text style={[styles.balanceLabel, { color: colors.textSecondary }]}>Available Balance</Text>
+        <Text style={[styles.balanceLabel, { color: colors.textSecondary }]}>
+          Available Balance
+        </Text>
         <Text style={[styles.balanceAmount, { color: colors.text }]}>
           {balance.toLocaleString()} Nodes
         </Text>
@@ -138,7 +142,10 @@ export default function WithdrawalScreen(): React.ReactElement {
           keyboardType="number-pad"
           returnKeyType="done"
         />
-        <TouchableOpacity style={[styles.maxBtn, { backgroundColor: colors.primary }]} onPress={handleMax}>
+        <TouchableOpacity
+          style={[styles.maxBtn, { backgroundColor: colors.primary }]}
+          onPress={handleMax}
+        >
           <Text style={styles.maxBtnText}>MAX</Text>
         </TouchableOpacity>
       </View>
@@ -196,20 +203,21 @@ export default function WithdrawalScreen(): React.ReactElement {
             onPress={() => setPayoutMethod(method.id)}
           >
             <Ionicons
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               name={method.icon as never}
               size={22}
               color={isActive ? colors.primary : colors.textSecondary}
             />
-            <Text
-              style={[
-                styles.payoutLabel,
-                { color: isActive ? colors.primary : colors.text },
-              ]}
-            >
+            <Text style={[styles.payoutLabel, { color: isActive ? colors.primary : colors.text }]}>
               {method.label}
             </Text>
             {isActive && (
-              <Ionicons name="checkmark-circle" size={22} color={colors.primary} style={styles.payoutCheck} />
+              <Ionicons
+                name="checkmark-circle"
+                size={22}
+                color={colors.primary}
+                style={styles.payoutCheck}
+              />
             )}
           </TouchableOpacity>
         );

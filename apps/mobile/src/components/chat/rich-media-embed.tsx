@@ -27,7 +27,7 @@ import LightboxModal from './lightbox-modal';
 
 const RichMediaEmbed = memo(function RichMediaEmbed({
   content,
-  isOwnMessage = false,
+  _isOwnMessage = false,
   onLoad,
   maxEmbeds = 3,
 }: RichMediaEmbedProps): React.ReactElement | null {
@@ -115,6 +115,7 @@ const RichMediaEmbed = memo(function RichMediaEmbed({
         })
       );
 
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const validEmbeds = metadata.filter(
         (m): m is NonNullable<typeof m> => m !== null
       ) as LinkMetadata[];
@@ -146,10 +147,7 @@ const RichMediaEmbed = memo(function RichMediaEmbed({
         {embeds.map((embed, index) => (
           <View key={`${embed.url}-${index}`} style={styles.embedContainer}>
             {embed.type === 'image' && (
-              <ImageEmbed
-                embed={embed}
-                onExpand={() => handleOpenLightbox(embed.url, 'image')}
-              />
+              <ImageEmbed embed={embed} onExpand={() => handleOpenLightbox(embed.url, 'image')} />
             )}
             {embed.type === 'video' && (
               <VideoEmbed

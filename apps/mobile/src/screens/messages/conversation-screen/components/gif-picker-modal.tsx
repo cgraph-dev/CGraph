@@ -78,6 +78,7 @@ function generateSampleGifs(query: string): GifResult[] {
 }
 
 /**
+ * Gif Picker Modal component.
  *
  */
 export function GifPickerModal({ visible, onClose, onSelect }: GifPickerModalProps) {
@@ -85,7 +86,7 @@ export function GifPickerModal({ visible, onClose, onSelect }: GifPickerModalPro
   const [searchQuery, setSearchQuery] = useState('');
   const [gifs, setGifs] = useState<GifResult[]>([]);
   const [recentGifs, setRecentGifs] = useState<GifResult[]>([]);
-  const [showRecent, setShowRecent] = useState(false);
+  const [_showRecent, _setShowRecent] = useState(false);
   const [loading, setLoading] = useState(false);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<TextInput>(null);
@@ -103,11 +104,14 @@ export function GifPickerModal({ visible, onClose, onSelect }: GifPickerModalPro
     });
   }, [visible]);
 
-  const addToRecent = useCallback(async (gif: GifResult) => {
-    const updated = [gif, ...recentGifs.filter((g) => g.id !== gif.id)].slice(0, MAX_RECENT_GIFS);
-    setRecentGifs(updated);
-    await AsyncStorage.setItem(RECENTLY_USED_KEY, JSON.stringify(updated));
-  }, [recentGifs]);
+  const addToRecent = useCallback(
+    async (gif: GifResult) => {
+      const updated = [gif, ...recentGifs.filter((g) => g.id !== gif.id)].slice(0, MAX_RECENT_GIFS);
+      setRecentGifs(updated);
+      await AsyncStorage.setItem(RECENTLY_USED_KEY, JSON.stringify(updated));
+    },
+    [recentGifs]
+  );
 
   const fetchGifs = useCallback(async (query: string) => {
     setLoading(true);

@@ -134,7 +134,7 @@ describe('ConversationScreen', () => {
     it('should debounce scroll events', () => {
       jest.useFakeTimers();
 
-      let scrollCount = 0;
+      const _scrollCount = 0;
       const DEBOUNCE_MS = 100;
 
       const handleScroll = jest.fn(() => {
@@ -195,9 +195,7 @@ describe('ConversationScreen', () => {
 
       const MAX_RETRIES = 3;
 
-      const retryableMessages = failedMessages.filter(
-        (msg) => msg.retries < MAX_RETRIES
-      );
+      const retryableMessages = failedMessages.filter((msg) => msg.retries < MAX_RETRIES);
 
       expect(retryableMessages.length).toBe(2);
     });
@@ -266,7 +264,7 @@ describe('ConversationScreen', () => {
       jest.useFakeTimers();
 
       const TYPING_DEBOUNCE = 1000;
-      let typingEventSent = false;
+      const _typingEventSent = false;
 
       const sendTyping = jest.fn(() => {
         typingEventSent = true;

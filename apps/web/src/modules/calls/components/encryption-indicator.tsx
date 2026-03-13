@@ -102,15 +102,11 @@ export function EncryptionIndicator({
       <div className="relative">
         <Icon className={`${sizes.icon} ${config.color}`} />
         {status === 'degraded' && (
-          <ExclamationTriangleIcon
-            className="absolute -right-1 -top-1 h-2.5 w-2.5 text-amber-400"
-          />
+          <ExclamationTriangleIcon className="absolute -right-1 -top-1 h-2.5 w-2.5 text-amber-400" />
         )}
       </div>
       {showLabel && (
-        <span className={`${sizes.text} ${config.color} font-medium`}>
-          {config.label}
-        </span>
+        <span className={`${sizes.text} ${config.color} font-medium`}>{config.label}</span>
       )}
     </div>
   );

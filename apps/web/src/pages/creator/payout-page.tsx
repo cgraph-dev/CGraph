@@ -63,7 +63,9 @@ const STATUS_CONFIG: Record<string, { label: string; className: string; icon: st
 
 const MINIMUM_PAYOUT_CENTS = 1000;
 
-export const PayoutPage: React.FC = () => {
+/** Description. */
+/** Payout Page component. */
+export function PayoutPage(): React.ReactElement {
   const {
     balance,
     payouts: rawPayouts,
@@ -73,6 +75,7 @@ export const PayoutPage: React.FC = () => {
     fetchPayouts,
     requestPayout,
   } = useCreatorDashboard();
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const payouts = (rawPayouts ?? []) as unknown as PayoutDisplay[];
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -87,7 +90,10 @@ export const PayoutPage: React.FC = () => {
     setSuccess(null);
     const result = await requestPayout();
     if (result) {
-      setSuccess(`Payout of ${formatCents((result as any).amountCents || (result as any).amount_cents || 0)} initiated!`);
+      setSuccess(
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+        `Payout of ${formatCents((result as any).amountCents || (result as any).amount_cents || 0)} initiated!`
+      );
     } else {
       setError('Failed to request payout');
     }
@@ -138,13 +144,15 @@ export const PayoutPage: React.FC = () => {
           disabled={!canPayout || requesting}
           className="w-full rounded-lg bg-green-600 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
-          {requesting ? 'Processing…' : `Withdraw ${formatCents(balance?.availableBalanceCents ?? 0)}`}
+          {requesting
+            ? 'Processing…'
+            : `Withdraw ${formatCents(balance?.availableBalanceCents ?? 0)}`}
         </button>
 
         {!canPayout && (
           <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-            Minimum withdrawal: {formatCents(MINIMUM_PAYOUT_CENTS)}. Your balance must reach
-            this amount before you can request a payout.
+            Minimum withdrawal: {formatCents(MINIMUM_PAYOUT_CENTS)}. Your balance must reach this
+            amount before you can request a payout.
           </p>
         )}
 
@@ -214,7 +222,9 @@ export const PayoutPage: React.FC = () => {
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                        {(payout.completedAt || payout.completed_at) ? formatDate((payout.completedAt || payout.completed_at)!) : '—'}
+                        {payout.completedAt || payout.completed_at
+                          ? formatDate((payout.completedAt || payout.completed_at)!)
+                          : '—'}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                         {payout.failureReason ?? payout.failure_reason ?? '—'}
@@ -229,7 +239,7 @@ export const PayoutPage: React.FC = () => {
       </div>
     </div>
   );
-};
+}
 
 PayoutPage.displayName = 'PayoutPage';
 

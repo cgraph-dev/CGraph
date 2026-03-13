@@ -42,6 +42,7 @@ interface PodiumProps {
 // =============================================================================
 
 /**
+ * Animated Podium component.
  *
  */
 export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
@@ -193,7 +194,6 @@ export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
   ) => {
     if (!item) return null;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const colors = {
       1: { gradient: ['#FFD700', '#FFA500'] as const, border: '#FFD700', shadow: '#FFD700' },
       2: { gradient: ['#C0C0C0', '#A0A0A0'] as const, border: '#C0C0C0', shadow: '#C0C0C0' },
@@ -212,24 +212,24 @@ export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
 
     const name =
       type === 'forums'
-         
-        ? `c/${(item as LeaderboardForum).slug}`
-         
-        : `u/${(item as TopContributor).user?.username || 'unknown'}`;
+        ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          `c/${(item as LeaderboardForum).slug}`
+        : // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          `u/${(item as TopContributor).user?.username || 'unknown'}`;
 
     const iconUrl =
       type === 'forums'
-         
-        ? (item as LeaderboardForum).icon_url
-         
-        : (item as TopContributor).user?.avatar_url;
+        ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          (item as LeaderboardForum).icon_url
+        : // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          (item as TopContributor).user?.avatar_url;
 
     const initial =
       type === 'forums'
-         
-        ? (item as LeaderboardForum).name.charAt(0)
-         
-        : (item as TopContributor).user?.username?.charAt(0).toUpperCase() || '?';
+        ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          (item as LeaderboardForum).name.charAt(0)
+        : // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          (item as TopContributor).user?.username?.charAt(0).toUpperCase() || '?';
 
     return (
       <Animated.View
@@ -296,13 +296,13 @@ export function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
           >
             {type === 'contributors' && (
               <Text style={styles.pedestalXp}>
-                { }
+                {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
                 {((item as TopContributor).xp || 0).toLocaleString()} XP
               </Text>
             )}
             {type === 'forums' && (
               <Text style={styles.pedestalXp}>
-                { }
+                {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
                 {((item as LeaderboardForum).member_count || 0).toLocaleString()}
               </Text>
             )}

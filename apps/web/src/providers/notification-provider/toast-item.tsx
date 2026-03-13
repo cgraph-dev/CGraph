@@ -44,6 +44,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
     }, 50);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notification.duration, onDismiss]);
 
   // Standard toast rendering

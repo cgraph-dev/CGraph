@@ -74,7 +74,7 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
   // Frame needs extra space for decorative elements (star crown, wings, etc.)
   if (borderType === 'lottie' && lottieUrl) {
     const frameSize = avatarSize + 28; // Lottie frame is larger than avatar
-    const outerSize = frameSize + 8;   // Container with breathing room
+    const outerSize = frameSize + 8; // Container with breathing room
     return (
       <div
         className="relative flex items-center justify-center"
@@ -124,9 +124,7 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
       </div>
 
       {/* Avatar image */}
-      <div className="relative z-10">
-        {avatarImage}
-      </div>
+      <div className="relative z-10">{avatarImage}</div>
     </div>
   );
 });

@@ -12,10 +12,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  ChevronDownIcon,
-  PlusIcon,
-} from '@heroicons/react/24/outline';
+import { ChevronDownIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { springs } from '@/lib/animation-presets';
 import { cn } from '@/lib/utils';
 
@@ -42,6 +39,7 @@ const STORAGE_KEY = 'cgraph:collapsed-categories';
 function getCollapsedSet(): Set<string> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
   } catch {
     return new Set();
@@ -54,6 +52,8 @@ function persistCollapsedSet(set: Set<string>) {
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Channel Category component. */
 export function ChannelCategory({
   categoryId,
   name,
@@ -89,7 +89,7 @@ export function ChannelCategory({
       e.stopPropagation();
       onCreateChannel?.(categoryId);
     },
-    [categoryId, onCreateChannel],
+    [categoryId, onCreateChannel]
   );
 
   return (

@@ -25,6 +25,7 @@ type Props = {
 };
 
 /**
+ * Group Screen component.
  *
  */
 export default function GroupScreen({ navigation, route }: Props) {
@@ -33,17 +34,18 @@ export default function GroupScreen({ navigation, route }: Props) {
   const [group, setGroup] = useState<Group | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  
+
   useEffect(() => {
     fetchGroup();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupId]);
-  
+
   const fetchGroup = async () => {
     try {
       const response = await api.get(`/api/v1/groups/${groupId}`);
       const groupData = response.data.data;
       setGroup(groupData);
-      
+
       navigation.setOptions({
         title: groupData.name,
         headerRight: () => (
@@ -55,7 +57,7 @@ export default function GroupScreen({ navigation, route }: Props) {
           </TouchableOpacity>
         ),
       });
-      
+
       // Expand all categories by default
       setExpandedCategories(new Set(groupData.categories?.map((c: ChannelCategory) => c.id) || []));
     } catch (error) {
@@ -64,7 +66,7 @@ export default function GroupScreen({ navigation, route }: Props) {
       setIsLoading(false);
     }
   };
-  
+
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) => {
       const next = new Set(prev);
@@ -76,7 +78,7 @@ export default function GroupScreen({ navigation, route }: Props) {
       return next;
     });
   };
-  
+
   if (isLoading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
@@ -84,7 +86,7 @@ export default function GroupScreen({ navigation, route }: Props) {
       </View>
     );
   }
-  
+
   if (!group) {
     return (
       <View style={[styles.errorContainer, { backgroundColor: colors.background }]}>
@@ -92,23 +94,19 @@ export default function GroupScreen({ navigation, route }: Props) {
       </View>
     );
   }
-  
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Group Header */}
       <View style={[styles.header, { backgroundColor: colors.surface }]}>
-        {group.banner_url && (
-          <Image source={{ uri: group.banner_url }} style={styles.banner} />
-        )}
+        {group.banner_url && <Image source={{ uri: group.banner_url }} style={styles.banner} />}
         <View style={styles.headerContent}>
           <View style={styles.groupIconLarge}>
             {group.icon_url ? (
               <Image source={{ uri: group.icon_url }} style={styles.groupIconImage} />
             ) : (
               <View style={[styles.groupIconPlaceholder, { backgroundColor: colors.primary }]}>
-                <Text style={styles.groupIconText}>
-                  {group.name.charAt(0).toUpperCase()}
-                </Text>
+                <Text style={styles.groupIconText}>{group.name.charAt(0).toUpperCase()}</Text>
               </View>
             )}
           </View>
@@ -118,7 +116,7 @@ export default function GroupScreen({ navigation, route }: Props) {
           </Text>
         </View>
       </View>
-      
+
       {/* Channels */}
       <ScrollView style={styles.channelsContainer}>
         {group.categories?.map((category) => (
@@ -136,14 +134,16 @@ export default function GroupScreen({ navigation, route }: Props) {
                 {category.name.toUpperCase()}
               </Text>
             </TouchableOpacity>
-            
+
             {expandedCategories.has(category.id) && (
               <View style={styles.channelsList}>
                 {category.channels?.map((channel) => (
                   <TouchableOpacity
                     key={channel.id}
                     style={[styles.channelItem, { backgroundColor: colors.surfaceHover }]}
-                    onPress={() => navigation.navigate('Channel', { groupId, channelId: channel.id })}
+                    onPress={() =>
+                      navigation.navigate('Channel', { groupId, channelId: channel.id })
+                    }
                   >
                     <Ionicons
                       name={
@@ -156,9 +156,7 @@ export default function GroupScreen({ navigation, route }: Props) {
                       size={20}
                       color={colors.textSecondary}
                     />
-                    <Text style={[styles.channelName, { color: colors.text }]}>
-                      {channel.name}
-                    </Text>
+                    <Text style={[styles.channelName, { color: colors.text }]}>{channel.name}</Text>
                     {channel.unread_count > 0 && (
                       <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
                         <Text style={styles.unreadText}>{channel.unread_count}</Text>

@@ -60,6 +60,7 @@ interface BlockNode {
 }
 
 /**
+ * Markdown Renderer component.
  *
  */
 export default function MarkdownRenderer({

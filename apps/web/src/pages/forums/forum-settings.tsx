@@ -100,9 +100,7 @@ export default function ForumSettings() {
 
           {/* Save Button */}
           <div className="flex justify-end">
-            <SubmitButton pendingText="Saving...">
-              Save Changes
-            </SubmitButton>
+            <SubmitButton pendingText="Saving...">Save Changes</SubmitButton>
           </div>
         </form>
 

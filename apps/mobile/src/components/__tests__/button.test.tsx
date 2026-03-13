@@ -53,9 +53,7 @@ describe('Button', () => {
     });
 
     it('renders with custom styles', () => {
-      const { getByText } = render(
-        <Button style={{ marginTop: 10 }}>Styled</Button>
-      );
+      const { getByText } = render(<Button style={{ marginTop: 10 }}>Styled</Button>);
       expect(getByText('Styled')).toBeTruthy();
     });
   });
@@ -68,39 +66,29 @@ describe('Button', () => {
     });
 
     it('renders secondary variant', () => {
-      const { getByText } = render(
-        <Button variant="secondary">Secondary</Button>
-      );
+      const { getByText } = render(<Button variant="secondary">Secondary</Button>);
       expect(getByText('Secondary')).toBeTruthy();
     });
 
     it('renders outline variant', () => {
-      const { getByText } = render(
-        <Button variant="outline">Outline</Button>
-      );
+      const { getByText } = render(<Button variant="outline">Outline</Button>);
       expect(getByText('Outline')).toBeTruthy();
     });
 
     it('renders ghost variant', () => {
-      const { getByText } = render(
-        <Button variant="ghost">Ghost</Button>
-      );
+      const { getByText } = render(<Button variant="ghost">Ghost</Button>);
       expect(getByText('Ghost')).toBeTruthy();
     });
 
     it('renders danger variant', () => {
-      const { getByText } = render(
-        <Button variant="danger">Danger</Button>
-      );
+      const { getByText } = render(<Button variant="danger">Danger</Button>);
       expect(getByText('Danger')).toBeTruthy();
     });
   });
 
   describe('sizes', () => {
     it('renders small size', () => {
-      const { getByText } = render(
-        <Button size="sm">Small</Button>
-      );
+      const { getByText } = render(<Button size="sm">Small</Button>);
       expect(getByText('Small')).toBeTruthy();
     });
 
@@ -110,9 +98,7 @@ describe('Button', () => {
     });
 
     it('renders large size', () => {
-      const { getByText } = render(
-        <Button size="lg">Large</Button>
-      );
+      const { getByText } = render(<Button size="lg">Large</Button>);
       expect(getByText('Large')).toBeTruthy();
     });
   });
@@ -120,9 +106,7 @@ describe('Button', () => {
   describe('states', () => {
     it('handles press events', () => {
       const onPress = jest.fn();
-      const { getByText } = render(
-        <Button onPress={onPress}>Press Me</Button>
-      );
+      const { getByText } = render(<Button onPress={onPress}>Press Me</Button>);
 
       fireEvent.press(getByText('Press Me'));
       expect(onPress).toHaveBeenCalledTimes(1);
@@ -141,9 +125,7 @@ describe('Button', () => {
     });
 
     it('shows loading indicator when loading', () => {
-      const { queryByText } = render(
-        <Button loading>Loading</Button>
-      );
+      const { queryByText } = render(<Button loading>Loading</Button>);
 
       // Text should not be visible during loading
       expect(queryByText('Loading')).toBeNull();
@@ -164,9 +146,7 @@ describe('Button', () => {
 
   describe('fullWidth', () => {
     it('renders full width when specified', () => {
-      const { getByText } = render(
-        <Button fullWidth>Full Width</Button>
-      );
+      const { getByText } = render(<Button fullWidth>Full Width</Button>);
       expect(getByText('Full Width')).toBeTruthy();
     });
   });
@@ -174,9 +154,7 @@ describe('Button', () => {
   describe('icon support', () => {
     it('renders with icon element', () => {
       const icon = <Text testID="button-icon">🔥</Text>;
-      const { getByTestId, getByText } = render(
-        <Button icon={icon}>With Icon</Button>
-      );
+      const { getByTestId, getByText } = render(<Button icon={icon}>With Icon</Button>);
 
       expect(getByTestId('button-icon')).toBeTruthy();
       expect(getByText('With Icon')).toBeTruthy();
@@ -186,9 +164,7 @@ describe('Button', () => {
   describe('animation', () => {
     it('animates on press in and out', async () => {
       const onPress = jest.fn();
-      const { getByText } = render(
-        <Button onPress={onPress}>Animated</Button>
-      );
+      const { getByText } = render(<Button onPress={onPress}>Animated</Button>);
 
       const button = getByText('Animated');
 

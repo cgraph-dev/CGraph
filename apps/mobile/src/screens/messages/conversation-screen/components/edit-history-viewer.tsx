@@ -8,15 +8,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Platform,
-} from 'react-native';
+import { View, Text, Modal, Pressable, ScrollView, StyleSheet, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import type { EditHistory } from '../../../../types';
@@ -87,17 +79,10 @@ export function EditHistoryViewer({
         </Pressable>
 
         {/* Bottom sheet */}
-        <View
-          style={[
-            historyStyles.sheet,
-            { backgroundColor: colors.surface },
-          ]}
-        >
+        <View style={[historyStyles.sheet, { backgroundColor: colors.surface }]}>
           {/* Handle bar */}
           <View style={historyStyles.handleBar}>
-            <View
-              style={[historyStyles.handle, { backgroundColor: colors.textTertiary + '40' }]}
-            />
+            <View style={[historyStyles.handle, { backgroundColor: colors.textTertiary + '40' }]} />
           </View>
 
           {/* Header */}
@@ -109,28 +94,18 @@ export function EditHistoryViewer({
           </View>
 
           {/* Content */}
-          <ScrollView
-            style={historyStyles.scrollView}
-            showsVerticalScrollIndicator={false}
-          >
+          <ScrollView style={historyStyles.scrollView} showsVerticalScrollIndicator={false}>
             {/* Current version */}
             <View style={[historyStyles.entry, { borderBottomColor: colors.border + '20' }]}>
               <View style={historyStyles.entryHeader}>
-                <View
-                  style={[historyStyles.badge, { backgroundColor: colors.primary + '20' }]}
-                >
-                  <Text style={[historyStyles.badgeText, { color: colors.primary }]}>
-                    Current
-                  </Text>
+                <View style={[historyStyles.badge, { backgroundColor: colors.primary + '20' }]}>
+                  <Text style={[historyStyles.badgeText, { color: colors.primary }]}>Current</Text>
                 </View>
                 <Text style={[historyStyles.timestamp, { color: colors.textTertiary }]}>
                   Latest
                 </Text>
               </View>
-              <Text
-                style={[historyStyles.content, { color: colors.text }]}
-                numberOfLines={5}
-              >
+              <Text style={[historyStyles.content, { color: colors.text }]} numberOfLines={5}>
                 {currentContent}
               </Text>
             </View>
@@ -145,9 +120,7 @@ export function EditHistoryViewer({
                   <View
                     style={[historyStyles.badge, { backgroundColor: colors.textTertiary + '15' }]}
                   >
-                    <Text
-                      style={[historyStyles.badgeText, { color: colors.textSecondary }]}
-                    >
+                    <Text style={[historyStyles.badgeText, { color: colors.textSecondary }]}>
                       Edit #{edit.editNumber}
                     </Text>
                   </View>

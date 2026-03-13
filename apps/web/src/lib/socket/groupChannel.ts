@@ -18,14 +18,21 @@ import { normalizeMessage } from '../apiUtils';
  */
 function toChannelMessage(raw: Record<string, unknown>): ChannelMessage {
   const normalized = normalizeMessage(raw);
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const sender = (normalized.sender ?? {}) as Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return {
     ...normalized,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     authorId: (normalized.senderId ?? sender.id ?? '') as string,
     author: {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       id: (sender.id ?? '') as string,
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       username: (sender.username ?? '') as string,
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       displayName: (sender.displayName ?? sender.display_name ?? null) as string | null,
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       avatarUrl: (sender.avatarUrl ?? sender.avatar_url ?? null) as string | null,
       member: null,
     },
@@ -56,29 +63,29 @@ export function joinGroupChannel(
   const channel = socket.channel(topic, {});
 
   channel.on('new_message', (payload) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const data = payload as { message: Record<string, unknown> };
-     
+
     const normalized = toChannelMessage(data.message);
     useGroupStore.getState().addChannelMessage(normalized);
   });
 
   channel.on('message_updated', (payload) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const data = payload as { message: Record<string, unknown> };
-     
+
     const normalized = toChannelMessage(data.message);
     useGroupStore.getState().updateChannelMessage(normalized);
   });
 
   channel.on('message_deleted', (payload) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const data = payload as { message_id: string };
     useGroupStore.getState().removeChannelMessage(data.message_id, channelId);
   });
 
   channel.on('link_preview_updated', (payload) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const data = payload as { message: Record<string, unknown> };
     if (data.message) {
       const normalized = toChannelMessage(data.message);
@@ -87,7 +94,7 @@ export function joinGroupChannel(
   });
 
   channel.on('typing', (payload) => {
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const data = payload as { user_id: string; is_typing: boolean };
     useGroupStore.getState().setTypingUser(channelId, data.user_id, data.is_typing);
   });

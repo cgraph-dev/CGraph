@@ -44,6 +44,7 @@ const roleColors: Record<string, string> = {
 };
 
 /**
+ * Group Members Screen component.
  *
  */
 export default function GroupMembersScreen({ route }: Props) {
@@ -57,20 +58,32 @@ export default function GroupMembersScreen({ route }: Props) {
     try {
       setLoading(true);
       const res = await api.get(`/api/v1/groups/${groupId}/members`);
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setMembers(
         data.map((m: Record<string, unknown>) => ({
-           
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           id: m.id as string,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           userId: (m.user_id ?? m.userId ?? m.id) as string,
-           
-          username: (m.username ?? (m.user as Record<string, unknown>)?.username ?? 'unknown') as string,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          username: (m.username ??
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            (m.user as Record<string, unknown>)?.username ??
+            'unknown') as string,
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           displayName: (m.display_name ?? m.displayName ?? null) as string | null,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           avatarUrl: (m.avatar_url ?? m.avatarUrl ?? null) as string | null,
-           
+
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           role: (m.role ?? 'member') as string,
           isMuted: !!(m.is_muted ?? m.isMuted),
         }))
@@ -99,7 +112,9 @@ export default function GroupMembersScreen({ route }: Props) {
               await api.post(`/api/v1/groups/${groupId}/members/${member.id}/mute`);
             }
             fetchMembers();
-          } catch { /* ignore */ }
+          } catch {
+            /* ignore */
+          }
         },
       },
       {
@@ -115,7 +130,9 @@ export default function GroupMembersScreen({ route }: Props) {
                 try {
                   await api.delete(`/api/v1/groups/${groupId}/members/${member.id}`);
                   setMembers((prev) => prev.filter((m) => m.id !== member.id));
-                } catch { /* ignore */ }
+                } catch {
+                  /* ignore */
+                }
               },
             },
           ]);
@@ -134,7 +151,9 @@ export default function GroupMembersScreen({ route }: Props) {
                 try {
                   await api.post(`/api/v1/groups/${groupId}/members/${member.id}/ban`);
                   setMembers((prev) => prev.filter((m) => m.id !== member.id));
-                } catch { /* ignore */ }
+                } catch {
+                  /* ignore */
+                }
               },
             },
           ]);
@@ -146,7 +165,9 @@ export default function GroupMembersScreen({ route }: Props) {
 
   const filtered = members.filter((m) => {
     const q = search.toLowerCase();
-    return m.username.toLowerCase().includes(q) || (m.displayName?.toLowerCase().includes(q) ?? false);
+    return (
+      m.username.toLowerCase().includes(q) || (m.displayName?.toLowerCase().includes(q) ?? false)
+    );
   });
 
   const renderMember = ({ item, index }: { item: Member; index: number }) => (
@@ -165,11 +186,14 @@ export default function GroupMembersScreen({ route }: Props) {
           <Text style={[styles.name, { color: colors.text }]}>
             {item.displayName || item.username}
           </Text>
-          <Text style={[styles.username, { color: colors.textSecondary }]}>
-            @{item.username}
-          </Text>
+          <Text style={[styles.username, { color: colors.textSecondary }]}>@{item.username}</Text>
         </View>
-        <View style={[styles.roleBadge, { backgroundColor: (roleColors[item.role] || roleColors.member) + '20' }]}>
+        <View
+          style={[
+            styles.roleBadge,
+            { backgroundColor: (roleColors[item.role] || roleColors.member) + '20' },
+          ]}
+        >
           <Text style={[styles.roleText, { color: roleColors[item.role] || roleColors.member }]}>
             {item.role}
           </Text>

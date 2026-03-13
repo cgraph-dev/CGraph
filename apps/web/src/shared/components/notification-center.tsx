@@ -65,6 +65,8 @@ const bucketOrder = ['Today', 'Yesterday', 'This Week', 'Older'];
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Notification Center component. */
 export function NotificationCenter({
   open,
   onClose,
@@ -112,19 +114,19 @@ export function NotificationCenter({
           <motion.div className="absolute inset-0 bg-black/30" onClick={onClose} />
 
           <motion.div
-            className="relative w-full max-w-[400px] h-full bg-[#1e1f22] border-l border-white/[0.06] flex flex-col"
+            className="relative flex h-full w-full max-w-[400px] flex-col border-l border-white/[0.06] bg-[#1e1f22]"
             initial={{ x: 400 }}
             animate={{ x: 0 }}
             exit={{ x: 400 }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
           >
             {/* Header */}
-            <div className="p-4 border-b border-white/[0.06]">
-              <div className="flex items-center justify-between mb-3">
+            <div className="border-b border-white/[0.06] p-4">
+              <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-bold text-white">Notifications</h2>
                   {unreadCount > 0 && (
-                    <span className="bg-primary-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                    <span className="min-w-[18px] rounded-full bg-primary-600 px-1.5 py-0.5 text-center text-[10px] font-bold text-white">
                       {unreadCount}
                     </span>
                   )}
@@ -133,7 +135,7 @@ export function NotificationCenter({
                   {unreadCount > 0 && (
                     <button
                       onClick={onMarkAllRead}
-                      className="p-1.5 rounded-md text-white/40 hover:text-white/60 transition-colors"
+                      className="rounded-md p-1.5 text-white/40 transition-colors hover:text-white/60"
                       title="Mark all as read"
                     >
                       <CheckIcon className="h-4 w-4" />
@@ -141,7 +143,7 @@ export function NotificationCenter({
                   )}
                   <button
                     onClick={onClose}
-                    className="p-1.5 rounded-md text-white/40 hover:text-white/60 transition-colors"
+                    className="rounded-md p-1.5 text-white/40 transition-colors hover:text-white/60"
                   >
                     <XMarkIcon className="h-4 w-4" />
                   </button>
@@ -155,10 +157,10 @@ export function NotificationCenter({
                     key={tab.value}
                     onClick={() => setActiveTab(tab.value)}
                     className={cn(
-                      'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+                      'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
                       activeTab === tab.value
                         ? 'bg-primary-600/20 text-primary-400'
-                        : 'text-white/40 hover:text-white/60 hover:bg-white/[0.04]',
+                        : 'text-white/40 hover:bg-white/[0.04] hover:text-white/60'
                     )}
                   >
                     {tab.icon}
@@ -172,9 +174,9 @@ export function NotificationCenter({
             <div className="flex-1 overflow-y-auto py-2">
               {filteredNotifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-white/20">
-                  <InboxIcon className="h-12 w-12 mb-3" />
+                  <InboxIcon className="mb-3 h-12 w-12" />
                   <p className="text-sm font-medium">All caught up!</p>
-                  <p className="text-xs mt-1">No notifications to show</p>
+                  <p className="mt-1 text-xs">No notifications to show</p>
                 </div>
               ) : (
                 bucketOrder.map((bucket) => {
@@ -182,7 +184,7 @@ export function NotificationCenter({
                   if (!items?.length) return null;
                   return (
                     <div key={bucket} className="mb-2">
-                      <p className="px-4 py-1.5 text-[11px] font-semibold text-white/30 uppercase tracking-wider">
+                      <p className="px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white/30">
                         {bucket}
                       </p>
                       {items.map((n) => (

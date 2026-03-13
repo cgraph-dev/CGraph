@@ -30,7 +30,6 @@ type SortOption = (typeof SORT_OPTIONS)[number]['value'];
  * Unified Explore page for discovering communities (groups + forums).
  */
 export default function ExplorePage() {
-
   const [communities, setCommunities] = useState<Community[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [category, setCategory] = useState<string | null>(null);
@@ -49,13 +48,15 @@ export default function ExplorePage() {
         setIsLoading(true);
         const currentOffset = reset ? 0 : offset;
 
-        const res = await api.get('/api/v1/explore', { params: {
-          category: category || undefined,
-          sort,
-          q: search || undefined,
-          limit: 20,
-          offset: currentOffset,
-        }});
+        const res = await api.get('/api/v1/explore', {
+          params: {
+            category: category || undefined,
+            sort,
+            q: search || undefined,
+            limit: 20,
+            offset: currentOffset,
+          },
+        });
         const payload = res.data?.data ?? res.data;
         const items: Community[] = payload?.communities ?? [];
         const cats: string[] = payload?.categories ?? [];
@@ -75,6 +76,7 @@ export default function ExplorePage() {
         setIsLoading(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [api, category, sort, search, offset]
   );
 
@@ -127,9 +129,7 @@ export default function ExplorePage() {
           <h1 className="text-2xl font-bold text-white">Explore Communities</h1>
         </div>
 
-        <p className="mt-1 text-sm text-white/50">
-          Discover groups and forums to join
-        </p>
+        <p className="mt-1 text-sm text-white/50">Discover groups and forums to join</p>
 
         {/* Search + Sort */}
         <div className="mt-4 flex items-center gap-3">
@@ -145,9 +145,10 @@ export default function ExplorePage() {
           </div>
 
           <div className="relative">
-            <AdjustmentsHorizontalIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40 pointer-events-none" />
+            <AdjustmentsHorizontalIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
             <select
               value={sort}
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               onChange={(e) => setSort(e.target.value as SortOption)}
               className="appearance-none rounded-xl bg-white/[0.04] py-2.5 pl-9 pr-8 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-primary-500/50"
             >

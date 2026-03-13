@@ -1,6 +1,6 @@
 /**
  * Groups Hooks (Mobile)
- * 
+ *
  * Connects to backend for group management, channels, and invites.
  * @module features/groups/hooks
  * @version 0.8.6
@@ -118,19 +118,22 @@ export function useGroup(groupId: string) {
     fetchGroup();
   }, [fetchGroup]);
 
-  const updateGroup = useCallback(async (updates: Partial<Group>) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      const response = await api.patch(`/api/v1/groups/${groupId}`, updates);
-      const data = response.data?.data || response.data;
-      setGroup(data);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return true;
-    } catch (_err: unknown) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return false;
-    }
-  }, [groupId]);
+  const updateGroup = useCallback(
+    async (updates: Partial<Group>) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      try {
+        const response = await api.patch(`/api/v1/groups/${groupId}`, updates);
+        const data = response.data?.data || response.data;
+        setGroup(data);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return true;
+      } catch (_err: unknown) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return false;
+      }
+    },
+    [groupId]
+  );
 
   const leaveGroup = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -182,19 +185,22 @@ export function useChannels(groupId: string) {
     fetchChannels();
   }, [fetchChannels]);
 
-  const createChannel = useCallback(async (name: string, type: 'text' | 'voice' | 'announcement' = 'text') => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      const response = await api.post(`/api/v1/groups/${groupId}/channels`, { name, type });
-      const newChannel = response.data?.data || response.data;
-      setChannels(prev => [...prev, newChannel]);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return newChannel;
-    } catch (_err: unknown) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return null;
-    }
-  }, [groupId]);
+  const createChannel = useCallback(
+    async (name: string, type: 'text' | 'voice' | 'announcement' = 'text') => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      try {
+        const response = await api.post(`/api/v1/groups/${groupId}/channels`, { name, type });
+        const newChannel = response.data?.data || response.data;
+        setChannels((prev) => [...prev, newChannel]);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return newChannel;
+      } catch (_err: unknown) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return null;
+      }
+    },
+    [groupId]
+  );
 
   return {
     channels,
@@ -211,7 +217,7 @@ export function useChannels(groupId: string) {
 export function useChannelNotifications(channelId: string) {
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   useEffect(() => {
     const fetchMuteStatus = async () => {
       try {
@@ -229,8 +235,8 @@ export function useChannelNotifications(channelId: string) {
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      await api.patch(`/api/v1/channels/${channelId}/settings`, { 
-        is_muted: !isMuted 
+      await api.patch(`/api/v1/channels/${channelId}/settings`, {
+        is_muted: !isMuted,
       });
       setIsMuted(!isMuted);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -242,7 +248,7 @@ export function useChannelNotifications(channelId: string) {
       setIsLoading(false);
     }
   }, [channelId, isMuted]);
-  
+
   return {
     isMuted,
     isLoading,
@@ -278,31 +284,37 @@ export function useGroupMembers(groupId: string) {
     fetchMembers();
   }, [fetchMembers]);
 
-  const kickMember = useCallback(async (userId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    try {
-      await api.delete(`/api/v1/groups/${groupId}/members/${userId}`);
-      setMembers(prev => prev.filter(m => m.user_id !== userId));
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return true;
-    } catch {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return false;
-    }
-  }, [groupId]);
+  const kickMember = useCallback(
+    async (userId: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      try {
+        await api.delete(`/api/v1/groups/${groupId}/members/${userId}`);
+        setMembers((prev) => prev.filter((m) => m.user_id !== userId));
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return true;
+      } catch {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return false;
+      }
+    },
+    [groupId]
+  );
 
-  const banMember = useCallback(async (userId: string, reason?: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    try {
-      await api.post(`/api/v1/groups/${groupId}/bans`, { user_id: userId, reason });
-      setMembers(prev => prev.filter(m => m.user_id !== userId));
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return true;
-    } catch {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return false;
-    }
-  }, [groupId]);
+  const banMember = useCallback(
+    async (userId: string, reason?: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      try {
+        await api.post(`/api/v1/groups/${groupId}/bans`, { user_id: userId, reason });
+        setMembers((prev) => prev.filter((m) => m.user_id !== userId));
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return true;
+      } catch {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return false;
+      }
+    },
+    [groupId]
+  );
 
   return {
     members,
@@ -341,35 +353,35 @@ export function useGroupInvites(groupId: string) {
     fetchInvites();
   }, [fetchInvites]);
 
-  const createInvite = useCallback(async (options?: { 
-    max_uses?: number; 
-    expires_in_hours?: number 
-  }) => {
-    setIsCreating(true);
-    setError(null);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
-    try {
-      const response = await api.post(`/api/v1/groups/${groupId}/invites`, options || {});
-      const invite = response.data?.data || response.data;
-      setInvites(prev => [invite, ...prev]);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return invite;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to create invite';
-      setError(message);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return null;
-    } finally {
-      setIsCreating(false);
-    }
-  }, [groupId]);
-  
+  const createInvite = useCallback(
+    async (options?: { max_uses?: number; expires_in_hours?: number }) => {
+      setIsCreating(true);
+      setError(null);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+      try {
+        const response = await api.post(`/api/v1/groups/${groupId}/invites`, options || {});
+        const invite = response.data?.data || response.data;
+        setInvites((prev) => [invite, ...prev]);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return invite;
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to create invite';
+        setError(message);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return null;
+      } finally {
+        setIsCreating(false);
+      }
+    },
+    [groupId]
+  );
+
   const shareInvite = useCallback(async (inviteCode: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
+
     const inviteUrl = `https://cgraph.app/invite/${inviteCode}`;
-    
+
     // Copy to clipboard - simple and reliable
     await copyToClipboard(inviteUrl);
   }, []);
@@ -380,19 +392,22 @@ export function useGroupInvites(groupId: string) {
     Alert.alert('Copied!', 'Invite link copied to clipboard');
   };
 
-  const revokeInvite = useCallback(async (inviteId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    try {
-      await api.delete(`/api/v1/groups/${groupId}/invites/${inviteId}`);
-      setInvites(prev => prev.filter(i => i.id !== inviteId));
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return true;
-    } catch {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return false;
-    }
-  }, [groupId]);
-  
+  const revokeInvite = useCallback(
+    async (inviteId: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      try {
+        await api.delete(`/api/v1/groups/${groupId}/invites/${inviteId}`);
+        setInvites((prev) => prev.filter((i) => i.id !== inviteId));
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return true;
+      } catch {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return false;
+      }
+    },
+    [groupId]
+  );
+
   return {
     invites,
     isLoading,
@@ -467,29 +482,28 @@ export function useCreateGroup() {
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createGroup = useCallback(async (data: {
-    name: string;
-    description?: string;
-    is_public?: boolean;
-  }) => {
-    setIsCreating(true);
-    setError(null);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  const createGroup = useCallback(
+    async (data: { name: string; description?: string; is_public?: boolean }) => {
+      setIsCreating(true);
+      setError(null);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
-    try {
-      const response = await api.post('/api/v1/groups', data);
-      const group = response.data?.data || response.data;
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return group;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to create group';
-      setError(message);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      return null;
-    } finally {
-      setIsCreating(false);
-    }
-  }, []);
+      try {
+        const response = await api.post('/api/v1/groups', data);
+        const group = response.data?.data || response.data;
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return group;
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Failed to create group';
+        setError(message);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return null;
+      } finally {
+        setIsCreating(false);
+      }
+    },
+    []
+  );
 
   return {
     isCreating,

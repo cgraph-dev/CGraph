@@ -39,7 +39,8 @@ type BBNode =
 // Parser
 // ---------------------------------------------------------------------------
 
-const TAG_RE = /\[(\/?)(b|i|u|s|url|img|quote|code|list|color|size|spoiler|center|\*)(?:=([^\]]*))?\]/gi;
+const TAG_RE =
+  /\[(\/?)(b|i|u|s|url|img|quote|code|list|color|size|spoiler|center|\*)(?:=([^\]]*))?\]/gi;
 
 function isValidUrl(url: string): boolean {
   try {
@@ -77,7 +78,7 @@ function parseBBCode(input: string): BBNode[] {
 
     if (tag === '*' && !slash) {
       // List item marker — treat as self-closing list-item opener
-      const current = stack.length > 0 ? stack[stack.length - 1].children : root;
+      const _current = stack.length > 0 ? stack[stack.length - 1].children : root;
       // Push a new item node onto current context; we'll collect until next [*] or [/list]
       stack.push({ tag: 'li', children: [] });
       // Add as child of current
@@ -203,12 +204,8 @@ function renderNodes(nodes: BBNode[], inheritedStyle: TextStyle = {}): React.Rea
         const author = node.attr;
         return (
           <View key={nextKey()} style={localStyles.quote}>
-            {author ? (
-              <Text style={localStyles.quoteAuthor}>{author} wrote:</Text>
-            ) : null}
-            <Text style={localStyles.quoteText}>
-              {renderNodes(node.children, inheritedStyle)}
-            </Text>
+            {author ? <Text style={localStyles.quoteAuthor}>{author} wrote:</Text> : null}
+            <Text style={localStyles.quoteText}>{renderNodes(node.children, inheritedStyle)}</Text>
           </View>
         );
       }
@@ -216,9 +213,7 @@ function renderNodes(nodes: BBNode[], inheritedStyle: TextStyle = {}): React.Rea
       case 'code':
         return (
           <View key={nextKey()} style={localStyles.codeBlock}>
-            <Text style={localStyles.codeText}>
-              {getTextContent(node.children)}
-            </Text>
+            <Text style={localStyles.codeText}>{getTextContent(node.children)}</Text>
           </View>
         );
 
@@ -294,22 +289,14 @@ function renderListItems(children: BBNode[], inheritedStyle: TextStyle): React.R
 
 /** Helper to extract raw text from a node tree */
 function getTextContent(nodes: BBNode[]): string {
-  return nodes
-    .map((n) => (n.type === 'text' ? n.value : getTextContent(n.children)))
-    .join('');
+  return nodes.map((n) => (n.type === 'text' ? n.value : getTextContent(n.children))).join('');
 }
 
 // ---------------------------------------------------------------------------
 // Spoiler sub-component (needs state)
 // ---------------------------------------------------------------------------
 
-function SpoilerBlock({
-  nodes,
-  style,
-}: {
-  nodes: BBNode[];
-  style: TextStyle;
-}) {
+function SpoilerBlock({ nodes, style }: { nodes: BBNode[]; style: TextStyle }) {
   const [revealed, setRevealed] = useState(false);
 
   return (
@@ -332,6 +319,8 @@ function SpoilerBlock({
 // Main component
 // ---------------------------------------------------------------------------
 
+/** Description. */
+/** B B Code Renderer component. */
 export function BBCodeRenderer({ content, style }: BBCodeRendererProps) {
   // Reset key counter each render to keep deterministic
   keyCounter = 0;

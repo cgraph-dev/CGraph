@@ -16,10 +16,10 @@ import Animated, {
   useSharedValue,
   useAnimatedProps,
   useDerivedValue,
-  withTiming,
+  _withTiming,
   withSpring,
-  interpolate,
-  Easing,
+  _interpolate,
+  _Easing,
   SharedValue,
 } from 'react-native-reanimated';
 import Svg, { Circle, Defs, LinearGradient, Stop, G } from 'react-native-svg';
@@ -60,6 +60,7 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 // ============================================================================
 
 /**
+ * Progress Ring component.
  *
  */
 export function ProgressRing({
@@ -73,7 +74,7 @@ export function ProgressRing({
   valuePrefix = '',
   valueSuffix = '%',
   animated = true,
-  animationDuration = 1000,
+  _animationDuration = 1000,
   springPreset = 'bouncy',
   lineCap = 'round',
   rotation = -90,
@@ -98,6 +99,7 @@ export function ProgressRing({
     } else {
       animatedProgress.value = clampedProgress;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clampedProgress, animated, springConfig]);
 
   // Animated circle props
@@ -188,7 +190,7 @@ function AnimatedProgressValue({ value, prefix, suffix, color }: AnimatedProgres
   });
 
   return (
-     
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
     <Animated.Text style={[styles.valueText, { color }]} animatedProps={animatedStyle as any}>
       {prefix}
       {Math.round(value.value)}
@@ -216,6 +218,7 @@ export interface StackedProgressRingProps {
 }
 
 /**
+ * Stacked Progress Ring component.
  *
  */
 export function StackedProgressRing({
@@ -299,6 +302,7 @@ export interface GaugeRingProps {
 }
 
 /**
+ * Gauge Ring component.
  *
  */
 export function GaugeRing({
@@ -329,6 +333,7 @@ export function GaugeRing({
     } else {
       animatedValue.value = clampedValue;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clampedValue, animated]);
 
   // Generate tick marks

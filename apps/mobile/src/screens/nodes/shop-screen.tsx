@@ -26,17 +26,53 @@ import type { NodeBundle } from '@cgraph/shared-types/nodes';
 // ---------------------------------------------------------------------------
 
 const DEFAULT_BUNDLES: NodeBundle[] = [
-  { id: '1', name: 'Starter', node_amount: 100, price_eur: 0.99, bonus_percent: 0, is_active: true },
-  { id: '2', name: 'Popular', node_amount: 500, price_eur: 3.99, bonus_percent: 5, is_active: true },
-  { id: '3', name: 'Value', node_amount: 1200, price_eur: 8.99, bonus_percent: 10, is_active: true },
-  { id: '4', name: 'Premium', node_amount: 5000, price_eur: 34.99, bonus_percent: 15, is_active: true },
-  { id: '5', name: 'Mega', node_amount: 12000, price_eur: 79.99, bonus_percent: 20, is_active: true },
+  {
+    id: '1',
+    name: 'Starter',
+    node_amount: 100,
+    price_eur: 0.99,
+    bonus_percent: 0,
+    is_active: true,
+  },
+  {
+    id: '2',
+    name: 'Popular',
+    node_amount: 500,
+    price_eur: 3.99,
+    bonus_percent: 5,
+    is_active: true,
+  },
+  {
+    id: '3',
+    name: 'Value',
+    node_amount: 1200,
+    price_eur: 8.99,
+    bonus_percent: 10,
+    is_active: true,
+  },
+  {
+    id: '4',
+    name: 'Premium',
+    node_amount: 5000,
+    price_eur: 34.99,
+    bonus_percent: 15,
+    is_active: true,
+  },
+  {
+    id: '5',
+    name: 'Mega',
+    node_amount: 12000,
+    price_eur: 79.99,
+    bonus_percent: 20,
+    is_active: true,
+  },
 ];
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
+/** Shop Screen component. */
 export default function ShopScreen(): React.ReactElement {
   const { colors } = useThemeStore();
   const { bundles, isLoading, fetchBundles, balance } = useNodesStore();
@@ -68,7 +104,7 @@ export default function ShopScreen(): React.ReactElement {
                 await new Promise((resolve) => setTimeout(resolve, 1500));
                 Alert.alert(
                   'Purchase Complete! 🎉',
-                  `You received ${bundle.node_amount.toLocaleString()} Nodes!`,
+                  `You received ${bundle.node_amount.toLocaleString()} Nodes!`
                 );
                 await fetchBundles();
               } catch (err: unknown) {
@@ -79,10 +115,10 @@ export default function ShopScreen(): React.ReactElement {
               }
             },
           },
-        ],
+        ]
       );
     },
-    [fetchBundles],
+    [fetchBundles]
   );
 
   // ─── Bundle card ──────────────────────────────────────────────────
@@ -126,7 +162,7 @@ export default function ShopScreen(): React.ReactElement {
         </TouchableOpacity>
       );
     },
-    [colors, purchasing, handlePurchase],
+    [colors, purchasing, handlePurchase]
   );
 
   // ─── Render ───────────────────────────────────────────────────────

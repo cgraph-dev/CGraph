@@ -76,10 +76,7 @@ export function UserResult({ user, onClick }: UserResultProps) {
           transition={tweens.standard}
         />
         <div className="relative z-10 flex items-center gap-3 p-3 text-left">
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            transition={springs.snappy}
-          >
+          <motion.div whileHover={{ scale: 1.1 }} transition={springs.snappy}>
             {user.avatarUrl ? (
               <div className="rounded-full bg-gradient-to-br from-primary-500 to-purple-600 p-0.5">
                 <ThemedAvatar
@@ -128,10 +125,7 @@ export function GroupResult({ group, onClick }: GroupResultProps) {
           transition={tweens.standard}
         />
         <div className="relative z-10 flex items-center gap-3 p-3 text-left">
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            transition={springs.snappy}
-          >
+          <motion.div whileHover={{ scale: 1.1 }} transition={springs.snappy}>
             {group.iconUrl ? (
               <img
                 src={group.iconUrl}
@@ -176,10 +170,7 @@ export function ForumResult({ forum, onClick }: ForumResultProps) {
           transition={tweens.standard}
         />
         <div className="relative z-10 flex items-center gap-3 p-3 text-left">
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            transition={springs.snappy}
-          >
+          <motion.div whileHover={{ scale: 1.1 }} transition={springs.snappy}>
             {forum.iconUrl ? (
               <img
                 src={forum.iconUrl}

@@ -36,7 +36,7 @@ export function useFriendPresence(userId: string | undefined | null): FriendPres
     // Subscribe to changes
     const unsubscribe = socketManager.onGlobalStatusChange((changedUserId, isOnline, status) => {
       if (changedUserId === userId) {
-        setPresence(prev => ({
+        setPresence((prev) => ({
           ...prev,
           online: isOnline,
           status: status || (isOnline ? 'online' : 'offline'),
@@ -65,7 +65,7 @@ export function useIsFriendOnline(userId: string | undefined | null): boolean {
 export function useFriendsPresence(userIds: string[]): Map<string, FriendPresenceData> {
   const [presenceMap, setPresenceMap] = useState<Map<string, FriendPresenceData>>(() => {
     const map = new Map<string, FriendPresenceData>();
-    userIds.forEach(id => {
+    userIds.forEach((id) => {
       const presence = socketManager.getFriendPresence(id);
       if (presence) {
         map.set(id, presence);
@@ -77,7 +77,7 @@ export function useFriendsPresence(userIds: string[]): Map<string, FriendPresenc
   useEffect(() => {
     // Fetch bulk status on mount and when userIds change
     if (userIds.length > 0) {
-      socketManager.getBulkFriendStatus(userIds).then(result => {
+      socketManager.getBulkFriendStatus(userIds).then((result) => {
         const map = new Map<string, FriendPresenceData>();
         Object.entries(result).forEach(([id, data]) => {
           if (!data.hidden) {
@@ -91,7 +91,7 @@ export function useFriendsPresence(userIds: string[]): Map<string, FriendPresenc
     // Subscribe to changes
     const unsubscribe = socketManager.onGlobalStatusChange((userId, isOnline, status) => {
       if (userIds.includes(userId)) {
-        setPresenceMap(prev => {
+        setPresenceMap((prev) => {
           const next = new Map(prev);
           const existing = next.get(userId);
           next.set(userId, {
@@ -105,6 +105,7 @@ export function useFriendsPresence(userIds: string[]): Map<string, FriendPresenc
     });
 
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userIds.join(',')]); // Re-run when userIds change
 
   return presenceMap;

@@ -25,7 +25,9 @@ export interface ContentGateProps {
   className?: string;
 }
 
-export const ContentGate: React.FC<ContentGateProps> = ({
+/** Description. */
+/** Content Gate component. */
+export function ContentGate({
   title,
   teaser,
   forumName,
@@ -33,7 +35,7 @@ export const ContentGate: React.FC<ContentGateProps> = ({
   subscribeUrl,
   onSubscribe,
   className,
-}) => {
+}: ContentGateProps): React.ReactElement {
   const handleSubscribe = (e: React.MouseEvent) => {
     if (onSubscribe) {
       e.preventDefault();
@@ -47,17 +49,13 @@ export const ContentGate: React.FC<ContentGateProps> = ({
     >
       {/* Title — always visible */}
       <div className="border-b border-gray-100 p-4 dark:border-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          {title}
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
       </div>
 
       {/* Teaser with gradient fade */}
       {teaser && (
-        <div className="relative px-4 pt-4 pb-8">
-          <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-            {teaser}…
-          </p>
+        <div className="relative px-4 pb-8 pt-4">
+          <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">{teaser}…</p>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white dark:from-gray-900" />
         </div>
       )}
@@ -81,9 +79,12 @@ export const ContentGate: React.FC<ContentGateProps> = ({
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Subscribe to <strong className="text-gray-900 dark:text-gray-100">{forumName}</strong>
           {priceDisplay && (
-            <> for <strong className="text-amber-600 dark:text-amber-400">{priceDisplay}/mo</strong></>
-          )}
-          {' '}to read this content
+            <>
+              {' '}
+              for <strong className="text-amber-600 dark:text-amber-400">{priceDisplay}/mo</strong>
+            </>
+          )}{' '}
+          to read this content
         </p>
 
         <a
@@ -96,7 +97,7 @@ export const ContentGate: React.FC<ContentGateProps> = ({
       </div>
     </div>
   );
-};
+}
 
 ContentGate.displayName = 'ContentGate';
 

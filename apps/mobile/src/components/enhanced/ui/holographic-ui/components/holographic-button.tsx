@@ -30,6 +30,7 @@ interface HolographicButtonProps {
 }
 
 /**
+ * Holographic Button component.
  *
  */
 export function HolographicButton({
@@ -63,6 +64,7 @@ export function HolographicButton({
     );
     animation.start();
     return () => animation.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const sizeStyles: Record<string, ViewStyle> = {

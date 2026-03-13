@@ -165,10 +165,7 @@ export const ProfileCardPreview = memo(function ProfileCardPreview() {
         />
 
         {/* Profile effect overlay (sparkles, snow, fire, etc.) */}
-        <LottieOverlay
-          effectId={settings.equippedProfileEffect ?? null}
-          speed={speedMultiplier}
-        />
+        <LottieOverlay effectId={settings.equippedProfileEffect ?? null} speed={speedMultiplier} />
       </motion.div>
     </TiltCard>
   );

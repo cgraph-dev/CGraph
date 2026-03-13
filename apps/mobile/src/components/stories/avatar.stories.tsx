@@ -15,10 +15,10 @@ import Avatar from '../avatar';
  */
 function ThemeWrapper({ children }: { children: React.ReactNode }): React.ReactElement {
   return (
-  <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-    {children}
-  </View>
-);
+    <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+      {children}
+    </View>
+  );
 }
 
 const meta: Meta<typeof Avatar> = {

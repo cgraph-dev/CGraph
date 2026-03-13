@@ -71,7 +71,8 @@ export function validateWithFallback<T>(
     }
     // Return raw data as-is, cast to expected type
     // This allows the app to continue working even with schema mismatches
-     
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return data as T; // safe downcast – runtime verified
   }
 

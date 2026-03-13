@@ -166,6 +166,7 @@ export default function ContactsScreen({ navigation }: ContactsScreenProps) {
       result.push({ title: 'Offline', data: offline });
     }
     return result;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [friends, isOnline, onlineFriends]);
 
   const handleRefresh = useCallback(async () => {
@@ -199,9 +200,7 @@ export default function ContactsScreen({ navigation }: ContactsScreenProps) {
   const renderSectionHeader = useCallback(
     ({ section }: { section: SectionListData<Friend, ContactSection> }) => (
       <View style={[styles.sectionHeader, { backgroundColor: colors.background }]}>
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-          {section.title}
-        </Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{section.title}</Text>
       </View>
     ),
     [colors]

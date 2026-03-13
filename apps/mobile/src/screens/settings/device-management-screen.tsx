@@ -90,7 +90,8 @@ function getPlatformLabel(platform: string): string {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function DeviceManagementScreen({ navigation }: Props) {
+/** Device Management Screen component. */
+export default function DeviceManagementScreen({ _navigation }: Props) {
   const { colors } = useThemeStore();
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -118,38 +119,35 @@ export default function DeviceManagementScreen({ navigation }: Props) {
     fetchDevices();
   }, [fetchDevices]);
 
-  const handleRemoveDevice = useCallback(
-    (device: DeviceInfo) => {
-      if (device.isCurrent) {
-        Alert.alert('Cannot Remove', 'You cannot remove the current device.');
-        return;
-      }
+  const handleRemoveDevice = useCallback((device: DeviceInfo) => {
+    if (device.isCurrent) {
+      Alert.alert('Cannot Remove', 'You cannot remove the current device.');
+      return;
+    }
 
-      Alert.alert(
-        'Remove Device',
-        `Remove "${device.deviceId.slice(0, 8)}…" from your linked devices? This device will lose E2EE access.`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Remove',
-            style: 'destructive',
-            onPress: async () => {
-              setActionDeviceId(device.deviceId);
-              try {
-                await revokeDeviceTrust(device.deviceId);
-                setDevices((prev) => prev.filter((d) => d.deviceId !== device.deviceId));
-              } catch {
-                Alert.alert('Error', 'Failed to remove device');
-              } finally {
-                setActionDeviceId(null);
-              }
-            },
+    Alert.alert(
+      'Remove Device',
+      `Remove "${device.deviceId.slice(0, 8)}…" from your linked devices? This device will lose E2EE access.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            setActionDeviceId(device.deviceId);
+            try {
+              await revokeDeviceTrust(device.deviceId);
+              setDevices((prev) => prev.filter((d) => d.deviceId !== device.deviceId));
+            } catch {
+              Alert.alert('Error', 'Failed to remove device');
+            } finally {
+              setActionDeviceId(null);
+            }
           },
-        ]
-      );
-    },
-    []
-  );
+        },
+      ]
+    );
+  }, []);
 
   const handleVerifyDevice = useCallback(
     async (device: DeviceInfo) => {
@@ -173,7 +171,12 @@ export default function DeviceManagementScreen({ navigation }: Props) {
       const isActioning = actionDeviceId === item.deviceId;
 
       return (
-        <View style={[styles.deviceCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View
+          style={[
+            styles.deviceCard,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
           <View style={styles.deviceRow}>
             {/* Icon */}
             <View style={[styles.iconContainer, { backgroundColor: colors.surfaceHover }]}>
@@ -271,9 +274,7 @@ export default function DeviceManagementScreen({ navigation }: Props) {
     return (
       <View style={[styles.container, styles.center, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-          Loading devices…
-        </Text>
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading devices…</Text>
       </View>
     );
   }
@@ -283,7 +284,9 @@ export default function DeviceManagementScreen({ navigation }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header info */}
-      <View style={[styles.infoCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View
+        style={[styles.infoCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      >
         <Ionicons name="information-circle-outline" size={20} color={colors.primary} />
         <Text style={[styles.infoText, { color: colors.textSecondary }]}>
           Linked devices share your E2EE encryption keys. Only verify devices you trust.
@@ -335,23 +338,25 @@ interface KeyChangeBannerProps {
  */
 export function KeyChangeBanner({
   contactName,
-  contactId,
+  _contactId,
   onVerify,
   onDismiss,
 }: KeyChangeBannerProps) {
   const { colors } = useThemeStore();
 
   return (
-    <View style={[bannerStyles.container, { backgroundColor: colors.warning + '15', borderBottomColor: colors.warning + '40' }]}>
+    <View
+      style={[
+        bannerStyles.container,
+        { backgroundColor: colors.warning + '15', borderBottomColor: colors.warning + '40' },
+      ]}
+    >
       <View style={bannerStyles.contentRow}>
         <Ionicons name="warning-outline" size={18} color={colors.warning} />
         <Text style={[bannerStyles.text, { color: colors.warning }]}>
           <Text style={bannerStyles.bold}>{contactName}</Text>
           {"'s security number has changed. "}
-          <Text
-            style={[bannerStyles.link, { color: colors.warning }]}
-            onPress={onVerify}
-          >
+          <Text style={[bannerStyles.link, { color: colors.warning }]} onPress={onVerify}>
             Tap to verify
           </Text>
         </Text>

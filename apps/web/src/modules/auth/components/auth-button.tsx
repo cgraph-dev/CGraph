@@ -161,7 +161,7 @@ export function AuthButton({
       onClick={handleClick}
       disabled={isDisabled}
       className={`relative overflow-hidden rounded-xl font-semibold transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary-500/50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70 ${sizeClasses[size]} ${variantClasses[variant]} ${fullWidth ? 'w-full' : ''} ${isSuccess ? 'bg-gradient-to-r from-green-500 to-emerald-500' : ''} ${isError ? 'bg-gradient-to-r from-red-500 to-rose-500' : ''} ${className} `}
-       
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)} // type assertion: spreading button-specific HTML props
     >
       {/* Shimmer effect */}
@@ -183,6 +183,6 @@ export function AuthButton({
       <AnimatePresence mode="wait">{getContent()}</AnimatePresence>
     </button>
   );
-};
+}
 
 export default AuthButton;

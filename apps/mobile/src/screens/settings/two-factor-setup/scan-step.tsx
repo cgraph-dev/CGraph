@@ -2,14 +2,7 @@
  * QR code scan step for 2FA setup wizard.
  */
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { TwoFactorSetupData, SCREEN_WIDTH } from './two-factor-types';
@@ -23,6 +16,8 @@ interface ScanStepProps {
   onContinue: () => void;
 }
 
+/** Description. */
+/** Scan Step component. */
 export function ScanStep({
   colors,
   isLoading,
@@ -98,16 +93,28 @@ const styles = StyleSheet.create({
   qrCode: { width: 200, height: 200 },
   manualLabel: { fontSize: 14, marginBottom: 8 },
   secretBox: {
-    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16,
-    paddingVertical: 12, borderRadius: 12, marginBottom: 32, gap: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginBottom: 32,
+    gap: 12,
   },
   secretText: {
-    flex: 1, fontSize: 16, fontFamily: 'monospace', letterSpacing: 2, textAlign: 'center',
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'monospace',
+    letterSpacing: 2,
+    textAlign: 'center',
   },
   copyIcon: { fontSize: 18 },
   primaryButton: {
-    width: SCREEN_WIDTH - 48, height: 52, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
+    width: SCREEN_WIDTH - 48,
+    height: 52,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });

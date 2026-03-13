@@ -21,6 +21,8 @@ interface TransactionRowProps {
   transaction: NodeTransaction;
 }
 
+/** Description. */
+/** Transaction Row component. */
 export function TransactionRow({ transaction }: TransactionRowProps) {
   const config = typeConfig[transaction.type] ?? fallbackConfig;
   const isPositive = transaction.amount > 0;
@@ -43,7 +45,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
       <span
         className={cn(
           'text-sm font-semibold tabular-nums',
-          isPositive ? 'text-green-500' : 'text-red-500',
+          isPositive ? 'text-green-500' : 'text-red-500'
         )}
       >
         {isPositive ? '+' : ''}

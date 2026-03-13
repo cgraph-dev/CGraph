@@ -96,10 +96,11 @@ export default function Conversation() {
             isOtherUserOnline={ctx.isOtherUserOnline}
             typing={ctx.typing}
             uiPreferences={
-               
-              ctx.uiPreferences as Parameters< // safe downcast – structural boundary
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              ctx.uiPreferences as Parameters<
+                // safe downcast – structural boundary
                 typeof ConversationHeader
-              >[0]['uiPreferences'] 
+              >[0]['uiPreferences']
             }
             onStartVoiceCall={() =>
               ctx.callModals.handleStartVoiceCall(ctx.uiPreferences.enableHaptic)
@@ -252,8 +253,9 @@ export default function Conversation() {
       <InfoPanel
         showInfoPanel={ctx.showInfoPanel}
         otherParticipant={
-           
-          ctx.otherParticipant as unknown as Record< // safe downcast – structural boundary
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          ctx.otherParticipant as unknown as Record<
+            // safe downcast – structural boundary
             string,
             unknown
           >

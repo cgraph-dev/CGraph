@@ -75,7 +75,7 @@ export function FloatingSidebar({
         <div className={`flex h-full flex-col rounded-2xl p-2 ${glassSurfaceElevated}`}>
           <button
             onClick={toggleCollapsed}
-            className="absolute -right-3 top-8 rounded-full border border-white/[0.10] bg-[rgb(30,32,40)]/[0.85] p-1.5 backdrop-blur-[12px] hover:bg-white/[0.12] transition-colors"
+            className="absolute -right-3 top-8 rounded-full border border-white/[0.10] bg-[rgb(30,32,40)]/[0.85] p-1.5 backdrop-blur-[12px] transition-colors hover:bg-white/[0.12]"
           >
             {isCollapsed ? (
               <ChevronRightIcon className="h-4 w-4 text-white" />
@@ -116,7 +116,7 @@ export function FloatingSidebar({
                     <motion.div
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="absolute left-full z-50 ml-2 whitespace-nowrap rounded-lg bg-[rgb(30,32,40)]/[0.90] px-3 py-1.5 text-sm text-foreground backdrop-blur-[16px] border border-white/[0.08] shadow-lg"
+                      className="absolute left-full z-50 ml-2 whitespace-nowrap rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)]/[0.90] px-3 py-1.5 text-sm text-foreground shadow-lg backdrop-blur-[16px]"
                     >
                       {group.name}
                     </motion.div>

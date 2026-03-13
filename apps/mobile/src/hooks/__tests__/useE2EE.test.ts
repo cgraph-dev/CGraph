@@ -185,7 +185,7 @@ describe('useE2EE', () => {
       (e2ee.loadIdentityKeyPair as jest.Mock).mockResolvedValue(mockIdentityKeyPair);
       (e2ee.getDeviceId as jest.Mock).mockResolvedValue('device-123');
       (api.delete as jest.Mock).mockResolvedValue({ data: {} });
-      
+
       // After clearE2EEData is called, isE2EESetUp should return false
       (e2ee.clearE2EEData as jest.Mock).mockImplementation(async () => {
         (e2ee.isE2EESetUp as jest.Mock).mockResolvedValue(false);
@@ -204,12 +204,12 @@ describe('useE2EE', () => {
       });
 
       expect(e2ee.clearE2EEData).toHaveBeenCalled();
-      
+
       // Wait for state to update after reset
       await waitFor(() => {
         expect(result.current.isSetUp).toBe(false);
       });
-      
+
       expect(result.current.identityKey).toBeNull();
     });
 

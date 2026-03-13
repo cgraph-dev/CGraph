@@ -91,7 +91,9 @@ export async function listPayouts(page = 1): Promise<PayoutRequest[]> {
 }
 
 /** Get overview analytics */
-export async function getAnalyticsOverview(params?: { period?: string }): Promise<AnalyticsOverview> {
+export async function getAnalyticsOverview(params?: {
+  period?: string;
+}): Promise<AnalyticsOverview> {
   const response = await api.get('/api/v1/creator/analytics/overview', { params });
   return response.data?.data;
 }

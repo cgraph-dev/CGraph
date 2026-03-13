@@ -48,7 +48,7 @@ export function PinnedMessages({
           key={msg.id}
           className={cn(
             'group flex items-start gap-2 rounded-md px-2 py-2',
-            'transition-colors hover:bg-white/[0.04]',
+            'transition-colors hover:bg-white/[0.04]'
           )}
         >
           <Avatar size="xs" name={msg.authorName} src={msg.authorAvatarUrl} />
@@ -57,9 +57,7 @@ export function PinnedMessages({
               <span className="text-xs font-medium text-white/80">{msg.authorName}</span>
               <span className="text-[10px] text-white/20">{msg.pinnedAt}</span>
             </div>
-            <p className="line-clamp-2 text-xs leading-relaxed text-white/50">
-              {msg.content}
-            </p>
+            <p className="line-clamp-2 text-xs leading-relaxed text-white/50">{msg.content}</p>
             <div className="mt-1 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
               <button
                 type="button"

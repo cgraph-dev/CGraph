@@ -32,9 +32,9 @@ export default function DateTimeFields({
           name="allDay"
           checked={formData.allDay}
           onChange={handleChange}
-          className="border-border text-primary focus:ring-primary h-4 w-4 rounded"
+          className="border-border h-4 w-4 rounded text-primary focus:ring-primary"
         />
-        <label htmlFor="allDay" className="text-foreground cursor-pointer text-sm font-medium">
+        <label htmlFor="allDay" className="cursor-pointer text-sm font-medium text-foreground">
           All-day event
         </label>
       </div>
@@ -42,7 +42,7 @@ export default function DateTimeFields({
       {/* Date/Time */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="text-foreground mb-1 block text-sm font-medium">
+          <label className="mb-1 block text-sm font-medium text-foreground">
             Start {formData.allDay ? 'Date' : 'Date & Time'} *
           </label>
           <div className="relative">
@@ -55,7 +55,7 @@ export default function DateTimeFields({
                   : formatDateTimeLocal(formData.startDate)
               }
               onChange={(e) => handleDateChange('startDate', e.target.value)}
-              className={`bg-background focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 ${
+              className={`bg-background w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary ${
                 errors.startDate ? 'border-destructive' : 'border-border'
               }`}
             />
@@ -64,7 +64,7 @@ export default function DateTimeFields({
         </div>
 
         <div>
-          <label className="text-foreground mb-1 block text-sm font-medium">
+          <label className="mb-1 block text-sm font-medium text-foreground">
             End {formData.allDay ? 'Date' : 'Date & Time'}
           </label>
           <div className="relative">
@@ -77,7 +77,7 @@ export default function DateTimeFields({
                   : formatDateTimeLocal(formData.endDate || '')
               }
               onChange={(e) => handleDateChange('endDate', e.target.value)}
-              className={`bg-background focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 ${
+              className={`bg-background w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary ${
                 errors.endDate ? 'border-destructive' : 'border-border'
               }`}
             />

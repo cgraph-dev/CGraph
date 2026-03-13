@@ -14,15 +14,11 @@
  * @module navigation/tab-bar
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { View, Pressable, Text, StyleSheet, Dimensions, Platform } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
+import React, { useEffect } from 'react';
+import { View, Pressable, Text, StyleSheet, Dimensions } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 import * as Haptics from 'expo-haptics';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
@@ -44,6 +40,8 @@ const PILL_PADDING = 16;
 
 // ── Component ──────────────────────────────────────────────────────────
 
+/** Description. */
+/** Sliding Tab Bar component. */
 export function SlidingTabBar({
   state,
   descriptors,
@@ -82,7 +80,7 @@ export function SlidingTabBar({
           const isFocused = state.index === index;
           const badgeCount = badges[route.name] || 0;
 
-          const onPress = useCallback(() => {
+          const handlePress = () => {
             Haptics.selectionAsync();
             const event = navigation.emit({
               type: 'tabPress',
@@ -92,7 +90,7 @@ export function SlidingTabBar({
             if (!isFocused && !event.defaultPrevented) {
               navigation.navigate(route.name);
             }
-          }, [isFocused, route]);
+          };
 
           // Use tabBarIcon from options
           const icon = options.tabBarIcon?.({
@@ -111,7 +109,7 @@ export function SlidingTabBar({
           return (
             <Pressable
               key={route.key}
-              onPress={onPress}
+              onPress={handlePress}
               style={styles.tab}
               accessibilityRole="button"
               accessibilityState={isFocused ? { selected: true } : {}}
@@ -121,20 +119,12 @@ export function SlidingTabBar({
                 {icon}
                 {badgeCount > 0 && (
                   <View style={styles.badge}>
-                    <Text style={styles.badgeText}>
-                      {badgeCount > 99 ? '99+' : badgeCount}
-                    </Text>
+                    <Text style={styles.badgeText}>{badgeCount > 99 ? '99+' : badgeCount}</Text>
                   </View>
                 )}
               </View>
               {showLabels && (
-                <Text
-                  style={[
-                    styles.label,
-                    isFocused && styles.labelActive,
-                  ]}
-                  numberOfLines={1}
-                >
+                <Text style={[styles.label, isFocused && styles.labelActive]} numberOfLines={1}>
                   {label}
                 </Text>
               )}

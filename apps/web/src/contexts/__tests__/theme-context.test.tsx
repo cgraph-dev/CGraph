@@ -9,6 +9,7 @@ import '@testing-library/jest-dom/vitest';
 
 const { mockThemeEngine, getState, setState } = vi.hoisted(() => {
   let _currentThemeId = 'dark';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let _subscribers: ((theme: any) => void)[] = [];
   let _preferences = {
     themeId: 'dark',
@@ -49,12 +50,14 @@ const { mockThemeEngine, getState, setState } = vi.hoisted(() => {
         })
       );
     }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     subscribe: vi.fn((fn: (theme: any) => void) => {
       _subscribers.push(fn);
       return () => {
         _subscribers = _subscribers.filter((s) => s !== fn);
       };
     }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateSettings: vi.fn((settings: any) => {
       _preferences = {
         ..._preferences,
@@ -68,7 +71,12 @@ const { mockThemeEngine, getState, setState } = vi.hoisted(() => {
   return {
     mockThemeEngine: engine,
     getState: () => ({ _currentThemeId, _subscribers, _preferences }),
-    setState: (patch: { themeId?: string; preferences?: typeof _preferences; subscribers?: ((theme: any) => void)[] }) => {
+    setState: (patch: {
+      themeId?: string;
+      preferences?: typeof _preferences;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      subscribers?: ((theme: any) => void)[];
+    }) => {
       if (patch.themeId !== undefined) _currentThemeId = patch.themeId;
       if (patch.preferences !== undefined) _preferences = patch.preferences;
       if (patch.subscribers !== undefined) _subscribers = patch.subscribers;

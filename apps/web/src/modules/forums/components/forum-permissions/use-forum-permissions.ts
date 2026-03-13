@@ -75,7 +75,7 @@ export function useForumPermissions({
             .get(
               targetType === 'forum'
                 ? `/api/v1/forums/${targetId}/members?limit=100`
-                : `/api/v1/forums/${forumId}/members?limit=100`,
+                : `/api/v1/forums/${forumId}/members?limit=100`
             )
             .catch(() => ({ data: { data: [] } })),
         ]);
@@ -87,19 +87,19 @@ export function useForumPermissions({
             group_id: p.group_id || p.user_group_id,
             group_name:
               p.group_name ||
-               
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               (p.user_group as Record<string, unknown>)?.name || // safe downcast – structural boundary
               `Group ${p.group_id || p.user_group_id}`,
             applies_to: p.applies_to || 'group',
             permissions: extractPermissions(p, perms),
-          })),
+          }))
         );
 
         const availableGroups = (groupRes.data?.groups ?? groupRes.data?.data ?? []).map(
           (g: Record<string, unknown>) => ({
             id: String(g.id),
             name: String(g.name || g.username || g.id),
-          }),
+          })
         );
         setGroups(availableGroups);
       } catch {
@@ -142,7 +142,7 @@ export function useForumPermissions({
         toast.error('Failed to remove overwrite');
       }
     },
-    [basePath],
+    [basePath]
   );
 
   // ----- Add -----
@@ -181,7 +181,7 @@ export function useForumPermissions({
           ...ow,
           permissions: { ...ow.permissions, [permKey]: next },
         };
-      }),
+      })
     );
   }, []);
 
