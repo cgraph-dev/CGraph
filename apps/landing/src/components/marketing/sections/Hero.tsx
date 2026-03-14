@@ -64,6 +64,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
   const [subtitleIndex, setSubtitleIndex] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const mousePosRef = useRef({ x: 0.5, y: 0.5 });
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
 
@@ -95,6 +96,22 @@ const Hero = memo(function Hero(): React.JSX.Element {
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -80]);
 
+  // Pause video when tab hidden or reduced motion preferred
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (prefersReduced) {
+      video.pause();
+      return;
+    }
+    const onVisibility = (): void => {
+      if (document.hidden) video.pause();
+      else video.play().catch(() => {});
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, [prefersReduced]);
+
   // Cycle subtitles every 4s
   useEffect(() => {
     if (prefersReduced) return;
@@ -120,17 +137,20 @@ const Hero = memo(function Hero(): React.JSX.Element {
         aria-hidden="true"
         style={prefersReduced ? undefined : { y: bgY }}
       >
-        {/* AI-generated hero background — single clean layer */}
-        <div
-          className="hero-pro__ai-bg"
-          style={
-            prefersReduced
-              ? undefined
-              : {
-                  transform: `translate(${(mousePos.x - 0.5) * -20}px, ${(mousePos.y - 0.5) * -15}px) scale(1.06)`,
-                }
-          }
-        />
+        {/* Video background — looping ambient footage */}
+        <video
+          ref={videoRef}
+          className="hero-pro__video-bg"
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/videos/hero-poster.webp"
+          aria-hidden="true"
+        >
+          <source src="/videos/hero-bg.webm" type="video/webm" />
+          <source src="/videos/hero-bg.mp4" type="video/mp4" />
+        </video>
 
         {/* Mouse-following radial glow */}
         <div

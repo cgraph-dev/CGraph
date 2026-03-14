@@ -23,17 +23,15 @@
   z-index: 0;
 }
 
-/* ── AI-Generated Background (Gemini via Nano Banana MCP) ── */
-.hero-pro__ai-bg {
+/* ── Video Background ── */
+.hero-pro__video-bg {
   position: absolute;
-  inset: -6%;
-  background-image: url('/images/hero/hero-bg.webp');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  will-change: transform;
-  transition: transform 0.15s ease-out;
-  animation: hero-bg-breathe 10s ease-in-out infinite;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* Mouse-following cursor glow */
@@ -54,11 +52,7 @@
   opacity: 0.45;
 }
 
-/* Background subtle breathing */
-@keyframes hero-bg-breathe {
-  0%, 100% { transform: scale(1.06); }
-  50% { transform: scale(1.1); }
-}
+/* removed — video doesn't need CSS breathing */
 
 /* Base dark gradient */
 .hero-pro__gradient-base {
@@ -635,10 +629,9 @@
   .hero-pro__particles { display: none; }
   .hero-pro__scanlines { display: none; }
 
-  /* AI background — reduce parallax on mobile */
-  .hero-pro__ai-bg {
-    inset: -4%;
-    transition: none;
+  /* Video background — no change needed on mobile */
+  .hero-pro__video-bg {
+    /* already object-fit: cover */
   }
 
   .hero-pro__cursor-glow {
@@ -745,11 +738,8 @@
     animation: none;
   }
 
-  .hero-pro__ai-bg {
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
-    inset: 0;
+  .hero-pro__video-bg {
+    /* paused via JS — no CSS animation to disable */
   }
 
   .hero-pro__cursor-glow {
