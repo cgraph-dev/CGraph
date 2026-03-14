@@ -28,7 +28,6 @@ import '../components/marketing/sections/Security.css';
 import { CTA } from '../components/marketing/sections/CTA';
 import { PricingSection } from '../components/marketing/sections/Pricing';
 import { DownloadCTA } from '../components/marketing/sections/DownloadCTA';
-import { SectionHeader } from '../components/marketing/ui/SectionHeader';
 import SEO from '../components/SEO';
 
 /* ── Split CSS architecture (replaces monolithic landing-page.css) ── */
@@ -43,7 +42,6 @@ import '../styles/about-security-section.css';
 import '../styles/cta-section.css';
 import '../styles/showcase-section.css';
 import '../styles/pricing-section.css';
-import '../styles/interactive-demo-section.css';
 import '../styles/customization-preview.css';
 import '../styles/value-proposition.css';
 import '../styles/animated-borders.css';
@@ -52,9 +50,6 @@ import '../styles/mobile.css';
 gsap.registerPlugin(ScrollTrigger);
 
 // Lazy-load showcase sections to reduce initial bundle size
-const InteractiveDemo = lazy(() =>
-  import('../components/interactive-demo').then((m) => ({ default: m.InteractiveDemo }))
-);
 const CustomizationDemo = lazy(() =>
   import('../components/customization-demo').then((m) => ({ default: m.CustomizationDemo }))
 );
@@ -179,35 +174,6 @@ export default function LandingPage() {
       {/* Hero — Professional SaaS hero */}
       <main id="main-content">
         <Hero />
-
-        {/* Interactive Demo */}
-        <section className="interactive-demo-section zoom-section">
-          <SectionHeader
-            badge="Try It Now"
-            badgeVariant="cyan"
-            title="Experience CGraph"
-            titleAccent="Live"
-            titleAccentClass="title-fx--air"
-            description="No signup required. Explore our features in this interactive demo."
-          />
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-          >
-            <Suspense
-              fallback={
-                <div className="interactive-demo-skeleton">
-                  <div className="interactive-demo-skeleton__header" />
-                  <div className="interactive-demo-skeleton__content" />
-                </div>
-              }
-            >
-              <InteractiveDemo />
-            </Suspense>
-          </motion.div>
-        </section>
 
         {/* Features */}
         <Features />
