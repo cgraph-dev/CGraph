@@ -156,6 +156,42 @@ const Hero = memo(function Hero(): React.JSX.Element {
           }
         />
 
+        {/* AI-generated electric circuit traces overlay */}
+        <div
+          className="hero-pro__ai-bg hero-pro__ai-bg--circuits"
+          style={
+            prefersReduced
+              ? undefined
+              : {
+                  transform: `translate(${(mousePos.x - 0.5) * 20}px, ${(mousePos.y - 0.5) * 15}px) scale(1.06)`,
+                }
+          }
+        />
+
+        {/* AI-generated holographic HUD overlay */}
+        <div
+          className="hero-pro__ai-bg hero-pro__ai-bg--holo"
+          style={
+            prefersReduced
+              ? undefined
+              : {
+                  transform: `translate(${(mousePos.x - 0.5) * -35}px, ${(mousePos.y - 0.5) * 25}px) scale(1.04)`,
+                }
+          }
+        />
+
+        {/* AI-generated data streams overlay */}
+        <div
+          className="hero-pro__ai-bg hero-pro__ai-bg--streams"
+          style={
+            prefersReduced
+              ? undefined
+              : {
+                  transform: `translate(${(mousePos.x - 0.5) * 45}px, ${(mousePos.y - 0.5) * -20}px) scale(1.07)`,
+                }
+          }
+        />
+
         {/* Mouse-following radial glow */}
         <div
           className="hero-pro__cursor-glow"

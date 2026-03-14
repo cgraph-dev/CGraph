@@ -30,15 +30,18 @@ const COLORS: ReadonlyArray<readonly [number, number, number]> = [
 ];
 
 // ── Tuning constants ──
-const NODE_COUNT = 55;
-const CONNECTION_DIST = 160;
-const MOUSE_DIST = 220;
-const PARTICLE_COUNT = 12;
-const NODE_REPULSION_RADIUS = 150;
-const SPEED_CAP = 1.2;
-const DAMPING = 0.995;
-const PULSE_RING_INTERVAL = 100; // frames between random pulse emissions
-const MAX_PULSE_RINGS = 4;
+const NODE_COUNT = 65;
+const CONNECTION_DIST = 180;
+const MOUSE_DIST = 250;
+const PARTICLE_COUNT = 18;
+const NODE_REPULSION_RADIUS = 170;
+const SPEED_CAP = 1.5;
+const DAMPING = 0.994;
+const PULSE_RING_INTERVAL = 70; // frames between random pulse emissions
+const MAX_PULSE_RINGS = 6;
+const LIGHTNING_INTERVAL = 90; // frames between electricity arcs
+const MAX_LIGHTNINGS = 3;
+const HEX_COUNT = 8; // floating hexagons
 
 // ── Types ──
 interface Node {
@@ -68,10 +71,32 @@ interface PulseRing {
   color: readonly [number, number, number];
 }
 
+interface LightningArc {
+  points: { x: number; y: number }[];
+  color: readonly [number, number, number];
+  life: number;
+  maxLife: number;
+  width: number;
+}
+
+interface FloatingHex {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  rotation: number;
+  rotSpeed: number;
+  color: readonly [number, number, number];
+  phase: number;
+}
+
 interface CanvasState {
   nodes: Node[];
   particles: FlowParticle[];
   pulses: PulseRing[];
+  lightnings: LightningArc[];
+  hexagons: FloatingHex[];
   frame: number;
   tick: number;
   w: number;
@@ -81,6 +106,52 @@ interface CanvasState {
 
 function pickColor(): readonly [number, number, number] {
   return COLORS[Math.floor(Math.random() * COLORS.length)]!;
+}
+
+/** Generate jagged lightning points between two positions */
+function generateLightningPath(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  segments: number
+): { x: number; y: number }[] {
+  const points: { x: number; y: number }[] = [{ x: x1, y: y1 }];
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.sqrt(dx * dx + dy * dy);
+  const jitter = len * 0.15; // jag amplitude
+  for (let i = 1; i < segments; i++) {
+    const t = i / segments;
+    const nx = -dy / len; // normal vector
+    const ny = dx / len;
+    const offset = (Math.random() - 0.5) * 2 * jitter;
+    points.push({
+      x: x1 + dx * t + nx * offset,
+      y: y1 + dy * t + ny * offset,
+    });
+  }
+  points.push({ x: x2, y: y2 });
+  return points;
+}
+
+/** Draw a hexagon at (cx, cy) with given size and rotation */
+function drawHexagon(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  size: number,
+  rotation: number
+): void {
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const angle = rotation + (Math.PI / 3) * i;
+    const x = cx + size * Math.cos(angle);
+    const y = cy + size * Math.sin(angle);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
 }
 
 /**
@@ -99,6 +170,8 @@ export function useCircuitCanvas(
     nodes: [],
     particles: [],
     pulses: [],
+    lightnings: [],
+    hexagons: [],
     frame: 0,
     tick: 0,
     w: 0,
@@ -148,6 +221,24 @@ export function useCircuitCanvas(
       );
     };
 
+    const hexCount = isMobile ? Math.floor(HEX_COUNT * 0.4) : HEX_COUNT;
+    const initHexagons = (): void => {
+      state.hexagons = Array.from(
+        { length: hexCount },
+        (): FloatingHex => ({
+          x: Math.random() * state.w,
+          y: Math.random() * state.h,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: 15 + Math.random() * 35,
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.008,
+          color: pickColor(),
+          phase: Math.random() * Math.PI * 2,
+        })
+      );
+    };
+
     const resize = (): void => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const parent = canvas.parentElement;
@@ -163,6 +254,7 @@ export function useCircuitCanvas(
       if (!state.initialized) {
         initNodes();
         initParticles();
+        initHexagons();
         state.initialized = true;
       }
     };
@@ -173,7 +265,7 @@ export function useCircuitCanvas(
     // ── Animation loop ──
     const loop = (): void => {
       state.tick++;
-      const { w, h, nodes, particles, pulses } = state;
+      const { w, h, nodes, particles, pulses, lightnings, hexagons } = state;
       const mouse = mousePosRef.current;
       const mx = mouse.x * w;
       const my = mouse.y * h;
@@ -300,8 +392,8 @@ export function useCircuitCanvas(
 
         // Glow halo
         ctx.beginPath();
-        ctx.arc(px, py, 8, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha * 0.08})`;
+        ctx.arc(px, py, 12, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha * 0.1})`;
         ctx.fill();
 
         // Trail (small circle behind)
@@ -309,14 +401,20 @@ export function useCircuitCanvas(
         const tx = from.x + (to.x - from.x) * trailT;
         const ty = from.y + (to.y - from.y) * trailT;
         ctx.beginPath();
-        ctx.arc(tx, ty, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha * 0.3})`;
+        ctx.arc(tx, ty, 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha * 0.4})`;
         ctx.fill();
 
         // Bright core
         ctx.beginPath();
-        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha * 0.9})`;
+        ctx.arc(px, py, 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha * 0.95})`;
+        ctx.fill();
+
+        // White-hot center
+        ctx.beginPath();
+        ctx.arc(px, py, 1.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha * 0.6})`;
         ctx.fill();
       }
 
@@ -325,44 +423,79 @@ export function useCircuitCanvas(
         const pulse = 0.5 + Math.sin(n.phase) * 0.5;
         const [cr, cg, cb] = n.color;
 
-        // Glow ring
-        const gr = n.r + 5 + pulse * 5;
+        // Outer glow ring
+        const gr = n.r + 8 + pulse * 8;
         ctx.beginPath();
         ctx.arc(n.x, n.y, gr, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},${0.02 + pulse * 0.04})`;
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${0.02 + pulse * 0.05})`;
+        ctx.fill();
+
+        // Mid glow
+        const mr = n.r + 3 + pulse * 3;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, mr, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${0.06 + pulse * 0.06})`;
         ctx.fill();
 
         // Core
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r + pulse * 0.8, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},${0.5 + pulse * 0.4})`;
+        ctx.arc(n.x, n.y, n.r + pulse * 1, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${0.6 + pulse * 0.4})`;
+        ctx.fill();
+
+        // Hot center
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r * 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${0.15 + pulse * 0.2})`;
         ctx.fill();
       }
 
       // ── Mouse hub — central pulse ring (like logo's CentralHub) ──
       if (!isMobile) {
         const hubPulse = 0.5 + Math.sin(state.tick * 0.04) * 0.5;
+        const hubPulse2 = 0.5 + Math.sin(state.tick * 0.06 + 1) * 0.5;
 
-        // Expanding pulse ring
-        const ringR = 8 + hubPulse * 22;
+        // Outer expanding ring
+        const ringR = 10 + hubPulse * 30;
         ctx.beginPath();
         ctx.arc(mx, my, ringR, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(16,185,129,${(1 - hubPulse) * 0.2})`;
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = `rgba(16,185,129,${(1 - hubPulse) * 0.25})`;
+        ctx.lineWidth = 2;
         ctx.stroke();
 
         // Secondary ring offset
-        const ringR2 = 5 + ((hubPulse + 0.5) % 1) * 18;
+        const ringR2 = 6 + ((hubPulse + 0.5) % 1) * 24;
         ctx.beginPath();
         ctx.arc(mx, my, ringR2, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(139,92,246,${(1 - ((hubPulse + 0.5) % 1)) * 0.12})`;
+        ctx.strokeStyle = `rgba(139,92,246,${(1 - ((hubPulse + 0.5) % 1)) * 0.18})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Third ring — cyan
+        const ringR3 = 4 + hubPulse2 * 18;
+        ctx.beginPath();
+        ctx.arc(mx, my, ringR3, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(6,182,212,${(1 - hubPulse2) * 0.15})`;
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Core glow
+        // Rotating hex ring around mouse
+        drawHexagon(ctx, mx, my, 16 + hubPulse * 8, state.tick * 0.015);
+        ctx.strokeStyle = `rgba(16,185,129,${0.06 + hubPulse * 0.08})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+
+        // Core glow — brighter
+        const coreR = 6 + hubPulse * 4;
         ctx.beginPath();
-        ctx.arc(mx, my, 5 + hubPulse * 3, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(16,185,129,${0.06 + hubPulse * 0.06})`;
+        ctx.arc(mx, my, coreR, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(16,185,129,${0.08 + hubPulse * 0.08})`;
+        ctx.fill();
+
+        // White-hot center
+        ctx.beginPath();
+        ctx.arc(mx, my, 3 + hubPulse * 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${0.05 + hubPulse * 0.07})`;
         ctx.fill();
       }
 
@@ -393,6 +526,123 @@ export function useCircuitCanvas(
         ctx.arc(ring.x, ring.y, ring.r, 0, Math.PI * 2);
         ctx.strokeStyle = `rgba(${cr},${cg},${cb},${alpha})`;
         ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // ── Lightning arcs between nearby nodes ──
+      if (
+        state.tick % LIGHTNING_INTERVAL === 0 &&
+        lightnings.length < MAX_LIGHTNINGS &&
+        nodes.length > 1
+      ) {
+        const srcIdx = Math.floor(Math.random() * nodes.length);
+        const src = nodes[srcIdx]!;
+        // Find a nearby target
+        let bestIdx = -1;
+        let bestDist = Infinity;
+        for (let j = 0; j < nodes.length; j++) {
+          if (j === srcIdx) continue;
+          const tgt = nodes[j]!;
+          const dx = src.x - tgt.x;
+          const dy = src.y - tgt.y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < CONNECTION_DIST * 1.8 && d < bestDist) {
+            bestDist = d;
+            bestIdx = j;
+          }
+        }
+        if (bestIdx >= 0) {
+          const tgt = nodes[bestIdx]!;
+          lightnings.push({
+            points: generateLightningPath(
+              src.x,
+              src.y,
+              tgt.x,
+              tgt.y,
+              6 + Math.floor(Math.random() * 5)
+            ),
+            color: pickColor(),
+            life: 0,
+            maxLife: 12 + Math.floor(Math.random() * 10),
+            width: 1 + Math.random() * 1.5,
+          });
+        }
+      }
+
+      for (let i = lightnings.length - 1; i >= 0; i--) {
+        const arc = lightnings[i]!;
+        arc.life++;
+        if (arc.life >= arc.maxLife) {
+          lightnings.splice(i, 1);
+          continue;
+        }
+        const progress = arc.life / arc.maxLife;
+        const alpha = progress < 0.2 ? progress / 0.2 : 1 - (progress - 0.2) / 0.8;
+        const [cr, cg, cb] = arc.color;
+
+        // Outer glow
+        ctx.save();
+        ctx.lineWidth = arc.width + 4;
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},${alpha * 0.08})`;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        for (let p = 0; p < arc.points.length; p++) {
+          const pt = arc.points[p]!;
+          if (p === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+
+        // Bright core
+        ctx.lineWidth = arc.width;
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},${alpha * 0.7})`;
+        ctx.beginPath();
+        for (let p = 0; p < arc.points.length; p++) {
+          const pt = arc.points[p]!;
+          if (p === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+
+        // Inner white-hot core
+        ctx.lineWidth = Math.max(0.5, arc.width * 0.3);
+        ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.5})`;
+        ctx.beginPath();
+        for (let p = 0; p < arc.points.length; p++) {
+          const pt = arc.points[p]!;
+          if (p === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // ── Floating hexagons ──
+      for (const hex of hexagons) {
+        hex.x += hex.vx;
+        hex.y += hex.vy;
+        hex.rotation += hex.rotSpeed;
+        hex.phase += 0.02;
+
+        // Wrap edges
+        if (hex.x < -hex.size * 2) hex.x = w + hex.size * 2;
+        else if (hex.x > w + hex.size * 2) hex.x = -hex.size * 2;
+        if (hex.y < -hex.size * 2) hex.y = h + hex.size * 2;
+        else if (hex.y > h + hex.size * 2) hex.y = -hex.size * 2;
+
+        const pulse = 0.3 + Math.sin(hex.phase) * 0.2;
+        const [cr, cg, cb] = hex.color;
+
+        // Glow fill
+        drawHexagon(ctx, hex.x, hex.y, hex.size, hex.rotation);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${pulse * 0.03})`;
+        ctx.fill();
+
+        // Wireframe stroke
+        drawHexagon(ctx, hex.x, hex.y, hex.size, hex.rotation);
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},${pulse * 0.15})`;
+        ctx.lineWidth = 0.8;
         ctx.stroke();
       }
 
