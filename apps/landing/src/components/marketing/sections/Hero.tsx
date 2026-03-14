@@ -189,15 +189,6 @@ const Hero = memo(function Hero(): React.JSX.Element {
         {/* Interactive circuit network canvas (logo-style) */}
         <canvas ref={canvasRef} className="hero-pro__circuit-canvas" aria-hidden="true" />
 
-        {/* Grid overlay */}
-        <div className="hero-pro__grid" />
-
-        {/* Floating particles */}
-        <div className="hero-pro__particles" />
-
-        {/* Scanlines */}
-        <div className="hero-pro__scanlines" />
-
         {/* Bottom fade for smooth transition */}
         <div className="hero-pro__fade" />
       </motion.div>
