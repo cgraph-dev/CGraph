@@ -77,7 +77,7 @@ export function CommentHeader({
             )}
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-400">
-            <span>{comment.author.karma} karma</span>
+            <span>{comment.author.pulse} pulse</span>
             <span>•</span>
             <span>{formatTimeAgo(comment.createdAt)}</span>
             {comment.isEdited && (

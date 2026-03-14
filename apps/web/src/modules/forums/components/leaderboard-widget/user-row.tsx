@@ -7,7 +7,7 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 import { CheckBadgeIcon } from '@heroicons/react/24/solid';
 
 import type { UserRowProps } from './types';
-import { formatKarma, getRankIcon, deriveUserDisplayInfo } from './utils';
+import { formatPulse, getRankIcon, deriveUserDisplayInfo } from './utils';
 
 /**
  * unknown for the forums module.
@@ -22,7 +22,7 @@ export function UserRow({
   displayName,
   avatarUrl,
   avatarBorderId,
-  karma,
+  pulse,
   isVerified,
 }: UserRowProps) {
   const { name, handle, initial } = deriveUserDisplayInfo(displayName, username, userId);
@@ -66,7 +66,7 @@ export function UserRow({
         <span
           className={`text-sm font-semibold ${rank <= 3 ? 'text-yellow-400' : 'text-gray-300'}`}
         >
-          {formatKarma(karma)}
+          {formatPulse(pulse)}
         </span>
       </div>
     </Link>

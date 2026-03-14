@@ -200,8 +200,14 @@ export function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfil
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     commentCount: (user.comment_count as number) || 0, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    reputation: (user.karma as number) || (user.reputation as number) || 0, // type assertion: API response field
+    reputation:
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      (user.pulse as number) ||
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      (user.karma as number) ||
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      (user.reputation as number) ||
+      0,
 
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     reputationPositive: (user.reputation_positive as number) || 0, // type assertion: API response field

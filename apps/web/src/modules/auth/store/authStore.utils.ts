@@ -72,7 +72,7 @@ export function mapUserFromApi(apiUser: Record<string, unknown>): User {
     statusMessage: (apiUser.custom_status as string | null) || null, // type assertion: API field narrowed from unknown
 
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    karma: (apiUser.karma as number) || 0, // type assertion: API field narrowed from unknown
+    pulse: (apiUser.karma as number) || 0, // type assertion: API field narrowed from unknown
 
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     isVerified: (apiUser.is_verified as boolean) || false, // type assertion: API field narrowed from unknown

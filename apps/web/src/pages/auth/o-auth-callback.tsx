@@ -117,7 +117,7 @@ export function OAuthCallbackPage() {
               twoFactorEnabled: response.user.totp_enabled,
               status: response.user.status,
               statusMessage: response.user.custom_status,
-              karma: 0,
+              pulse: 0,
               isVerified: response.user.is_verified,
               isPremium: response.user.is_premium,
               isAdmin: false,

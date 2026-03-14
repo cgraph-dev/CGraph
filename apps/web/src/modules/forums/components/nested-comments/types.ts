@@ -12,7 +12,7 @@ export interface CommentAuthor {
   avatarUrl: string | null;
   avatarBorderId?: string | null;
   avatar_border_id?: string | null;
-  karma: number;
+  pulse: number;
   isVerified: boolean;
   badges?: string[];
 }

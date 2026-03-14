@@ -29,7 +29,7 @@ const mockUser: User = {
   twoFactorEnabled: false,
   status: 'online',
   statusMessage: null,
-  karma: 100,
+  pulse: 100,
   isVerified: true,
   isPremium: true,
   isAdmin: false,

@@ -1,7 +1,7 @@
 /**
- * Karma Settings — Reputation & Ranks category
+ * Pulse Settings — Reputation & Ranks category
  *
- * Karma name, upvote/downvote labels, rank thresholds,
+ * Pulse name, upvote/downvote labels, rank thresholds,
  * rank image upload, show reputation toggle.
  *
  * @module modules/forums/components/customization-center
@@ -11,23 +11,23 @@ import { useState, useCallback, useEffect } from 'react';
 import { CheckIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import type { RankThreshold } from '@cgraph/shared-types';
 
-interface KarmaSettingsProps {
+interface PulseSettingsProps {
   options: Record<string, unknown>;
   onSave: (changes: Record<string, unknown>) => void;
   saving: boolean;
 }
 
 const DEFAULT_THRESHOLDS: RankThreshold[] = [
-  { name: 'Newcomer', minKarma: 0, imageUrl: '' },
-  { name: 'Member', minKarma: 10, imageUrl: '' },
-  { name: 'Regular', minKarma: 50, imageUrl: '' },
-  { name: 'Veteran', minKarma: 200, imageUrl: '' },
-  { name: 'Elite', minKarma: 500, imageUrl: '' },
+  { name: 'Newcomer', minPulse: 0, imageUrl: '' },
+  { name: 'Member', minPulse: 10, imageUrl: '' },
+  { name: 'Regular', minPulse: 50, imageUrl: '' },
+  { name: 'Veteran', minPulse: 200, imageUrl: '' },
+  { name: 'Elite', minPulse: 500, imageUrl: '' },
 ];
 
 /** Description. */
-/** Karma Settings component. */
-export function KarmaSettings({ options, onSave, saving }: KarmaSettingsProps) {
+/** Pulse Settings component. */
+export function PulseSettings({ options, onSave, saving }: PulseSettingsProps) {
   const [draft, setDraft] = useState<Record<string, unknown>>({});
   const [thresholds, setThresholds] = useState<RankThreshold[]>(DEFAULT_THRESHOLDS);
 
@@ -40,7 +40,7 @@ export function KarmaSettings({ options, onSave, saving }: KarmaSettingsProps) {
           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           name: (t.name as string) ?? '',
           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-          minKarma: (t.min_karma as number) ?? (t.minKarma as number) ?? 0,
+          minPulse: (t.min_karma as number) ?? (t.minPulse as number) ?? 0,
           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           imageUrl: (t.image_url as string) ?? (t.imageUrl as string) ?? '',
         }))
@@ -64,7 +64,7 @@ export function KarmaSettings({ options, onSave, saving }: KarmaSettingsProps) {
       ...prev,
       {
         name: '',
-        minKarma: prev.length > 0 ? (prev[prev.length - 1]?.minKarma ?? 0) + 100 : 0,
+        minPulse: prev.length > 0 ? (prev[prev.length - 1]?.minPulse ?? 0) + 100 : 0,
         imageUrl: '',
       },
     ]);
@@ -79,7 +79,7 @@ export function KarmaSettings({ options, onSave, saving }: KarmaSettingsProps) {
       ...draft,
       rank_thresholds: thresholds.map((t) => ({
         name: t.name,
-        min_karma: t.minKarma,
+        min_karma: t.minPulse,
         image_url: t.imageUrl,
       })),
     });
@@ -87,16 +87,16 @@ export function KarmaSettings({ options, onSave, saving }: KarmaSettingsProps) {
 
   return (
     <div className="space-y-6">
-      {/* Karma Name & Labels */}
+      {/* Pulse Name & Labels */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div>
-          <label className="mb-1 block text-xs text-white/50">Karma Name</label>
+          <label className="mb-1 block text-xs text-white/50">Pulse Name</label>
           <input
             type="text"
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            value={(draft.karma_name as string) ?? 'Karma'}
+            value={(draft.karma_name as string) ?? 'Pulse'}
             onChange={(e) => updateField('karma_name', e.target.value)}
-            placeholder="Karma"
+            placeholder="Pulse"
             className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
           />
         </div>
@@ -160,11 +160,11 @@ export function KarmaSettings({ options, onSave, saving }: KarmaSettingsProps) {
                 />
                 <input
                   type="number"
-                  value={threshold.minKarma}
+                  value={threshold.minPulse}
                   onChange={(e) =>
-                    updateThreshold(index, 'minKarma', parseInt(e.target.value) || 0)
+                    updateThreshold(index, 'minPulse', parseInt(e.target.value) || 0)
                   }
-                  placeholder="Min karma"
+                  placeholder="Min pulse"
                   className="rounded border border-white/10 bg-white/5 px-2 py-1 text-sm text-white"
                 />
                 <input
@@ -208,4 +208,4 @@ export function KarmaSettings({ options, onSave, saving }: KarmaSettingsProps) {
   );
 }
 
-export default KarmaSettings;
+export default PulseSettings;

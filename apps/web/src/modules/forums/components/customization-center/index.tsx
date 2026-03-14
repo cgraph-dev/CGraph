@@ -31,7 +31,7 @@ import { HeaderBrandingEditor } from './header-branding-editor';
 import { WidgetConfigurator } from './widget-configurator';
 import { CssEditor } from './css-editor';
 import { CustomFieldsEditor } from './custom-fields-editor';
-import { KarmaSettings } from './karma-settings';
+import { PulseSettings } from './pulse-settings';
 import type { ForumCustomizationOptions, CustomizationCategory } from '@cgraph/shared-types';
 
 // =============================================================================
@@ -95,7 +95,7 @@ const TABS: TabConfig[] = [
     id: 'reputation_and_ranks',
     label: 'Reputation & Ranks',
     icon: TrophyIcon,
-    description: 'Karma names, rank thresholds, images',
+    description: 'Pulse names, rank thresholds, images',
   },
   {
     id: 'custom_css_and_advanced',
@@ -340,7 +340,7 @@ function CategoryEditor({ category, options, forumId, onSave, saving }: Category
     case 'custom_fields':
       return <CustomFieldsEditor forumId={forumId} onSave={onSave} saving={saving} />;
     case 'reputation_and_ranks':
-      return <KarmaSettings options={categoryOptions} onSave={onSave} saving={saving} />;
+      return <PulseSettings options={categoryOptions} onSave={onSave} saving={saving} />;
     case 'custom_css_and_advanced':
       return <CssEditor options={categoryOptions} onSave={onSave} saving={saving} />;
     default:

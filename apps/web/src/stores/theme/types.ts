@@ -46,7 +46,7 @@ export interface ProfileCardConfig {
   layout: string;
   showLevel: boolean;
   showXp: boolean;
-  showKarma: boolean;
+  showPulse: boolean;
   showStreak: boolean;
   showBadges: boolean;
   maxBadges: number;

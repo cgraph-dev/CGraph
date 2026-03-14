@@ -121,8 +121,8 @@ export const LottieBorderRenderer = memo(function LottieBorderRenderer({
 
     async function init() {
       try {
-        // Dynamically import lottie-web (light build)
-        const lottie = (await import('lottie-web/build/player/lottie_light')).default;
+        // Dynamically import full lottie-web (supports embedded image assets)
+        const lottie = (await import('lottie-web')).default;
         if (cancelled) return;
 
         const anim = lottie.loadAnimation({

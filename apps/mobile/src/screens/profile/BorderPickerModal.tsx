@@ -1,7 +1,7 @@
 /**
- * BorderPickerModal — grid of all 42 borders, grouped by rarity.
+ * BorderPickerModal — grid of all borders, grouped by rarity.
  *
- * Each border renders an AvatarBorder at 64px, animated.
+ * Each border renders a colored gradient ring at 64px.
  * Tap to equip. Current equipped border gets a highlight ring.
  *
  * @module profile/screens/BorderPickerModal
@@ -20,11 +20,11 @@ import {
 } from 'react-native';
 import {
   getBordersByRarity,
+  BORDER_THEME_PALETTES,
   type BorderRarity,
   type BorderRegistryEntry,
 } from '@cgraph/animation-constants';
 import { useThemeStore } from '@/stores';
-// TODO(phase-26): Rewire — gamification components deleted
 
 interface BorderPickerModalProps {
   /** Whether the modal is visible */
@@ -58,9 +58,54 @@ const RARITY_COLORS: Record<BorderRarity, string> = {
 };
 
 const PREVIEW_SIZE = 64;
+const BORDER_WIDTH = 3;
 
 /**
- * Modal showing all 42 borders in a grid, grouped by rarity tier.
+ * Renders a colored gradient ring preview for a border entry.
+ */
+function BorderPreview({
+  border,
+  isEquipped,
+}: {
+  border: BorderRegistryEntry;
+  isEquipped: boolean;
+}) {
+  const palette = BORDER_THEME_PALETTES[border.theme];
+  const primary = palette[0] ?? '#6366f1';
+  const secondary = palette[1] ?? primary;
+
+  return (
+    <View
+      style={[
+        styles.previewOuter,
+        {
+          borderColor: primary,
+          shadowColor: isEquipped ? primary : 'transparent',
+          shadowOpacity: isEquipped ? 0.6 : 0,
+          shadowRadius: isEquipped ? 8 : 0,
+        },
+      ]}
+    >
+      {/* Inner gradient ring using layered borders */}
+      <View
+        style={[
+          styles.previewInnerRing,
+          {
+            borderColor: secondary,
+          },
+        ]}
+      >
+        {/* Avatar placeholder center */}
+        <View style={styles.previewCenter}>
+          <Text style={styles.previewEmoji}>👤</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+/**
+ * Modal showing all borders in a grid, grouped by rarity tier.
  */
 export function BorderPickerModal({
   visible,
@@ -84,8 +129,7 @@ export function BorderPickerModal({
           onPress={() => onSelect(border.id)}
           activeOpacity={0.7}
         >
-          {/* TODO(phase-26): Rewire — gamification components deleted (AvatarBorder) */}
-          <View style={styles.previewAvatar} />
+          <BorderPreview border={border} isEquipped={isEquipped} />
           <Text style={[styles.borderName, { color: colors.text }]} numberOfLines={1}>
             {border.name}
           </Text>
@@ -201,11 +245,33 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     width: 96,
   },
-  previewAvatar: {
+  previewOuter: {
     width: PREVIEW_SIZE,
     height: PREVIEW_SIZE,
     borderRadius: PREVIEW_SIZE / 2,
+    borderWidth: BORDER_WIDTH,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
+  },
+  previewInnerRing: {
+    width: PREVIEW_SIZE - BORDER_WIDTH * 2 - 2,
+    height: PREVIEW_SIZE - BORDER_WIDTH * 2 - 2,
+    borderRadius: (PREVIEW_SIZE - BORDER_WIDTH * 2 - 2) / 2,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  previewCenter: {
+    width: PREVIEW_SIZE - BORDER_WIDTH * 2 - 8,
+    height: PREVIEW_SIZE - BORDER_WIDTH * 2 - 8,
+    borderRadius: (PREVIEW_SIZE - BORDER_WIDTH * 2 - 8) / 2,
     backgroundColor: '#374151',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  previewEmoji: {
+    fontSize: 20,
   },
   borderName: {
     fontSize: 10,

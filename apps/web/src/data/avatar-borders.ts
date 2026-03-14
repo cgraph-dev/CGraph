@@ -875,6 +875,52 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     lottieUrl: '/lottie/borders/anime_mythic_01.json',
     lottieConfig: { loop: true, speed: 1.3 },
   },
+
+  // ─── SPECIAL (2) ─── real animated Lottie borders ──────────────────
+  {
+    id: 'border_special_avatar_frame',
+    type: 'lottie',
+    name: 'Avatar Frame',
+    description: 'A premium animated avatar frame with shimmering stars and sweep effects.',
+    theme: 'cosmic',
+    rarity: 'mythic',
+    unlockType: 'event',
+    unlockRequirement: {
+      type: 'event',
+      value: 'avatar_frame_special',
+      description: 'Obtain the Avatar Frame',
+    },
+    primaryColor: '#c0f0ff',
+    secondaryColor: '#7b2fff',
+    accentColor: '#ffffff',
+    particleCount: 16,
+    isPremium: true,
+    tags: ['special', 'animated', 'mythic', 'frame', 'avatar'],
+    lottieUrl: '/lottie/borders/avatar-frame.json',
+    lottieConfig: { loop: true, speed: 1.0 },
+  },
+  {
+    id: 'border_special_profile_frame',
+    type: 'lottie',
+    name: 'Profile Frame',
+    description: 'An elegant animated profile frame with twinkling stars and light sweep.',
+    theme: 'cosmic',
+    rarity: 'mythic',
+    unlockType: 'event',
+    unlockRequirement: {
+      type: 'event',
+      value: 'profile_frame_special',
+      description: 'Obtain the Profile Frame',
+    },
+    primaryColor: '#ffffff',
+    secondaryColor: '#c0f0ff',
+    accentColor: '#7b2fff',
+    particleCount: 16,
+    isPremium: true,
+    tags: ['special', 'animated', 'mythic', 'frame', 'profile'],
+    lottieUrl: '/lottie/borders/profile-frame.json',
+    lottieConfig: { loop: true, speed: 1.0 },
+  },
 ];
 
 // ==================== HELPER FUNCTIONS ====================

@@ -75,7 +75,7 @@ export const DetailedLayout = memo(function DetailedLayout({
       {/* Stats row */}
       {config.showStats && (
         <div className="grid grid-cols-4 gap-2 text-center">
-          {config.showKarma && user.topCommunities?.[0] && (
+          {config.showPulse && user.topCommunities?.[0] && (
             <StatItem
               label="Pulse"
               value={user.topCommunities[0].score}

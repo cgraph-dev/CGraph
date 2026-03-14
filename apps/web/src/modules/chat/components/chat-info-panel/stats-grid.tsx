@@ -1,19 +1,19 @@
 /**
- * StatsGrid - karma and streak stats display
+ * StatsGrid - pulse and streak stats display
  */
 
 import { motion } from 'motion/react';
 import { GlassCard } from '@/shared/components/ui';
 
 interface StatsGridProps {
-  karma: number;
+  pulse: number;
   streak: number;
 }
 
 const STATS_CONFIG = [
   {
-    key: 'karma',
-    label: 'Karma',
+    key: 'pulse',
+    label: 'Pulse',
     icon: '🏆',
     color: 'from-yellow-500 to-orange-500',
   },
@@ -31,8 +31,8 @@ const STATS_CONFIG = [
 /**
  * Stats Grid component.
  */
-export function StatsGrid({ karma, streak }: StatsGridProps) {
-  const values = { karma, streak };
+export function StatsGrid({ pulse, streak }: StatsGridProps) {
+  const values = { pulse, streak };
 
   return (
     <div className="grid grid-cols-2 gap-2">

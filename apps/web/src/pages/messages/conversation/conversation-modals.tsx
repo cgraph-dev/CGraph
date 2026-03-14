@@ -213,7 +213,7 @@ export function InfoPanel({
             xp: (user?.xp as number) ?? 0, // safe downcast – structural boundary
 
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            karma: (user?.karma as number) ?? 0, // safe downcast – structural boundary
+            pulse: (user?.pulse as number) ?? 0, // safe downcast – structural boundary
 
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             streak: (user?.streak as number) ?? 0, // safe downcast – structural boundary

@@ -64,7 +64,7 @@ describe('FullProfileCard', () => {
     friendCount: 42,
     postCount: 100,
     level: 10,
-    karma: 1500,
+    pulse: 1500,
     xp: 5000,
     xpToNextLevel: 10000,
     streak: 7,

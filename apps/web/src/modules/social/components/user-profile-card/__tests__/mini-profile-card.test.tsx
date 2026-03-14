@@ -52,7 +52,7 @@ describe('MiniProfileCard', () => {
     level: 5,
     xp: 0,
     xpToNextLevel: 1000,
-    karma: 0,
+    pulse: 0,
     streak: 0,
     avatarBorderId: undefined,
   };

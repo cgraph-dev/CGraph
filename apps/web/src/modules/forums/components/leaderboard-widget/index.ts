@@ -6,7 +6,7 @@ export { GlobalLeaderboardWidget } from './global-leaderboard-widget';
 export { LeaderboardSidebar } from './leaderboard-sidebar';
 export { default } from './leaderboard-sidebar';
 export { UserRow } from './user-row';
-export { formatKarma, getRankIcon, deriveUserDisplayInfo } from './utils';
+export { formatPulse, getRankIcon, deriveUserDisplayInfo } from './utils';
 
 export type {
   ContributorUser,

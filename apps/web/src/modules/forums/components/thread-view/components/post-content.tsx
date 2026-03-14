@@ -125,7 +125,7 @@ export function PostContent({
             )}
             {post.author.reputation !== undefined && (
               <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-xs text-purple-400">
-                {post.author.reputation} karma
+                {post.author.reputation} pulse
               </span>
             )}
           </div>

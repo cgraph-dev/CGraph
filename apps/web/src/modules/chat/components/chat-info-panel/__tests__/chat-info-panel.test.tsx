@@ -85,7 +85,7 @@ vi.mock('@/stores/theme', () => ({
         layout: 'default',
         showLevel: true,
         showXp: true,
-        showKarma: true,
+        showPulse: true,
         showStreak: true,
         showBadges: true,
         maxBadges: 6,
@@ -156,7 +156,7 @@ vi.mock('@/stores/theme', () => ({
       layout: 'default',
       showLevel: true,
       showXp: true,
-      showKarma: true,
+      showPulse: true,
       showStreak: true,
       showBadges: true,
       maxBadges: 6,
@@ -242,9 +242,9 @@ vi.mock('../profile-section', () => ({
 }));
 
 vi.mock('../stats-grid', () => ({
-  StatsGrid: ({ karma, streak }: { karma: number; streak: number }) => (
+  StatsGrid: ({ pulse, streak }: { pulse: number; streak: number }) => (
     <div data-testid="stats-grid">
-      karma:{karma} streak:{streak}
+      pulse:{pulse} streak:{streak}
     </div>
   ),
 }));
@@ -291,7 +291,7 @@ const defaultUser = {
   avatarUrl: 'https://example.com/avatar.png',
   level: 5,
   xp: 1200,
-  karma: 42,
+  pulse: 42,
   streak: 7,
   onlineStatus: 'online' as const,
   bio: 'Hello world',
@@ -325,9 +325,9 @@ describe('ChatInfoPanel', () => {
     expect(screen.getByTestId('profile-section')).toHaveTextContent('Test User');
   });
 
-  it('renders stats grid with karma and streak', () => {
+  it('renders stats grid with pulse and streak', () => {
     render(<ChatInfoPanel {...defaultProps} />);
-    expect(screen.getByTestId('stats-grid')).toHaveTextContent('karma:42 streak:7');
+    expect(screen.getByTestId('stats-grid')).toHaveTextContent('pulse:42 streak:7');
   });
 
   it('renders bio when present', () => {

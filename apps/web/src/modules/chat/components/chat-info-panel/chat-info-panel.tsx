@@ -92,7 +92,7 @@ export default function ChatInfoPanel({
         <ProfileSection user={user} />
 
         {/* Stats Grid */}
-        <StatsGrid karma={user.karma || 0} streak={user.streak || 0} />
+        <StatsGrid pulse={user.pulse || 0} streak={user.streak || 0} />
 
         {/* Bio */}
         {user.bio && (

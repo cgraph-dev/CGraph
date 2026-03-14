@@ -9,13 +9,13 @@ export interface ContributorUser {
   avatarUrl: string | null;
   avatarBorderId?: string | null;
   isVerified: boolean;
-  karma: number;
+  pulse: number;
 }
 
 export interface Contributor {
   rank: number;
   user: ContributorUser;
-  forumKarma: number;
+  forumPulse: number;
 }
 
 export interface LeaderboardUser {
@@ -25,7 +25,7 @@ export interface LeaderboardUser {
   displayName: string | null;
   avatarUrl: string | null;
   avatarBorderId?: string | null;
-  karma: number;
+  pulse: number;
   isVerified: boolean;
 }
 
@@ -38,7 +38,7 @@ export interface UserRowProps {
   displayName: string | null;
   avatarUrl: string | null;
   avatarBorderId?: string | null;
-  karma: number;
+  pulse: number;
   isVerified?: boolean;
 }
 

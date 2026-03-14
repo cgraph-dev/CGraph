@@ -27,7 +27,7 @@ const mockUser = {
   avatarUrl: 'https://example.com/avatar.jpg',
   isVerified: true,
   userIdDisplay: '#1234',
-  karma: 5000,
+  pulse: 5000,
 };
 
 describe('UserIdBadge', () => {
@@ -68,15 +68,15 @@ describe('UserIdBadge', () => {
     expect(screen.getByText('T')).toBeInTheDocument();
   });
 
-  it('renders karma count when karma > 0', () => {
+  it('renders pulse count when pulse > 0', () => {
     render(<UserIdBadge user={mockUser as never} />);
     expect(screen.getByText(/5,000/)).toBeInTheDocument();
   });
 
-  it('does not render karma when karma is 0', () => {
-    const noKarma = { ...mockUser, karma: 0 };
-    render(<UserIdBadge user={noKarma as never} />);
-    expect(screen.queryByText(/karma/)).not.toBeInTheDocument();
+  it('does not render pulse when pulse is 0', () => {
+    const noPulse = { ...mockUser, pulse: 0 };
+    render(<UserIdBadge user={noPulse as never} />);
+    expect(screen.queryByText(/pulse/)).not.toBeInTheDocument();
   });
 
   it('renders fallback for null user', () => {

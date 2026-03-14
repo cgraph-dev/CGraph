@@ -2,7 +2,7 @@
 /**
  * ForumLeaderboardWidget - Forum-specific leaderboard showing top contributors
  *
- * Updated to use unified scoring (karma + XP), rank badges, and period selector.
+ * Updated to use unified scoring (pulse + XP), rank badges, and period selector.
  */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -61,9 +61,9 @@ export function ForumLeaderboardWidget({
                 avatarUrl: userObj.avatar_url,
                 avatarBorderId: userObj.avatar_border_id || userObj.avatarBorderId || null,
                 isVerified: userObj.is_verified,
-                karma: userObj.karma,
+                pulse: userObj.karma,
               },
-              forumKarma: c.forum_karma ?? c.score ?? 0,
+              forumPulse: c.forum_karma ?? c.score ?? 0,
               rank_info: rankObj
                 ? {
                     name: rankObj.name as string,
@@ -174,7 +174,7 @@ export function ForumLeaderboardWidget({
                 displayName={contributor.user.displayName}
                 avatarUrl={contributor.user.avatarUrl}
                 avatarBorderId={contributor.user.avatarBorderId}
-                karma={contributor.forumKarma}
+                pulse={contributor.forumPulse}
                 isVerified={contributor.user.isVerified}
               />
             </div>

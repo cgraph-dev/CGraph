@@ -185,7 +185,7 @@ export function BadgeManager({ forumId, onSave, saving }: BadgeManagerProps) {
               >
                 <option value="manual">Manual</option>
                 <option value="post_count">Post Count</option>
-                <option value="karma">Karma Threshold</option>
+                <option value="karma">Pulse Threshold</option>
                 <option value="registration_age">Registration Age</option>
               </select>
             </div>

@@ -27,7 +27,7 @@ export interface ForumLeaderboardState {
   myRank: MyRankResponse | null;
   ranks: ForumRank[];
   period: LeaderboardPeriod;
-  karmaLabel: string;
+  pulseLabel: string;
   isLoading: boolean;
   isLoadingMyRank: boolean;
   isLoadingRanks: boolean;
@@ -53,7 +53,7 @@ const initialState = {
   ranks: [] as ForumRank[],
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   period: 'all_time' as LeaderboardPeriod,
-  karmaLabel: 'Karma',
+  pulseLabel: 'Pulse',
   isLoading: false,
   isLoadingMyRank: false,
   isLoadingRanks: false,
@@ -100,7 +100,7 @@ export const useForumLeaderboardStore = create<ForumLeaderboardState>((set, get)
             isPremium: user.is_premium ?? false,
           },
           score: e.score ?? 0,
-          forumKarma: e.forum_karma ?? 0,
+          forumPulse: e.forum_karma ?? 0,
           xp: e.xp ?? 0,
           rank: rank
             ? {
@@ -188,7 +188,7 @@ export const useForumLeaderboardStore = create<ForumLeaderboardState>((set, get)
         myRank: {
           position: d.position,
           score: d.score,
-          forumKarma: d.forum_karma ?? 0,
+          forumPulse: d.forum_karma ?? 0,
           xp: d.xp ?? 0,
           rank: mapRank(rank),
           progress: {
@@ -244,7 +244,7 @@ export const useForumLeaderboardStore = create<ForumLeaderboardState>((set, get)
       }));
 
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      set({ ranks, karmaLabel: (data.karma_label as string) ?? 'Karma', isLoadingRanks: false });
+      set({ ranks, pulseLabel: (data.karma_label as string) ?? 'Pulse', isLoadingRanks: false });
     } catch (err) {
       logger.error('Failed to fetch ranks:', err);
       set({ isLoadingRanks: false });

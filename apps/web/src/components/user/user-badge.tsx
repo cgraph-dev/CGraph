@@ -15,7 +15,7 @@ interface UserBadgeProps {
   avatarBorderId?: string | null;
   isVerified?: boolean;
   isPremium?: boolean;
-  karma?: number;
+  pulse?: number;
   size?: 'sm' | 'md' | 'lg';
   showId?: boolean;
   interactive?: boolean;
@@ -29,7 +29,7 @@ interface UserBadgeProps {
  * - Unique user ID display (#0001)
  * - Optional username (can be null for new users)
  * - Verification and premium badges
- * - Karma display
+ * - Pulse display
  * - Smooth hover animations
  */
 export default function UserBadge({
@@ -41,7 +41,7 @@ export default function UserBadge({
   avatarBorderId,
   isVerified = false,
   isPremium = false,
-  karma = 0,
+  pulse = 0,
   size = 'md',
   showId = true,
   interactive = true,
@@ -127,10 +127,10 @@ export default function UserBadge({
               {userIdDisplay}
             </span>
           )}
-          {karma > 0 && (
+          {pulse > 0 && (
             <span className={`${s.id} flex items-center gap-0.5 text-amber-400`}>
               <ShieldCheckIcon className="h-3 w-3" />
-              {karma.toLocaleString()}
+              {pulse.toLocaleString()}
             </span>
           )}
         </div>

@@ -159,7 +159,7 @@ export interface ConversationParticipant {
     avatarBorderId?: string | null;
     level?: number;
     xp?: number;
-    karma?: number;
+    pulse?: number;
     streak?: number;
     bio?: string | null;
     badges?: string[];

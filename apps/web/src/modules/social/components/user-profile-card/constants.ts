@@ -20,7 +20,7 @@ export const DEFAULT_PLACEHOLDER_USER = {
   level: 0,
   xp: 0,
   xpToNextLevel: 100,
-  karma: 0,
+  pulse: 0,
   streak: 0,
   isOnline: false,
 } as const;

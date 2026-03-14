@@ -47,7 +47,7 @@ const mockApiUser = {
   totp_enabled: false,
   status: 'online',
   custom_status: null,
-  karma: 100,
+  pulse: 100,
   is_verified: true,
   is_premium: false,
   is_admin: false,
@@ -171,7 +171,7 @@ describe('AuthStore', () => {
       expect(u.id).toBe('user-1');
       expect(u.uid).toBe('1234567890');
       expect(u.userId).toBe(42);
-      expect(u.karma).toBe(100);
+      expect(u.pulse).toBe(100);
       expect(u.level).toBe(5);
       expect(u.xp).toBe(1200);
       expect(u.twoFactorEnabled).toBe(false);

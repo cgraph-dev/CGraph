@@ -73,7 +73,7 @@ export interface ConversationModalsProps {
       avatarUrl?: string | null;
       level?: number;
       xp?: number;
-      karma?: number;
+      pulse?: number;
       streak?: number;
       lastSeenAt?: string | null;
       bio?: string | null;
@@ -265,7 +265,7 @@ export function ConversationModals({
               avatarUrl: otherParticipant?.user?.avatarUrl ?? undefined,
               level: otherParticipant?.user?.level ?? 1,
               xp: otherParticipant?.user?.xp ?? 0,
-              karma: otherParticipant?.user?.karma ?? 0,
+              pulse: otherParticipant?.user?.pulse ?? 0,
               streak: otherParticipant?.user?.streak ?? 0,
               onlineStatus: isOtherUserOnline ? 'online' : 'offline',
               lastSeenAt: otherParticipant?.user?.lastSeenAt ?? undefined,

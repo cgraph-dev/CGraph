@@ -23,7 +23,7 @@ const mockApiUser = {
   totp_enabled: false,
   status: 'online',
   custom_status: 'Hello world',
-  karma: 100,
+  pulse: 100,
   is_verified: true,
   is_premium: false,
   is_admin: false,
@@ -65,7 +65,7 @@ describe('authStore', () => {
       expect(user.twoFactorEnabled).toBe(false);
       expect(user.status).toBe('online');
       expect(user.statusMessage).toBe('Hello world');
-      expect(user.karma).toBe(100);
+      expect(user.pulse).toBe(100);
       expect(user.isVerified).toBe(true);
       expect(user.isPremium).toBe(false);
       expect(user.isAdmin).toBe(false);
@@ -93,7 +93,7 @@ describe('authStore', () => {
       expect(user.avatarUrl).toBeNull();
       expect(user.twoFactorEnabled).toBe(false);
       expect(user.status).toBe('offline');
-      expect(user.karma).toBe(0);
+      expect(user.pulse).toBe(0);
       expect(user.level).toBe(1);
       expect(user.xp).toBe(0);
       expect(user.coins).toBe(0);
@@ -253,7 +253,7 @@ describe('authStore', () => {
         xp: 5000,
         coins: 1000,
         streak: 30,
-        karma: 500,
+        pulse: 500,
         title: 'Legend',
       };
 
@@ -263,7 +263,7 @@ describe('authStore', () => {
       expect(user.xp).toBe(5000);
       expect(user.coins).toBe(1000);
       expect(user.streak).toBe(30);
-      expect(user.karma).toBe(500);
+      expect(user.pulse).toBe(500);
       expect(user.title).toBe('Legend');
     });
 
@@ -280,7 +280,7 @@ describe('authStore', () => {
       expect(user.xp).toBe(0);
       expect(user.coins).toBe(0);
       expect(user.streak).toBe(0);
-      expect(user.karma).toBe(0);
+      expect(user.pulse).toBe(0);
     });
   });
 });

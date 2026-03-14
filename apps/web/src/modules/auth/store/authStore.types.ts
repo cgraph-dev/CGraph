@@ -25,7 +25,7 @@ export interface User {
   twoFactorEnabled: boolean;
   status: 'online' | 'idle' | 'dnd' | 'offline';
   statusMessage: string | null;
-  karma: number;
+  pulse: number;
   isVerified: boolean;
   isPremium: boolean;
   isAdmin: boolean;

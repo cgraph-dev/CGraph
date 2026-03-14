@@ -78,7 +78,7 @@ export const FEATURES: Feature[] = [
     title: 'Groups & Channels',
     description: 'Create communities with group servers',
   },
-  { icon: '📋', title: 'Forums', description: 'Discussions with karma system' },
+  { icon: '📋', title: 'Forums', description: 'Discussions with Pulse reputation' },
   {
     icon: '🏆',
     title: 'Achievements',

@@ -4,12 +4,12 @@
 import { TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';
 
 /**
- * Formats karma numbers into compact display strings.
+ * Formats pulse numbers into compact display strings.
  */
-export function formatKarma(karma: number): string {
-  if (karma >= 1000000) return `${(karma / 1000000).toFixed(1)}M`;
-  if (karma >= 1000) return `${(karma / 1000).toFixed(1)}K`;
-  return karma.toString();
+export function formatPulse(pulse: number): string {
+  if (pulse >= 1000000) return `${(pulse / 1000000).toFixed(1)}M`;
+  if (pulse >= 1000) return `${(pulse / 1000).toFixed(1)}K`;
+  return pulse.toString();
 }
 
 /**

@@ -186,7 +186,7 @@ export interface ForumThemePreset {
 
 export interface RankThreshold {
   name: string;
-  minKarma: number;
+  minPulse: number;
   imageUrl: string;
 }
 
@@ -219,18 +219,32 @@ export interface BadgeConfig {
 // TYPE GUARDS
 // =============================================================================
 
+/** Check whether a string is a valid customization category. */
 export function isCustomizationCategory(value: string): value is CustomizationCategory {
-  return CUSTOMIZATION_CATEGORIES.includes(value as CustomizationCategory);
+  return CUSTOMIZATION_CATEGORIES.some((c) => c === value);
 }
 
+/** Check whether a string is a valid custom field type. */
 export function isCustomFieldType(value: string): value is CustomFieldType {
   return ['text', 'number', 'select', 'checkbox', 'date', 'url'].includes(value);
 }
 
+/** Check whether a string is a valid custom field target. */
 export function isCustomFieldTarget(value: string): value is CustomFieldTarget {
   return ['thread', 'post', 'profile'].includes(value);
 }
 
+/** Check whether a string is a valid forum theme preset key. */
 export function isForumThemePresetKey(value: string): value is ForumThemePresetKey {
-  return ['dark-elite', 'cyberpunk', 'classic-mybb', 'forest', 'ocean', 'sunset', 'neon', 'monochrome', 'custom'].includes(value);
+  return [
+    'dark-elite',
+    'cyberpunk',
+    'classic-mybb',
+    'forest',
+    'ocean',
+    'sunset',
+    'neon',
+    'monochrome',
+    'custom',
+  ].includes(value);
 }

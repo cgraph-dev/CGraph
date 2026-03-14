@@ -74,7 +74,7 @@ export interface MemberData {
   role: string;
   joinedAt: string;
   postCount: number;
-  karma: number;
+  pulse: number;
 }
 
 export interface ModQueueItem {

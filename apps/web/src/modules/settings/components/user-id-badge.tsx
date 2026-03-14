@@ -59,9 +59,9 @@ export function UserIdBadge({ user }: UserIdBadgeProps) {
               {user?.userIdDisplay || '#0000'}
             </span>
             {user?.username && <span className="text-sm text-white/40">@{user.username}</span>}
-            {user?.karma !== undefined && user.karma > 0 && (
+            {user?.pulse !== undefined && user.pulse > 0 && (
               <span className="rounded-lg bg-amber-500/[0.08] px-2 py-0.5 text-sm text-amber-400 ring-1 ring-amber-500/20">
-                ⚡ {(user.karma ?? 0).toLocaleString()} karma
+                ⚡ {(user.pulse ?? 0).toLocaleString()} pulse
               </span>
             )}
           </div>

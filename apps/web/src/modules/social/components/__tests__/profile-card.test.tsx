@@ -78,7 +78,7 @@ const makeUser = (overrides?: Partial<ProfileCardUser>): ProfileCardUser => ({
   level: 10,
   xp: 5000,
   xpToNextLevel: 10000,
-  karma: 200,
+  pulse: 200,
   streak: 5,
   isOnline: false,
   ...overrides,

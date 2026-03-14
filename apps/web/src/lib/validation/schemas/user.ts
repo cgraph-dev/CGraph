@@ -48,7 +48,7 @@ export const userSchema = z.object({
   totp_enabled: z.boolean().optional(),
   status: userStatusSchema.optional(),
   custom_status: z.string().nullable().optional(),
-  karma: z.number().int().optional(),
+  pulse: z.number().int().optional(),
   is_verified: z.boolean().optional(),
   is_premium: z.boolean().optional(),
   is_admin: z.boolean().optional(),

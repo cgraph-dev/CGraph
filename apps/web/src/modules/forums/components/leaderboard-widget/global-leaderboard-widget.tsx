@@ -41,7 +41,7 @@ export function GlobalLeaderboardWidget({
             displayName: u.display_name,
             avatarUrl: u.avatar_url,
             avatarBorderId: u.avatar_border_id || u.avatarBorderId || null,
-            karma: u.karma,
+            pulse: u.karma,
             isVerified: u.is_verified,
           }))
         );
@@ -104,7 +104,7 @@ export function GlobalLeaderboardWidget({
             displayName={user.displayName}
             avatarUrl={user.avatarUrl}
             avatarBorderId={user.avatarBorderId}
-            karma={user.karma}
+            pulse={user.pulse}
             isVerified={user.isVerified}
           />
         ))}

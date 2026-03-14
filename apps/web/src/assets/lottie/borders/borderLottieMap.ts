@@ -67,7 +67,9 @@ export const BORDER_LOTTIE_MAP: Record<string, string> = {
   // General / fallback
   avatar_frame: `${BASE}/avatar-frame.json`,
   profile_frame: `${BASE}/profile-frame.json`,
-  // Special
+  // Special animated borders (real Lottie animations)
+  special_avatar_frame: `${BASE}/avatar-frame.json`,
+  special_profile_frame: `${BASE}/profile-frame.json`,
   special_legendary: `${BASE}/avatar-frame.json`,
   special_epic: `${BASE}/profile-frame.json`,
 };

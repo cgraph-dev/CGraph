@@ -26,7 +26,7 @@ export interface ProfileCardUser {
   level: number;
   xp: number;
   xpToNextLevel: number;
-  karma: number;
+  pulse: number;
   streak: number;
   // Title/Badge
   equippedTitle?: {

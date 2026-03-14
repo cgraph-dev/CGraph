@@ -33,7 +33,7 @@ const mockUser = {
   avatar_url: null,
   level: 1,
   xp: 0,
-  karma: 0,
+  pulse: 0,
   is_verified: true,
   inserted_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',

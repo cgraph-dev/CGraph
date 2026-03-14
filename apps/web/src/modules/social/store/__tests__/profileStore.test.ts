@@ -172,7 +172,7 @@ const mockApiResponse = {
     post_count: 200,
     topic_count: 10,
     comment_count: 80,
-    karma: 420,
+    pulse: 420,
     reputation_positive: 450,
     reputation_negative: 30,
     warn_level: 0,

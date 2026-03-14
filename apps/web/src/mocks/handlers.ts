@@ -27,7 +27,7 @@ const mockUser = (overrides: Partial<MockUser> = {}): MockUser => ({
   avatarUrl: null,
   level: 1,
   xp: 0,
-  karma: 0,
+  pulse: 0,
   isVerified: true,
   isPremium: false,
   isAdmin: false,
@@ -98,7 +98,7 @@ interface MockUser {
   avatarUrl: string | null;
   level: number;
   xp: number;
-  karma: number;
+  pulse: number;
   isVerified: boolean;
   isPremium: boolean;
   isAdmin: boolean;

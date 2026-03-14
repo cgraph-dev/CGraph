@@ -43,12 +43,29 @@ export interface ForumRank {
 }
 
 /** Default rank tiers seeded per forum. */
-export const DEFAULT_RANKS: Pick<ForumRank, 'name' | 'minScore' | 'maxScore' | 'color' | 'position' | 'isDefault'>[] = [
+export const DEFAULT_RANKS: Pick<
+  ForumRank,
+  'name' | 'minScore' | 'maxScore' | 'color' | 'position' | 'isDefault'
+>[] = [
   { name: 'Newcomer', minScore: 0, maxScore: 49, color: '#9CA3AF', position: 0, isDefault: true },
   { name: 'Regular', minScore: 50, maxScore: 199, color: '#60A5FA', position: 1, isDefault: false },
-  { name: 'Veteran', minScore: 200, maxScore: 499, color: '#34D399', position: 2, isDefault: false },
+  {
+    name: 'Veteran',
+    minScore: 200,
+    maxScore: 499,
+    color: '#34D399',
+    position: 2,
+    isDefault: false,
+  },
   { name: 'Expert', minScore: 500, maxScore: 999, color: '#A78BFA', position: 3, isDefault: false },
-  { name: 'Legend', minScore: 1000, maxScore: null, color: '#FBBF24', position: 4, isDefault: false },
+  {
+    name: 'Legend',
+    minScore: 1000,
+    maxScore: null,
+    color: '#FBBF24',
+    position: 4,
+    isDefault: false,
+  },
 ];
 
 // ── Score Change ────────────────────────────────────────────────────────
@@ -77,7 +94,7 @@ export interface LeaderboardEntry {
     isPremium: boolean;
   };
   score: number;
-  forumKarma: number;
+  forumPulse: number;
   xp: number;
   rank: ForumRank | null;
   change: ScoreChange;
@@ -96,7 +113,7 @@ export interface RankProgress {
 export interface MyRankResponse {
   position: number;
   score: number;
-  forumKarma: number;
+  forumPulse: number;
   xp: number;
   rank: ForumRank | null;
   progress: RankProgress;

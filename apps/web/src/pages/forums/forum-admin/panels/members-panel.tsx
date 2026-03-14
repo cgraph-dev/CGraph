@@ -97,7 +97,7 @@ export function MembersPanel({
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-400">
                   <span>{member.postCount} posts</span>
-                  <span>{member.karma} karma</span>
+                  <span>{member.pulse} pulse</span>
                   <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
                 </div>
               </div>
