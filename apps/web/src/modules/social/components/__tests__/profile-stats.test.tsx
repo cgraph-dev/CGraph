@@ -1,7 +1,7 @@
 /**
  * @file profile-stats.test.tsx
  * @description Tests for ProfileStatsGrid and ProfileSidebar components —
- *   profile statistic displays including level, XP, streak, friends, and karma.
+ *   profile statistic displays including level, XP, streak, friends, and pulse.
  * @module social/components/__tests__/ProfileStats
  */
 import React from 'react';
@@ -223,6 +223,22 @@ vi.mock('@/lib/animations/animation-engine', () => ({
   HapticFeedback: { light: vi.fn(), medium: vi.fn() },
 }));
 
+vi.mock('@/modules/pulse', () => ({
+  PulseDots: ({ score, tier, showLabel }: { score: number; tier: string; showLabel?: boolean }) => (
+    <div data-testid="pulse-dots" data-score={score} data-tier={tier}>
+      {showLabel !== false && <span>{tier}</span>}
+    </div>
+  ),
+}));
+
+vi.mock('@/modules/nodes/components/tip-button', () => ({
+  TipButton: ({ recipientId, recipientName }: { recipientId: string; recipientName: string }) => (
+    <button data-testid="tip-button" data-recipient={recipientId}>
+      Tip @{recipientName}
+    </button>
+  ),
+}));
+
 import { ProfileStatsGrid, ProfileSidebar } from '../profile-stats';
 
 // ── Helpers ────────────────────────────────────────────────────────────
@@ -241,7 +257,6 @@ const makeProfile = (overrides?: Record<string, unknown>) => ({
   totalXP: 12500,
   loginStreak: 7,
   friendsCount: 42,
-  karma: 1500,
   createdAt: '2024-06-15T00:00:00Z',
   ...overrides,
 });
@@ -300,29 +315,41 @@ describe('ProfileStatsGrid', () => {
 describe('ProfileSidebar', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('renders Karma value', () => {
-    render(<ProfileSidebar profile={makeProfile({ karma: 2500 })} />);
-    expect(screen.getByText('2,500')).toBeInTheDocument();
-  });
-
-  it('shows "Top contributor" for karma > 1000', () => {
-    render(<ProfileSidebar profile={makeProfile({ karma: 5000 })} />);
-    expect(screen.getByText('Top contributor')).toBeInTheDocument();
-  });
-
-  it('shows "Legendary contributor" for karma > 10000', () => {
-    render(<ProfileSidebar profile={makeProfile({ karma: 15000 })} />);
-    expect(screen.getByText('Legendary contributor')).toBeInTheDocument();
-  });
-
-  it('shows "Active contributor" for karma 101-1000', () => {
-    render(<ProfileSidebar profile={makeProfile({ karma: 500 })} />);
-    expect(screen.getByText('Active contributor')).toBeInTheDocument();
-  });
-
-  it('renders Karma label', () => {
+  it('renders Pulse Reputation label', () => {
     render(<ProfileSidebar profile={makeProfile()} />);
-    expect(screen.getByText('Karma')).toBeInTheDocument();
+    expect(screen.getByText('Pulse Reputation')).toBeInTheDocument();
+  });
+
+  it('renders PulseDots component', () => {
+    render(<ProfileSidebar profile={makeProfile()} />);
+    expect(screen.getByTestId('pulse-dots')).toBeInTheDocument();
+  });
+
+  it('shows newcomer tier when no top communities', () => {
+    render(<ProfileSidebar profile={makeProfile()} />);
+    const dots = screen.getByTestId('pulse-dots');
+    expect(dots.getAttribute('data-tier')).toBe('newcomer');
+  });
+
+  it('renders top communities when available', () => {
+    const topCommunities = [
+      { forumId: 'f1', forumName: 'Tech Talk', score: 250, tier: 'expert' },
+      { forumId: 'f2', forumName: 'Gaming', score: 50, tier: 'trusted' },
+    ];
+    render(<ProfileSidebar profile={makeProfile({ topCommunities })} />);
+    expect(screen.getByText('Tech Talk')).toBeInTheDocument();
+    expect(screen.getByText('Gaming')).toBeInTheDocument();
+    expect(screen.getByText('Top Communities')).toBeInTheDocument();
+  });
+
+  it('shows tip button for other users profiles', () => {
+    render(<ProfileSidebar profile={makeProfile()} isOwnProfile={false} />);
+    expect(screen.getByTestId('tip-button')).toBeInTheDocument();
+  });
+
+  it('hides tip button for own profile', () => {
+    render(<ProfileSidebar profile={makeProfile()} isOwnProfile />);
+    expect(screen.queryByTestId('tip-button')).not.toBeInTheDocument();
   });
 
   it('renders join date', () => {

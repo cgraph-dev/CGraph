@@ -78,9 +78,9 @@ export const GamingLayout = memo(function GamingLayout({
             style={{ backgroundColor: theme?.colors.surface + '80' }}
           >
             <div className="text-lg font-bold" style={{ color: theme?.colors.accent }}>
-              {user.karma}
+              {user.topCommunities?.[0]?.score ?? 0}
             </div>
-            <div className="text-xs opacity-60">KARMA</div>
+            <div className="text-xs opacity-60">PULSE</div>
           </div>
           <div
             className="rounded p-2 text-center"

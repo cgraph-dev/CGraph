@@ -75,8 +75,12 @@ export const DetailedLayout = memo(function DetailedLayout({
       {/* Stats row */}
       {config.showStats && (
         <div className="grid grid-cols-4 gap-2 text-center">
-          {config.showKarma && (
-            <StatItem label="Karma" value={user.karma} color={theme?.colors.accent} />
+          {config.showKarma && user.topCommunities?.[0] && (
+            <StatItem
+              label="Pulse"
+              value={user.topCommunities[0].score}
+              color={theme?.colors.accent}
+            />
           )}
           {config.showStreak && (
             <StatItem label="Streak" value={user.streak} suffix="🔥" color={theme?.colors.accent} />

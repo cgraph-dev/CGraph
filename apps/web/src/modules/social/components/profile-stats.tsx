@@ -11,13 +11,14 @@ import {
   BoltIcon,
   FireIcon,
   ChartBarIcon,
-  ArrowTrendingUpIcon,
   CalendarDaysIcon,
   MapPinIcon,
   LinkIcon,
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { PulseDots } from '@/modules/pulse';
+import { TipButton } from '@/modules/nodes/components/tip-button';
 import type { UserProfileData } from '@/types/profile.types';
 
 interface ProfileStatsGridProps {
@@ -97,6 +98,8 @@ export function ProfileStatsGrid({ profile }: ProfileStatsGridProps) {
 
 interface ProfileSidebarProps {
   profile: UserProfileData;
+  /** Whether viewing own profile (hides tip button) */
+  isOwnProfile?: boolean;
 }
 
 /**
@@ -105,10 +108,12 @@ interface ProfileSidebarProps {
 /**
  * Profile Sidebar component.
  */
-export function ProfileSidebar({ profile }: ProfileSidebarProps) {
+export function ProfileSidebar({ profile, isOwnProfile }: ProfileSidebarProps) {
+  const topCommunities = profile.topCommunities ?? [];
+
   return (
     <div className="space-y-6">
-      {/* Karma Card */}
+      {/* Pulse Reputation Card */}
       <GlassCard variant="holographic" glow glowColor="rgba(16, 185, 129, 0.3)" className="p-6">
         <div className="mb-4 flex items-center gap-3">
           <motion.div
@@ -116,38 +121,57 @@ export function ProfileSidebar({ profile }: ProfileSidebarProps) {
             whileHover={{ scale: 1.1, rotate: 5 }}
             transition={springs.bouncy}
           >
-            <ArrowTrendingUpIcon className="h-6 w-6 text-primary-400" />
+            <SparklesIcon className="h-6 w-6 text-primary-400" />
           </motion.div>
           <div>
-            <p className="text-sm text-gray-400">Karma</p>
-            <motion.p
-              className="bg-gradient-to-r from-white to-primary-200 bg-clip-text text-2xl font-bold text-transparent"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={springs.bouncy}
-            >
-              {(profile.karma ?? 0).toLocaleString()}
-            </motion.p>
+            <p className="text-sm text-gray-400">Pulse Reputation</p>
+            {topCommunities.length > 0 && topCommunities[0] ? (
+              <PulseDots
+                score={topCommunities[0].score}
+                tier={topCommunities[0].tier}
+                size="md"
+                showLabel
+                showTooltip
+              />
+            ) : (
+              <PulseDots score={0} tier="newcomer" size="md" showLabel showTooltip />
+            )}
           </div>
         </div>
-        {profile.karma > 100 && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex items-center gap-2 text-sm"
-          >
-            <FireIcon className="h-4 w-4 text-orange-500" />
-            <span className="text-orange-400">
-              {profile.karma > 10000
-                ? 'Legendary contributor'
-                : profile.karma > 1000
-                  ? 'Top contributor'
-                  : 'Active contributor'}
-            </span>
-          </motion.div>
+
+        {/* Top-3 Communities */}
+        {topCommunities.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-gray-500">Top Communities</p>
+            {topCommunities.slice(0, 3).map((community) => (
+              <div
+                key={community.forumId}
+                className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2"
+              >
+                <span className="truncate text-sm text-gray-300">{community.forumName}</span>
+                <PulseDots
+                  score={community.score}
+                  tier={community.tier}
+                  size="sm"
+                  showLabel={false}
+                />
+              </div>
+            ))}
+          </div>
         )}
       </GlassCard>
+
+      {/* Tip Button (only for other users' profiles) */}
+      {!isOwnProfile && (
+        <GlassCard variant="frosted" className="p-4">
+          <p className="mb-3 text-center text-sm text-gray-400">Support this creator</p>
+          <TipButton
+            recipientId={profile.id}
+            recipientName={profile.displayName ?? profile.username}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-purple-600/20 px-4 py-2.5 text-sm font-medium text-purple-400 transition-colors hover:bg-purple-600/30"
+          />
+        </GlassCard>
+      )}
 
       <GlassCard variant="frosted" className="space-y-4 p-6">
         <motion.div whileHover={{ x: 4 }} className="flex items-center gap-3 text-gray-400">

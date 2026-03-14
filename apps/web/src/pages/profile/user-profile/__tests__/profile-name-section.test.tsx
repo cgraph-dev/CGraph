@@ -28,7 +28,6 @@ function makeProfile(overrides: Partial<UserProfileData> = {}): UserProfileData 
     statusMessage: null,
     isVerified: false,
     isPremium: false,
-    karma: 100,
     createdAt: new Date().toISOString(),
     ...overrides,
   };

@@ -14,8 +14,9 @@ export interface UserProfileData {
   statusMessage: string | null;
   isVerified: boolean;
   isPremium: boolean;
-  karma: number;
   createdAt: string;
+  // Pulse reputation (community-scoped, replaces karma)
+  topCommunities?: { forumId: string; forumName: string; score: number; tier: string }[];
   mutualFriends?: number;
   location?: string;
   website?: string;

@@ -54,9 +54,9 @@ export const CreatorLayout = memo(function CreatorLayout({
           </div>
           <div>
             <div className="text-xl font-bold" style={{ color: theme?.colors.accent }}>
-              {user.karma.toLocaleString()}
+              {(user.topCommunities?.[0]?.score ?? 0).toLocaleString()}
             </div>
-            <div className="text-xs opacity-60">Karma</div>
+            <div className="text-xs opacity-60">Pulse</div>
           </div>
           <div>
             <div className="text-xl font-bold" style={{ color: theme?.colors.accent }}>

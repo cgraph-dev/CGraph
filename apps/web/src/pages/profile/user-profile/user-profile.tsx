@@ -303,7 +303,7 @@ export function UserProfile() {
             )}
           </div>
 
-          <ProfileSidebar profile={profile} />
+          <ProfileSidebar profile={profile} isOwnProfile={isOwnProfile} />
         </motion.div>
       </div>
     </div>

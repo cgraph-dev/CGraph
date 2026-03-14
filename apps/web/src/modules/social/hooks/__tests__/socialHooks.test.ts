@@ -72,7 +72,6 @@ function makeProfile(overrides: Partial<UserProfileData> = {}): UserProfileData 
     statusMessage: null,
     isVerified: false,
     isPremium: false,
-    karma: 10,
     createdAt: '2025-01-01',
     ...overrides,
   };
@@ -199,7 +198,6 @@ describe('useProfileData', () => {
           custom_status: null,
           is_verified: true,
           is_premium: false,
-          karma: 42,
           inserted_at: '2025-01-01',
           friendship_status: 'friends',
         },
