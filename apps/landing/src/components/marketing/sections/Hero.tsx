@@ -15,17 +15,8 @@
 import { memo, useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useReducedMotion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { GradientText } from '../ui/GradientText';
-import { LandingButton } from '../ui/LandingButton';
 import { useCircuitCanvas } from './use-circuit-canvas';
 import './Hero.css';
-import { WEB_APP_URL } from '@/constants';
-
-// Trust badges shown below the CTA
-const trustBadges = [
-  { label: 'E2E Encrypted' },
-  { label: 'Sub-200ms Delivery' },
-  { label: 'Zero-Knowledge' },
-] as const;
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -55,8 +46,6 @@ const subtitles = [
   'End-to-end encrypted messaging with post-quantum security.',
   'Real-time community forums with threads, voting, and moderation.',
   'Voice & video calls powered by WebRTC — sub-200ms.',
-  '325 cosmetics, creator economy, and self-expression tools.',
-  'Web3-ready authentication with wallet connect.',
 ] as const;
 
 const Hero = memo(function Hero(): React.JSX.Element {
@@ -230,55 +219,10 @@ const Hero = memo(function Hero(): React.JSX.Element {
           </AnimatePresence>
         </motion.div>
 
-        {/* CTA Buttons */}
-        <motion.div variants={itemVariants} className="hero-pro__actions">
-          <LandingButton
-            variant="primary"
-            href={`${WEB_APP_URL}/register`}
-            icon={
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
-            }
-          >
-            Get Started Free
-          </LandingButton>
-          <LandingButton variant="secondary" href="#features">
-            Explore Features
-          </LandingButton>
-        </motion.div>
-
-        {/* Trust badges */}
-        <motion.div variants={itemVariants} className="hero-pro__trust">
-          {trustBadges.map((badge, i) => (
-            <motion.div
-              key={badge.label}
-              className="hero-pro__badge"
-              initial={prefersReduced ? {} : { opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                delay: 1.2 + i * 0.15,
-                type: 'spring',
-                stiffness: 200,
-                damping: 15,
-              }}
-              whileHover={{ scale: 1.1, y: -2 }}
-            >
-              <span>{badge.label}</span>
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Web3 feature highlight */}
+        <motion.p variants={itemVariants} className="hero-pro__web3-badge">
+          Web3-ready authentication with wallet connect
+        </motion.p>
       </motion.div>
 
       {/* Scroll indicator */}

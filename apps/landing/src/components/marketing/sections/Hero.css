@@ -282,102 +282,16 @@
   font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* CTA Buttons */
-.hero-pro__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.875rem;
-  justify-content: center;
-  margin-top: 0.25rem;
-}
-
-.hero-pro__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
-  border-radius: 12px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.hero-pro__btn--primary {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-  color: #ffffff;
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 4px 16px rgba(5, 150, 105, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.hero-pro__btn--primary:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    0 8px 24px rgba(5, 150, 105, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  filter: brightness(1.08);
-}
-
-.hero-pro__btn--primary:active {
-  transform: translateY(0);
-}
-
-.hero-pro__btn--primary svg {
-  transition: transform 0.2s ease;
-}
-
-.hero-pro__btn--primary:hover svg {
-  transform: translateX(3px);
-}
-
-.hero-pro__btn--secondary {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.hero-pro__btn--secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-}
-
-.hero-pro__btn--secondary:active {
-  transform: translateY(0);
-}
-
-/* Trust badges */
-.hero-pro__trust {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: center;
-  margin-top: 0.5rem;
-}
-
-.hero-pro__badge {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.4);
-  letter-spacing: 0.01em;
-}
-
-.hero-pro__badge span:first-child {
-  font-size: 0.875rem;
-}
-
-.hero-pro__badge:hover {
+/* Web3 feature badge */
+.hero-pro__web3-badge {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: rgba(255, 255, 255, 0.7);
-  text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.3), 0 0 40px rgba(139, 92, 246, 0.15);
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 /* CSS particles — disabled, canvas handles particles now */
@@ -388,27 +302,6 @@
 /* Scanlines — disabled for cleaner look */
 .hero-pro__scanlines {
   display: none;
-}
-
-/* ── CTA pulsing glow ── */
-.hero-pro__btn--primary {
-  animation: hero-cta-pulse 3s ease-in-out infinite;
-}
-
-@keyframes hero-cta-pulse {
-  0%, 100% {
-    box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 4px 16px rgba(5, 150, 105, 0.25),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-  50% {
-    box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.3),
-      0 4px 16px rgba(5, 150, 105, 0.25),
-      0 0 30px rgba(16, 185, 129, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
 }
 
 /* ── Scroll indicator (Complex Tech Style) ── */
@@ -569,22 +462,6 @@
     opacity: 0.6;
   }
 
-  .hero-pro__actions {
-    flex-direction: column;
-    width: 100%;
-    max-width: 320px;
-  }
-
-  .hero-pro__btn {
-    justify-content: center;
-    width: 100%;
-  }
-
-  .hero-pro__trust {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
   .hero-pro__scroll {
     position: relative;
     bottom: auto;
@@ -636,16 +513,7 @@
     opacity: 0.6;
   }
 
-  .hero-pro__btn--primary:hover,
-  .hero-pro__btn--secondary:hover {
-    transform: none;
-  }
-
   .hero-pro__title-accent {
-    animation: none;
-  }
-
-  .hero-pro__btn--primary {
     animation: none;
   }
 
