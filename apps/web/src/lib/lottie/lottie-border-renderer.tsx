@@ -47,7 +47,7 @@ export interface LottieBorderProps {
 // ── Active animation counter (max 2 concurrent) ───────────────────────
 
 let activeAnimationCount = 0;
-const MAX_CONCURRENT_ANIMATIONS = 20;
+const MAX_CONCURRENT_ANIMATIONS = 100; // Increased to allow all grid items and live preview to play without freezing
 
 // ── Reduced motion hook ───────────────────────────────────────────────
 
@@ -160,6 +160,10 @@ export const LottieBorderRenderer = memo(function LottieBorderRenderer({
     return () => {
       cancelled = true;
       if (animRef.current) {
+        // Fix counting leak: decrement if it was actively playing when destroyed
+        if (!animRef.current.isPaused) {
+          activeAnimationCount = Math.max(0, activeAnimationCount - 1);
+        }
         animRef.current.destroy();
         animRef.current = null;
       }

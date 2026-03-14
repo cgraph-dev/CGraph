@@ -519,6 +519,26 @@ export const BORDER_REGISTRY: readonly BorderRegistryEntry[] = [
     particleShape: 'diamond',
     lottieFile: 'anime_mythic_01.json',
   },
+
+  // ─── SPECIAL (2) ─── real animated Lottie borders ──────────────────
+  {
+    id: 'border_special_avatar_frame',
+    name: 'Avatar Frame',
+    rarity: 'mythic',
+    theme: 'COSMIC',
+    rotationDirection: 'cw',
+    particleShape: 'spark',
+    lottieFile: 'avatar-frame.json',
+  },
+  {
+    id: 'border_special_profile_frame',
+    name: 'Profile Frame',
+    rarity: 'mythic',
+    theme: 'COSMIC',
+    rotationDirection: 'ccw',
+    particleShape: 'diamond',
+    lottieFile: 'profile-frame.json',
+  },
 ] as const;
 
 /** Get a border entry by ID */
