@@ -23,65 +23,17 @@
   z-index: 0;
 }
 
-/* ── AI-Generated Background Layers (Gemini via Nano Banana MCP) ── */
+/* ── AI-Generated Background (Gemini via Nano Banana MCP) ── */
 .hero-pro__ai-bg {
   position: absolute;
-  inset: -8%;
+  inset: -6%;
+  background-image: url('/images/hero/hero-bg.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   will-change: transform;
   transition: transform 0.15s ease-out;
-}
-
-.hero-pro__ai-bg--main {
-  z-index: 0;
-  background-image: url('/images/hero/hero-bg-main.webp');
-  opacity: 0.75;
-  animation: hero-bg-breathe 8s ease-in-out infinite;
-}
-
-.hero-pro__ai-bg--nebula {
-  z-index: 1;
-  background-image: url('/images/hero/hero-nebula-overlay.webp');
-  opacity: 0.5;
-  mix-blend-mode: screen;
-  animation: hero-nebula-drift 10s ease-in-out infinite;
-}
-
-.hero-pro__ai-bg--particles {
-  z-index: 1;
-  background-image: url('/images/hero/hero-particles-overlay.webp');
-  opacity: 0.35;
-  mix-blend-mode: screen;
-  animation: hero-network-pulse 5s ease-in-out infinite;
-}
-
-/* Electric circuit traces overlay */
-.hero-pro__ai-bg--circuits {
-  z-index: 2;
-  background-image: url('/images/hero/hero-electric-circuits.webp');
-  opacity: 0.4;
-  mix-blend-mode: screen;
-  animation: hero-circuit-surge 6s ease-in-out infinite;
-}
-
-/* Holographic HUD overlay */
-.hero-pro__ai-bg--holo {
-  z-index: 2;
-  background-image: url('/images/hero/hero-holographic-grid.webp');
-  opacity: 0.25;
-  mix-blend-mode: screen;
-  animation: hero-holo-scan 12s linear infinite;
-}
-
-/* Data streams overlay */
-.hero-pro__ai-bg--streams {
-  z-index: 1;
-  background-image: url('/images/hero/hero-data-streams.webp');
-  opacity: 0.3;
-  mix-blend-mode: screen;
-  animation: hero-stream-flow 7s ease-in-out infinite;
+  animation: hero-bg-breathe 10s ease-in-out infinite;
 }
 
 /* Mouse-following cursor glow */
@@ -99,58 +51,13 @@
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.92;
+  opacity: 0.45;
 }
 
-/* Background breathing animation */
+/* Background subtle breathing */
 @keyframes hero-bg-breathe {
-  0%, 100% { opacity: 0.7; transform: scale(1.08); }
-  50% { opacity: 0.9; transform: scale(1.15); }
-}
-
-/* Nebula slow drift */
-@keyframes hero-nebula-drift {
-  0%, 100% { transform: translate(0, 0) scale(1.05) rotate(0deg); }
-  25% { transform: translate(18px, -12px) scale(1.09) rotate(0.8deg); }
-  50% { transform: translate(-6px, 14px) scale(1.03) rotate(-0.3deg); }
-  75% { transform: translate(-14px, -8px) scale(1.07) rotate(0.5deg); }
-}
-
-/* Network nodes pulse */
-@keyframes hero-network-pulse {
-  0%, 100% { opacity: 0.3; transform: scale(1.08); }
-  50% { opacity: 0.6; transform: scale(1.12); }
-}
-
-/* Electric circuit surge — flicker + scale */
-@keyframes hero-circuit-surge {
-  0%   { opacity: 0.25; transform: scale(1.06); filter: brightness(1); }
-  15%  { opacity: 0.55; transform: scale(1.07); filter: brightness(1.4); }
-  20%  { opacity: 0.3;  transform: scale(1.06); filter: brightness(1); }
-  25%  { opacity: 0.5;  transform: scale(1.065); filter: brightness(1.3); }
-  40%  { opacity: 0.35; transform: scale(1.06); filter: brightness(1.05); }
-  60%  { opacity: 0.45; transform: scale(1.08); filter: brightness(1.2); }
-  65%  { opacity: 0.3;  transform: scale(1.06); filter: brightness(1); }
-  80%  { opacity: 0.4;  transform: scale(1.07); filter: brightness(1.15); }
-  100% { opacity: 0.25; transform: scale(1.06); filter: brightness(1); }
-}
-
-/* Holographic scan — slow vertical shift + opacity pulse */
-@keyframes hero-holo-scan {
-  0%   { opacity: 0.2;  transform: scale(1.04) translateY(0); }
-  25%  { opacity: 0.3;  transform: scale(1.05) translateY(-8px); }
-  50%  { opacity: 0.18; transform: scale(1.04) translateY(-4px); }
-  75%  { opacity: 0.28; transform: scale(1.05) translateY(6px); }
-  100% { opacity: 0.2;  transform: scale(1.04) translateY(0); }
-}
-
-/* Data stream flow — horizontal drift + brightness flicker */
-@keyframes hero-stream-flow {
-  0%   { opacity: 0.2;  transform: scale(1.07) translateX(0); }
-  30%  { opacity: 0.45; transform: scale(1.08) translateX(20px); filter: brightness(1.3); }
-  50%  { opacity: 0.25; transform: scale(1.07) translateX(10px); filter: brightness(1); }
-  70%  { opacity: 0.4;  transform: scale(1.08) translateX(-15px); filter: brightness(1.2); }
-  100% { opacity: 0.2;  transform: scale(1.07) translateX(0); filter: brightness(1); }
+  0%, 100% { transform: scale(1.06); }
+  50% { transform: scale(1.1); }
 }
 
 /* Base dark gradient */
@@ -728,30 +635,10 @@
   .hero-pro__particles { display: none; }
   .hero-pro__scanlines { display: none; }
 
-  /* AI backgrounds — reduce on mobile for performance */
+  /* AI background — reduce parallax on mobile */
   .hero-pro__ai-bg {
     inset: -4%;
     transition: none;
-  }
-
-  .hero-pro__ai-bg--particles {
-    display: none;
-  }
-
-  .hero-pro__ai-bg--nebula {
-    opacity: 0.3;
-  }
-
-  .hero-pro__ai-bg--circuits {
-    opacity: 0.25;
-  }
-
-  .hero-pro__ai-bg--holo {
-    display: none;
-  }
-
-  .hero-pro__ai-bg--streams {
-    opacity: 0.2;
   }
 
   .hero-pro__cursor-glow {
@@ -863,30 +750,6 @@
     transition: none !important;
     transform: none !important;
     inset: 0;
-  }
-
-  .hero-pro__ai-bg--main {
-    opacity: 0.6;
-  }
-
-  .hero-pro__ai-bg--nebula {
-    opacity: 0.3;
-  }
-
-  .hero-pro__ai-bg--particles {
-    opacity: 0.2;
-  }
-
-  .hero-pro__ai-bg--circuits {
-    opacity: 0.2;
-  }
-
-  .hero-pro__ai-bg--holo {
-    opacity: 0.15;
-  }
-
-  .hero-pro__ai-bg--streams {
-    opacity: 0.15;
   }
 
   .hero-pro__cursor-glow {

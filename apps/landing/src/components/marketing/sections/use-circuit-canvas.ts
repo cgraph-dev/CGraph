@@ -30,18 +30,18 @@ const COLORS: ReadonlyArray<readonly [number, number, number]> = [
 ];
 
 // ── Tuning constants ──
-const NODE_COUNT = 65;
-const CONNECTION_DIST = 180;
-const MOUSE_DIST = 250;
-const PARTICLE_COUNT = 18;
-const NODE_REPULSION_RADIUS = 170;
-const SPEED_CAP = 1.5;
-const DAMPING = 0.994;
-const PULSE_RING_INTERVAL = 70; // frames between random pulse emissions
-const MAX_PULSE_RINGS = 6;
-const LIGHTNING_INTERVAL = 90; // frames between electricity arcs
-const MAX_LIGHTNINGS = 3;
-const HEX_COUNT = 8; // floating hexagons
+const NODE_COUNT = 40;
+const CONNECTION_DIST = 150;
+const MOUSE_DIST = 200;
+const PARTICLE_COUNT = 10;
+const NODE_REPULSION_RADIUS = 140;
+const SPEED_CAP = 0.8;
+const DAMPING = 0.996;
+const PULSE_RING_INTERVAL = 120; // frames between random pulse emissions
+const MAX_PULSE_RINGS = 3;
+const LIGHTNING_INTERVAL = 180; // frames between electricity arcs
+const MAX_LIGHTNINGS = 2;
+const HEX_COUNT = 4; // floating hexagons
 
 // ── Types ──
 interface Node {

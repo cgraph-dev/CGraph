@@ -120,74 +120,14 @@ const Hero = memo(function Hero(): React.JSX.Element {
         aria-hidden="true"
         style={prefersReduced ? undefined : { y: bgY }}
       >
-        {/* AI-generated main aurora/nebula background */}
+        {/* AI-generated hero background — single clean layer */}
         <div
-          className="hero-pro__ai-bg hero-pro__ai-bg--main"
+          className="hero-pro__ai-bg"
           style={
             prefersReduced
               ? undefined
               : {
-                  transform: `translate(${(mousePos.x - 0.5) * -40}px, ${(mousePos.y - 0.5) * -30}px) scale(1.08)`,
-                }
-          }
-        />
-
-        {/* AI-generated nebula overlay — slower parallax */}
-        <div
-          className="hero-pro__ai-bg hero-pro__ai-bg--nebula"
-          style={
-            prefersReduced
-              ? undefined
-              : {
-                  transform: `translate(${(mousePos.x - 0.5) * 30}px, ${(mousePos.y - 0.5) * 25}px) scale(1.05)`,
-                }
-          }
-        />
-
-        {/* AI-generated particle network — fastest parallax */}
-        <div
-          className="hero-pro__ai-bg hero-pro__ai-bg--particles"
-          style={
-            prefersReduced
-              ? undefined
-              : {
-                  transform: `translate(${(mousePos.x - 0.5) * -50}px, ${(mousePos.y - 0.5) * -40}px) scale(1.1)`,
-                }
-          }
-        />
-
-        {/* AI-generated electric circuit traces overlay */}
-        <div
-          className="hero-pro__ai-bg hero-pro__ai-bg--circuits"
-          style={
-            prefersReduced
-              ? undefined
-              : {
-                  transform: `translate(${(mousePos.x - 0.5) * 20}px, ${(mousePos.y - 0.5) * 15}px) scale(1.06)`,
-                }
-          }
-        />
-
-        {/* AI-generated holographic HUD overlay */}
-        <div
-          className="hero-pro__ai-bg hero-pro__ai-bg--holo"
-          style={
-            prefersReduced
-              ? undefined
-              : {
-                  transform: `translate(${(mousePos.x - 0.5) * -35}px, ${(mousePos.y - 0.5) * 25}px) scale(1.04)`,
-                }
-          }
-        />
-
-        {/* AI-generated data streams overlay */}
-        <div
-          className="hero-pro__ai-bg hero-pro__ai-bg--streams"
-          style={
-            prefersReduced
-              ? undefined
-              : {
-                  transform: `translate(${(mousePos.x - 0.5) * 45}px, ${(mousePos.y - 0.5) * -20}px) scale(1.07)`,
+                  transform: `translate(${(mousePos.x - 0.5) * -20}px, ${(mousePos.y - 0.5) * -15}px) scale(1.06)`,
                 }
           }
         />
