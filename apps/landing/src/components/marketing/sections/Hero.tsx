@@ -218,11 +218,6 @@ const Hero = memo(function Hero(): React.JSX.Element {
             </motion.p>
           </AnimatePresence>
         </motion.div>
-
-        {/* Web3 feature highlight */}
-        <motion.p variants={itemVariants} className="hero-pro__web3-badge">
-          Web3-ready authentication with wallet connect
-        </motion.p>
       </motion.div>
 
       {/* Scroll indicator */}

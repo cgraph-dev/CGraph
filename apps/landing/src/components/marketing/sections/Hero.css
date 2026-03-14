@@ -176,13 +176,17 @@
 
 /* ── Content ── */
 .hero-pro__content {
-  position: relative;
+  position: absolute;
+  bottom: 6rem;
+  left: 0;
+  right: 0;
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   max-width: 900px;
+  width: 100%;
   padding: 0 1.5rem;
   margin: 0 auto;
   gap: 1.5rem;
@@ -225,9 +229,9 @@
   flex-shrink: 0;
 }
 
-/* Title */
+/* Title — hidden on desktop, shown on mobile */
 .hero-pro__title {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 0.125rem;
   font-family: 'Orbitron', system-ui, sans-serif;
@@ -275,24 +279,14 @@
 
 /* Subtitle */
 .hero-pro__subtitle {
-  max-width: 580px;
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.55);
+  max-width: 640px;
+  font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.65);
   font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Web3 feature badge */
-.hero-pro__web3-badge {
-  margin-top: 1.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
-  text-shadow: 0 0 20px rgba(16, 185, 129, 0.3), 0 0 40px rgba(139, 92, 246, 0.15);
-  font-family: 'Inter', system-ui, sans-serif;
-}
+
 
 /* CSS particles — disabled, canvas handles particles now */
 .hero-pro__particles {
@@ -412,13 +406,29 @@
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .hero-pro {
-    min-height: 90vh;
-    min-height: 90dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    justify-content: flex-start;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .hero-pro__title {
+    display: flex;
   }
 
   .hero-pro__content {
+    position: static;
+    flex: 1;
+    width: 100%;
     padding: 0 1.25rem;
-    gap: 1.25rem;
+    gap: 0;
+    justify-content: space-between;
+  }
+
+  .hero-pro__subtitle-wrap {
+    margin-top: auto;
+    margin-bottom: -2.5rem;
   }
 
   .hero-pro__mesh {
@@ -466,17 +476,33 @@
     position: relative;
     bottom: auto;
     left: auto;
-    transform: none; /* Reset desktop transform */
-    margin-top: 3rem;
-    margin-bottom: 2rem;
+    transform: none;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
     z-index: 20;
-    scale: 0.6;
-    opacity: 0.6; /* Matches requested opacity, allows framer-motion override */
+    scale: 0.55;
+    opacity: 0.5;
+    gap: 0.4rem;
+  }
+
+  .hero-pro__scroll-mouse {
+    width: 22px;
+    height: 36px;
+  }
+
+  .hero-pro__scroll-arrows {
+    gap: 3px;
+  }
+
+  .hero-pro__scroll-arrows span {
+    width: 8px;
+    height: 8px;
   }
 
   .hero-pro__scroll-text {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
   }
 
 }
