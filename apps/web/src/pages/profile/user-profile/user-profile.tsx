@@ -5,13 +5,19 @@
  * - Banner and avatar with edit capabilities
  * - User info with verification badges and title
  * - Bio section
- * - XP progress and achievements (for own profile)
+ * - XP progress and achievements
  * - Stats grid and sidebar
+ * - Activity summary
  */
 
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { PaintBrushIcon } from '@heroicons/react/24/outline';
+import {
+  PaintBrushIcon,
+  ChatBubbleLeftIcon,
+  DocumentTextIcon,
+  TrophyIcon,
+} from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { GlassCard } from '@/shared/components/ui';
@@ -37,11 +43,84 @@ import { useProfileData } from './hooks/useProfileData';
 import { useProfileActions } from './hooks/useProfileActions';
 import { tweens } from '@/lib/animation-presets';
 
-/**
- * unknown for the profile module.
- */
 /** Stable empty array for stub achievements */
 const EMPTY_ACHIEVEMENTS: never[] = [];
+
+/** XP progress bar toward next level */
+function XPProgressBar({
+  currentXP,
+  level,
+}: {
+  currentXP: number;
+  totalXP: number;
+  level: number;
+}) {
+  const xpForNextLevel = level * 500;
+  const xpInCurrentLevel = currentXP % xpForNextLevel || 0;
+  const progress =
+    xpForNextLevel > 0 ? Math.min((xpInCurrentLevel / xpForNextLevel) * 100, 100) : 0;
+
+  return (
+    <GlassCard variant="frosted" className="p-4">
+      <div className="mb-2 flex items-center justify-between text-sm">
+        <span className="text-gray-400">
+          Level {level} &rarr; {level + 1}
+        </span>
+        <span className="text-gray-500">
+          {xpInCurrentLevel.toLocaleString()} / {xpForNextLevel.toLocaleString()} XP
+        </span>
+      </div>
+      <div className="h-2.5 overflow-hidden rounded-full bg-white/[0.08]">
+        <motion.div
+          className="h-full rounded-full bg-gradient-to-r from-primary-500 to-purple-500"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        />
+      </div>
+    </GlassCard>
+  );
+}
+
+/** Activity summary cards showing messages sent, posts created, etc. */
+function ActivitySummary({
+  messagesSent,
+  postsCreated,
+}: {
+  messagesSent?: number;
+  postsCreated?: number;
+}) {
+  if (!messagesSent && !postsCreated) return null;
+
+  return (
+    <GlassCard variant="frosted" className="p-6">
+      <h2 className="mb-4 flex items-center gap-2 bg-gradient-to-r from-white to-primary-200 bg-clip-text text-lg font-semibold text-transparent">
+        <TrophyIcon className="h-5 w-5 text-primary-400" />
+        Activity
+      </h2>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex items-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.04] p-3">
+          <ChatBubbleLeftIcon className="h-8 w-8 text-blue-400" />
+          <div>
+            <div className="text-xl font-bold text-white">
+              {(messagesSent ?? 0).toLocaleString()}
+            </div>
+            <div className="text-xs text-gray-500">Messages Sent</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.04] p-3">
+          <DocumentTextIcon className="h-8 w-8 text-green-400" />
+          <div>
+            <div className="text-xl font-bold text-white">
+              {(postsCreated ?? 0).toLocaleString()}
+            </div>
+            <div className="text-xs text-gray-500">Forum Posts</div>
+          </div>
+        </div>
+      </div>
+    </GlassCard>
+  );
+}
 
 /**
  * User Profile component.
@@ -124,7 +203,14 @@ export function UserProfile() {
           />
 
           <div className="flex flex-1 items-center justify-between pb-2">
-            <ProfileNameSection profile={profile} />
+            <div>
+              <ProfileNameSection profile={profile} />
+              {profile.statusMessage && (
+                <p className="mt-1 text-sm italic text-gray-400">
+                  &ldquo;{profile.statusMessage}&rdquo;
+                </p>
+              )}
+            </div>
 
             {!isOwnProfile && (
               <div className="flex items-center gap-3">
@@ -177,25 +263,32 @@ export function UserProfile() {
               onBioChange={actions.setEditedBio}
             />
 
-            {isOwnProfile && (
-              <EquippedBadgesShowcase
-                equippedBadges={equippedBadges}
-                achievements={EMPTY_ACHIEVEMENTS}
-                editMode={actions.editMode}
-              />
-            )}
+            <XPProgressBar
+              currentXP={profile.currentXP ?? profile.totalXP ?? 0}
+              totalXP={profile.totalXP ?? 0}
+              level={profile.level ?? 1}
+            />
 
-            {isOwnProfile && (
-              <AchievementsShowcase
-                achievements={unlockedAchievements}
-                totalUnlocked={totalUnlocked}
-                totalAchievements={profile?.totalAchievements || 0}
-                showAll={showAllAchievements}
-                onToggleShowAll={() => setShowAllAchievements(!showAllAchievements)}
-              />
-            )}
+            <EquippedBadgesShowcase
+              equippedBadges={equippedBadges}
+              achievements={EMPTY_ACHIEVEMENTS}
+              editMode={isOwnProfile && actions.editMode}
+            />
+
+            <AchievementsShowcase
+              achievements={unlockedAchievements}
+              totalUnlocked={totalUnlocked}
+              totalAchievements={profile?.totalAchievements || 0}
+              showAll={showAllAchievements}
+              onToggleShowAll={() => setShowAllAchievements(!showAllAchievements)}
+            />
 
             <ProfileStatsGrid profile={profile} />
+
+            <ActivitySummary
+              messagesSent={profile.messagesSent}
+              postsCreated={profile.postsCreated}
+            />
 
             {profile.mutualFriends !== undefined && profile.mutualFriends > 0 && (
               <GlassCard variant="default" className="p-6">

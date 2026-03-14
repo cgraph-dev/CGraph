@@ -75,7 +75,7 @@ export function ForumRoutes() {
         path="forums/:forumSlug/posts"
         element={
           <RouteErrorBoundary routeName="Forum Posts">
-            <Forums />
+            <ForumBoardView />
           </RouteErrorBoundary>
         }
       />
