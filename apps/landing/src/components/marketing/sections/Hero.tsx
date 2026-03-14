@@ -16,6 +16,7 @@ import { memo, useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useReducedMotion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { GradientText } from '../ui/GradientText';
 import { LandingButton } from '../ui/LandingButton';
+import { useCircuitCanvas } from './use-circuit-canvas';
 import './Hero.css';
 import { WEB_APP_URL } from '@/constants';
 
@@ -62,6 +63,8 @@ const Hero = memo(function Hero(): React.JSX.Element {
   const prefersReduced = useReducedMotion();
   const [subtitleIndex, setSubtitleIndex] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mousePosRef = useRef({ x: 0.5, y: 0.5 });
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
 
   // Interactive mouse tracking for parallax background layers
@@ -69,10 +72,12 @@ const Hero = memo(function Hero(): React.JSX.Element {
     (e: React.MouseEvent<HTMLElement>) => {
       if (prefersReduced) return;
       const rect = e.currentTarget.getBoundingClientRect();
-      setMousePos({
+      const pos = {
         x: (e.clientX - rect.left) / rect.width,
         y: (e.clientY - rect.top) / rect.height,
-      });
+      };
+      setMousePos(pos);
+      mousePosRef.current = pos;
     },
     [prefersReduced]
   );
@@ -82,6 +87,9 @@ const Hero = memo(function Hero(): React.JSX.Element {
     target: heroRef,
     offset: ['start start', 'end start'],
   });
+
+  // Circuit network canvas animation (logo-style effects)
+  useCircuitCanvas(canvasRef, mousePosRef, prefersReduced);
 
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
@@ -119,7 +127,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
             prefersReduced
               ? undefined
               : {
-                  transform: `translate(${(mousePos.x - 0.5) * -20}px, ${(mousePos.y - 0.5) * -15}px) scale(1.08)`,
+                  transform: `translate(${(mousePos.x - 0.5) * -40}px, ${(mousePos.y - 0.5) * -30}px) scale(1.08)`,
                 }
           }
         />
@@ -131,7 +139,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
             prefersReduced
               ? undefined
               : {
-                  transform: `translate(${(mousePos.x - 0.5) * 15}px, ${(mousePos.y - 0.5) * 10}px) scale(1.05)`,
+                  transform: `translate(${(mousePos.x - 0.5) * 30}px, ${(mousePos.y - 0.5) * 25}px) scale(1.05)`,
                 }
           }
         />
@@ -143,7 +151,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
             prefersReduced
               ? undefined
               : {
-                  transform: `translate(${(mousePos.x - 0.5) * -30}px, ${(mousePos.y - 0.5) * -20}px) scale(1.1)`,
+                  transform: `translate(${(mousePos.x - 0.5) * -50}px, ${(mousePos.y - 0.5) * -40}px) scale(1.1)`,
                 }
           }
         />
@@ -159,6 +167,9 @@ const Hero = memo(function Hero(): React.JSX.Element {
                 }
           }
         />
+
+        {/* Interactive circuit network canvas (logo-style) */}
+        <canvas ref={canvasRef} className="hero-pro__circuit-canvas" aria-hidden="true" />
 
         {/* Grid overlay */}
         <div className="hero-pro__grid" />
