@@ -14,6 +14,7 @@
   justify-content: center;
   overflow: hidden;
   background: transparent;
+  contain: layout style paint;
 }
 
 /* ── Background layers ── */
@@ -32,6 +33,8 @@
   object-fit: cover;
   z-index: 0;
   pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Mouse-following cursor glow */
@@ -50,6 +53,8 @@
   z-index: 2;
   pointer-events: none;
   opacity: 0.45;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* removed — video doesn't need CSS breathing */

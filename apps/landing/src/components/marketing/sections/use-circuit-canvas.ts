@@ -164,7 +164,8 @@ function drawHexagon(
 export function useCircuitCanvas(
   canvasRef: RefObject<HTMLCanvasElement | null>,
   mousePosRef: RefObject<{ x: number; y: number }>,
-  prefersReduced: boolean | null
+  prefersReduced: boolean | null,
+  isVisibleRef?: RefObject<boolean>
 ): void {
   const stateRef = useRef<CanvasState>({
     nodes: [],
@@ -240,7 +241,9 @@ export function useCircuitCanvas(
     };
 
     const resize = (): void => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = isMobile
+        ? Math.min(window.devicePixelRatio || 1, 1.5)
+        : Math.min(window.devicePixelRatio || 1, 2);
       const parent = canvas.parentElement;
       const rect = parent ? parent.getBoundingClientRect() : canvas.getBoundingClientRect();
       state.w = rect.width;
@@ -263,7 +266,19 @@ export function useCircuitCanvas(
     window.addEventListener('resize', resize);
 
     // ── Animation loop ──
+    let frameSkip = 0;
     const loop = (): void => {
+      state.frame = requestAnimationFrame(loop);
+
+      // Skip rendering when hero is off-screen
+      if (isVisibleRef && !isVisibleRef.current) return;
+
+      // Throttle to ~30fps on mobile (every other frame)
+      if (isMobile) {
+        frameSkip++;
+        if (frameSkip % 2 !== 0) return;
+      }
+
       state.tick++;
       const { w, h, nodes, particles, pulses, lightnings, hexagons } = state;
       const mouse = mousePosRef.current;
@@ -645,8 +660,6 @@ export function useCircuitCanvas(
         ctx.lineWidth = 0.8;
         ctx.stroke();
       }
-
-      state.frame = requestAnimationFrame(loop);
     };
 
     state.frame = requestAnimationFrame(loop);
@@ -656,5 +669,5 @@ export function useCircuitCanvas(
       window.removeEventListener('resize', resize);
       state.initialized = false;
     };
-  }, [canvasRef, mousePosRef, prefersReduced]);
+  }, [canvasRef, mousePosRef, prefersReduced, isVisibleRef]);
 }

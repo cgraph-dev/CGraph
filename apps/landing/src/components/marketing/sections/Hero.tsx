@@ -66,12 +66,14 @@ const Hero = memo(function Hero(): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mousePosRef = useRef({ x: 0.5, y: 0.5 });
+  const isVisibleRef = useRef(true);
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+  const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
 
-  // Interactive mouse tracking for parallax background layers
+  // Interactive mouse tracking for parallax background layers (skipped on touch)
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
-      if (prefersReduced) return;
+      if (prefersReduced || isTouchDevice) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const pos = {
         x: (e.clientX - rect.left) / rect.width,
@@ -80,7 +82,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
       setMousePos(pos);
       mousePosRef.current = pos;
     },
-    [prefersReduced]
+    [prefersReduced, isTouchDevice]
   );
 
   // Scroll-linked parallax — bg drifts slower, content fades out
@@ -90,11 +92,30 @@ const Hero = memo(function Hero(): React.JSX.Element {
   });
 
   // Circuit network canvas animation (logo-style effects)
-  useCircuitCanvas(canvasRef, mousePosRef, prefersReduced);
+  useCircuitCanvas(canvasRef, mousePosRef, prefersReduced, isVisibleRef);
 
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -80]);
+
+  // Pause video + canvas when hero is off-screen (IntersectionObserver)
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const visible = entry?.isIntersecting ?? false;
+        isVisibleRef.current = visible;
+        const video = videoRef.current;
+        if (!video || prefersReduced) return;
+        if (visible && !document.hidden) video.play().catch(() => {});
+        else video.pause();
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, [prefersReduced]);
 
   // Pause video when tab hidden or reduced motion preferred
   useEffect(() => {
@@ -105,7 +126,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
       return;
     }
     const onVisibility = (): void => {
-      if (document.hidden) video.pause();
+      if (document.hidden || !isVisibleRef.current) video.pause();
       else video.play().catch(() => {});
     };
     document.addEventListener('visibilitychange', onVisibility);
@@ -145,6 +166,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
           loop
           muted
           playsInline
+          preload="metadata"
           poster="/videos/hero-poster.webp"
           aria-hidden="true"
         >
