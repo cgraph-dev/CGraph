@@ -8,13 +8,15 @@
   position: relative;
   min-height: 100vh;
   min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: transparent;
-  contain: layout style paint;
+  background: #030712;
+  contain: layout style;
 }
 
 /* ── Background layers ── */
@@ -22,6 +24,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
 }
 
 /* ── Video Background ── */
@@ -163,15 +166,63 @@
   pointer-events: none;
 }
 
-/* Bottom fade for seamless section transition */
+/* Bottom fade — multi-layer cinematic dissolve */
 .hero-pro__fade {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 200px;
+  height: 60%;
   z-index: 4;
-  background: linear-gradient(to top, #030712 0%, transparent 100%);
+  pointer-events: none;
+  /* Main darkness sweep — tuned for wide desktop screens */
+  background:
+    linear-gradient(
+      to top,
+      #030712 0%,
+      #030712 6%,
+      rgba(3, 7, 18, 0.97) 12%,
+      rgba(3, 7, 18, 0.90) 22%,
+      rgba(3, 7, 18, 0.75) 35%,
+      rgba(3, 7, 18, 0.50) 50%,
+      rgba(3, 7, 18, 0.25) 65%,
+      rgba(3, 7, 18, 0.08) 80%,
+      transparent 100%
+    );
+}
+
+/* Luminous edge — subtle brand glow at the seam */
+.hero-pro__fade::before {
+  content: '';
+  position: absolute;
+  bottom: 18%;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(16, 185, 129, 0.15) 15%,
+    rgba(6, 182, 212, 0.08) 35%,
+    rgba(139, 92, 246, 0.10) 55%,
+    rgba(16, 185, 129, 0.15) 85%,
+    transparent 100%
+  );
+  filter: blur(8px);
+  opacity: 0.7;
+}
+
+/* Soft vignette to kill hard side edges */
+.hero-pro__fade::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background:
+    radial-gradient(ellipse 140% 50% at 50% 100%, #030712 0%, transparent 65%);
+  opacity: 0.6;
 }
 
 /* ── Content ── */
@@ -303,14 +354,13 @@
   position: absolute;
   bottom: 2rem;
   left: 50%;
-  transform: translateX(-50%) scale(0.7);
+  transform: translateX(-50%);
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
   cursor: pointer;
-  opacity: 0.6;
   transition: opacity 0.3s ease;
 }
 
@@ -319,34 +369,7 @@
 }
 
 .hero-pro__scroll-mouse {
-  width: 26px;
-  height: 42px;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  position: relative;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
-  transition: all 0.3s ease;
-}
-
-.hero-pro__scroll:hover .hero-pro__scroll-mouse {
-  border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
-}
-
-.hero-pro__scroll-wheel {
-  position: absolute;
-  top: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  background: #10b981;
-  border-radius: 50%;
-  animation: scroll-wheel 2s ease-in-out infinite;
-  box-shadow: 0 0 8px #10b981;
+  display: none;
 }
 
 .hero-pro__scroll-arrows {
@@ -391,12 +414,6 @@
   text-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
 }
 
-@keyframes scroll-wheel {
-  0% { top: 6px; opacity: 1; height: 4px; }
-  20% { height: 12px; }
-  100% { top: 24px; opacity: 0; height: 4px; }
-}
-
 @keyframes scroll-arrow {
   0% { opacity: 0; transform: rotate(45deg) translate(-2px, -2px); }
   50% { opacity: 1; }
@@ -408,6 +425,9 @@
   .hero-pro {
     min-height: 100vh;
     min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
     justify-content: flex-start;
     padding-top: 0;
     padding-bottom: 0;
@@ -421,14 +441,14 @@
     position: static;
     flex: 1;
     width: 100%;
-    padding: 0 1.25rem;
+    padding: 0 1.25rem 5rem;
     gap: 0;
     justify-content: space-between;
   }
 
   .hero-pro__subtitle-wrap {
     margin-top: auto;
-    margin-bottom: -2.5rem;
+    margin-bottom: 0;
   }
 
   .hero-pro__mesh {
@@ -473,21 +493,15 @@
   }
 
   .hero-pro__scroll {
-    position: relative;
-    bottom: auto;
-    left: auto;
-    transform: none;
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) scale(0.7);
     margin-top: 0;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0;
     z-index: 20;
-    scale: 0.55;
-    opacity: 0.5;
+    opacity: 0.7;
     gap: 0.4rem;
-  }
-
-  .hero-pro__scroll-mouse {
-    width: 22px;
-    height: 36px;
   }
 
   .hero-pro__scroll-arrows {

@@ -488,8 +488,10 @@
 
   /* --- Hero Section --- */
   .hero-pro {
-    min-height: 88vh;
-    min-height: 88dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100vh;
+    height: 100dvh;
     padding: 6.75rem 1rem 3.5rem;
     padding-top: 6.9rem !important;
   }

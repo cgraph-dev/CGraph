@@ -132,7 +132,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
   }, [prefersReduced]);
 
   const { scrollY } = useScroll();
-  const scrollOpacity = useTransform(scrollY, [0, 100], [0.6, 0]);
+  const scrollOpacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
     <section
@@ -177,10 +177,10 @@ const Hero = memo(function Hero(): React.JSX.Element {
 
         {/* Interactive circuit network canvas (logo-style) */}
         <canvas ref={canvasRef} className="hero-pro__circuit-canvas" aria-hidden="true" />
-
-        {/* Bottom fade for smooth transition */}
-        <div className="hero-pro__fade" />
       </motion.div>
+
+      {/* Bottom fade — outside parallax container so it stays pinned */}
+      <div className="hero-pro__fade" aria-hidden="true" />
 
       {/* Content — fades out on scroll */}
       <motion.div
@@ -220,16 +220,13 @@ const Hero = memo(function Hero(): React.JSX.Element {
         </motion.div>
       </motion.div>
 
-      {/* Scroll indicator */}
-      {/* Scroll indicator */}
+      {/* Scroll indicator — click scrolls to features */}
       <motion.div
         className="hero-pro__scroll"
         aria-hidden="true"
         style={{ opacity: scrollOpacity }}
+        onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
       >
-        <div className="hero-pro__scroll-mouse">
-          <div className="hero-pro__scroll-wheel" />
-        </div>
         <div className="hero-pro__scroll-arrows">
           <span />
           <span />
