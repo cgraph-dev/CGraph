@@ -52,9 +52,9 @@ export const systemApi = {
 
     // Remove undefined values
     Object.keys(payload).forEach((key) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       if (payload[key as keyof typeof payload] === undefined) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         delete payload[key as keyof typeof payload];
       }
     });

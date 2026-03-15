@@ -181,9 +181,9 @@ export function ForwardMessageModal({
                   filteredConversations.map((conversation) => {
                     const isSelected = selectedConversations.has(conversation.id);
                     const avatarBorderId =
-                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                       
                       (conversation as { avatarBorderId?: string | null })?.avatarBorderId ??
-                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                       
                       (conversation as { avatar_border_id?: string | null })?.avatar_border_id ??
                       null;
                     return (

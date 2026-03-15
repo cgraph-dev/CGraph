@@ -87,7 +87,7 @@ export function useForumPermissions({
             group_id: p.group_id || p.user_group_id,
             group_name:
               p.group_name ||
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               (p.user_group as Record<string, unknown>)?.name || // safe downcast – structural boundary
               `Group ${p.group_id || p.user_group_id}`,
             applies_to: p.applies_to || 'group',

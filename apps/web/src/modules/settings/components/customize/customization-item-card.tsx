@@ -281,7 +281,7 @@ function CustomizationItemCardInner<T extends CustomizationItem>({
 // type assertion: preserving generic type through React.memo wrapper
 // type assertion: React.memo loses generic type parameter, re-assert original component type
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+ 
 export const CustomizationItemCard = memo(
   CustomizationItemCardInner
 ) as typeof CustomizationItemCardInner;

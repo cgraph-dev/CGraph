@@ -63,7 +63,7 @@ export function SearchFiltersPanel({ filters, onFiltersChange }: SearchFiltersPa
       {/* Sort Selector */}
       <select
         value={filters.sort ?? 'relevance'}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         onChange={(e) => updateFilter('sort', e.target.value as ForumSearchFilters['sort'])}
         className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-300 outline-none focus:border-blue-500"
       >

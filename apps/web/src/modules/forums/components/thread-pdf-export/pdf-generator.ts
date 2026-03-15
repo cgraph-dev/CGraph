@@ -107,7 +107,7 @@ export async function generatePDF(
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100);
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const metadataLines = [
       `Author: ${thread.author.name}`,
       `Posted: ${formatDate(thread.createdAt)}`,

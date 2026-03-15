@@ -151,7 +151,7 @@ export default function IdentityCardScreen({ navigation }: Props) {
     frame: selectedFrame?.id !== 'none' ? selectedFrame : null,
     badges: availableBadges.filter((b) => equippedBadgeIds.includes(b.id)),
     title: title || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     reputation: (user as Record<string, unknown>)?.karma as number | undefined,
     bio: bio || undefined,
   };

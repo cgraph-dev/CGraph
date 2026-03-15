@@ -206,7 +206,7 @@ export default function ModerationQueueScreen({ navigation }: any) {
           {/* Reason badge */}
           <View style={styles.cardHeader}>
             <View style={[styles.reasonBadge, { backgroundColor: reason.color + '20' }]}>
-              {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               <Ionicons name={reason.icon as any} size={14} color={reason.color} />
               <Text style={[styles.reasonText, { color: reason.color }]}>{reason.label}</Text>
             </View>

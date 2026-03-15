@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+ 
 /**
  * Header & Branding Editor — Logo, header bg, title font, subtitle, favicon
  *

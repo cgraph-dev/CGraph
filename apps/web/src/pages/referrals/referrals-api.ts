@@ -125,7 +125,7 @@ function transformReferral(data: ApiReferral): ReferralEntry {
           avatar: data.referred_user.avatar_url,
         }
       : null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     status: data.status as ReferralEntry['status'],
     codeUsed: data.code_used,
     createdAt: data.inserted_at,

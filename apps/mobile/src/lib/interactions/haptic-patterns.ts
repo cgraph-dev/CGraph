@@ -325,7 +325,7 @@ class HapticEngine {
           case 'impact':
             if (step.style) {
               const effectiveStyle = this.getEffectiveStyle(
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 step.style as Haptics.ImpactFeedbackStyle
               );
               if (effectiveStyle) {
@@ -336,7 +336,7 @@ class HapticEngine {
 
           case 'notification':
             if (step.style) {
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               await Haptics.notificationAsync(step.style as Haptics.NotificationFeedbackType);
             }
             break;
@@ -376,14 +376,14 @@ class HapticEngine {
         switch (step.type) {
           case 'impact':
             if (step.style) {
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               await Haptics.impactAsync(step.style as Haptics.ImpactFeedbackStyle);
             }
             break;
 
           case 'notification':
             if (step.style) {
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               await Haptics.notificationAsync(step.style as Haptics.NotificationFeedbackType);
             }
             break;

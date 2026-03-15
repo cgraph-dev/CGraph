@@ -52,7 +52,7 @@ export function useProfileActions({
       setUser({ ...user, friend_request_sent: true });
       Alert.alert('Success', 'Friend request sent!');
     } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
       let errorMessage =
         typeof error.response?.data?.error === 'object'
@@ -75,7 +75,7 @@ export function useProfileActions({
       setUser({ ...user, friend_request_sent: false, friend_request_received: false });
       Alert.alert('Cancelled', 'Friend request cancelled');
     } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const error = err as { response?: { data?: { error?: string; message?: string } } };
       Alert.alert(
         'Error',
@@ -94,7 +94,7 @@ export function useProfileActions({
       setUser({ ...user, is_friend: true, friend_request_received: false });
       Alert.alert('Success', 'Friend request accepted!');
     } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
       const errorMessage =
         typeof error.response?.data?.error === 'object'
@@ -114,7 +114,7 @@ export function useProfileActions({
       setUser({ ...user, friend_request_received: false });
       Alert.alert('Declined', 'Friend request declined');
     } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const error = err as { response?: { data?: { error?: string; message?: string } } };
       Alert.alert(
         'Error',

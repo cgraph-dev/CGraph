@@ -155,7 +155,7 @@ export function SearchForm({ onSuccess }: SearchFormProps) {
       setSearchInput('');
       onSuccess();
     } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const apiErr = err as { response?: { data?: { error?: { message?: string } | string } } };
       let errorMessage =
         typeof apiErr.response?.data?.error === 'object'

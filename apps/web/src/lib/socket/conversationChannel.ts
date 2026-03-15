@@ -112,10 +112,10 @@ export function joinConversation(
     });
 
     channel.on('new_message', (payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as { message: Record<string, unknown> };
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const normalized = normalizeMessage(data.message) as unknown as Message; // safe downcast – structural boundary
       logger.log('Received new_message:', normalized);
 
@@ -130,14 +130,14 @@ export function joinConversation(
     });
 
     channel.on('msg_delivered', (payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as { message_id: string; conversation_id?: string };
       const convId = data.conversation_id || conversationId;
       useChatStore.getState().updateMessageStatus(convId, data.message_id, 'delivered');
     });
 
     channel.on('message_read', (payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as {
         message_id: string;
         user_id: string;
@@ -151,32 +151,32 @@ export function joinConversation(
     });
 
     channel.on('message_updated', (payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as { message: Record<string, unknown> };
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const normalized = normalizeMessage(data.message) as unknown as Message; // safe downcast – structural boundary
       useChatStore.getState().updateMessage(normalized);
     });
 
     channel.on('message_deleted', (payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as { message_id: string };
       useChatStore.getState().markMessageDeleted(data.message_id);
     });
 
     channel.on('link_preview_updated', (payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as { message: Record<string, unknown> };
       if (data.message) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const normalized = normalizeMessage(data.message) as unknown as Message;
         useChatStore.getState().updateMessage(normalized);
       }
     });
 
     channel.on('typing', (payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as { user_id: string; is_typing: boolean; started_at?: string };
       useChatStore
         .getState()
@@ -187,7 +187,7 @@ export function joinConversation(
     channel.on('presence_diff', (diff) => logger.log('Presence diff:', diff));
 
     channel.on('reaction_added', (payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as {
         message_id: string;
         user_id: string;
@@ -200,7 +200,7 @@ export function joinConversation(
     });
 
     channel.on('reaction_removed', (payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as { message_id: string; user_id: string; emoji: string };
       useChatStore.getState().removeReactionFromMessage(data.message_id, data.emoji, data.user_id);
     });

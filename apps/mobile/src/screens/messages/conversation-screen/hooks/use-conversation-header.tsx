@@ -105,7 +105,7 @@ export function useConversationHeader({
             style={styles.headerTitleContainer}
             onPress={() => {
               if (otherParticipantId) {
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 (navigation as NavigationProp<ParamListBase>).navigate('FriendsTab', {
                   screen: 'UserProfile',
                   params: { userId: otherParticipantId },

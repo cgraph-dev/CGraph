@@ -142,7 +142,7 @@ export function MessageList({
 
       const { message, groupMessages, msgIndex } = row;
       const messageSenderId =
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         getMessageSenderId(message as unknown as Record<string, unknown>) || ''; // type assertion: narrowing for helper function
       const currentUserId = userId || '';
 
@@ -151,7 +151,7 @@ export function MessageList({
 
       const prevMessage = groupMessages[msgIndex - 1];
       const prevSenderId = prevMessage
-        ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        ?  
           getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || '' // type assertion: narrowing for helper function
         : '';
       const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);

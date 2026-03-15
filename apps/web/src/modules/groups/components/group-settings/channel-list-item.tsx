@@ -71,7 +71,7 @@ export function ChannelListItem({
   // type assertion: channel.type is a valid key of channelIcons map
 
   const Icon: React.ComponentType<React.SVGProps<SVGSVGElement>> =
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     channelIcons[channel.type as keyof typeof channelIcons] ?? HashtagIcon;
 
   return (

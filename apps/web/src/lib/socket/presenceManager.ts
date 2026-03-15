@@ -63,7 +63,7 @@ export function joinPresenceLobby(
 
   // Handle initial presence state with customizations
   channel.on('presence_state', (payload: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { users?: Record<string, { customization?: FriendCustomization }> };
     if (data.users) {
       for (const [userId, info] of Object.entries(data.users)) {
@@ -75,7 +75,7 @@ export function joinPresenceLobby(
   });
 
   channel.on('friend_online', (payload: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as {
       user_id: string;
       status: string;
@@ -90,7 +90,7 @@ export function joinPresenceLobby(
   });
 
   channel.on('friend_offline', (payload: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { user_id: string; last_seen?: string };
     onlineUsers.get('lobby')?.delete(data.user_id);
     friendCustomizations.delete(data.user_id);
@@ -99,7 +99,7 @@ export function joinPresenceLobby(
   });
 
   channel.on('friend_customization_changed', (payload: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { user_id: string; customization: FriendCustomization };
     if (data.customization) {
       friendCustomizations.set(data.user_id, data.customization);
@@ -108,7 +108,7 @@ export function joinPresenceLobby(
   });
 
   const handleStatusUpdate = (payload: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { user_id: string; status: string };
     logger.log('Friend status update:', data.user_id, '->', data.status);
   };

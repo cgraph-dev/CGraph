@@ -176,7 +176,7 @@ export function addBreadcrumb(breadcrumb: Omit<Breadcrumb, 'timestamp'>): void {
     ...breadcrumb,
     timestamp: Date.now(),
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     data: stripPii(breadcrumb.data) as Record<string, unknown> | undefined,
   });
 
@@ -260,7 +260,7 @@ export function captureError(error: Error | string, context: ErrorContext = {}):
     error: errorObj.message,
     stack: errorObj.stack,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     context: stripPii(context) as ErrorContext,
     userContext,
     breadcrumbs: [...breadcrumbs],
@@ -394,7 +394,7 @@ export async function initErrorTracking(baseUrl: string): Promise<void> {
   // Start queue processor — adaptive: 60s active, 4 min backgrounded
   // Store interval ID for cleanup; AppState-aware to reduce background work
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   const { AppState } = require('react-native');
   let queueInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -411,7 +411,7 @@ export async function initErrorTracking(baseUrl: string): Promise<void> {
   isInitialized = true;
 
   if (CONFIG.debug) {
-    // eslint-disable-next-line no-console
+     
     console.info('[ErrorTracking] Initialized for mobile');
   }
 }

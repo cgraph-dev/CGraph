@@ -61,7 +61,7 @@ export default function Select({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         // type assertion: EventTarget to Node for contains check
         setIsOpen(false);

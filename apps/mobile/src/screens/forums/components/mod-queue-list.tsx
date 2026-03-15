@@ -26,7 +26,7 @@ interface ModQueueListProps {
 
 // ── Content Type Badge ─────────────────────────────────────────────
 function ContentTypeBadge({ type }: { type: ModQueueItem['content_type'] }) {
-  const { _colors } = useThemeStore();
+  const { colors } = useThemeStore();
 
   const config = {
     thread: { label: 'Thread', color: '#6366f1' },

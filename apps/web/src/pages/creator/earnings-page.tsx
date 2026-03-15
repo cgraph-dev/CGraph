@@ -59,7 +59,7 @@ export function EarningsPage(): React.ReactElement {
     fetchPayouts,
     requestPayout,
   } = useCreatorDashboard();
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const payouts = (rawPayouts ?? []) as unknown as Payout[];
 
   useEffect(() => {

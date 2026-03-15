@@ -56,7 +56,7 @@ export function UISettingsPanel({
                   updatePreference(
                     'glassEffect',
 
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     e.target.value as UIPreferences['glassEffect'] /* safe downcast – event value */
                   )
                 }
@@ -79,7 +79,7 @@ export function UISettingsPanel({
                   updatePreference(
                     'voiceVisualizerTheme',
 
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     e.target
                       .value as UIPreferences['voiceVisualizerTheme'] /* safe downcast – event value */
                   )
@@ -104,7 +104,7 @@ export function UISettingsPanel({
                   updatePreference(
                     'animationIntensity',
 
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     e.target.value as AnimationIntensity /* safe downcast – event value */
                   )
                 }
@@ -127,7 +127,7 @@ export function UISettingsPanel({
                   updatePreference(
                     'messageEntranceAnimation',
 
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     e.target
                       .value as UIPreferences['messageEntranceAnimation'] /* safe downcast – event value */
                   )
@@ -156,13 +156,13 @@ export function UISettingsPanel({
                   setUiPreferences({
                     ...uiPreferences,
 
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     [key]: !uiPreferences[key as keyof typeof uiPreferences],
                   });
                   if (uiPreferences.enableHaptic) HapticFeedback.light();
                 }}
                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   uiPreferences[key as keyof typeof uiPreferences]
                     ? 'bg-primary-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]'
                     : 'border border-white/[0.08] bg-white/[0.06] text-gray-400'

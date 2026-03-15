@@ -101,9 +101,9 @@ export default function BoardPermissionsScreen({ route }: Props) {
         api.get(`/api/v1/boards/${boardId}/permissions`),
         api.get(`/api/v1/forums/${forumId}/permission-templates`),
       ]);
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       setPerms((permsRes.data?.permissions || []) as BoardPerm[]);
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       setTemplates((templatesRes.data?.templates || []) as PermTemplate[]);
     } catch {
       // silent
@@ -204,7 +204,7 @@ export default function BoardPermissionsScreen({ route }: Props) {
 
         {/* Legend */}
         <View style={styles.legend}>
-          {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+          { }
           {(['inherit', 'allow', 'deny'] as PermLevel[]).map((level) => (
             <View key={level} style={styles.legendItem}>
               <View style={[styles.legendDot, { backgroundColor: LEVEL_COLORS[level].bg }]} />
@@ -254,7 +254,7 @@ export default function BoardPermissionsScreen({ route }: Props) {
                       </Text>
                       {/* Segmented control */}
                       <View style={styles.segmented}>
-                        {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+                        { }
                         {(['inherit', 'allow', 'deny'] as PermLevel[]).map((l) => (
                           <TouchableOpacity
                             key={l}

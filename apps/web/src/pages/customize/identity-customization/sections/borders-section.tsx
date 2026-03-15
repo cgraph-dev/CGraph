@@ -151,7 +151,7 @@ export function BordersSection({
                       id: border.id,
                       name: border.name,
 
-                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                       
                       rarity: border.rarity === 'free' ? 'common' : (border.rarity as Rarity), // safe downcast – compatible rarity union
                       animation: border.animationType,
                       colors: border.colors,

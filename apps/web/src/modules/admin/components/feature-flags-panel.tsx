@@ -241,7 +241,7 @@ function CreateFlagModal({
             <label className="mb-1 block text-sm font-medium">Type</label>
             <select
               value={type}
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               onChange={(e) => setType(e.target.value as FlagType)}
               className="w-full rounded-md border px-3 py-2 dark:border-white/[0.08] dark:bg-white/[0.06]"
             >

@@ -119,7 +119,7 @@ export const conversationsApi = {
     const data = response.data?.conversation || response.data?.data || response.data;
     // Return data directly - full validation on individual items would require importing conversationSchema
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return data as Conversation; // safe downcast – API response shape
   },
 
@@ -132,7 +132,7 @@ export const conversationsApi = {
     });
     const data = response.data?.conversation || response.data?.data || response.data;
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return data as Conversation; // safe downcast – API response shape
   },
 };
@@ -190,7 +190,7 @@ export const messagesApi = {
     });
     const data = response.data?.message || response.data?.data || response.data;
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return data as Message; // safe downcast – API response shape
   },
 
@@ -204,7 +204,7 @@ export const messagesApi = {
     );
     const data = response.data?.message || response.data?.data || response.data;
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return data as Message; // safe downcast – API response shape
   },
 

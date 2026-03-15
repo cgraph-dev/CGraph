@@ -110,7 +110,7 @@ export const createThemeActions: StateCreator<ThemeStore, [], [], ThemeStore> = 
       }
     } catch (error) {
       // Silently handle 404 — endpoint may not be deployed yet
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const status = (error as { response?: { status?: number } })?.response?.status;
       if (status !== 404) {
         logger.warn('Failed to sync theme:', error);

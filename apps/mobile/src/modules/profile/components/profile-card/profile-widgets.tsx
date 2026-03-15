@@ -67,7 +67,7 @@ export function ProfileWidgets({ widgets, onPressWidget, onPressAdd }: ProfileWi
           onPress={() => onPressWidget?.(widget)}
         >
           <Ionicons
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             name={getIconName(widget.icon) as React.ComponentProps<typeof Ionicons>['name']}
             size={20}
             color="#aaa"

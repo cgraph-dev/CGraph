@@ -70,7 +70,7 @@ export function createScheduledActions(set: Set, _get: Get) {
 
         const response = await api.post(`/conversations/${conversationId}/messages`, payload);
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const scheduledMessage = normalizeMessage(
           response.data?.message || response.data
         ) as unknown as Message; // type assertion: normalizer output type bridge
@@ -119,7 +119,7 @@ export function createScheduledActions(set: Set, _get: Get) {
           scheduled_at: newScheduledAt.toISOString(),
         });
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const updatedMessage = normalizeMessage(
           response.data?.message || response.data
         ) as unknown as Message; // type assertion: normalizer output type bridge

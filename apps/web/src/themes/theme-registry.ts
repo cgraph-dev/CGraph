@@ -193,7 +193,7 @@ class ThemeRegistryClass {
    */
   importTheme(json: string): AppTheme {
     try {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const theme = JSON.parse(json) as AppTheme; // safe downcast – validated below
 
       // Validate theme structure

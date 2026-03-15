@@ -28,7 +28,7 @@ export function getLuminance(color: string): number {
   const rgb = hexToRgb(color);
   if (!rgb) return 0;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((val) => {
     const normalized = val / 255;
     return normalized <= 0.03928 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);

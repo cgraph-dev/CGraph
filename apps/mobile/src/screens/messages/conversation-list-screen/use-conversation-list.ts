@@ -58,16 +58,16 @@ export function useConversationList(user: UserBasic | null) {
       const convos = response.data.data || [];
       setConversations(convos);
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const participantIds = convos
         .map((conv: Conversation) => {
           const other = conv.participants?.find((p: ConversationParticipant) => {
             const pUserId =
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
             return String(pUserId) !== String(user?.id);
           });
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           return other?.userId || other?.user_id || (other?.user as Record<string, unknown>)?.id;
         })
         .filter(Boolean) as string[];

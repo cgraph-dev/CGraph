@@ -73,9 +73,9 @@ function FallbackLayer({ config, index, totalLayers, borderRadius = 0 }: Fallbac
 
   return (
     <LinearGradient
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       colors={gradient.colors as [string, string, ...string[]]}
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       locations={gradient.locations as [number, number, ...number[]]}
       start={gradient.start}
       end={gradient.end}
@@ -263,7 +263,7 @@ export default function BlurViewCross({
 
       {/* Style-specific gradient overlay */}
       <LinearGradient
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         colors={[colors.gradientStart, colors.gradientEnd] as [string, string]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}

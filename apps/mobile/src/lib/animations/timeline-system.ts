@@ -261,7 +261,7 @@ export function runKeyframeAnimation(
   if (animations.length === 1 && animations[0]) {
     target.value = animations[0];
   } else if (animations.length > 1) {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     target.value = withSequence(...(animations as [any, any, ...any[]]));
   }
 }
@@ -386,7 +386,7 @@ export function createStaggeredAnimation(
     if (animations.length === 1 && animations[0]) {
       target.value = withDelay(delay, animations[0]);
     } else if (animations.length > 1) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       target.value = withDelay(delay, withSequence(...(animations as [any, any, ...any[]])));
     }
   });
@@ -482,7 +482,7 @@ export function createShakeAnimation(
 
   shakeAnimations.push(withTiming(0, { duration: shakeDuration }));
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   target.value = withSequence(...(shakeAnimations as [any, any, ...any[]]));
 }
 
@@ -513,7 +513,7 @@ export function createBounceAnimation(
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   target.value = withSequence(...(bounceAnimations as [any, any, ...any[]]));
 }
 

@@ -47,7 +47,7 @@ export function usePremiumStatus() {
 
   const hasFeature = useCallback(
     (feature: keyof typeof TIER_FEATURES.free) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const tierFeatures = TIER_FEATURES[tier as TierName] || TIER_FEATURES.free;
       const value = tierFeatures[feature];
 
@@ -64,7 +64,7 @@ export function usePremiumStatus() {
 
   const getFeatureLimit = useCallback(
     (feature: keyof typeof TIER_FEATURES.free) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const tierFeatures = TIER_FEATURES[tier as TierName] || TIER_FEATURES.free;
       return tierFeatures[feature];
     },

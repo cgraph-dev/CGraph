@@ -17,7 +17,7 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SwatchIcon, EyeIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
-// eslint-disable-next-line no-restricted-imports
+ 
 import {
   useThemeStore,
   type ThemeColorPreset,

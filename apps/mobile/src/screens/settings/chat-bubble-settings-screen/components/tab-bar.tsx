@@ -30,7 +30,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
           }}
         >
           <Ionicons
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             name={tab.icon as keyof typeof Ionicons.glyphMap}
             size={20}
             color={activeTab === tab.id ? '#10b981' : '#6b7280'}

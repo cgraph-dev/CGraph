@@ -144,31 +144,31 @@ export default function WhosOnlineScreen() {
   // Transform API response
   const transformApiUsers = (data: unknown[]): OnlineUser[] => {
     return data.map((u) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const user = u as Record<string, unknown>;
       return {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         id: user.id as string,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         username: (user.username as string) || 'Unknown',
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         displayName: (user.display_name as string) || null,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         avatarUrl: (user.avatar_url as string) || null,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         userGroup: (user.user_group as string) || 'Member',
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         userGroupColor: (user.user_group_color as string) || null,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         lastActivity: (user.last_activity as string) || new Date().toISOString(),
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         currentActivity: (user.current_activity as string) || null,
       };
     });
@@ -203,7 +203,7 @@ export default function WhosOnlineScreen() {
             activity: a.activity || 'Unknown',
             count: a.count || 0,
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             icon: getActivityIcon(a.activity as string),
           })
         );
@@ -284,7 +284,7 @@ export default function WhosOnlineScreen() {
       <FloatingOrbs />
 
       {/* Wave effect */}
-      {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <WaveEffect scrollY={scrollY as any} />
 
       {/* Header with parallax */}
@@ -346,7 +346,7 @@ export default function WhosOnlineScreen() {
               user={item}
               index={index}
               onPress={() => handleUserPress(item)}
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               scrollY={scrollY as any}
             />
           )}
@@ -393,7 +393,7 @@ export default function WhosOnlineScreen() {
               <AnimatedRecordBadge
                 record={stats.record}
                 recordDate={stats.recordDate}
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 scrollY={scrollY as any}
               />
               {/* Activity Breakdown with animations */}

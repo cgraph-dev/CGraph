@@ -6,7 +6,7 @@ import { type ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LockClosedIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
-// eslint-disable-next-line no-restricted-imports
+ 
 import { useThemeStore } from '@/stores/theme';
 import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';
@@ -44,7 +44,7 @@ export function PremiumThemeGate({
   // Determine user's current tier (from subscription or user data)
   const userTier = user?.subscription?.tier || (theme.isPremium ? 'premium' : 'free');
   const hasAccess =
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     tierHierarchy[userTier as keyof typeof tierHierarchy] >= tierHierarchy[requiredTier];
 
   if (hasAccess) {

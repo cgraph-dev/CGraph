@@ -12,7 +12,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 // Mock motion/react so Dialog renders plain elements in jsdom
 vi.mock('motion/react', () => ({
   motion: {
-    // eslint-disable-next-line no-restricted-syntax
+     
     div: React.forwardRef(
       (
         { children, ...props }: React.PropsWithChildren<Record<string, unknown>>,

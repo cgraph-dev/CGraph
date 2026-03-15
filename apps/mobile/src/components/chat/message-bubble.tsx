@@ -3,7 +3,7 @@
  * @module components/chat/message-bubble
  */
 import React, { memo, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet, _Linking, type ViewStyle } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Linking, type ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { space, radius } from '../../theme/tokens';
@@ -47,7 +47,7 @@ export const MessageBubble = memo(function MessageBubble({
     ...styles.bubble,
     ...bubbleRadius,
     ...(isOwnMessage ? styles.ownBubble : styles.otherBubble),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     ...(style as object),
   };
 

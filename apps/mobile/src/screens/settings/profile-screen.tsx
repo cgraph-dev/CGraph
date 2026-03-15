@@ -60,7 +60,7 @@ export default function ProfileScreen({ navigation }: Props) {
       const { uri } = result.assets[0];
       const filename = uri.split('/').pop() ?? 'avatar.jpg';
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       formData.append('avatar', {
         uri,
         name: filename,
@@ -117,7 +117,7 @@ export default function ProfileScreen({ navigation }: Props) {
       });
       Alert.alert('Success', 'Username changed successfully');
     } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const error = err as {
         response?: { data?: { error?: { message?: string }; message?: string } };
       };
@@ -161,7 +161,7 @@ export default function ProfileScreen({ navigation }: Props) {
           <View style={{ marginTop: 12 }}>
             <TitleBadge
               title={user.title}
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               rarity={(user.title_rarity as Rarity) ?? 'common'}
               animation="shimmer"
               showSparkles={true}

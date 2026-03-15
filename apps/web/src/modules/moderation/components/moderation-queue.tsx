@@ -238,7 +238,7 @@ export function ModerationQueue() {
         )}
         <select
           value={statusFilter}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           onChange={(e) => setStatusFilter(e.target.value as FilterStatus)} // safe downcast – select event value
           className="rounded bg-white/[0.04] px-3 py-1.5 text-sm text-gray-300"
         >
@@ -247,7 +247,7 @@ export function ModerationQueue() {
         </select>
         <select
           value={priorityFilter}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           onChange={(e) => setPriorityFilter(e.target.value as FilterPriority)} // safe downcast – select event value
           className="rounded bg-white/[0.04] px-3 py-1.5 text-sm text-gray-300"
         >

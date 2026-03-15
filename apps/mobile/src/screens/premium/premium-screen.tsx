@@ -157,7 +157,7 @@ function PremiumScreen(): React.ReactElement | null {
                 }
               }
             } catch (error: unknown) {
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               const err = error as Error;
               console.error('[PremiumScreen] Purchase error:', err);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -195,7 +195,7 @@ function PremiumScreen(): React.ReactElement | null {
                 Alert.alert('No Purchases', 'No previous purchases found to restore.');
               }
             } catch (error: unknown) {
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               const err = error as Error;
               console.error('[PremiumScreen] Restore error:', err);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -280,7 +280,7 @@ function PremiumScreen(): React.ReactElement | null {
       <PremiumFooter
         currentTier={currentTier}
         onManageSubscription={handleManageSubscription}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         colors={colors as unknown as Record<string, string>}
       />
     </ScrollView>

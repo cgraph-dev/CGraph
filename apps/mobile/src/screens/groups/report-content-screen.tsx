@@ -46,7 +46,7 @@ const REPORT_CATEGORIES = [
  * Report content screen with category selection and optional description.
  */
 export default function ReportContentScreen({ navigation, route }: Props) {
-  const { targetType, targetId, _groupId, targetPreview } = route.params;
+  const { targetType, targetId, groupId, targetPreview } = route.params;
   const { colors } = useThemeStore();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [description, setDescription] = useState('');
@@ -110,7 +110,7 @@ export default function ReportContentScreen({ navigation, route }: Props) {
                   onPress={() => setSelectedCategory(cat.key)}
                 >
                   <Ionicons
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     name={cat.icon as keyof typeof Ionicons.glyphMap}
                     size={18}
                     color={isSelected ? colors.primary : colors.textSecondary}

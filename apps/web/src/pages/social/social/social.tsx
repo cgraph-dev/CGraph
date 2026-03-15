@@ -78,7 +78,7 @@ export function Social() {
       storeNotifications.map((n) => ({
         id: n.id,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: store type matches UI union
+         
         type: n.type as Notification['type'],
         title: n.title,
         message: n.body,

@@ -322,7 +322,7 @@ export function ScheduleMessageModal({
                     onPress={() => handleQuickOption(opt)}
                     activeOpacity={0.7}
                   >
-                    {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     <Ionicons name={opt.icon as any} size={18} color={colors.primary} />
                     <Text style={dynamicStyles.quickBtnText}>{opt.label}</Text>
                   </TouchableOpacity>

@@ -39,7 +39,7 @@ export interface SpringConfig {
 export function getSpringConfig(config: SpringConfig): WithSpringConfig {
   const { name: _name, description: _description, ...springConfig } = config;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return springConfig as WithSpringConfig;
 }
 

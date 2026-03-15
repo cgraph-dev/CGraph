@@ -89,7 +89,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
     const phoenixChannel = socketManager.joinChannel(`group:${channelId}`);
     if (phoenixChannel) {
       phoenixChannel.on('new_message', (payload: unknown) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const data = payload as { message: Message };
         setMessages((prev) => [...prev, data.message].slice(-500));
       });

@@ -51,7 +51,7 @@ export function useChatInfoPanel({
     api
       .get(`/api/v1/conversations/${conversationId}`)
       .then((res) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const data = (res as { data?: { data?: { message_ttl?: number | null } } })?.data?.data;
         if (data?.message_ttl !== undefined) {
           setMessageTTL(data.message_ttl);

@@ -453,7 +453,7 @@ export function useSystemColors(): ReturnType<typeof platformAdapter.getSystemCo
   useEffect(() => {
     // Refresh colors when theme changes
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+     
     const { Appearance } = require('react-native');
     const listener = Appearance.addChangeListener(() => {
       setColors(platformAdapter.getSystemColors());

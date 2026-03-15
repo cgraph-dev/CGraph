@@ -292,7 +292,7 @@ export const useForumThemeStore = useThemeStore;
 export const useActiveForumTheme = () => {
   const themeId = useThemeStore((s) => s.activeForumThemeId);
   return themeId
-    ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    ?  
       FORUM_THEME_PRESETS[themeId as keyof typeof FORUM_THEME_PRESETS]
     : FORUM_THEME_PRESETS['dark-elite'];
 };
@@ -369,7 +369,7 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
       ...current,
       [category]: { ...(current[category] ?? {}), ...changes },
     };
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     set({ previewDraft: merged as ForumCustomizationOptions });
   },
 

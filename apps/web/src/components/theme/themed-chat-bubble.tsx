@@ -5,14 +5,14 @@
 import { durations } from '@cgraph/animation-constants';
 import { motion } from 'motion/react';
 
-// eslint-disable-next-line no-restricted-imports
+ 
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useChatCustomization } from '@/modules/settings/store/customization';
 
-// eslint-disable-next-line no-restricted-imports
+ 
 import { useChatBubbleStore } from '@/stores/theme';
 
-// eslint-disable-next-line no-restricted-imports
+ 
 import type { UserTheme } from '@/stores/theme';
 import { ThemedAvatar } from './themed-avatar';
 import { tweens, loop, springs } from '@/lib/animation-presets';

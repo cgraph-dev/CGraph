@@ -292,10 +292,10 @@ export function parseNotificationData(
   const { content } = request;
 
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     type: (content.data?.type as string) || undefined,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: (content.data?.id as string) || undefined,
     title: content.title || undefined,
     body: content.body || undefined,

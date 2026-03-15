@@ -34,7 +34,7 @@ export const useSecretChatStore = create<SecretChatState>()(
       // ── Initial State ──────────────────────────────────────────────
       session: null,
       ghostMode: { ...initialGhostMode },
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       selectedThemeId: 'void' as SecretThemeId,
       isPanicWiping: false,
 
@@ -113,7 +113,7 @@ export const useSecretChatStore = create<SecretChatState>()(
           {
             session: null,
             ghostMode: { ...initialGhostMode },
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             selectedThemeId: 'void' as SecretThemeId,
             isPanicWiping: false,
           },

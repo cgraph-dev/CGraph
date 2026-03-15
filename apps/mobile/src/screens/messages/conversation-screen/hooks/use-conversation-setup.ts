@@ -6,7 +6,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { FlatList, TextInput, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import type { Message } from '../../../../types';
+import type { Message, MessagesStackParamList, UserBasic } from '../../../../types';
 import type { GifResult } from '../components/gif-picker-modal';
 import { createLogger } from '../../../../lib/logger';
 import {
@@ -29,7 +29,6 @@ import {
 import { formatSimpleTime, getMessageStatusInfo } from '../utils';
 import { usePrivacySettings } from '../../../../stores/settingsStore';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { MessagesStackParamList, UserBasic } from '../../../../types';
 import type { EncryptedMessage } from '../../../../lib/crypto/e2ee';
 import type { AttachmentItem } from './useAttachments';
 
@@ -157,7 +156,7 @@ export function useConversationSetup(params: SetupParams) {
 
   const header = useConversationHeader({
     navigation,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     colors: colors as {
       text: string;
       textSecondary: string;
@@ -168,7 +167,7 @@ export function useConversationSetup(params: SetupParams) {
     isOtherUserTyping: showTypingIndicators && presence.isOtherUserTyping,
     otherParticipantLastSeen: presence.otherParticipantLastSeen,
     otherParticipantId,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     otherUser: null as UserBasic | null, // set from outside
     onStartCall: handleStartCall,
     onOpenDisappearingMessages: () => setShowDisappearingMessages(true),
@@ -312,7 +311,7 @@ export function useConversationSetup(params: SetupParams) {
       if (assets.length === 0) return;
       const newAttachments: AttachmentItem[] = assets.map((a) => ({
         uri: a.uri,
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         type: a.type as 'image' | 'file' | 'video',
         name: a.name,
         mimeType: a.mimeType,
@@ -329,7 +328,7 @@ export function useConversationSetup(params: SetupParams) {
       if (!isOwn) return null;
       const status =
         message.status || (message.read_at ? 'read' : message.delivered_at ? 'delivered' : 'sent');
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return getMessageStatusInfo(status, colors as { textTertiary: string });
     },
     [colors]

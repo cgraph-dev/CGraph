@@ -245,7 +245,7 @@ export default function ProfileVisibilityScreen() {
                 value={settings.allowMessaging}
                 options={MESSAGING_OPTIONS}
                 onChange={(v) =>
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   updateSetting('allowMessaging', v as 'everyone' | 'friends' | 'nobody')
                 }
               />

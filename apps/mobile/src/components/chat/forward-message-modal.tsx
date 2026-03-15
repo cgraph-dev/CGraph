@@ -151,9 +151,9 @@ export function ForwardMessageModal({
         >
           {/* Avatar */}
           <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-            {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {(item as any).avatar_url ? (
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               <Image source={{ uri: (item as any).avatar_url }} style={styles.avatarImage} />
             ) : (
               <Text style={styles.avatarText}>{(item.name || '?').charAt(0).toUpperCase()}</Text>

@@ -65,7 +65,7 @@ function buildParticles(theme: SeasonalTheme, count: number): ParticleConfig[] {
 
       case 'hearts':
         particles.push({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           emoji: ['❤️', '💕', '💖', '💗', '💘'][Math.floor(Math.random() * 5)] as string,
           size: 14 + Math.random() * 12,
           startX,
@@ -96,7 +96,7 @@ function buildParticles(theme: SeasonalTheme, count: number): ParticleConfig[] {
 
       case 'confetti':
         particles.push({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           emoji: ['🎊', '🎉', '✨', '⭐'][Math.floor(Math.random() * 4)] as string,
           size: 12 + Math.random() * 8,
           startX,

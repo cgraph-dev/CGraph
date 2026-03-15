@@ -91,7 +91,7 @@ export interface UseMessageSendingReturn {
  */
 export function useMessageSending({
   conversationId,
-  _userId,
+  userId,
   isE2EEInitialized,
   otherParticipantId,
   encryptMessage,
@@ -259,7 +259,7 @@ export function useMessageSending({
         const formData = new FormData();
         const fileName = `voice_${Date.now()}.m4a`;
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         formData.append('file', {
           uri: voiceData.uri,
           type: 'audio/m4a',
@@ -348,7 +348,7 @@ export function useMessageSending({
 
         const formData = new FormData();
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         formData.append('file', {
           uri,
           type: fileMimeType,
@@ -380,7 +380,7 @@ export function useMessageSending({
         onMessageSent(normalized);
         onScrollToBottom();
       } catch (error: unknown) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const err = error as {
           response?: { data?: { error?: { message?: string } } };
           message?: string;
@@ -425,7 +425,7 @@ export function useMessageSending({
           const mimeType =
             attachment.mimeType || (attachment.type === 'video' ? 'video/mp4' : 'image/jpeg');
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           formData.append('file', {
             uri: attachment.uri,
             type: mimeType,

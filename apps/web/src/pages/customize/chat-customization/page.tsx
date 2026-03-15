@@ -96,7 +96,7 @@ export default function ChatCustomization() {
         >
           {activeCategory === 'bubbles' && (
             <BubbleStylesSection
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               bubbles={filteredItems as BubbleStyle[]} // safe downcast – runtime verified
               selectedBubble={bubbleStyle}
               previewingLockedItem={previewingLockedItem}
@@ -106,7 +106,7 @@ export default function ChatCustomization() {
 
           {activeCategory === 'effects' && (
             <MessageEffectsSection
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               effects={filteredItems as MessageEffect[]} // safe downcast – runtime verified
               selectedEffect={messageEffect}
               previewingLockedItem={previewingLockedItem}

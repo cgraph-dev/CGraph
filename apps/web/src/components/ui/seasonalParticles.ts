@@ -83,7 +83,7 @@ export function createParticle(theme: SeasonalTheme, w: number, h: number): Seas
         size: 6 + Math.random() * 10,
         opacity: 0.3 + Math.random() * 0.4,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         color: ['#ef4444', '#ec4899', '#f43f5e', '#fb7185'][
           Math.floor(Math.random() * 4)
         ] as string, // type assertion: array index returns valid color string
@@ -101,7 +101,7 @@ export function createParticle(theme: SeasonalTheme, w: number, h: number): Seas
         size: 5 + Math.random() * 8,
         opacity: 0.3 + Math.random() * 0.5,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         color: ['#fbb6ce', '#f9a8d4', '#fbcfe8', '#fce7f3'][
           Math.floor(Math.random() * 4)
         ] as string, // type assertion: array index returns valid color string
@@ -124,7 +124,7 @@ export function createParticle(theme: SeasonalTheme, w: number, h: number): Seas
         size: 2 + Math.random() * 3,
         opacity: 1,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         color: ['#fbbf24', '#ef4444', '#3b82f6', '#22c55e', '#a855f7', '#f97316'][
           Math.floor(Math.random() * 6)
         ] as string, // type assertion: array index returns valid color string
@@ -142,7 +142,7 @@ export function createParticle(theme: SeasonalTheme, w: number, h: number): Seas
         size: 4 + Math.random() * 4,
         opacity: 0.7 + Math.random() * 0.3,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         color: ['#ef4444', '#3b82f6', '#22c55e', '#fbbf24', '#a855f7', '#ec4899'][
           Math.floor(Math.random() * 6)
         ] as string, // type assertion: array index returns valid color string

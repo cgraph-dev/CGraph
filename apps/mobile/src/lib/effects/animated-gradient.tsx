@@ -138,9 +138,9 @@ export function AnimatedGradientView({
     <View style={[styles.container, style, { borderRadius }]}>
       <Animated.View style={combinedStyle}>
         <LinearGradient
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           colors={gradientData.colors as [string, string, ...string[]]}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           locations={gradientData.locations as [number, number, ...number[]]}
           start={gradientData.start}
           end={gradientData.end}
@@ -237,7 +237,7 @@ export function AnimatedBorderGradient({
       {/* Gradient border (enlarged and clipped) */}
       <Animated.View style={[styles.gradientBorderWrapper, animatedStyle]}>
         <LinearGradient
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           colors={colors as [string, string, ...string[]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -394,7 +394,7 @@ export function MeshGradientBackground({
     <View style={[styles.meshContainer, style]}>
       {/* Base layer */}
       <LinearGradient
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         colors={[color1, color2] as [string, string]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -404,7 +404,7 @@ export function MeshGradientBackground({
       {/* Animated overlay layers */}
       <Animated.View style={[styles.meshLayer, layer1Style]}>
         <LinearGradient
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           colors={[`${color2}80`, 'transparent'] as [string, string]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -414,7 +414,7 @@ export function MeshGradientBackground({
 
       <Animated.View style={[styles.meshLayer, layer2Style]}>
         <LinearGradient
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           colors={[`${color3}60`, 'transparent'] as [string, string]}
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 1 }}

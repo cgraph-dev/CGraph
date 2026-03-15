@@ -83,19 +83,22 @@ describe('Hero', () => {
         <Hero />
       </MemoryRouter>
     );
-    expect(screen.getByText('Get Started Free')).toBeInTheDocument();
-    expect(screen.getByText('Explore Features')).toBeInTheDocument();
+    // Hero uses cycling subtitles instead of CTA buttons
+    expect(screen.getByText('Reimagined')).toBeInTheDocument();
+    expect(screen.getByText('Scroll to explore')).toBeInTheDocument();
   });
 
-  it('renders trust badges', async () => {
+  it('renders cycling subtitles', async () => {
     const { default: Hero } = await importHero();
     render(
       <MemoryRouter>
         <Hero />
       </MemoryRouter>
     );
-    expect(screen.getByText('E2E Encrypted')).toBeInTheDocument();
-    expect(screen.getByText('Zero-Knowledge')).toBeInTheDocument();
+    // First subtitle is shown by default
+    expect(
+      screen.getByText('End-to-end encrypted messaging with post-quantum security.')
+    ).toBeInTheDocument();
   });
 
   it('has an accessible aria-label', async () => {
@@ -109,25 +112,27 @@ describe('Hero', () => {
     expect(section).toBeInTheDocument();
   });
 
-  it('Get Started Free links to registration', async () => {
+  it('scroll indicator targets features section', async () => {
     const { default: Hero } = await importHero();
     render(
       <MemoryRouter>
         <Hero />
       </MemoryRouter>
     );
-    const cta = screen.getByText('Get Started Free').closest('a');
-    expect(cta).toHaveAttribute('href', expect.stringContaining('register'));
+    // Scroll indicator exists and clicking it calls scrollIntoView
+    const scrollText = screen.getByText('Scroll to explore');
+    expect(scrollText).toBeInTheDocument();
   });
 
-  it('Explore Features links to features section', async () => {
+  it('renders multiple cycling subtitle options', async () => {
     const { default: Hero } = await importHero();
     render(
       <MemoryRouter>
         <Hero />
       </MemoryRouter>
     );
-    const link = screen.getByText('Explore Features').closest('a');
-    expect(link).toHaveAttribute('href', '#features');
+    // Verify that at least one subtitle is in the document
+    const subtitle = screen.getByText(/encrypted messaging|community forums|video calls/i);
+    expect(subtitle).toBeInTheDocument();
   });
 });

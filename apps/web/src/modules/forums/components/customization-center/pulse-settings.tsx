@@ -37,11 +37,11 @@ export function PulseSettings({ options, onSave, saving }: PulseSettingsProps) {
     if (Array.isArray(stored) && stored.length > 0) {
       setThresholds(
         stored.map((t: Record<string, unknown>) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           name: (t.name as string) ?? '',
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           minPulse: (t.min_karma as number) ?? (t.minPulse as number) ?? 0,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           imageUrl: (t.image_url as string) ?? (t.imageUrl as string) ?? '',
         }))
       );
@@ -93,7 +93,7 @@ export function PulseSettings({ options, onSave, saving }: PulseSettingsProps) {
           <label className="mb-1 block text-xs text-white/50">Pulse Name</label>
           <input
             type="text"
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             value={(draft.karma_name as string) ?? 'Pulse'}
             onChange={(e) => updateField('karma_name', e.target.value)}
             placeholder="Pulse"
@@ -104,7 +104,7 @@ export function PulseSettings({ options, onSave, saving }: PulseSettingsProps) {
           <label className="mb-1 block text-xs text-white/50">Upvote Label</label>
           <input
             type="text"
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             value={(draft.upvote_label as string) ?? 'Upvote'}
             onChange={(e) => updateField('upvote_label', e.target.value)}
             placeholder="Upvote"
@@ -115,7 +115,7 @@ export function PulseSettings({ options, onSave, saving }: PulseSettingsProps) {
           <label className="mb-1 block text-xs text-white/50">Downvote Label</label>
           <input
             type="text"
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             value={(draft.downvote_label as string) ?? 'Downvote'}
             onChange={(e) => updateField('downvote_label', e.target.value)}
             placeholder="Downvote"

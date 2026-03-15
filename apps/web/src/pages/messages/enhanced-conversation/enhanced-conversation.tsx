@@ -101,7 +101,7 @@ export default function EnhancedConversation() {
           messageInput={messageInput}
           isSending={isSending}
           showStickerPicker={showStickerPicker}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           inputContainerRef={inputContainerRef as React.RefObject<HTMLDivElement>} // safe downcast – DOM element
           onMessageChange={setMessageInput}
           onSend={handleSend}

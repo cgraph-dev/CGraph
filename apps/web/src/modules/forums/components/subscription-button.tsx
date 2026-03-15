@@ -176,7 +176,7 @@ export function SubscriptionButton({
                     value={settings.notificationMode}
                     onValueChange={
                       (value: string) =>
-                        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                         
                         handleSettingsChange({ notificationMode: value as NotificationMode }) // safe downcast – select event value
                     }
                   >

@@ -81,7 +81,7 @@ export function useCopyToClipboard(
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         }
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         setState({ copied: false, error: error as Error });
         return false;
       }

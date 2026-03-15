@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+ 
 /**
  * ProfileContent - Avatar, name, title, status, badges, and XP bar
  */

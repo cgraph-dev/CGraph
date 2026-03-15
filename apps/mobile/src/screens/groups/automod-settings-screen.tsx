@@ -98,17 +98,17 @@ export default function AutomodSettingsScreen({ route }: Props) {
           : [];
       setRules(
         data.map((r: Record<string, unknown>) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           id: (r.id ?? '') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           name: (r.name ?? '') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           ruleType: (r.rule_type ?? r.ruleType ?? '') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           pattern: (r.pattern ?? '') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           action: (r.action ?? 'delete') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           isEnabled: (r.is_enabled ?? r.isEnabled ?? true) as boolean,
         }))
       );
@@ -238,7 +238,7 @@ export default function AutomodSettingsScreen({ route }: Props) {
           >
             <Ionicons
               name={
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 (RULE_TYPE_ICONS[item.ruleType] ||
                   'shield-outline') as keyof typeof Ionicons.glyphMap
               }

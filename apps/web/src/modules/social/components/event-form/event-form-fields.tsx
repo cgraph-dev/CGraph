@@ -119,7 +119,7 @@ export default function EventFormFields({
             value={formData.recurrence?.pattern || ''}
             // type assertion: select element value matches RecurrencePattern union
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             onChange={(e) => handleRecurrenceChange(e.target.value as RecurrencePattern | '')}
             className="bg-background border-border w-full appearance-none rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
           >

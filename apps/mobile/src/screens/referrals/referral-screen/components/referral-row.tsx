@@ -50,7 +50,7 @@ export function ReferralRow({ referral }: ReferralRowProps) {
 
       <View style={[styles.statusBadge, { backgroundColor: statusConfig.color + '20' }]}>
         <Ionicons
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           name={statusConfig.icon as keyof typeof Ionicons.glyphMap}
           size={14}
           color={statusConfig.color}

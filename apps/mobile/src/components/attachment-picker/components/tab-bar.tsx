@@ -41,7 +41,7 @@ export function TabBar({ activeTab, onTabPress, isDark, textSecondaryColor }: Ta
             style={[styles.tabIconContainer, activeTab === tab.id && styles.tabIconContainerActive]}
           >
             <Ionicons
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               name={tab.icon as keyof typeof Ionicons.glyphMap}
               size={22}
               color={activeTab === tab.id ? '#fff' : textSecondaryColor}

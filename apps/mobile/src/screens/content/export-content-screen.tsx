@@ -66,11 +66,11 @@ export default function ExportContentScreen() {
         content: data.content || '',
         replies:
           data.replies?.map((r: Record<string, unknown>) => ({
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             author: (r.author as { username?: string })?.username || 'Unknown',
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             date: new Date(r.created_at as string).toLocaleDateString(),
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             content: (r.content as string) || '',
           })) || [],
       };

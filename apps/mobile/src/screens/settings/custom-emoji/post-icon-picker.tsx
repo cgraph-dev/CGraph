@@ -68,7 +68,7 @@ export function PostIconPicker({
       setLoading(true);
       try {
         const res = await api.get(`/api/v1/forums/${forumId}/boards/${boardId}/post-icons`);
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const data = (res.data as { data: PostIcon[] }).data || [];
         if (!cancelled) setIcons(data);
       } catch {

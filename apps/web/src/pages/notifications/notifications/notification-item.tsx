@@ -118,7 +118,7 @@ export function NotificationItem({
               <p className="mt-1 text-xs text-gray-500">{formatTimeAgo(notification.createdAt)}</p>
 
               {/* Inline action buttons for actionable notifications */}
-              {/* eslint-disable @typescript-eslint/consistent-type-assertions -- narrowing notification.type to known union after includes() check */}
+              { }
               {(['friend_request', 'message', 'group_invite', 'mention'] as const).includes(
                 notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention'
               ) && (

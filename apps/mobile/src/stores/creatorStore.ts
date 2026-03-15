@@ -19,7 +19,7 @@ import {
   refreshOnboard as refreshOnboardApi,
   listPremiumThreads,
   listTiers,
-  type _CreatorStatus,
+  type CreatorStatus,
   type CreatorBalance,
   type PayoutRequest,
   type AnalyticsOverview,
@@ -77,9 +77,9 @@ const initialState = {
   balance: null,
   payouts: [],
   analyticsOverview: null,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   premiumThreads: [] as any[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tiers: [] as any[],
   isLoadingPremium: false,
   isLoading: false,

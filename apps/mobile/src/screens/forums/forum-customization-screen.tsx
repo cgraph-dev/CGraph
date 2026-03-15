@@ -158,12 +158,12 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
               <View
                 style={[
                   styles.colorSwatch,
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   { backgroundColor: (appearance[key] as string) ?? '#3B82F6' },
                 ]}
               />
               <TextInput
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 value={(appearance[key] as string) ?? ''}
                 onChangeText={(v) => updateAppearance(key, v)}
                 style={[styles.colorInput, { color: colors.text, borderColor: colors.border }]}
@@ -241,7 +241,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
         <View style={styles.inputRow}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>Karma Name</Text>
           <TextInput
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             value={(reputation.karma_name as string) ?? 'Karma'}
             onChangeText={(v) =>
               setOptions(
@@ -258,7 +258,7 @@ export default function ForumCustomizationScreen({ navigation, route }: Props) {
         <View style={styles.inputRow}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>Upvote Label</Text>
           <TextInput
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             value={(reputation.upvote_label as string) ?? 'Upvote'}
             onChangeText={(v) =>
               setOptions(

@@ -43,10 +43,10 @@ export default function Dropdown({
     const handleClickOutside = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- EventTarget to Node for contains check
+         
         !dropdownRef.current.contains(e.target as Node) &&
         triggerRef.current &&
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- EventTarget to Node for contains check
+         
         !triggerRef.current.contains(e.target as Node)
       ) {
         setIsOpen(false);

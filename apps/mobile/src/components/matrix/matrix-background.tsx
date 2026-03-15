@@ -56,7 +56,7 @@ import Animated, {
 
 import type {
   MatrixBackgroundProps,
-  _MatrixBackgroundRef,
+  MatrixBackgroundRef,
   MatrixColumnData,
   MatrixChar,
   MatrixMobileTheme,
@@ -247,7 +247,7 @@ export const MatrixBackground = memo(function MatrixBackground(props: MatrixBack
   // Theme
   const theme: MatrixMobileTheme = useMemo(() => {
     if (typeof themeProp === 'string') {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return getTheme(themeProp as ThemePreset);
     }
     return themeProp;

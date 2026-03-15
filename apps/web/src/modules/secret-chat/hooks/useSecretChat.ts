@@ -88,7 +88,7 @@ interface SerializedTripleRatchetMessage {
  * Deserialize a base64 JSON blob back into a TripleRatchetMessage.
  */
 function deserializeMessage(blob: string): TripleRatchetMessage {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const parsed: SerializedTripleRatchetMessage = JSON.parse(blob) as SerializedTripleRatchetMessage;
 
   return {

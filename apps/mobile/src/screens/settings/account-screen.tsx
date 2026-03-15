@@ -288,9 +288,9 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
               <Text style={[styles.settingsItemText, { color: colors.text }]}>Wallet</Text>
               {user?.wallet_address ? (
                 <Text style={[styles.connectedValue, { color: colors.textSecondary }]}>
-                  {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+                  { }
                   {(user.wallet_address as string).slice(0, 6)}...
-                  {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+                  { }
                   {(user.wallet_address as string).slice(-4)}
                 </Text>
               ) : (

@@ -95,7 +95,7 @@ export default function ConfettiCelebration({
         color: colors[Math.floor(Math.random() * colors.length)],
         size: 8 + Math.random() * 8,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         shape: ['square', 'rectangle', 'circle'][Math.floor(Math.random() * 3)] as
           | 'square'
           | 'rectangle'

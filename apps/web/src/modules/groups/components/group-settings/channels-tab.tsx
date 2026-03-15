@@ -57,7 +57,7 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
               id: asString(c.id),
               name: asString(c.name),
 
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               type: (channelType === 'voice' || channelType === 'announcement'
                 ? channelType
                 : 'text') as 'text' | 'voice' | 'announcement', // type assertion: narrowing validated string to union

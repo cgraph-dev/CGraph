@@ -138,7 +138,7 @@ export function MorphingButton({
   onLongPress,
   disabled = false,
   hapticFeedback = true,
-  _morphDuration = 300,
+  morphDuration = 300,
   pressScale = 0.95,
   springPreset = 'snappy',
   autoResetAfterSuccess = true,
@@ -318,7 +318,7 @@ export function MorphingButton({
   const content =
     variant === 'gradient' && gradientColors ? (
       <LinearGradient
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         colors={gradientColors as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}

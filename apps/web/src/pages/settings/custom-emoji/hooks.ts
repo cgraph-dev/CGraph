@@ -81,7 +81,7 @@ export function useCustomEmoji() {
     queryFn: async () => {
       const res = await api.get('/api/v1/emojis/custom');
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return res.data.data as CustomEmoji[]; // safe downcast – API response field
     },
     retry: 1,

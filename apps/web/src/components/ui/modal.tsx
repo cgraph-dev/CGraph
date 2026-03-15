@@ -48,10 +48,10 @@ export function Modal({
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const firstElement = focusableElements[0] as HTMLElement; // safe downcast – DOM element
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement; // safe downcast – DOM element
 
         if (event.shiftKey && document.activeElement === firstElement) {
@@ -68,14 +68,14 @@ export function Modal({
 
   useEffect(() => {
     if (isOpen) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       previousActiveElement.current = document.activeElement as HTMLElement; // safe downcast – DOM element
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
 
       // Focus the modal
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const firstFocusable = modalRef.current?.querySelector(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       ) as HTMLElement; // safe downcast – DOM element

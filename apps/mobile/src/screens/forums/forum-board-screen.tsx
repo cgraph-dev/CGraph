@@ -75,7 +75,7 @@ type SortOption = 'newest' | 'popular' | 'active';
  *
  */
 export default function ForumBoardScreen({ navigation, route }: Props) {
-  const { forumId, boardId, _boardName } = route.params;
+  const { forumId, boardId, boardName } = route.params;
   const { colors } = useThemeStore();
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -152,7 +152,7 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
         { backgroundColor: colors.surface, borderBottomColor: colors.border },
       ]}
     >
-      {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+      { }
       {(['newest', 'popular', 'active'] as SortOption[]).map((sort) => (
         <TouchableOpacity
           key={sort}
@@ -254,7 +254,7 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
     <View style={[styles.boardHeader, { backgroundColor: colors.surface }]}>
       <View style={styles.boardInfo}>
         <View style={[styles.boardIcon, { backgroundColor: colors.primary }]}>
-          {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <Ionicons name={(board?.icon as any) || 'chatbubbles'} size={24} color="#fff" />
         </View>
         <View style={styles.boardDetails}>

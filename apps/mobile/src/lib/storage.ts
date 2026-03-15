@@ -98,7 +98,7 @@ const generalStorage = {
     const value = await this.getItem(key);
     if (!value) return null;
     try {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return JSON.parse(value) as T;
     } catch {
       return null;
@@ -173,7 +173,7 @@ export const storage = {
   async getTheme(): Promise<'light' | 'dark' | 'system' | null> {
     const theme = await generalStorage.getItem(KEYS.THEME);
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return theme as 'light' | 'dark' | 'system' | null;
   },
 

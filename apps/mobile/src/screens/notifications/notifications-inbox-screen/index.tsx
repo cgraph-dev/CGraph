@@ -36,7 +36,7 @@ import {
  */
 export default function NotificationsInboxScreen() {
   const { colors, isDark } = useThemeStore();
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const notifications = useNotificationStore((s) => s.notifications) as unknown as Notification[];
   const isLoading = useNotificationStore((s) => s.isLoading);
   const { fetchNotifications, markAsRead, markAllAsRead, deleteNotification } =

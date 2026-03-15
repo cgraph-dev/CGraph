@@ -23,7 +23,7 @@ export function SettingsSection({ title, icon, iconColor, children }: SettingsSe
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={[styles.sectionIcon, { backgroundColor: `${iconColor}20` }]}>
-          {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+          { }
           <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={18} color={iconColor} />
         </View>
         <Text style={styles.sectionTitle}>{title}</Text>

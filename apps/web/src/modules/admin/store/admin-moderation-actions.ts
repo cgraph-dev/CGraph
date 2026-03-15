@@ -30,7 +30,7 @@ export function createModerationActions(set: Set) {
         const { api } = await import('@/lib/api');
         const response = await api.get('/api/v1/admin/moderation');
         set({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           moderationQueue: (response.data as ModerationItem[]).map((item) => ({
             // type assertion: API response data shape
             ...item,

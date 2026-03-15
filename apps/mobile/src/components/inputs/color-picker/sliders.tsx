@@ -63,7 +63,7 @@ export function HueSlider({ value, onChange, width, height, hapticFeedback }: Sl
   return (
     <View style={[styles.slider, { width, height, borderRadius: height / 2 }]}>
       <LinearGradient
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         colors={hueColors as [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}

@@ -205,7 +205,7 @@ function LottieBackground({ animationData, disabled }: LottieBackgroundProps) {
           renderer: 'svg',
           loop: true,
           autoplay: true,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- lottie-web animationData accepts object
+           
           animationData: animationData as Record<string, unknown>,
         });
 

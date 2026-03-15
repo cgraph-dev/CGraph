@@ -64,7 +64,7 @@ defmodule CGraph.Messaging.LinkPreviewService do
   @doc """
   Build a frontend-compatible preview map from cache entry or raw metadata.
   """
-  @spec build_preview_map(%LinkPreviewCache{} | map()) :: map()
+  @spec build_preview_map(LinkPreviewCache.t() | map()) :: map()
   def build_preview_map(%LinkPreviewCache{} = entry) do
     %{
       url: entry.url,

@@ -160,10 +160,10 @@ const QUICK_ACTIONS = [
     label: 'Find Friends',
     color: '#10b981',
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     gradient: ['#10b981', '#059669'] as [string, string],
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     category: 'users' as SearchCategory,
   },
   {
@@ -171,10 +171,10 @@ const QUICK_ACTIONS = [
     label: 'Join Groups',
     color: '#f59e0b',
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     gradient: ['#f59e0b', '#d97706'] as [string, string],
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     category: 'groups' as SearchCategory,
   },
   {
@@ -182,10 +182,10 @@ const QUICK_ACTIONS = [
     label: 'Explore Forums',
     color: '#ec4899',
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     gradient: ['#ec4899', '#db2777'] as [string, string],
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     category: 'forums' as SearchCategory,
   },
   {
@@ -193,10 +193,10 @@ const QUICK_ACTIONS = [
     label: 'Discover',
     color: '#8b5cf6',
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     gradient: ['#8b5cf6', '#7c3aed'] as [string, string],
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     category: 'all' as SearchCategory,
   },
 ];

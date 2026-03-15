@@ -278,7 +278,7 @@ export default function ForumSettingsScreen({ navigation, route }: Props) {
             <Switch
               value={Boolean(value)}
               onValueChange={(val) =>
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 updateSetting(item.key, val as ForumSettings[typeof item.key])
               }
               trackColor={{ false: colors.border, true: colors.primary }}
@@ -300,7 +300,7 @@ export default function ForumSettingsScreen({ navigation, route }: Props) {
               ]}
               value={String(value)}
               onChangeText={(text) =>
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 updateSetting(item.key, text as ForumSettings[typeof item.key])
               }
               placeholder={`Enter ${item.label.toLowerCase()}`}
@@ -331,7 +331,7 @@ export default function ForumSettingsScreen({ navigation, route }: Props) {
               onChangeText={(text) => {
                 const num = parseInt(text, 10);
 
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 updateSetting(item.key, (isNaN(num) ? 0 : num) as ForumSettings[typeof item.key]);
               }}
               keyboardType="number-pad"
@@ -357,7 +357,7 @@ export default function ForumSettingsScreen({ navigation, route }: Props) {
                     },
                   ]}
                   onPress={() =>
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     updateSetting(item.key, option.value as ForumSettings[typeof item.key])
                   }
                 >

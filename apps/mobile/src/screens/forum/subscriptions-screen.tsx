@@ -53,7 +53,7 @@ export function SubscriptionsScreen(): React.ReactElement {
     try {
       const response = await fetch('/api/forum/subscriptions');
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = (await response.json()) as { subscriptions?: Subscription[] };
       setSubscriptions(data.subscriptions || []);
     } catch (error) {

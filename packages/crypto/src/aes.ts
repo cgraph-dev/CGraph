@@ -50,6 +50,7 @@ export async function encryptAES(
   plaintext: string,
   key: CryptoKey | ArrayBuffer
 ): Promise<EncryptionResult> {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- type guard narrows CryptoKey, else is ArrayBuffer
   const cryptoKey = isCryptoKey(key) ? key : await importAESKey(key as ArrayBuffer);
   const encoder = new TextEncoder();
   const data = encoder.encode(plaintext);
@@ -86,6 +87,7 @@ export async function decryptAES(
   nonce: ArrayBuffer,
   key: CryptoKey | ArrayBuffer
 ): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- type guard narrows CryptoKey, else is ArrayBuffer
   const cryptoKey = isCryptoKey(key) ? key : await importAESKey(key as ArrayBuffer);
 
   const decrypted = await crypto.subtle.decrypt(

@@ -36,7 +36,7 @@ export function useOnboarding() {
       setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         setAvatarPreview(reader.result as string); // type assertion: FileReader result is always string when readAsDataURL
       };
       reader.readAsDataURL(file);
@@ -61,7 +61,7 @@ export function useOnboarding() {
 
         // Update profile via API
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         await api.put('/api/v1/me', {
           display_name: profileData.displayName,
           bio: profileData.bio,

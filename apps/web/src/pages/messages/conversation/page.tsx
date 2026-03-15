@@ -96,7 +96,7 @@ export default function Conversation() {
             isOtherUserOnline={ctx.isOtherUserOnline}
             typing={ctx.typing}
             uiPreferences={
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               ctx.uiPreferences as Parameters<
                 // safe downcast – structural boundary
                 typeof ConversationHeader
@@ -253,7 +253,7 @@ export default function Conversation() {
       <InfoPanel
         showInfoPanel={ctx.showInfoPanel}
         otherParticipant={
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           ctx.otherParticipant as unknown as Record<
             // safe downcast – structural boundary
             string,

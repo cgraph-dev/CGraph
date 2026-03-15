@@ -71,7 +71,7 @@ export default function CommunityCard({ community, onPress }: CommunityCardProps
 
           <View style={styles.meta}>
             <View style={[styles.badge, { backgroundColor: typeColor + '22' }]}>
-              {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+              { }
               <Ionicons name={typeIcon as 'people' | 'chatbubbles'} size={10} color={typeColor} />
               <Text style={[styles.badgeText, { color: typeColor }]}>{typeLabel}</Text>
             </View>

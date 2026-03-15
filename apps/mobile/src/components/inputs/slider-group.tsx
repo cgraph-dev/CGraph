@@ -16,11 +16,11 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  _withTiming,
+  withTiming,
   runOnJS,
-  _interpolate,
-  _interpolateColor,
-  _Extrapolate,
+  interpolate,
+  interpolateColor,
+  Extrapolate,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
@@ -371,7 +371,7 @@ export function RangeSlider({
       const value1 = positionToValue(newX);
       const value2 = positionToValue(thumbX2.value);
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       runOnJS(onChange)([value1, value2] as [number, number]);
 
       if (hapticFeedback) {
@@ -408,7 +408,7 @@ export function RangeSlider({
       const value1 = positionToValue(thumbX1.value);
       const value2 = positionToValue(newX);
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       runOnJS(onChange)([value1, value2] as [number, number]);
 
       if (hapticFeedback) {

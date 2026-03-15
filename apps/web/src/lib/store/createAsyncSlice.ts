@@ -85,10 +85,10 @@ export function createAsyncSlice<T>(
     const doFetch = async (): Promise<T | null> => {
       // Check stale time
       if (options.staleTime) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const lastFetched = get()[lastFetchedKey] as number | null; // safe downcast – known async state shape
         if (lastFetched && Date.now() - lastFetched < options.staleTime) {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           return get()[dataKey] as T; // safe downcast – known async state shape
         }
       }
@@ -125,14 +125,14 @@ export function createAsyncSlice<T>(
     return {
       // State (safe downcast – initial state typing for computed property keys)
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       [dataKey]: null as T | null, // type assertion: initial null state for generic type
       [loadingKey]: false,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       [errorKey]: null as Error | null, // type assertion: initial null state for error
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       [lastFetchedKey]: null as number | null, // type assertion: initial null state for timestamp
 
       // Actions

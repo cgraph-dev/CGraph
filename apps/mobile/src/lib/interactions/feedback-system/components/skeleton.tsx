@@ -60,7 +60,7 @@ export function Skeleton({
       {animated && (
         <Animated.View style={[styles.shimmerContainer, shimmerStyle]}>
           <LinearGradient
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             colors={['transparent', shimmerColor, 'transparent'] as [string, string, string]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}

@@ -377,7 +377,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
           <View style={styles.postActions}>
             <VoteButtons
               voteCount={post.vote_count}
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               myVote={(post.my_vote || 0) as 0 | 1 | -1}
               onVote={(dir) => handleVotePost(dir)}
               size={22}

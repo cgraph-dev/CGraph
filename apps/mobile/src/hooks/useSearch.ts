@@ -120,7 +120,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
         // Save to search history
         await searchService.saveSearchToHistory(query).catch(() => {});
       } catch (error: unknown) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const err = error as any;
         if (err.name !== 'AbortError') {
           setState((prev) => ({

@@ -80,7 +80,7 @@ export const useChatStore = create<ChatState>()(
             'conversations'
           );
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const normalizedConversations = normalizeConversations(
             rawConversations
           ) as unknown as Conversation[]; // type assertion: normalizer output type bridge
@@ -104,7 +104,7 @@ export const useChatStore = create<ChatState>()(
           });
           const rawMessages = ensureArray<Record<string, unknown>>(response.data, 'messages');
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const newMessages = rawMessages.map((m) => normalizeMessage(m)) as unknown as Message[]; // type assertion: normalizer output type bridge
           const hasMore = newMessages.length === 50;
 

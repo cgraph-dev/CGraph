@@ -148,7 +148,7 @@ export default function ExplorePage() {
             <AdjustmentsHorizontalIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
             <select
               value={sort}
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               onChange={(e) => setSort(e.target.value as SortOption)}
               className="appearance-none rounded-xl bg-white/[0.04] py-2.5 pl-9 pr-8 text-sm text-white outline-none ring-1 ring-white/10 focus:ring-primary-500/50"
             >

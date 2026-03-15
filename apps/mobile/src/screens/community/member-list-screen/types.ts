@@ -103,27 +103,27 @@ export function generateFallbackMembers(): Member[] {
 /** Transforms api members. */
 export function transformApiMembers(data: Record<string, unknown>[]): Member[] {
   return data.map((m) => ({
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: m.id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     username: (m.username as string) || 'Unknown',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     displayName: (m.display_name as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     avatarUrl: (m.avatar_url as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     userGroup: (m.user_group as string) || 'Member',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     userGroupColor: (m.user_group_color as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isOnline: (m.is_online as boolean) || false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     lastActive: (m.last_active as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     joinedAt: (m.joined_at as string) || new Date().toISOString(),
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     postCount: (m.post_count as number) || 0,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     reputation: (m.reputation as number) || 0,
   }));
 }

@@ -65,7 +65,7 @@ export function getConversationAvatarBorderId(
   }
   const otherParticipant = conversation.participants?.find((p) => p.userId !== currentUserId);
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const user = (otherParticipant as Record<string, unknown> | undefined)?.user; // type assertion: dynamic participant shape
   return getAvatarBorderId(user);
 }

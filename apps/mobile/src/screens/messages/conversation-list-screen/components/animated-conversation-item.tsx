@@ -72,7 +72,7 @@ export function AnimatedConversationItem({
         <GlassCard
           variant={item.unread_count > 0 ? 'neon' : 'frosted'}
           intensity="subtle"
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           style={[styles.conversationCard, item.unread_count > 0 && styles.unreadCard] as any}
           glowColor={item.unread_count > 0 ? '#10b981' : undefined}
         >
@@ -129,7 +129,7 @@ export function AnimatedConversationItem({
                   {displayName}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+                  { }
                   {!!(item as unknown as Record<string, unknown>).is_muted && (
                     <Ionicons name="notifications-off" size={14} color={colors.textTertiary} />
                   )}

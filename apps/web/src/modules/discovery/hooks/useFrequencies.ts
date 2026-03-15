@@ -26,7 +26,7 @@ export function useTopics() {
     queryKey: ['discovery', 'topics'],
     queryFn: async () => {
       const res = await api.get('/api/v1/topics');
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return res.data.data as Topic[];
     },
     staleTime: 5 * 60_000,
@@ -39,7 +39,7 @@ export function useUserFrequencies() {
     queryKey: ['discovery', 'frequencies'],
     queryFn: async () => {
       const res = await api.get('/api/v1/frequencies');
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return res.data.data as UserFrequency[];
     },
     staleTime: 60_000,

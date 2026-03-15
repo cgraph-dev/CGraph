@@ -94,7 +94,8 @@ export async function encryptFileWithMetadata(data: ArrayBuffer): Promise<{
   return {
     encryptedData: ciphertext,
     metadata: {
-      iv: arrayBufferToBase64(iv.buffer),
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Uint8Array.buffer is ArrayBuffer in practice
+      iv: arrayBufferToBase64(iv.buffer as ArrayBuffer),
       rawKeyBase64: arrayBufferToBase64(fileKey),
       algorithm: 'aes-256-gcm',
     },

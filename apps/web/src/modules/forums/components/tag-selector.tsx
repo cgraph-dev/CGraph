@@ -61,7 +61,7 @@ export default function TagSelector({
   // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }

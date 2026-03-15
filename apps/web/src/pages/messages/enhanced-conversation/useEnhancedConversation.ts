@@ -72,7 +72,7 @@ export function useEnhancedConversation() {
 
     // Optimistic: show message in the list immediately with a sending indicator
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     addOptimisticMessage({
       id: `optimistic-${Date.now()}`,
       conversationId,
@@ -87,7 +87,7 @@ export function useEnhancedConversation() {
       isEdited: false,
       deletedAt: null,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       metadata: {} as Message['metadata'], // safe downcast – optimistic message placeholder
       reactions: [],
       sender: {

@@ -164,7 +164,7 @@ export const useSecretChatStore = create<SecretChatStore>((set, get) => ({
       set({
         conversations: storedConversations ? JSON.parse(storedConversations) : [],
         messages: storedMessages ? JSON.parse(storedMessages) : {},
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         activeTheme: (storedTheme as SecretThemeId) ?? 'void',
       });
     } catch {
@@ -267,7 +267,7 @@ export const useSecretChatStore = create<SecretChatStore>((set, get) => ({
 
     // Decrypt with PQXDH session
     const ciphertextJson = Buffer.from(msg.ciphertext, 'base64').toString('utf-8');
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const ratchetMsg = JSON.parse(ciphertextJson) as TripleRatchetMessage;
     const plaintext = await decryptMessage(conversation.sessionId, ratchetMsg);
 

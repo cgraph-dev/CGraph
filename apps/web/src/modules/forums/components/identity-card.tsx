@@ -141,7 +141,7 @@ export default function IdentityCard({
           {visibleBadges.length > 0 && (
             <div className="mt-1.5 flex flex-wrap items-center gap-1">
               {visibleBadges.map((badge, i) => {
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 const IconComp = BADGE_ICONS[i % BADGE_ICONS.length] as React.ComponentType<
                   React.SVGProps<SVGSVGElement>
                 >;

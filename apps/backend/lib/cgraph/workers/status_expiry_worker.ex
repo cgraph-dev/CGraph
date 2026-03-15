@@ -39,7 +39,7 @@ defmodule CGraph.Workers.StatusExpiryWorker do
     :ok
   end
 
-  @spec clear_expired_status(%User{}) :: :ok
+  @spec clear_expired_status(User.t()) :: :ok
   defp clear_expired_status(user) do
     user
     |> Ecto.Changeset.change(%{

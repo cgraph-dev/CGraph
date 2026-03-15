@@ -138,7 +138,7 @@ export interface CreateAutoRuleData {
 async function apiCall<T>(method: string, url: string, data?: unknown): Promise<T> {
   const { default: axios } = await import('axios');
   const response = await axios({ method, url, data });
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return response.data as T;
 }
 
@@ -146,101 +146,101 @@ async function apiCall<T>(method: string, url: string, data?: unknown): Promise<
 
 function mapGroup(raw: Record<string, unknown>): ForumUserGroupLocal {
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     forumId: (raw.forum_id as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     name: raw.name as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     description: (raw.description as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     color: (raw.color as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     type: (raw.type as ForumUserGroupLocal['type']) || 'custom',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     position: (raw.position as number) || 0,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isDefault: (raw.is_default as boolean) || false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isHidden: (raw.is_hidden as boolean) || false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isStaff: (raw.is_staff as boolean) || false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isSuperMod: (raw.is_super_mod as boolean) || false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     canModerate: (raw.can_moderate as boolean) || false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     canAdmin: (raw.can_admin as boolean) || false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     permissions: (raw.permissions as Record<string, boolean | number>) || {},
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     memberCount: (raw.member_count as number) || 0,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     createdAt: (raw.created_at as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     updatedAt: (raw.updated_at as string) || '',
   };
 }
 
 function mapSecondaryMember(raw: Record<string, unknown>): SecondaryGroupMember {
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     userId: raw.user_id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     groupId: raw.group_id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     groupName: (raw.group_name as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     groupColor: (raw.group_color as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     assignedBy: (raw.assigned_by as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     assignedAt: (raw.assigned_at as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     expiresAt: (raw.expires_at as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isActive: (raw.is_active as boolean) ?? true,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     reason: (raw.reason as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     username: (raw.username as string) || undefined,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     displayName: (raw.display_name as string) || undefined,
   };
 }
 
 function mapAutoRule(raw: Record<string, unknown>): AutoRule {
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     forumId: (raw.forum_id as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     name: raw.name as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     description: (raw.description as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     ruleType: (raw.rule_type as AutoRule['ruleType']) || 'milestone',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     threshold: (raw.threshold as number) || 0,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     targetGroupId: (raw.target_group_id as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     targetGroupName: (raw.target_group_name as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isActive: (raw.is_active as boolean) ?? true,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     lastEvaluatedAt: (raw.last_evaluated_at as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     usersAssigned: (raw.users_assigned as number) || 0,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     criteria: (raw.criteria as Record<string, unknown>) || {},
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     createdAt: (raw.created_at as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     updatedAt: (raw.updated_at as string) || '',
   };
 }
@@ -248,16 +248,16 @@ function mapAutoRule(raw: Record<string, unknown>): AutoRule {
 // ── Store ────────────────────────────────────────────────────────────────
 
 const initialState = {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   groups: [] as ForumUserGroupLocal[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   secondaryMembers: [] as SecondaryGroupMember[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   autoRules: [] as AutoRule[],
   isLoadingGroups: false,
   isLoadingMembers: false,
   isLoadingRules: false,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   selectedGroupId: null as string | null,
 };
 
@@ -316,7 +316,7 @@ export const useUserGroupsStore = create<UserGroupsState>((set) => ({
     });
     set((s) => {
       const map = new Map(s.groups.map((g) => [g.id, g]));
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const ordered = groupIds
         .map((id, i) => {
           const g = map.get(id);

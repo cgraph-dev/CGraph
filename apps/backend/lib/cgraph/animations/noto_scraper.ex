@@ -216,11 +216,10 @@ defmodule CGraph.Animations.NotoScraper do
     emoji
     |> String.codepoints()
     |> Enum.reject(&(&1 == "\uFE0F"))
-    |> Enum.map(fn cp ->
+    |> Enum.map_join("_", fn cp ->
       <<code::utf8>> = cp
       code |> Integer.to_string(16) |> String.downcase()
     end)
-    |> Enum.join("_")
   end
 
   @doc """
@@ -235,11 +234,10 @@ defmodule CGraph.Animations.NotoScraper do
   def codepoint_to_emoji(codepoint) when is_binary(codepoint) do
     codepoint
     |> String.split("_")
-    |> Enum.map(fn hex ->
+    |> Enum.map_join(fn hex ->
       {code, ""} = Integer.parse(hex, 16)
       <<code::utf8>>
     end)
-    |> Enum.join()
   end
 
   # ============================================================================

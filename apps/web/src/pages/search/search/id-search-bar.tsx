@@ -45,7 +45,7 @@ export function IdSearchBar({
           <div className="flex items-center gap-3">
             <select
               value={idSearchType}
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               onChange={(e) => setIdSearchType(e.target.value as IdSearchType)} // safe downcast – select event value
               className="rounded-lg border border-primary-500/30 bg-white/[0.06] px-3 py-2 text-sm text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
             >

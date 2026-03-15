@@ -39,8 +39,7 @@ defmodule CGraph.Accounts.WalletAuth.Recovery do
     Enum.map_join(1..4, "-", fn _ ->
       :crypto.strong_rand_bytes(4)
       |> :binary.bin_to_list()
-      |> Enum.map(fn byte -> String.at(chars, rem(byte, chars_len)) end)
-      |> Enum.join()
+      |> Enum.map_join(fn byte -> String.at(chars, rem(byte, chars_len)) end)
     end)
   end
 

@@ -90,7 +90,7 @@ export function useAttachmentUpload({
               : 'application/octet-stream';
         const mimeType = getMimeType(name, defaultMime);
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         formData.append('file', {
           uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
           name,
@@ -153,7 +153,7 @@ export function useAttachmentUpload({
           Alert.alert('Error', 'Upload failed - no file URL returned.');
         }
       } catch (error: unknown) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const err = error as {
           response?: { data?: { error?: { message?: string } } };
           message?: string;
@@ -197,7 +197,7 @@ export function useAttachmentUpload({
             const name = image.name || `photo_${Date.now()}.jpg`;
             const mimeType = getMimeType(name, image.mimeType || 'image/jpeg');
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             formData.append('file', {
               uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,
               name,
@@ -272,7 +272,7 @@ export function useAttachmentUpload({
           );
         }
       } catch (error: unknown) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const err = error as { response?: { data?: { error?: string } } };
         logger.error('Error sending attachments:', error);
         logger.error('Error response:', err?.response?.data);

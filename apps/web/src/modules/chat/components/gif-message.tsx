@@ -41,19 +41,19 @@ export function GifMessage({
 
   // Extract GIF metadata
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const gifUrl = (message.metadata?.gifUrl as string) || message.metadata?.url || message.content; // type assertion: message metadata field
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const gifPreviewUrl = message.metadata?.gifPreviewUrl as string; // type assertion: message metadata field
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const gifTitle = (message.metadata?.gifTitle as string) || 'GIF'; // type assertion: message metadata field
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const gifWidth = message.metadata?.gifWidth as number; // type assertion: message metadata field
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const gifHeight = message.metadata?.gifHeight as number; // type assertion: message metadata field
 
   // Calculate aspect ratio for proper sizing

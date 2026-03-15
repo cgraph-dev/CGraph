@@ -47,7 +47,7 @@ type Props = {
  * Two-factor verification screen for login.
  */
 export default function TwoFactorVerifyScreen({ navigation, route }: Props) {
-  const { _colors } = useThemeStore();
+  const { colors } = useThemeStore();
   const { verifyLoginTwoFactor } = useAuthStore();
   const twoFactorToken = route.params?.twoFactorToken;
 
@@ -124,7 +124,7 @@ export default function TwoFactorVerifyScreen({ navigation, route }: Props) {
       await verifyLoginTwoFactor(twoFactorToken, codeToVerify);
       // On success: authStore sets isAuthenticated=true, root navigator switches to Main
     } catch (error: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const err = error as {
         response?: {
           data?: {

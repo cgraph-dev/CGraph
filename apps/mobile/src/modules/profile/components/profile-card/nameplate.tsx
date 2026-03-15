@@ -1,4 +1,3 @@
-/* eslint-disable check-file/filename-naming-convention, @typescript-eslint/consistent-type-assertions */
 /**
  * Nameplate — decorative Lottie bar behind the username text.
  *

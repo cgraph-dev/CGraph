@@ -32,7 +32,7 @@ export function PresetsTab({ onApplyPreset }: PresetsTabProps) {
             onPress={() => onApplyPreset(preset.id)}
           >
             <LinearGradient
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               colors={preset.colors as [string, string]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -166,7 +166,7 @@ export function ShapeTab({ style, updateStyle }: ShapeTabProps) {
             { value: 'subtle', label: 'Subtle' },
           ]}
           selected={style.tailStyle}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           onSelect={(value) => updateStyle('tailStyle', value as ChatBubbleStyle['tailStyle'])}
         />
         <SliderRow
@@ -220,7 +220,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
             { value: 'large', label: 'Large' },
           ]}
           selected={style.avatarSize}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           onSelect={(value) => updateStyle('avatarSize', value as ChatBubbleStyle['avatarSize'])}
         />
       </SettingsSection>
@@ -240,7 +240,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
           ]}
           selected={style.timestampPosition}
           onSelect={(value) =>
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             updateStyle('timestampPosition', value as ChatBubbleStyle['timestampPosition'])
           }
         />
@@ -254,7 +254,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
             { value: 'right', label: 'Right' },
           ]}
           selected={style.alignSent}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           onSelect={(value) => updateStyle('alignSent', value as ChatBubbleStyle['alignSent'])}
         />
         <SegmentedRow
@@ -265,7 +265,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
           ]}
           selected={style.alignReceived}
           onSelect={(value) =>
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             updateStyle('alignReceived', value as ChatBubbleStyle['alignReceived'])
           }
         />
@@ -277,7 +277,7 @@ export function LayoutTab({ style, updateStyle }: LayoutTabProps) {
             { value: 'spacious', label: 'Spacious' },
           ]}
           selected={style.spacing}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           onSelect={(value) => updateStyle('spacing', value as ChatBubbleStyle['spacing'])}
         />
       </SettingsSection>

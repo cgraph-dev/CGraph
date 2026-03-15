@@ -63,7 +63,7 @@ export default function PremiumBadge({ tier, size = 'md', animated = true }: Pre
   const iconSize = SIZE_MAP[size];
   const colors = TIER_COLORS[tier];
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const iconName = TIER_ICONS[tier] as keyof typeof Ionicons.glyphMap;
 
   return (

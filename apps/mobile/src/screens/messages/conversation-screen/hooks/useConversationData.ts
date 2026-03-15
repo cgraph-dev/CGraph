@@ -121,7 +121,7 @@ export function useConversationData({
       // Find other participant
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
         const participantUserId =
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
         return String(participantUserId) !== String(userId);
       });
@@ -130,7 +130,7 @@ export function useConversationData({
       const rawOtherUserId =
         otherParticipant?.userId ||
         otherParticipant?.user_id ||
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         (otherParticipant?.user as Record<string, unknown>)?.id;
       const extractedOtherUserId = rawOtherUserId ? String(rawOtherUserId) : null;
 
@@ -141,26 +141,26 @@ export function useConversationData({
         const otherUserInfo: UserBasic = {
           id: extractedOtherUserId,
           username:
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             ((otherParticipant?.user as Record<string, unknown>)?.username as string | undefined) ||
             otherParticipant?.username ||
             null,
           display_name:
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             ((otherParticipant?.user as Record<string, unknown>)?.displayName as
               | string
               | undefined) ||
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             ((otherParticipant?.user as Record<string, unknown>)?.display_name as
               | string
               | undefined) ||
             null,
           avatar_url:
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             ((otherParticipant?.user as Record<string, unknown>)?.avatarUrl as
               | string
               | undefined) ||
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             ((otherParticipant?.user as Record<string, unknown>)?.avatar_url as
               | string
               | undefined) ||
@@ -173,13 +173,13 @@ export function useConversationData({
         const displayName = String(
           conv.name ||
             otherParticipant?.nickname ||
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (otherParticipant?.user as Record<string, unknown>)?.displayName ||
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (otherParticipant?.user as Record<string, unknown>)?.display_name ||
             otherParticipant?.displayName ||
             otherParticipant?.display_name ||
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (otherParticipant?.user as Record<string, unknown>)?.username ||
             otherParticipant?.username ||
             'Conversation'
@@ -188,7 +188,7 @@ export function useConversationData({
         // Extract last seen
 
         const lastSeen =
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           ((otherParticipant?.user as Record<string, unknown>)?.lastSeenAt as string | undefined) ||
           null;
 

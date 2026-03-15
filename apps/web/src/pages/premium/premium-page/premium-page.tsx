@@ -58,7 +58,7 @@ export default function PremiumPage() {
 
       try {
         await redirectToCheckout(
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           tierId as Parameters<typeof redirectToCheckout>[0], // safe downcast – structural boundary
           billingInterval === 'year'
         );

@@ -85,7 +85,7 @@ export async function setupMobileE2EE(room: Room, roomKey: Uint8Array): Promise<
     // LiveKit React Native E2EE setup
     // The @livekit/react-native SDK supports E2EE via room options
     const e2eeOptions: E2EEOptions = {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       keyProvider: {
         setKey: async (_key: Uint8Array) => {
           // Key provider implementation

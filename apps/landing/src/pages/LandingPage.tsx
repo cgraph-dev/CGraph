@@ -21,7 +21,6 @@ import Navigation from '../components/marketing/layout/Navigation';
 import Footer from '../components/marketing/layout/Footer';
 import Hero from '../components/marketing/sections/Hero';
 import { Features } from '../components/marketing/sections/Features';
-import ValueProposition from '../components/marketing/sections/ValueProposition';
 import { Security } from '../components/marketing/sections/Security';
 import { GlobalBackground } from '../components/marketing/layout/GlobalBackground';
 import '../components/marketing/sections/Security.css';
@@ -43,7 +42,7 @@ import '../styles/cta-section.css';
 import '../styles/showcase-section.css';
 import '../styles/pricing-section.css';
 import '../styles/customization-preview.css';
-import '../styles/value-proposition.css';
+
 import '../styles/animated-borders.css';
 import '../styles/mobile.css';
 
@@ -223,9 +222,6 @@ export default function LandingPage() {
 
         {/* Pricing (NEW — v1.0) */}
         <PricingSection />
-
-        {/* Value Proposition */}
-        <ValueProposition />
 
         {/* Download CTA (NEW — v1.0) */}
         <DownloadCTA />

@@ -61,7 +61,7 @@ export function MessageRow({
   const navigate = useNavigate();
   const messageSenderId =
     getMessageSenderId(
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       message as unknown as Record<string, unknown> /* safe downcast – polymorphic message access */
     ) || '';
   const currentUserId = user?.id || '';
@@ -72,7 +72,7 @@ export function MessageRow({
   const prevMessage = groupMessages[msgIndex - 1];
   const prevSenderId = prevMessage
     ? getMessageSenderId(
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         prevMessage as unknown as Record<
           // safe downcast – structural boundary
           string,

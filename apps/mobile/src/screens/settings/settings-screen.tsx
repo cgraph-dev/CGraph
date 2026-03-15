@@ -87,7 +87,7 @@ export default function SettingsScreen({ navigation }: Props) {
       title: 'Premium',
       icon: 'star',
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       gradient: ['#F59E0B', '#EF4444'] as [string, string],
       items: [
         {
@@ -96,7 +96,7 @@ export default function SettingsScreen({ navigation }: Props) {
           onPress: () => navigation.navigate('Premium'),
           isPremium: true,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#F59E0B', '#EF4444'] as [string, string],
         },
         {
@@ -105,7 +105,7 @@ export default function SettingsScreen({ navigation }: Props) {
           onPress: () => navigation.navigate('CoinShop'),
           isShop: true,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
       ],
@@ -114,7 +114,7 @@ export default function SettingsScreen({ navigation }: Props) {
       title: 'Features',
       icon: 'apps',
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       gradient: ['#3b82f6', '#8b5cf6'] as [string, string],
       items: [
         {
@@ -122,7 +122,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'calendar' as const,
           onPress: () => navigation.navigate('Calendar'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
 
@@ -131,7 +131,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'gift' as const,
           onPress: () => navigation.navigate('Referrals'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#ec4899', '#f472b6'] as [string, string],
         },
         {
@@ -139,7 +139,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'sparkles' as const,
           onPress: () => navigation.navigate('HolographicDemo'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
       ],
@@ -148,7 +148,7 @@ export default function SettingsScreen({ navigation }: Props) {
       title: 'Account',
       icon: 'person',
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       gradient: ['#10b981', '#34d399'] as [string, string],
       items: [
         {
@@ -156,7 +156,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'person' as const,
           onPress: () => navigation.navigate('Profile'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#3b82f6', '#60a5fa'] as [string, string],
         },
         {
@@ -164,7 +164,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'lock-closed' as const,
           onPress: () => navigation.navigate('Account'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#6366f1', '#818cf8'] as [string, string],
         },
         {
@@ -172,7 +172,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'shield' as const,
           onPress: () => navigation.navigate('Privacy'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
         {
@@ -180,7 +180,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'phone-portrait' as const,
           onPress: () => navigation.navigate('Sessions'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#f97316', '#fb923c'] as [string, string],
         },
       ],
@@ -189,7 +189,7 @@ export default function SettingsScreen({ navigation }: Props) {
       title: 'Preferences',
       icon: 'settings',
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       gradient: ['#6366f1', '#818cf8'] as [string, string],
       items: [
         {
@@ -197,7 +197,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'color-palette' as const,
           onPress: () => navigation.navigate('Appearance'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#ec4899', '#f472b6'] as [string, string],
         },
         {
@@ -205,7 +205,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'options' as const,
           onPress: () => navigation.navigate('UICustomization'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
         {
@@ -213,7 +213,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'chatbubbles' as const,
           onPress: () => navigation.navigate('ChatBubbles'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
         {
@@ -221,7 +221,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'person-circle' as const,
           onPress: () => navigation.navigate('AvatarSettings'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#f59e0b', '#fbbf24'] as [string, string],
         },
         {
@@ -229,7 +229,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'notifications' as const,
           onPress: () => navigation.navigate('Notifications'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#ef4444', '#f87171'] as [string, string],
         },
       ],
@@ -238,7 +238,7 @@ export default function SettingsScreen({ navigation }: Props) {
       title: 'About',
       icon: 'information-circle',
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       gradient: ['#6b7280', '#9ca3af'] as [string, string],
       items: [
         {
@@ -246,7 +246,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'help-circle' as const,
           onPress: () => {},
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#06b6d4', '#22d3ee'] as [string, string],
         },
         {
@@ -254,7 +254,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'document-text' as const,
           onPress: () => navigation.navigate('TermsOfService'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
         {
@@ -262,7 +262,7 @@ export default function SettingsScreen({ navigation }: Props) {
           icon: 'shield-checkmark' as const,
           onPress: () => navigation.navigate('PrivacyPolicy'),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
       ],
@@ -450,7 +450,7 @@ export default function SettingsScreen({ navigation }: Props) {
                 style={styles.sectionIconContainer}
               >
                 <Ionicons
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   name={section.icon as keyof typeof Ionicons.glyphMap}
                   size={12}
                   color="#fff"

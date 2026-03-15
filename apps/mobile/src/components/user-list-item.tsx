@@ -100,7 +100,7 @@ export default function UserListItem({
           source={user.avatar_url}
           name={user.display_name || user.username || 'Unknown'}
           size="md"
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           status={showStatus ? (user.status as 'online' | 'idle' | 'dnd' | 'offline') : undefined}
           showStatus={showStatus}
         />

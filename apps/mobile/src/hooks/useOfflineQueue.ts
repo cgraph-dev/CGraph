@@ -99,7 +99,7 @@ export function useOfflineQueue(): UseOfflineQueueReturn {
       subscribe('itemFailed', refresh),
       subscribe('syncComplete', refresh),
       subscribe('networkChange', (data) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const { isOnline } = data as { isOnline: boolean };
         setStats((prev) => ({ ...prev, isOnline }));
 

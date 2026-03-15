@@ -81,9 +81,9 @@ export default function ConversationListScreen({ navigation }: Props) {
       'Unknown';
 
     const avatarUrl: string | undefined =
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       (otherParticipant?.user?.avatar_url as string | undefined) ??
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       (otherParticipant?.avatar_url as string | undefined);
 
     const otherUserId =

@@ -101,7 +101,7 @@ export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
         <div>
           <label className="mb-1 block text-xs text-white/50">Thread Layout</label>
           <select
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             value={(draft.thread_layout as string) ?? 'classic'}
             onChange={(e) => updateField('thread_layout', e.target.value)}
             className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
@@ -116,7 +116,7 @@ export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
         <div>
           <label className="mb-1 block text-xs text-white/50">Post Layout</label>
           <select
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             value={(draft.post_layout as string) ?? 'classic'}
             onChange={(e) => updateField('post_layout', e.target.value)}
             className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
@@ -131,7 +131,7 @@ export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
         <div>
           <label className="mb-1 block text-xs text-white/50">Category Layout</label>
           <select
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             value={(draft.category_layout as string) ?? 'table'}
             onChange={(e) => updateField('category_layout', e.target.value)}
             className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
@@ -146,7 +146,7 @@ export function LayoutEditor({ options, onSave, saving }: LayoutEditorProps) {
         <div>
           <label className="mb-1 block text-xs text-white/50">Board Layout</label>
           <select
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             value={(draft.board_layout as string) ?? 'table'}
             onChange={(e) => updateField('board_layout', e.target.value)}
             className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"

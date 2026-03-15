@@ -75,7 +75,7 @@ export default function CustomizeScreen() {
           <TouchableOpacity
             key={cat.id}
             style={[styles.card, { backgroundColor: colors.surface }]}
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onPress={() => navigation.navigate(cat.screen as any)}
             activeOpacity={0.7}
           >

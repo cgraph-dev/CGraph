@@ -161,7 +161,7 @@ defmodule CGraph.Forums.EmojiPack do
 
             errors = Enum.filter(emoji_results, &match?({:error, _}, &1))
 
-            if length(errors) > 0 do
+            if errors != [] do
               Repo.rollback({:emoji_import_errors, length(errors)})
             else
               updated =

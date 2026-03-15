@@ -37,7 +37,7 @@ export function createUserActions(set: Set, get: Get) {
         set({
           // safe downcast – API response
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           users: (response.data as AdminUser[]).map((user) => ({
             // type assertion: API response data shape
             ...user,
@@ -84,7 +84,7 @@ export function createUserActions(set: Set, get: Get) {
         await api.post(`/api/v1/admin/users/${id}/ban`, { reason, duration });
         set((state) => ({
           users: state.users.map(
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (user) => (user.id === id ? { ...user, status: 'banned' as UserStatus } : user) // safe downcast – runtime verified
           ),
         }));
@@ -99,7 +99,7 @@ export function createUserActions(set: Set, get: Get) {
         await api.post(`/api/v1/admin/users/${id}/suspend`, { reason, duration });
         set((state) => ({
           users: state.users.map(
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (user) => (user.id === id ? { ...user, status: 'suspended' as UserStatus } : user) // safe downcast – runtime verified
           ),
         }));
@@ -128,7 +128,7 @@ export function createUserActions(set: Set, get: Get) {
         await api.post(`/api/v1/admin/users/${id}/unban`);
         set((state) => ({
           users: state.users.map(
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (user) => (user.id === id ? { ...user, status: 'active' as UserStatus } : user) // safe downcast – runtime verified
           ),
         }));

@@ -38,11 +38,10 @@ defmodule CGraph.Animations.LottieManifest do
                      emoji
                      |> String.codepoints()
                      |> Enum.reject(&(&1 == "\uFE0F"))
-                     |> Enum.map(fn cp ->
+                     |> Enum.map_join("_", fn cp ->
                        <<code::utf8>> = cp
                        Integer.to_string(code, 16) |> String.downcase()
                      end)
-                     |> Enum.join("_")
 
                    {codepoint,
                     %{

@@ -47,9 +47,9 @@ export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style 
   return (
     <Animated.View
       style={[
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           width: width as number | string,
           height,
           borderRadius,

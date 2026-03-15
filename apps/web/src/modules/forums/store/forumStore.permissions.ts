@@ -116,7 +116,7 @@ export interface PermissionsState {
 async function apiCall<T>(method: string, url: string, data?: unknown): Promise<T> {
   const { default: axios } = await import('axios');
   const response = await axios({ method, url, data });
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return response.data as T;
 }
 
@@ -124,63 +124,63 @@ async function apiCall<T>(method: string, url: string, data?: unknown): Promise<
 
 function mapBoardPermission(raw: Record<string, unknown>): BoardPermissionLocal {
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     boardId: (raw.board_id as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     groupId: (raw.group_id as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     groupName: (raw.group_name as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     groupColor: (raw.group_color as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     permissions: (raw.permissions as Record<string, PermLevel>) || {},
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     createdAt: (raw.created_at as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     updatedAt: (raw.updated_at as string) || '',
   };
 }
 
 function mapForumPermission(raw: Record<string, unknown>): ForumPermissionLocal {
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     forumId: (raw.forum_id as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     groupId: (raw.group_id as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     groupName: (raw.group_name as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     groupColor: (raw.group_color as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     permissions: (raw.permissions as Record<string, PermLevel>) || {},
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     createdAt: (raw.created_at as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     updatedAt: (raw.updated_at as string) || '',
   };
 }
 
 function mapTemplate(raw: Record<string, unknown>): PermissionTemplateLocal {
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     forumId: (raw.forum_id as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     name: (raw.name as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     description: (raw.description as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isSystem: (raw.is_system as boolean) || false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     permissions: (raw.permissions as Record<string, PermLevel>) || {},
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     createdAt: (raw.created_at as string) || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     updatedAt: (raw.updated_at as string) || '',
   };
 }
@@ -188,13 +188,13 @@ function mapTemplate(raw: Record<string, unknown>): PermissionTemplateLocal {
 // ── Store ────────────────────────────────────────────────────────────────
 
 const initialState = {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   boardPermissions: [] as BoardPermissionLocal[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   forumPermissions: [] as ForumPermissionLocal[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   templates: [] as PermissionTemplateLocal[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   effectivePermissions: [] as EffectivePermResult[],
   isLoadingBoardPerms: false,
   isLoadingTemplates: false,
@@ -355,13 +355,13 @@ export const usePermissionsStore = create<PermissionsState>((set) => ({
       `/api/v1/boards/${boardId}/permissions/check?group_id=${groupId}&permission=${permission}`
     );
     return {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       permission: (res.effective?.permission as string) || permission,
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       level: (res.effective?.level as PermLevel) || 'inherit',
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       source: (res.effective?.source as EffectivePermResult['source']) || 'default',
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       inheritedFrom: (res.effective?.inherited_from as string) || undefined,
     };
   },
@@ -373,13 +373,13 @@ export const usePermissionsStore = create<PermissionsState>((set) => ({
         `/api/v1/boards/${boardId}/permissions/effective?group_id=${groupId}`
       );
       const perms: EffectivePermResult[] = (res.effective_permissions || []).map((e) => ({
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         permission: (e.permission as string) || '',
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         level: (e.level as PermLevel) || 'inherit',
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         source: (e.source as EffectivePermResult['source']) || 'default',
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         inheritedFrom: (e.inherited_from as string) || undefined,
       }));
       set({ effectivePermissions: perms });

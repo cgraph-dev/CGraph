@@ -78,7 +78,7 @@ export function QuickReply({
 
   const insertBBCode = useCallback(
     (tag: string, value?: string) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const textarea = document.querySelector(`#quick-reply-${threadId}`) as HTMLTextAreaElement; // safe downcast – DOM element
       if (!textarea) return;
 

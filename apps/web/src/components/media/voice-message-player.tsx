@@ -198,7 +198,7 @@ export function VoiceMessagePlayer({
 
   const cyclePlaybackSpeed = useCallback(() => {
     setPlaybackSpeed((prev) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const currentIndex = SPEED_OPTIONS.indexOf(prev as (typeof SPEED_OPTIONS)[number]);
       const nextIndex = (currentIndex + 1) % SPEED_OPTIONS.length;
       const newSpeed = SPEED_OPTIONS[nextIndex] ?? 1;

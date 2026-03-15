@@ -87,55 +87,59 @@ defmodule CGraphWeb.API.V1.ForumAdminController do
         target_user_id = params["user_id"]
         role = params["role"] || "member"
 
-        case action do
-          "add" ->
-            attrs = %{forum_id: forum.id, user_id: target_user_id, role: role}
+        execute_member_action(conn, user, forum, action, target_user_id, role)
+    end
+  end
 
-            case %ForumMember{} |> ForumMember.changeset(attrs) |> Repo.insert() do
-              {:ok, _member} ->
-                log_moderation_action(user.id, "add_member", "user", target_user_id, %{role: role})
-                render_data(conn, %{status: "member_added", user_id: target_user_id, role: role})
+  defp execute_member_action(conn, user, forum, "add", target_user_id, role) do
+    attrs = %{forum_id: forum.id, user_id: target_user_id, role: role}
 
-              {:error, changeset} ->
-                conn
-                |> put_status(:unprocessable_entity)
-                |> render_error(422, format_errors(changeset))
-            end
+    case %ForumMember{} |> ForumMember.changeset(attrs) |> Repo.insert() do
+      {:ok, _member} ->
+        log_moderation_action(user.id, "add_member", "user", target_user_id, %{role: role})
+        render_data(conn, %{status: "member_added", user_id: target_user_id, role: role})
 
-          "remove" ->
-            query = from(m in ForumMember, where: m.forum_id == ^forum.id and m.user_id == ^target_user_id)
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render_error(422, format_errors(changeset))
+    end
+  end
 
-            case Repo.delete_all(query) do
-              {0, _} ->
-                render_error(conn, 404, "member_not_found")
+  defp execute_member_action(conn, user, forum, "remove", target_user_id, _role) do
+    query = from(m in ForumMember, where: m.forum_id == ^forum.id and m.user_id == ^target_user_id)
 
-              {_count, _} ->
-                log_moderation_action(user.id, "remove_member", "user", target_user_id)
-                render_data(conn, %{status: "member_removed", user_id: target_user_id})
-            end
+    case Repo.delete_all(query) do
+      {0, _} ->
+        render_error(conn, 404, "member_not_found")
 
-          "change_role" ->
-            case Repo.get_by(ForumMember, forum_id: forum.id, user_id: target_user_id) do
-              nil ->
-                render_error(conn, 404, "member_not_found")
+      {_count, _} ->
+        log_moderation_action(user.id, "remove_member", "user", target_user_id)
+        render_data(conn, %{status: "member_removed", user_id: target_user_id})
+    end
+  end
 
-              member ->
-                case member |> Ecto.Changeset.change(%{role: role}) |> Repo.update() do
-                  {:ok, _updated} ->
-                    log_moderation_action(user.id, "change_role", "user", target_user_id, %{role: role})
-                    render_data(conn, %{status: "role_changed", user_id: target_user_id, role: role})
+  defp execute_member_action(conn, user, forum, "change_role", target_user_id, role) do
+    case Repo.get_by(ForumMember, forum_id: forum.id, user_id: target_user_id) do
+      nil ->
+        render_error(conn, 404, "member_not_found")
 
-                  {:error, changeset} ->
-                    conn
-                    |> put_status(:unprocessable_entity)
-                    |> render_error(422, format_errors(changeset))
-                end
-            end
+      member ->
+        case member |> Ecto.Changeset.change(%{role: role}) |> Repo.update() do
+          {:ok, _updated} ->
+            log_moderation_action(user.id, "change_role", "user", target_user_id, %{role: role})
+            render_data(conn, %{status: "role_changed", user_id: target_user_id, role: role})
 
-          _ ->
-            render_error(conn, 400, "invalid_action")
+          {:error, changeset} ->
+            conn
+            |> put_status(:unprocessable_entity)
+            |> render_error(422, format_errors(changeset))
         end
     end
+  end
+
+  defp execute_member_action(conn, _user, _forum, _action, _target_user_id, _role) do
+    render_error(conn, 400, "invalid_action")
   end
 
   @doc """

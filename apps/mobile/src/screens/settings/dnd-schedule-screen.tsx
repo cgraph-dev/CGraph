@@ -126,7 +126,7 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
               <Picker
                 selectedValue={startTime}
                 onValueChange={(v) => setStartTime(v)}
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 style={[styles.picker, { color: colors.text } as any]}
                 dropdownIconColor={colors.text}
               >
@@ -140,7 +140,7 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
               <Picker
                 selectedValue={endTime}
                 onValueChange={(v) => setEndTime(v)}
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 style={[styles.picker, { color: colors.text } as any]}
                 dropdownIconColor={colors.text}
               >
@@ -173,7 +173,7 @@ export default function DndScheduleScreen({ navigation: _navigation }: Props) {
         <Text
           onPress={handleSave}
           style={
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             [
               styles.saveButton,
               { backgroundColor: colors.primary, opacity: isSaving ? 0.5 : 1 },

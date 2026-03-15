@@ -363,7 +363,7 @@ defmodule CGraph.Mailer.Templates.HtmlRenderer do
     trending_html =
       trending
       |> Enum.take(5)
-      |> Enum.map(fn post ->
+      |> Enum.map_join("", fn post ->
         title = html_escape(Map.get(post, :title, "Post"))
         replies = Map.get(post, :replies, 0)
         """
@@ -377,7 +377,6 @@ defmodule CGraph.Mailer.Templates.HtmlRenderer do
         </tr>
         """
       end)
-      |> Enum.join("")
 
     achievements_html =
       achievements

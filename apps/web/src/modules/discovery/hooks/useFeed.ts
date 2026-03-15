@@ -47,15 +47,15 @@ export function useFeed(mode: FeedMode, communityId?: string | null) {
     queryKey: ['feed', mode, communityId ?? null],
     queryFn: async ({ pageParam }) => {
       const params = new URLSearchParams({ mode });
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       if (pageParam) params.set('cursor', pageParam as string);
       if (communityId) params.set('community_id', communityId);
 
       const res = await api.get(`/api/v1/feed?${params.toString()}`);
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return res.data as FeedResponse;
     },
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => (lastPage.meta.has_more ? lastPage.meta.cursor : undefined),
     staleTime: 60_000,

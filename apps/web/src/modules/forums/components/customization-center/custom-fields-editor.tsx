@@ -163,7 +163,7 @@ export function CustomFieldsEditor({ forumId }: CustomFieldsEditorProps) {
           setEditing({
             name: '',
             fieldType: 'text',
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             target: activeTarget as CustomFieldTarget,
             required: false,
             position: fields.length,
@@ -198,7 +198,7 @@ export function CustomFieldsEditor({ forumId }: CustomFieldsEditorProps) {
               <select
                 value={editing.fieldType ?? 'text'}
                 onChange={(e) =>
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   setEditing({ ...editing, fieldType: e.target.value as CustomFieldType })
                 }
                 className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
@@ -217,7 +217,7 @@ export function CustomFieldsEditor({ forumId }: CustomFieldsEditorProps) {
                 onChange={(e) =>
                   setEditing({
                     ...editing,
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     visibleTo: e.target.value as 'all' | 'members' | 'mods' | 'admins',
                   })
                 }

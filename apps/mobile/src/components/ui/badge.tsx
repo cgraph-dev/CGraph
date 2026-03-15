@@ -222,7 +222,7 @@ export default function Badge({
     >
       {gradient && currentVariant.gradient ? (
         <LinearGradient
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           colors={currentVariant.gradient as any}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}

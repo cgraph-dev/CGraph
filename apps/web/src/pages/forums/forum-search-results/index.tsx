@@ -34,9 +34,9 @@ function ForumSearchResults() {
 
   // Read URL params on mount
   const urlQuery = searchParams.get('q') ?? '';
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const urlType = searchParams.get('type') as ForumSearchFilters['type'] | null;
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const urlSort = searchParams.get('sort') as ForumSearchFilters['sort'] | null;
   const urlDateFrom = searchParams.get('date_from') ?? undefined;
   const urlDateTo = searchParams.get('date_to') ?? undefined;

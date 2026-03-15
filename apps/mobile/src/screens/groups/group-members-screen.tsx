@@ -65,25 +65,25 @@ export default function GroupMembersScreen({ route }: Props) {
           : [];
       setMembers(
         data.map((m: Record<string, unknown>) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           id: m.id as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           userId: (m.user_id ?? m.userId ?? m.id) as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           username: (m.username ??
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (m.user as Record<string, unknown>)?.username ??
             'unknown') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           displayName: (m.display_name ?? m.displayName ?? null) as string | null,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           avatarUrl: (m.avatar_url ?? m.avatarUrl ?? null) as string | null,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           role: (m.role ?? 'member') as string,
           isMuted: !!(m.is_muted ?? m.isMuted),
         }))

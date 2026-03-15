@@ -55,7 +55,7 @@ function ShimmerBox({
     <View
       style={[
         {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           width: w as number,
           height: h,
           borderRadius,

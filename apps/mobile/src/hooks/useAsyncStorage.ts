@@ -31,7 +31,7 @@ export function useAsyncStorage<T>(
       try {
         const item = await AsyncStorage.getItem(key);
         if (item !== null) {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           setStoredValue(JSON.parse(item) as T);
         }
       } catch (error) {

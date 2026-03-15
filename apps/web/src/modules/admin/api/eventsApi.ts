@@ -44,7 +44,7 @@ function transformEvent(data: ApiEventResponse): AdminEvent {
     name: data.name,
     // type assertion: API response field maps to known union type
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     status: data.status as AdminEvent['status'],
     participants: data.participant_count || 0,
     startDate: data.start_date,

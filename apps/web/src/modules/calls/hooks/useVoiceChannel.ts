@@ -111,7 +111,7 @@ export function useVoiceChannel(): UseVoiceChannelReturn {
 
         // Set up event handlers
         channel.on('voice_member_joined', (_payload) => {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const payload = _payload as VoiceEventPayload;
           addChannelMember(channelId, {
             userId: payload.user_id,
@@ -125,13 +125,13 @@ export function useVoiceChannel(): UseVoiceChannelReturn {
         });
 
         channel.on('voice_member_left', (_payload) => {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const payload = _payload as VoiceEventPayload;
           removeChannelMember(channelId, payload.user_id);
         });
 
         channel.on('voice_state_update', (_payload) => {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const payload = _payload as VoiceEventPayload;
           updateMemberState(channelId, payload.user_id, {
             selfMute: payload.self_mute,
@@ -141,18 +141,18 @@ export function useVoiceChannel(): UseVoiceChannelReturn {
         });
 
         channel.on('presence_state', (_payload) => {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const payload = _payload as VoiceEventPayload;
           if (payload.members) {
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             const members = (payload.members as Array<Record<string, unknown>>).map((m) => ({
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               userId: m.user_id as string,
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               selfMute: (m.self_mute as boolean) ?? false,
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               selfDeafen: (m.self_deafen as boolean) ?? false,
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               video: (m.video as boolean) ?? false,
             }));
             setChannelMembers(channelId, members);
@@ -164,10 +164,10 @@ export function useVoiceChannel(): UseVoiceChannelReturn {
           (resolve, reject) => {
             channel
               .join()
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               .receive('ok', (resp) => resolve(resp as { token: string; room_name: string }))
               .receive('error', (resp) =>
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 reject(new Error((resp as { reason?: string }).reason ?? 'join_failed'))
               )
               .receive('timeout', () => reject(new Error('join_timeout')));

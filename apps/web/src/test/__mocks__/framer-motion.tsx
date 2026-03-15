@@ -31,7 +31,7 @@ const motionEl = (tag: string) => {
       ...rest
     } = props;
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return createElement(tag, { ...rest, ref }, children as ReactNode);
   };
   Component.displayName = `motion.${tag}`;

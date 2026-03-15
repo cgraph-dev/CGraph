@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+ 
 import React, { useEffect, useState } from 'react';
 import { useCreatorDashboard } from '@/modules/creator/hooks/useCreatorDashboard';
 

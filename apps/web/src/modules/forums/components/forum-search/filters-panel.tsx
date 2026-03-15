@@ -64,7 +64,7 @@ export function FiltersPanel({
                     key={value}
                     onClick={
                       () =>
-                        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                         
                         onFilterChange({ timeRange: value as SearchFilters['timeRange'] }) // safe downcast – select event value
                     }
                     className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
@@ -87,7 +87,7 @@ export function FiltersPanel({
                 {CONTENT_TYPE_OPTIONS.map(({ value, label, icon: Icon }) => (
                   <button
                     key={value}
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     onClick={() => onFilterChange({ type: value as SearchFilters['type'] })} // safe downcast – select event value
                     className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       filters.type === value

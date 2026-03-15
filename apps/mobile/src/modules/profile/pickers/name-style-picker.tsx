@@ -1,4 +1,3 @@
-/* eslint-disable check-file/filename-naming-convention, @typescript-eslint/consistent-type-assertions */
 /**
  * NameStylePicker — modal for customizing display name font, effect, and color.
  *
@@ -34,7 +33,7 @@ import {
   type NameEffect,
 } from '@cgraph/animation-constants/src/registries/displayNameStyles';
 import { useThemeStore } from '@/stores';
-import { DisplayName } from '../components/DisplayName';
+import { DisplayName } from '../components/display-name';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 

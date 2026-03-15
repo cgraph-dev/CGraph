@@ -6,7 +6,6 @@
  *
  * @module profile/screens/BorderPickerModal
  */
-/* eslint-disable check-file/filename-naming-convention */
 
 import React, { useCallback } from 'react';
 import {

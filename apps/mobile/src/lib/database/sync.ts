@@ -118,7 +118,7 @@ export async function sync(force = false): Promise<SyncStats | null> {
           throw new Error(`Pull failed: ${response.status} ${response.statusText}`);
         }
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const data = (await response.json()) as {
           changes: SyncDatabaseChangeSet;
           timestamp: number;
@@ -128,7 +128,7 @@ export async function sync(force = false): Promise<SyncStats | null> {
         conflicts = data.conflicts ?? 0;
 
         return {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           changes: data.changes as SyncDatabaseChangeSet,
           timestamp: data.timestamp,
         };
@@ -305,7 +305,7 @@ export async function enqueueOfflineOperation(params: {
       record.priority = params.priority ?? 3; // NORMAL
       record.endpoint = params.endpoint;
       record.method = params.method;
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const raw = record._raw as Record<string, unknown>;
       raw.payload_json = JSON.stringify(params.payload ?? {});
       raw.headers_json = params.headers ? JSON.stringify(params.headers) : null;

@@ -441,7 +441,7 @@ defmodule CGraphWeb.PresenceChannel do
 
   # Restore persisted status from DB on reconnect.
   # Returns {status, metadata_map} where expired statuses are cleared.
-  @spec restore_persisted_status(%User{}) :: {String.t(), map()}
+  @spec restore_persisted_status(User.t()) :: {String.t(), map()}
   defp restore_persisted_status(user) do
     now = DateTime.utc_now()
 

@@ -402,7 +402,7 @@ function TabButton({
   const textAnimatedStyle = useAnimatedStyle(() => {
     const fontWeight = isActive ? '600' : '400';
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return {
       color: isActive ? activeTextColor : inactiveTextColor,
       fontWeight,

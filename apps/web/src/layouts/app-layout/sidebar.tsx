@@ -204,7 +204,7 @@ function MagneticNavItem({
 
           {/* Level gate lock */}
           {'featureGate' in item && item.featureGate && (
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: guarded by `in` check
+             
             <NavItemGateBadge feature={item.featureGate as FeatureGateKey} />
           )}
         </motion.div>

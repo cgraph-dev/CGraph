@@ -473,7 +473,7 @@ function MessageContent({
               reaction={reaction}
               isOwnMessage={isOwnMessage}
               onPress={() => onReactionTap(item.id, reaction.emoji, reaction.hasReacted)}
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               colors={colors as Parameters<typeof AnimatedReactionBubble>[0]['colors']}
             />
           ))}
@@ -491,7 +491,7 @@ function ImageGridContent({
   item: Message;
   onImagePress: (url: string, gallery?: string[], index?: number) => void;
 }) {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const images = item.metadata?.grid_images as string[];
   const count = images.length;
 
@@ -585,7 +585,7 @@ function FileContent({
         ]}
       >
         <Ionicons
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           name={getFileIcon(item.metadata?.filename) as 'document-outline'}
           size={20}
           color={isOwnMessage ? '#fff' : colors.primary}

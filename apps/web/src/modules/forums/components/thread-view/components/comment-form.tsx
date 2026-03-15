@@ -47,7 +47,7 @@ export function CommentForm({
             placeholder="Write a comment..."
             className="w-full resize-none rounded-lg border border-white/[0.08] bg-white/[0.06] p-3 focus:border-primary focus:outline-none"
             rows={4}
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             style={{ '--tw-ring-color': primaryColor } as React.CSSProperties} // safe downcast – CSS custom properties
           />
           <div className="mt-2 flex justify-end gap-2">

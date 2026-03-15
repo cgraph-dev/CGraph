@@ -1,4 +1,3 @@
-/* eslint-disable check-file/filename-naming-convention */
 /**
  * ProfileThemePicker — modal for choosing a primary + accent
  * color pair that tints the profile card.

@@ -192,7 +192,7 @@ export default function GroupChannel() {
           isLoadingMessages={isLoadingMessages}
           channelName={channel.name}
           typing={typing}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>} // safe downcast – DOM element
           onLoadMore={handleLoadMore}
           onReply={setReplyTo}

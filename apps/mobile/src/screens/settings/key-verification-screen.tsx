@@ -99,7 +99,7 @@ export function KeyVerificationScreen() {
         error: null,
       });
     } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error = err as any;
       setState((s) => ({
         ...s,
@@ -123,7 +123,7 @@ export function KeyVerificationScreen() {
               setState((s) => ({ ...s, isVerified: true }));
               Alert.alert('Success', `${username} is now verified!`);
             } catch (err: unknown) {
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const error = err as any;
               Alert.alert('Error', error?.response?.data?.message || 'Failed to mark as verified');
             }

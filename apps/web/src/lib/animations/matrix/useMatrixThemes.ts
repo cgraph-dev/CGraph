@@ -20,7 +20,7 @@ import { getTheme, THEME_REGISTRY } from './themes';
 export function useMatrixThemes() {
   const themes = useMemo(() => {
     return Object.entries(THEME_REGISTRY).map(([key, theme]) => ({
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       id: key as ThemePreset, // safe downcast – structural boundary
       name: theme.name,
       primaryColor: theme.primaryColor,

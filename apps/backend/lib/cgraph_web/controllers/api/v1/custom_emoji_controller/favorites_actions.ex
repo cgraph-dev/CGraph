@@ -54,30 +54,29 @@ defmodule CGraphWeb.API.V1.CustomEmojiController.FavoritesActions do
     # Check emoji exists
     emoji_exists = from(e in CustomEmoji, where: e.id == ^emoji_id, select: true) |> Repo.one()
 
-    unless emoji_exists do
+    if emoji_exists do
+      # Get current max order
+      max_order = from(f in "user_emoji_favorites",
+        where: f.user_id == type(^user.id, Ecto.UUID),
+        select: max(f.order)
+      )
+      |> Repo.one() || 0
+
+      Repo.insert_all("user_emoji_favorites", [
+        %{
+          id: Ecto.UUID.dump!(Ecto.UUID.generate()),
+          user_id: Ecto.UUID.dump!(user.id),
+          emoji_id: Ecto.UUID.dump!(emoji_id),
+          order: max_order + 1,
+          inserted_at: DateTime.utc_now()
+        }
+      ], on_conflict: :nothing)
+
+      render_data(conn, %{favorited: true})
+    else
       conn
       |> put_status(:not_found)
       |> json(%{error: %{code: "not_found", message: "Emoji not found"}})
-    else
-
-    # Get current max order
-    max_order = from(f in "user_emoji_favorites",
-      where: f.user_id == type(^user.id, Ecto.UUID),
-      select: max(f.order)
-    )
-    |> Repo.one() || 0
-
-    Repo.insert_all("user_emoji_favorites", [
-      %{
-        id: Ecto.UUID.dump!(Ecto.UUID.generate()),
-        user_id: Ecto.UUID.dump!(user.id),
-        emoji_id: Ecto.UUID.dump!(emoji_id),
-        order: max_order + 1,
-        inserted_at: DateTime.utc_now()
-      }
-    ], on_conflict: :nothing)
-
-    render_data(conn, %{favorited: true})
     end
   end
 
@@ -93,17 +92,17 @@ defmodule CGraphWeb.API.V1.CustomEmojiController.FavoritesActions do
     # Check emoji exists
     emoji_exists = from(e in CustomEmoji, where: e.id == ^emoji_id, select: true) |> Repo.one()
 
-    unless emoji_exists do
-      conn
-      |> put_status(:not_found)
-      |> json(%{error: %{code: "not_found", message: "Emoji not found"}})
-    else
+    if emoji_exists do
       from(f in "user_emoji_favorites",
         where: f.user_id == type(^user.id, Ecto.UUID) and f.emoji_id == type(^emoji_id, Ecto.UUID)
       )
       |> Repo.delete_all()
 
       render_data(conn, %{favorited: false})
+    else
+      conn
+      |> put_status(:not_found)
+      |> json(%{error: %{code: "not_found", message: "Emoji not found"}})
     end
   end
 

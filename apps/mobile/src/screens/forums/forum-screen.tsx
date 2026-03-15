@@ -115,7 +115,7 @@ export default function ForumScreen({ navigation, route }: Props) {
       {/* Vote buttons */}
       <VoteButtons
         voteCount={item.vote_count}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         myVote={(item.my_vote || 0) as 0 | 1 | -1}
         onVote={(dir) => handleVote(item.id, dir)}
         size={24}

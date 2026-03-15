@@ -221,7 +221,7 @@ class IAPService {
       transaction_id: purchase.transactionId,
       receipt_data: purchase.transactionId, // receipt validated via transaction ID
       product_id: purchase.productId,
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       purchase_token: (purchase as unknown as Record<string, unknown>).purchaseToken, // Google-specific
     });
 

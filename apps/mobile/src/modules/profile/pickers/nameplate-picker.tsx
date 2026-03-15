@@ -26,7 +26,7 @@ import {
   type NameplateRarity,
 } from '@cgraph/animation-constants/src/registries/nameplates';
 import { useThemeStore } from '@/stores';
-import { Nameplate } from '../components/ProfileCard/Nameplate';
+import { Nameplate } from '../components/profile-card/nameplate';
 
 // ─── Rarity colors ───────────────────────────────────────────────────────────
 

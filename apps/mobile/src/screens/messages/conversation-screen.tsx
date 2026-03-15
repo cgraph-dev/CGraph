@@ -121,29 +121,29 @@ export default function ConversationScreen({ navigation, route }: Props) {
     if (_conversation) {
       const conv = _conversation;
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const pid = p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
         return String(pid) !== String(user?.id);
       });
       const displayName =
         conv.name ||
         otherParticipant?.nickname ||
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         (otherParticipant?.user as Record<string, unknown> | undefined)?.displayName ||
         otherParticipant?.user?.display_name ||
         otherParticipant?.displayName ||
         otherParticipant?.display_name ||
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         (otherParticipant?.user as Record<string, unknown> | undefined)?.username ||
         otherParticipant?.user?.username ||
         otherParticipant?.username ||
         'Conversation';
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       setup.header.updateHeader(displayName as string);
       if (otherParticipant) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const lastSeen = (otherParticipant?.user as Record<string, unknown>)?.lastSeenAt || null;
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         setup.presence.setOtherParticipantLastSeen(lastSeen as string | null);
       }
     }
@@ -202,7 +202,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           colors={colors}
           formatTime={setup.formatTime}
           getMessageStatus={
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             setup.getMessageStatus as (
               message: Message,
               isOwnMessage: boolean
@@ -245,13 +245,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
         isOwnMessage={String(user?.id) === String(setup.messageActions.selectedMessage?.sender_id)}
         isDark={isDark}
         colors={colors}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         messageActionsAnim={setup.messageActions.messageActionsAnim as unknown as Animated.Value}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         backdropAnim={setup.messageActions.backdropAnim as unknown as Animated.Value}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         menuScaleAnim={setup.messageActions.menuScaleAnim as unknown as Animated.Value}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         actionItemAnims={setup.messageActions.actionItemAnims as unknown as Animated.Value[]}
         closeMessageActions={setup.messageActions.closeMessageActions}
         onReply={setup.actionWrappers.handleReply}
@@ -272,7 +272,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         showAttachmentPreview={setup.attachments.showAttachmentPreview}
         pendingAttachments={setup.attachments.pendingAttachments}
         attachmentCaption={setup.attachments.attachmentCaption}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         attachmentPreviewAnim={setup.attachments.attachmentPreviewAnim as unknown as Animated.Value}
         closeAttachmentPreview={setup.attachments.closeAttachmentPreview}
         addMoreAttachments={setup.attachmentUpload.addMoreAttachments}
@@ -283,7 +283,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         selectedImage={setup.mediaViewer.selectedImage}
         imageGallery={setup.mediaViewer.imageGallery}
         currentImageIndex={setup.mediaViewer.currentImageIndex}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         imageGalleryRef={setup.mediaViewer.imageGalleryRef as React.RefObject<FlatList<string>>}
         imageViewerAnim={setup.mediaViewer.imageViewerAnim}
         imageScaleAnim={setup.mediaViewer.imageScaleAnim}
@@ -357,7 +357,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         isSending={setup.isSending}
         showAttachMenu={setup.attachments.showAttachMenu}
         attachMenuAnim={setup.attachments.attachMenuAnim}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         inputRef={setup.inputRef as React.RefObject<TextInput>}
         colors={colors}
         onTextChange={setup.handleTextChange}

@@ -88,62 +88,16 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
     target_ids = params["target_ids"] || params["target_user_ids"] || []
     call_type_str = params["type"] || params["call_type"] || "audio"
 
-    # Validate parameters
     if target_ids == [] or not is_list(target_ids) do
       {:reply, {:error, %{reason: "target_ids required"}}, socket}
     else
-      # Convert call type string to atom
-      call_type = case call_type_str do
-        "audio" -> :audio
-        "video" -> :video
-        "screen_share" -> :screen_share
-        _ -> :audio
-      end
+      call_type = parse_call_type(call_type_str)
 
-      # Create the room
       case WebRTC.create_room(user_id, call_type) do
         {:ok, room} ->
           Logger.info("webrtc_room_created", room_id: room.id, creator: user_id, targets: inspect(target_ids))
+          ring_and_notify(room, user_id, target_ids, call_type)
 
-          # Ring the target users
-          case WebRTC.ring(room.id, target_ids) do
-            :ok ->
-              Logger.info("webrtc_ringing_users", targets: inspect(target_ids))
-
-              # Send push notifications to callees (non-critical, must not crash call setup)
-              try do
-                caller = case CGraph.Accounts.get_user(user_id) do
-                  {:ok, u} -> u
-                  _ -> nil
-                end
-                call_type_label = if call_type == :video, do: "video", else: "voice"
-
-                Enum.each(target_ids, fn target_id ->
-                  case CGraph.Accounts.get_user(target_id) do
-                    {:ok, callee} ->
-                      Notifications.notify(callee, :incoming_call,
-                        "Incoming #{call_type_label} call from #{caller && caller.username || "Unknown"}",
-                        body: "Tap to answer",
-                        actor: caller,
-                        data: %{
-                          "call_id" => room.id,
-                          "call_type" => call_type_label,
-                          "room_id" => room.id
-                        }
-                      )
-                    _ -> :ok
-                  end
-                end)
-              rescue
-                e ->
-                  Logger.warning("webrtc_push_notification_failed", error: Exception.message(e))
-              end
-
-            {:error, reason} ->
-              Logger.warning("webrtc_ring_failed", reason: inspect(reason))
-          end
-
-          # Return room info
           response = %{
             room_id: room.id,
             type: room.type,
@@ -166,5 +120,55 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
   def handle_in(event, _params, socket) do
     Logger.warning("webrtc_lobby_unknown_event", event: event)
     {:reply, {:error, %{reason: "unknown_event"}}, socket}
+  end
+
+  defp parse_call_type(str) do
+    case str do
+      "audio" -> :audio
+      "video" -> :video
+      "screen_share" -> :screen_share
+      _ -> :audio
+    end
+  end
+
+  defp ring_and_notify(room, user_id, target_ids, call_type) do
+    case WebRTC.ring(room.id, target_ids) do
+      :ok ->
+        Logger.info("webrtc_ringing_users", targets: inspect(target_ids))
+        send_call_notifications(user_id, target_ids, room.id, call_type)
+
+      {:error, reason} ->
+        Logger.warning("webrtc_ring_failed", reason: inspect(reason))
+    end
+  end
+
+  defp send_call_notifications(caller_id, target_ids, room_id, call_type) do
+    try do
+      caller = case CGraph.Accounts.get_user(caller_id) do
+        {:ok, u} -> u
+        _ -> nil
+      end
+      call_type_label = if call_type == :video, do: "video", else: "voice"
+
+      Enum.each(target_ids, fn target_id ->
+        case CGraph.Accounts.get_user(target_id) do
+          {:ok, callee} ->
+            Notifications.notify(callee, :incoming_call,
+              "Incoming #{call_type_label} call from #{caller && caller.username || "Unknown"}",
+              body: "Tap to answer",
+              actor: caller,
+              data: %{
+                "call_id" => room_id,
+                "call_type" => call_type_label,
+                "room_id" => room_id
+              }
+            )
+          _ -> :ok
+        end
+      end)
+    rescue
+      e ->
+        Logger.warning("webrtc_push_notification_failed", error: Exception.message(e))
+    end
   end
 end

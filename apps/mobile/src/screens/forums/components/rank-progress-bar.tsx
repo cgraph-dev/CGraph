@@ -8,7 +8,7 @@
  * @module screens/forums/components/rank-progress-bar
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -17,7 +17,6 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { durations } from '@cgraph/animation-constants';
-import { useEffect } from 'react';
 
 // ── Types ──────────────────────────────────────────────────────────────
 

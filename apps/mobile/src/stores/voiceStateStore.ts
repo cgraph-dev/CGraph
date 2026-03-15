@@ -119,9 +119,9 @@ export const useVoiceStateStore = create<VoiceStateStore>()((set, get) => ({
 
         channel.on('phx_reply', (rawPayload?: unknown) => {
           clearTimeout(timeout);
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const payload = rawPayload as Record<string, unknown>;
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const response = payload.response as { token: string; room_name: string } | undefined;
           if (response?.token) {
             resolve(response);
@@ -136,50 +136,50 @@ export const useVoiceStateStore = create<VoiceStateStore>()((set, get) => ({
 
       // Set up event handlers
       channel.on('voice_member_joined', (rawPayload?: unknown) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const payload = rawPayload as Record<string, unknown>;
         get().addChannelMember(channelId, {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           userId: payload.user_id as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           username: payload.username as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           displayName: payload.display_name as string | null,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           avatarUrl: payload.avatar_url as string | null,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           selfMute: (payload.self_mute as boolean) ?? false,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           selfDeafen: (payload.self_deafen as boolean) ?? false,
           video: false,
         });
       });
 
       channel.on('voice_member_left', (rawPayload?: unknown) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const payload = rawPayload as Record<string, unknown>;
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         get().removeChannelMember(channelId, payload.user_id as string);
       });
 
       channel.on('voice_state_update', (rawPayload?: unknown) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const payload = rawPayload as Record<string, unknown>;
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         get().updateMemberState(channelId, payload.user_id as string, {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           selfMute: payload.self_mute as boolean,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           selfDeafen: payload.self_deafen as boolean,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           video: payload.video as boolean,
         });
       });
 
       channel.on('presence_state', (rawPayload?: unknown) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const payload = rawPayload as Record<string, unknown>;
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const members = payload.members as VoiceMember[] | undefined;
         if (members) {
           get().setChannelMembers(channelId, members);

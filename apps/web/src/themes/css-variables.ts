@@ -58,7 +58,7 @@ export function getCSSVariables(theme: AppTheme): Record<string, string> {
 
   // Components
   Object.entries(theme.components).forEach(([component, styles]) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     Object.entries(styles as Record<string, string>).forEach(([key, value]) => {
       // type assertion: style object entries iteration
       vars[`--theme-${component}-${kebabCase(key)}`] = value;

@@ -101,7 +101,7 @@ export function AnimationSetsSection({
                                   ? 0.7
                                   : 1,
 
-                        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- easing string from AnimationSet
+                         
                         ease: anim.easing as import('motion/react').Easing,
                         repeat: Infinity,
                         repeatDelay: 0.5,

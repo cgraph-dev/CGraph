@@ -361,7 +361,7 @@ function ActionButton({ action, index, onPress }: ActionButtonProps) {
 
   return (
     <Animated.View
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+       
       entering={require('react-native-reanimated').FadeInRight.delay(staggerDelay).springify()}
       style={[styles.actionButton, { backgroundColor: action.color }]}
     >

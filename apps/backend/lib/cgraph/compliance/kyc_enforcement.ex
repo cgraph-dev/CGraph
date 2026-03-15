@@ -55,9 +55,7 @@ defmodule CGraph.Compliance.KYCEnforcement do
   """
   @spec kyc_status(String.t()) :: :not_required | :pending | :verified | :rejected
   def kyc_status(user_id) do
-    if not check_kyc_required(user_id) do
-      :not_required
-    else
+    if check_kyc_required(user_id) do
       user = Repo.get(User, user_id)
 
       case user do
@@ -76,6 +74,8 @@ defmodule CGraph.Compliance.KYCEnforcement do
               :rejected
           end
       end
+    else
+      :not_required
     end
   end
 

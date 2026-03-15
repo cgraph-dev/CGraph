@@ -91,7 +91,7 @@ export function FilterModal({
           style={filterStyles.toggleIcon}
         >
           <Ionicons
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             name={icon as keyof typeof Ionicons.glyphMap}
             size={16}
             color={value ? '#fff' : colors.textSecondary}

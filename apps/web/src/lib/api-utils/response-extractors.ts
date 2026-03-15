@@ -61,7 +61,7 @@ export function asArray<T>(v: unknown, guard: (x: unknown) => x is T): T[] {
  * Use only when T is a known, closed interface.
  */
 export function typedKeys<T extends object>(obj: T): (keyof T)[] {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return Object.keys(obj) as (keyof T)[]; // type assertion: Object.keys returns keyof T
 }
 
@@ -108,7 +108,7 @@ export function ensureArray<T>(data: unknown, key?: string): T[] {
 
   // Handle direct array
   if (Array.isArray(data)) {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return data as T[]; // safe: Array.isArray verified; T is caller's responsibility
   }
 
@@ -118,7 +118,7 @@ export function ensureArray<T>(data: unknown, key?: string): T[] {
 
     // Try the specified key first
     if (key && Array.isArray(obj[key])) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return obj[key] as T[]; // safe: Array.isArray verified; T is caller's responsibility
     }
 
@@ -126,7 +126,7 @@ export function ensureArray<T>(data: unknown, key?: string): T[] {
     const commonKeys = ['data', 'items', 'results', 'list', 'records'];
     for (const k of commonKeys) {
       if (Array.isArray(obj[k])) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         return obj[k] as T[]; // safe: Array.isArray verified; T is caller's responsibility
       }
     }
@@ -164,20 +164,20 @@ export function ensureObject<T extends object>(data: unknown, key?: string): T |
 
     // Try the specified key first
     if (key && obj[key] && typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return obj[key] as T; // safe: object verified; T is caller's responsibility
     }
 
     // Try 'data' wrapper
     if (obj.data && typeof obj.data === 'object' && !Array.isArray(obj.data)) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return obj.data as T; // safe: object verified; T is caller's responsibility
     }
 
     // Return as-is if it looks like the target object (has properties beyond just 'data')
     const keys = Object.keys(obj);
     if (keys.length > 0 && !keys.every((k) => ['data', 'meta', 'status', 'message'].includes(k))) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return obj as unknown as T; // safe: structural heuristic; T is caller's responsibility
     }
   }

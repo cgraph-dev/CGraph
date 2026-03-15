@@ -229,8 +229,7 @@ defmodule CGraph.Forums.Search do
     |> String.trim()
     |> String.replace(~r/[^\w\s]/, "")
     |> String.split(~r/\s+/, trim: true)
-    |> Enum.map(&(&1 <> ":*"))
-    |> Enum.join(" & ")
+    |> Enum.map_join(" & ", &(&1 <> ":*"))
     |> case do
       "" -> "a"
       tsq -> tsq

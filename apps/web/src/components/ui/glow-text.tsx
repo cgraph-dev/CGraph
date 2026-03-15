@@ -76,7 +76,7 @@ export default function GlowText({
     : gradient.match(/#[a-fA-F0-9]{6}|#[a-fA-F0-9]{3}|rgb[a]?\([^)]+\)/)?.[0] || '#667eea';
   void _primaryColor; // Reserved for future enhanced glow effects
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- dynamic motion component access requires type assertion
+   
   const MotionComponent = motion[Component] as typeof motion.span;
 
   return (

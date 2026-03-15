@@ -17,7 +17,7 @@ import {
   ConnectionState,
   type RemoteParticipant,
   type RemoteTrackPublication,
-  type _LocalParticipant,
+  type LocalParticipant,
   type Participant,
   type RoomOptions,
 } from 'livekit-client';

@@ -54,7 +54,7 @@ export function NextTierProgress({ tier, currentReferrals, progress }: NextTierP
         {tier.rewards.slice(0, 3).map((reward, i) => (
           <View key={i} style={styles.reward}>
             <Ionicons
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               name={getRewardIcon(reward.type) as keyof typeof Ionicons.glyphMap}
               size={12}
               color="#9ca3af"

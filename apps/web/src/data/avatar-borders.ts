@@ -1021,7 +1021,7 @@ export interface BorderThemeCategory {
 
 /** Convert AvatarBorderConfig → BorderDefinition */
 function toBorderDefinition(b: AvatarBorderConfig): BorderDefinition {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const colors = [b.primaryColor, b.secondaryColor, b.accentColor].filter(Boolean) as string[];
   const isUnlocked = b.unlockType === 'default' || !b.isPremium;
   return {
@@ -1029,7 +1029,7 @@ function toBorderDefinition(b: AvatarBorderConfig): BorderDefinition {
     name: b.name,
     theme: b.theme,
     rarity: b.rarity,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     animationType: b.type === 'lottie' ? 'lottie' : (b.type as BorderAnimationType),
     colors,
     isPremium: b.isPremium,
@@ -1086,7 +1086,7 @@ const themeConfig: Record<
 
 export const BORDER_THEMES: BorderThemeCategory[] = Object.entries(themeConfig).map(
   ([id, cfg]) => ({
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: id as BorderTheme,
     name: cfg.name,
     description: cfg.description,

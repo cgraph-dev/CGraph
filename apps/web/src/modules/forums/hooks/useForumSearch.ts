@@ -41,9 +41,9 @@ export function useForumSearch() {
       const sort = searchParams.get('sort');
       const dateFrom = searchParams.get('date_from');
       const dateTo = searchParams.get('date_to');
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       if (type) filters.type = type as ForumSearchFilters['type'];
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       if (sort) filters.sort = sort as ForumSearchFilters['sort'];
       if (dateFrom) filters.dateFrom = dateFrom;
       if (dateTo) filters.dateTo = dateTo;

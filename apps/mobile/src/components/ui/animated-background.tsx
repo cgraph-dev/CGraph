@@ -158,13 +158,13 @@ function Orb({
           borderRadius: size / 2,
           backgroundColor: color,
           opacity: opacityMultiplier,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- position values may be string or number from config
+           
           top: top as number | undefined,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           bottom: bottom as number | undefined,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           left: left as number | undefined,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           right: right as number | undefined,
         },
         animatedStyle,

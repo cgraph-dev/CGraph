@@ -169,7 +169,7 @@ export const useGroupE2eeStore = create<GroupE2eeState>()(
         keyPair.chainIndex++;
         set(
           (state) =>
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             ({
               senderKeys: {
                 ...state.senderKeys,

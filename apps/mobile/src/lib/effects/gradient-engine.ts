@@ -634,7 +634,7 @@ export function createBorderGradientColors(
   const radians = (angle * Math.PI) / 180;
 
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     colors: config.colors as [string, string, ...string[]],
     start: {
       x: 0.5 - Math.cos(radians) * 0.5,

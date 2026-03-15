@@ -110,36 +110,36 @@ export const useChatCustomization = () => {
     bubbleStyle: chatBubbleStyle,
     // type assertion: initializing compatibility layer with explicit null types
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     textColor: null as string | null,
     textSize: 14,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     textWeight: 'normal' as string, // type assertion: legacy compat field widened to string
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     fontFamily: 'inherit' as string, // type assertion: legacy compat field widened to string
     entranceAnimation: bubbleEntranceAnimation,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     hoverEffect: (bubbleHoverEffect ? 'lift' : 'none') as string, // type assertion: legacy compat field widened to string
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     glassEffect: (bubbleGlassEffect ? 'default' : 'none') as string, // type assertion: legacy compat field widened to string
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     borderStyle: 'none' as string, // type assertion: legacy compat field widened to string
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     particleEffect: null as string | null, // type assertion: legacy compat nullable field type
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     animationSpeed: 'normal' as string, // type assertion: legacy compat field widened to string
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     backgroundEffect: null as string | null, // type assertion: legacy compat nullable field type
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     animationIntensity: 'medium' as string, // type assertion: legacy compat field widened to string
   };
 
@@ -153,7 +153,7 @@ export const useChatCustomization = () => {
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     updateSettings(mapped as Parameters<typeof updateSettings>[0]); // type assertion: mapped settings conform to update params
   };
 

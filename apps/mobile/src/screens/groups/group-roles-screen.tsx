@@ -229,7 +229,7 @@ const PRESET_COLORS = [
  * Group Roles Screen component.
  *
  */
-export default function GroupRolesScreen({ _navigation, route }: Props) {
+export default function GroupRolesScreen({ navigation, route }: Props) {
   const { groupId } = route.params;
   const { colors } = useThemeStore();
   const [roles, setRoles] = useState<Role[]>([]);

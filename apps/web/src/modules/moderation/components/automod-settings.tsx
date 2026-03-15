@@ -146,7 +146,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
                     setEditingRule({
                       ...editingRule,
 
-                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                       
                       rule_type: e.target.value as AutomodRule['rule_type'], // safe downcast – select event value
                     })
                   }
@@ -164,7 +164,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
                     setEditingRule({
                       ...editingRule,
 
-                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                       
                       action: e.target.value as AutomodRule['action'], // safe downcast – select event value
                     })
                   }

@@ -49,7 +49,7 @@ export default function UploadEmojiModal({ onClose }: UploadEmojiModalProps) {
 
   const validateLottieJson = (data: unknown): string | null => {
     if (typeof data !== 'object' || data === null) return 'Invalid JSON structure';
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- validated object from JSON.parse
+     
     const obj = data as Record<string, unknown>;
     const required = ['v', 'fr', 'ip', 'op', 'w', 'h', 'layers'];
     const missing = required.filter((k) => !(k in obj));

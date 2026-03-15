@@ -34,7 +34,7 @@ export function useLocalStorage<T>(
     try {
       const item = window.localStorage.getItem(key);
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return item !== null ? (JSON.parse(item) as T) : initialValue; // type assertion: JSON.parse result typed to generic param
     } catch (error: unknown) {
       logger.warn(
@@ -91,7 +91,7 @@ export function useLocalStorage<T>(
         try {
           setStoredValue(JSON.parse(event.newValue));
         } catch {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           setStoredValue(event.newValue as unknown as T); // type assertion: storage event value typed to generic param
         }
       } else if (event.key === key && event.newValue === null) {

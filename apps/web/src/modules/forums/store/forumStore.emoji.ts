@@ -71,34 +71,34 @@ interface EmojiStoreState {
 
 function mapPack(raw: Record<string, unknown>): EmojiPack {
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     name: raw.name as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     description: (raw.description as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     author: (raw.author as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     version: (raw.version as string) || '1.0.0',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     iconUrl: (raw.icon_url as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     emojiCount: (raw.emoji_count as number) || 0,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isPremium: (raw.is_premium as boolean) || false,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isActive: (raw.is_active as boolean) ?? true,
     emojis: Array.isArray(raw.emojis)
-      ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      ?  
         (raw.emojis as Record<string, unknown>[]).map((e) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           id: e.id as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           shortcode: e.shortcode as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           imageUrl: e.image_url as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           isAnimated: (e.is_animated as boolean) || false,
         }))
       : [],
@@ -116,7 +116,7 @@ export const useEmojiPackStore = create<EmojiStoreState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const res = await api.get(`/api/v1/forums/${forumId}/emoji-packs`);
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = (res.data as { data: Record<string, unknown>[] }).data || [];
       set({ packs: data.map(mapPack), loading: false });
     } catch (err) {
@@ -127,7 +127,7 @@ export const useEmojiPackStore = create<EmojiStoreState>((set, get) => ({
 
   createPack: async (forumId: string, data: { name: string; description?: string }) => {
     const res = await api.post(`/api/v1/forums/${forumId}/emoji-packs`, { pack: data });
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const pack = mapPack((res.data as { data: Record<string, unknown> }).data);
     set((s) => ({ packs: [...s.packs, pack] }));
     return pack;
@@ -135,7 +135,7 @@ export const useEmojiPackStore = create<EmojiStoreState>((set, get) => ({
 
   importPack: async (forumId: string, bundle: EmojiPackBundle) => {
     const res = await api.post(`/api/v1/forums/${forumId}/emoji-packs/import`, { bundle });
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const pack = mapPack((res.data as { data: Record<string, unknown> }).data);
     // Refetch to get full pack with emojis
     await get().fetchPacks(forumId);
@@ -144,7 +144,7 @@ export const useEmojiPackStore = create<EmojiStoreState>((set, get) => ({
 
   exportPack: async (forumId: string, packId: string) => {
     const res = await api.get(`/api/v1/forums/${forumId}/emoji-packs/${packId}/export`);
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return res.data as EmojiPackBundle;
   },
 
@@ -155,7 +155,7 @@ export const useEmojiPackStore = create<EmojiStoreState>((set, get) => ({
 
   fetchMarketplace: async () => {
     const res = await api.get('/api/v1/emoji-packs/marketplace');
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = (res.data as { data: Record<string, unknown>[] }).data || [];
     return data.map(mapPack);
   },

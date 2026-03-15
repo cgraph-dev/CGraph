@@ -42,7 +42,7 @@ export default function FileUnlockSheet({
   const handleConfirm = () => {
     try {
       // Optional haptic feedback — expo-haptics may not be available in all envs
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+       
       const Haptics = require('expo-haptics');
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     } catch {

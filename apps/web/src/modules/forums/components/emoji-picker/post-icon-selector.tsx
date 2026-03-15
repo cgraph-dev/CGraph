@@ -37,15 +37,15 @@ export interface PostIconSelectorProps {
 
 function mapIcon(raw: Record<string, unknown>): PostIcon {
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     name: raw.name as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     iconUrl: raw.icon_url as string,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     emoji: (raw.emoji as string) || null,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     displayOrder: (raw.display_order as number) || 0,
   };
 }
@@ -69,7 +69,7 @@ export const PostIconSelector = memo(function PostIconSelector({
       setLoading(true);
       try {
         const res = await api.get(`/api/v1/forums/${forumId}/boards/${boardId}/post-icons`);
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const data = (res.data as { data: Record<string, unknown>[] }).data || [];
         if (!cancelled) setIcons(data.map(mapIcon));
       } catch {

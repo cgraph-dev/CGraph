@@ -70,7 +70,7 @@ type Props = {
  */
 export default function CreatePostScreen({ navigation, route }: Props) {
   const { forumId } = route.params;
-  const { _colors } = useThemeStore();
+  const { colors } = useThemeStore();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -143,7 +143,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
     } catch (error: unknown) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const apiError = error as { response?: { data?: { message?: string } } };
       Alert.alert('Error', apiError.response?.data?.message || 'Failed to create post');
     } finally {

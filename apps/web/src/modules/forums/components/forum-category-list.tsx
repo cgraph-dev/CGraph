@@ -85,7 +85,7 @@ interface _ForumPreview {
   isHot?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+ 
 void (0 as unknown as _ForumPreview); // Silence unused interface warning
 
 /**

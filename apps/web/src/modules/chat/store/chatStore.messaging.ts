@@ -42,28 +42,28 @@ export async function attemptDecrypt(message: Message, e2eeStore: E2EEState): Pr
         timestamp: Date.now(),
         ratchetMessage: {
           header: {
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             dh: (metadata.ratchet_dh as string) || '',
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             pn: (metadata.ratchet_pn as number) || 0,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             n: (metadata.ratchet_n as number) || 0,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             sessionId: (metadata.ratchet_session_id as string) || '',
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             timestamp: (metadata.ratchet_timestamp as number) || Date.now(),
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             version: (metadata.ratchet_version as number) || 1,
           },
           ciphertext: message.encryptedContent || message.content,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           nonce: message.nonce || (metadata.nonce as string) || '',
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           mac: (metadata.ratchet_mac as string) || '',
         },
       };
       const senderIdentityKey =
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         message.senderIdentityKey || (metadata.sender_identity_key as string);
       return await e2eeStore.decryptWithRatchet(secureMsg, senderIdentityKey);
     } catch {
@@ -76,21 +76,21 @@ export async function attemptDecrypt(message: Message, e2eeStore: E2EEState): Pr
   const encryptedPayload = {
     ciphertext: message.encryptedContent || message.content,
     ephemeralPublicKey:
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       message.ephemeralPublicKey || (metadata.ephemeral_public_key as string), // safe downcast — validated below
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     recipientIdentityKeyId: (metadata.recipient_identity_key_id as string) || '', // safe downcast
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     oneTimePreKeyId: metadata.one_time_prekey_id as string | undefined, // safe downcast
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     nonce: message.nonce || (metadata.nonce as string), // safe downcast — validated below
   };
 
   const senderIdentityKey =
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     message.senderIdentityKey || (metadata.sender_identity_key as string); // safe downcast — validated below
 
   if (!encryptedPayload.ephemeralPublicKey || !senderIdentityKey || !encryptedPayload.nonce) {
@@ -238,7 +238,7 @@ export function createMessagingActions(_set: Set, get: Get) {
             );
             const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
             if (rawMessage) {
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
               // Store plaintext locally for sender (we know what we sent)
               message.content = content;
@@ -284,7 +284,7 @@ export function createMessagingActions(_set: Set, get: Get) {
         encryptedContent: null,
         isEncrypted: false,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         messageType: (contentType as Message['messageType']) || 'text', // safe downcast
         replyToId: replyToId || null,
         replyTo: null,
@@ -292,7 +292,7 @@ export function createMessagingActions(_set: Set, get: Get) {
         isEdited: false,
         deletedAt: null,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         metadata: (metadata || {}) as Message['metadata'], // safe downcast
         reactions: [],
         sender: {
@@ -314,7 +314,7 @@ export function createMessagingActions(_set: Set, get: Get) {
         );
         const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
         if (rawMessage) {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
           // Replace the optimistic message with the real server response
           get().removeMessage(clientMessageId, conversationId);
@@ -364,7 +364,7 @@ export function createMessagingActions(_set: Set, get: Get) {
         );
         const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
         if (rawMessage) {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
           // Store plaintext locally for sender
           message.content = content;

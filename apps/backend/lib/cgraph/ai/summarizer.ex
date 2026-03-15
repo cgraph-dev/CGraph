@@ -44,12 +44,11 @@ defmodule CGraph.AI.Summarizer do
 
     formatted =
       messages
-      |> Enum.map(fn msg ->
+      |> Enum.map_join("\n", fn msg ->
         sender = msg["sender"] || msg[:sender] || "Unknown"
         content = msg["content"] || msg[:content] || ""
         "#{sender}: #{content}"
       end)
-      |> Enum.join("\n")
 
     llm_messages = [
       %{role: "system", content: system_prompt},
@@ -97,8 +96,7 @@ defmodule CGraph.AI.Summarizer do
 
     all_text =
       messages
-      |> Enum.map(&(Map.get(&1, "content") || Map.get(&1, :content, "")))
-      |> Enum.join(" ")
+      |> Enum.map_join(" ", &(Map.get(&1, "content") || Map.get(&1, :content, "")))
 
     sentences =
       all_text
@@ -122,7 +120,7 @@ defmodule CGraph.AI.Summarizer do
 
     detailed =
       "This conversation involves #{Enum.join(participants, ", ")}. " <>
-      if(length(key_points) > 0,
+      if(key_points != [],
         do: "Key topics: #{Enum.take(key_points, 3) |> Enum.join("; ")}. ",
         else: "") <>
       "Total of #{length(messages)} messages exchanged."

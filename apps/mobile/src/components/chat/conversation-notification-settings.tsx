@@ -87,7 +87,7 @@ export function ConversationNotificationSettings({
         );
         const pref =
           res.data?.data?.preference ??
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           (res.data as unknown as { preference: NotificationPreference })?.preference;
         if (pref) {
           setCurrentMode(pref.mode || 'all');

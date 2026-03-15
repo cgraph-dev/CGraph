@@ -273,7 +273,7 @@ export function AppealScreen() {
           return (
             <View key={appeal.id} style={styles.appealCard}>
               <View style={styles.appealHeader}>
-                {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+                { }
                 <Ionicons name={config.icon as 'time'} size={18} color={config.color} />
                 <Text style={[styles.appealStatus, { color: config.color }]}>{config.label}</Text>
                 <Text style={styles.appealDate}>

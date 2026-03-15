@@ -248,7 +248,7 @@ export default function ErrorState({
           variant === 'minimal' && styles.iconContainerMinimal,
         ]}
       >
-        {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <IconComponent name={preset.icon as any} size={iconSize} color={preset.color} />
       </Animated.View>
     );

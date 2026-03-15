@@ -255,7 +255,7 @@ export function normalizeConversation(raw: Record<string, unknown>): Record<stri
   }
 
   const participants = Array.isArray(raw.participants)
-    ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    ?  
       (raw.participants as Record<string, unknown>[]) // safe: elements validated by normalizeParticipant
     : null;
   const lastMessage = raw.lastMessage ?? raw.last_message;
@@ -287,6 +287,6 @@ export function normalizeConversations(conversations: unknown[]): Record<string,
     return [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return conversations.map((c) => normalizeConversation(c as Record<string, unknown>)); // safe: normalizeConversation validates input
 }

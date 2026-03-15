@@ -64,7 +64,7 @@ export function OAuthCallbackPage() {
     // Validate provider
     const validProviders: OAuthProvider[] = ['google', 'apple', 'facebook', 'tiktok'];
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     if (!validProviders.includes(provider as OAuthProvider)) {
       // type assertion: validated by includes check above
       // safe downcast – runtime verified
@@ -83,7 +83,7 @@ export function OAuthCallbackPage() {
 
     // Exchange code for tokens
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     handleOAuthCallback(provider as OAuthProvider, code, state) // safe downcast – runtime verified
       .then((response) => {
         setStatus('success');
@@ -104,7 +104,7 @@ export function OAuthCallbackPage() {
             user: {
               id: response.user.id,
 
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               uid: ((response.user as Record<string, unknown>).uid as string) || '', // safe downcast – structural boundary
               userId: 0,
               userIdDisplay: '#0000',

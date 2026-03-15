@@ -53,32 +53,32 @@ export const useRssConfigStore = create<RssStoreState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const res = await api.get(`/api/v1/forums/${forumId}/rss/config`);
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = res.data as Record<string, unknown>;
       const boards = Array.isArray(data.boards)
-        ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        ?  
           (data.boards as Record<string, unknown>[]).map((b) => ({
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             boardId: b.board_id as string,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             boardName: b.board_name as string,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             rssEnabled: (b.rss_enabled as boolean) ?? true,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             feedUrl: b.feed_url as string,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             atomUrl: b.atom_url as string,
           }))
         : [];
 
       set({
         config: {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           globalEnabled: (data.global_enabled as boolean) ?? true,
           boards,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           feedFormat: (data.feed_format as 'rss' | 'atom') || 'rss',
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           itemsPerFeed: (data.items_per_feed as number) || 20,
         },
         loading: false,

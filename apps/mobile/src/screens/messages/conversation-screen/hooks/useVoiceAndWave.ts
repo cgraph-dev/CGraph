@@ -70,7 +70,7 @@ export function useVoiceAndWave({
         // Create form data for upload
         const formData = new FormData();
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         formData.append('audio', {
           uri: voiceData.uri,
           name: `voice_${Date.now()}.m4a`,

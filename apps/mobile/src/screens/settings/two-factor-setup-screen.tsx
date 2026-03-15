@@ -11,7 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
-  _Dimensions,
+  Dimensions,
   Alert,
   TextInput,
 } from 'react-native';
@@ -28,7 +28,7 @@ import {
   TwoFactorSetupData,
   SetupStep,
   STEPS,
-  _SCREEN_WIDTH,
+  SCREEN_WIDTH,
 } from './two-factor-setup/two-factor-types';
 import { IntroStep } from './two-factor-setup/intro-step';
 import { ScanStep } from './two-factor-setup/scan-step';

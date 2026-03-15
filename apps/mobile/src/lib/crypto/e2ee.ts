@@ -282,7 +282,7 @@ export enum CryptoProtocol {
 
 /** Check if a server prekey bundle includes KEM prekeys (PQ-capable peer) */
 export function bundleSupportsPQ(bundle: ServerPrekeyBundle): boolean {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return !!(bundle && 'kyber_prekey' in bundle && (bundle as Record<string, unknown>).kyber_prekey);
 }
 
@@ -369,7 +369,7 @@ export async function loadOneTimePreKeyPrivates(): Promise<Map<string, Uint8Arra
   const json = await SecureStore.getItemAsync(OPK_PRIVATE_KEYS);
   if (!json) return new Map();
   try {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const parsed = JSON.parse(json) as Record<string, string>;
     const map = new Map<string, Uint8Array>();
     for (const [keyId, b64] of Object.entries(parsed)) {
@@ -926,18 +926,18 @@ export async function loadSessions(): Promise<Map<string, Session>> {
   const map = new Map<string, Session>();
 
   for (const [recipientId, session] of Object.entries(sessions)) {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const s = session as Session;
     map.set(recipientId, {
       ...s,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       recipientIdentityKey: Buffer.from(s.recipientIdentityKey as unknown as string, 'base64'),
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       sharedSecret: Buffer.from(s.sharedSecret as unknown as string, 'base64'),
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       chainKey: Buffer.from(s.chainKey as unknown as string, 'base64'),
     });
   }

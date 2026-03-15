@@ -55,7 +55,7 @@ export default function CallScreen() {
       {/* Header */}
       <CallHeader
         recipient={recipient}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         callStatus={callState.status as CallStatus} // safe downcast – runtime verified
         formattedDuration={formatDuration}
         showControls={showControls}
@@ -66,7 +66,7 @@ export default function CallScreen() {
         {isConnecting ? (
           /* safe downcast – runtime verified */
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           <ConnectingState recipient={recipient} callStatus={callState.status as CallStatus} />
         ) : (
           <div className={`grid h-full ${gridClass} gap-4`}>

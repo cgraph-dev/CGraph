@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+ 
 /**
  * ForumLeaderboardWidget - Forum-specific leaderboard showing top contributors
  *

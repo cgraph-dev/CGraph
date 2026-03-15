@@ -121,7 +121,7 @@ export function ThemeEditor({ options, onSave, saving }: ThemeEditorProps) {
   }, []);
 
   const applyPreset = useCallback((presetKey: string) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const preset = PRESETS[presetKey as keyof typeof PRESETS];
     if (preset) {
       setDraft((prev) => ({ ...prev, ...preset }));
@@ -174,14 +174,14 @@ export function ThemeEditor({ options, onSave, saving }: ThemeEditorProps) {
               <div className="flex items-center gap-2">
                 <input
                   type="color"
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   value={(draft[key] as string) ?? '#000000'}
                   onChange={(e) => updateField(key, e.target.value)}
                   className="h-8 w-10 cursor-pointer rounded border border-white/10"
                 />
                 <input
                   type="text"
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   value={(draft[key] as string) ?? ''}
                   onChange={(e) => updateField(key, e.target.value)}
                   className="flex-1 rounded border border-white/10 bg-white/5 px-2 py-1 text-sm text-white"
@@ -199,7 +199,7 @@ export function ThemeEditor({ options, onSave, saving }: ThemeEditorProps) {
           <div>
             <label className="mb-1 block text-xs text-white/50">Font Family</label>
             <select
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               value={(draft.font_family as string) ?? 'Inter, system-ui, sans-serif'}
               onChange={(e) => updateField('font_family', e.target.value)}
               className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
@@ -214,7 +214,7 @@ export function ThemeEditor({ options, onSave, saving }: ThemeEditorProps) {
           <div>
             <label className="mb-1 block text-xs text-white/50">Base Font Size</label>
             <select
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               value={(draft.font_size_base as string) ?? '16px'}
               onChange={(e) => updateField('font_size_base', e.target.value)}
               className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
@@ -229,7 +229,7 @@ export function ThemeEditor({ options, onSave, saving }: ThemeEditorProps) {
           <div>
             <label className="mb-1 block text-xs text-white/50">Border Radius</label>
             <select
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               value={(draft.border_radius as string) ?? 'md'}
               onChange={(e) => updateField('border_radius', e.target.value)}
               className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"
@@ -250,7 +250,7 @@ export function ThemeEditor({ options, onSave, saving }: ThemeEditorProps) {
           <div>
             <label className="mb-1 block text-xs text-white/50">Content Width</label>
             <select
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               value={(draft.content_width as string) ?? '1200px'}
               onChange={(e) => updateField('content_width', e.target.value)}
               className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"

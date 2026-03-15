@@ -61,25 +61,25 @@ export default function GroupInvitesScreen({ route }: Props) {
           : [];
       setInvites(
         data.map((i: Record<string, unknown>) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           id: (i.id ?? '') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           code: (i.code ?? '') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           uses: (i.uses ?? 0) as number,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           maxUses: (i.max_uses ?? i.maxUses ?? null) as number | null,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           expiresAt: (i.expires_at ?? i.expiresAt ?? null) as string | null,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           createdBy: (i.created_by ?? i.createdBy ?? '') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           createdAt: (i.inserted_at ?? i.createdAt ?? '') as string,
         }))
       );

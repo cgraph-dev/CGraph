@@ -38,7 +38,7 @@ export function usePostIcons(forumId?: string, boardId?: string) {
         setIcons(data.icons || data);
         setError(null);
       } catch (err) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         setError(err as Error); // safe downcast – structural boundary
         // Fallback to emoji-based defaults
         setIcons(getDefaultIcons());

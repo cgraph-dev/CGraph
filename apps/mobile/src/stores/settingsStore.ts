@@ -236,7 +236,7 @@ function mapSettingsToApi(settings: Partial<UserSettings>): Record<string, unkno
     if (n.notifyMessages !== undefined) result.notify_messages = n.notifyMessages;
     if (n.notifyMentions !== undefined) result.notify_mentions = n.notifyMentions;
     if (n.notifyFriendRequests !== undefined)
-      result.notify_friend_requests = n.notifyFriendRequests;
+      {result.notify_friend_requests = n.notifyFriendRequests;}
     if (n.notifyGroupInvites !== undefined) result.notify_group_invites = n.notifyGroupInvites;
     if (n.notifyForumReplies !== undefined) result.notify_forum_replies = n.notifyForumReplies;
     if (n.notificationSound !== undefined) result.notification_sound = n.notificationSound;
@@ -251,11 +251,11 @@ function mapSettingsToApi(settings: Partial<UserSettings>): Record<string, unkno
     if (p.showOnlineStatus !== undefined) result.show_online_status = p.showOnlineStatus;
     if (p.showReadReceipts !== undefined) result.show_read_receipts = p.showReadReceipts;
     if (p.showTypingIndicators !== undefined)
-      result.show_typing_indicators = p.showTypingIndicators;
+      {result.show_typing_indicators = p.showTypingIndicators;}
     if (p.profileVisibility !== undefined) result.profile_visibility = p.profileVisibility;
     if (p.allowFriendRequests !== undefined) result.allow_friend_requests = p.allowFriendRequests;
     if (p.allowMessageRequests !== undefined)
-      result.allow_message_requests = p.allowMessageRequests;
+      {result.allow_message_requests = p.allowMessageRequests;}
     if (p.showInSearch !== undefined) result.show_in_search = p.showInSearch;
     if (p.allowGroupInvites !== undefined) result.allow_group_invites = p.allowGroupInvites;
   }
@@ -271,7 +271,7 @@ function mapSettingsToApi(settings: Partial<UserSettings>): Record<string, unkno
     if (a.reduceMotion !== undefined) result.reduce_motion = a.reduceMotion;
     if (a.highContrast !== undefined) result.high_contrast = a.highContrast;
     if (a.screenReaderOptimized !== undefined)
-      result.screen_reader_optimized = a.screenReaderOptimized;
+      {result.screen_reader_optimized = a.screenReaderOptimized;}
   }
 
   if (settings.locale) {

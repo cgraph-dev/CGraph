@@ -34,7 +34,7 @@ export function GlobalLeaderboardWidget({
         const data = response.data?.data || [];
         setUsers(
           data.map((u: Record<string, unknown>, index: number) => ({
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             rank: (u.rank as number) || index + 1, // type assertion: API response field
             id: u.id,
             username: u.username,

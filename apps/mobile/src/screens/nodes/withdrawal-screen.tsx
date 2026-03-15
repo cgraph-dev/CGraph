@@ -60,7 +60,7 @@ export default function WithdrawalScreen(): React.ReactElement {
   const validationError = useMemo((): string | null => {
     if (amount === 0) return null; // No input yet
     if (amount < MIN_WITHDRAWAL)
-      return `Minimum withdrawal is ${MIN_WITHDRAWAL.toLocaleString()} Nodes`;
+      {return `Minimum withdrawal is ${MIN_WITHDRAWAL.toLocaleString()} Nodes`;}
     if (amount > balance) return 'Exceeds available balance';
     return null;
   }, [amount, balance]);
@@ -203,7 +203,7 @@ export default function WithdrawalScreen(): React.ReactElement {
             onPress={() => setPayoutMethod(method.id)}
           >
             <Ionicons
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               name={method.icon as never}
               size={22}
               color={isActive ? colors.primary : colors.textSecondary}

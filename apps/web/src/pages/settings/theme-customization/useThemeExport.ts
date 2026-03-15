@@ -30,14 +30,14 @@ export function useThemeExport() {
     input.type = 'file';
     input.accept = 'application/json';
     input.onchange = (e) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const file = (e.target as HTMLInputElement).files?.[0]; // safe downcast – DOM element
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
           // type assertion: FileReader.result is string when readAsText() is used
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const json = e.target?.result as string;
           const success = importTheme(json);
           if (success) {

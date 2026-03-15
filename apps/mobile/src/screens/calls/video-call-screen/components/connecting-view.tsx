@@ -40,7 +40,7 @@ export function ConnectingView({
             source={
               recipientAvatar
                 ? { uri: recipientAvatar }
-                : // eslint-disable-next-line @typescript-eslint/no-require-imports
+                :  
                   require('@/assets/default-avatar.png')
             }
             size={140}

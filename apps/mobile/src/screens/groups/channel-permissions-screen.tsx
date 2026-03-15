@@ -197,7 +197,7 @@ const segStyles = StyleSheet.create({
  * Channel Permissions Screen component.
  *
  */
-export default function ChannelPermissionsScreen({ _navigation, route }: Props) {
+export default function ChannelPermissionsScreen({ navigation, route }: Props) {
   const { channelId, groupId } = route.params;
   const { colors } = useThemeStore();
 

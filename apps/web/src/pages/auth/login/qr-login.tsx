@@ -146,7 +146,7 @@ export function QrLogin() {
       // Listen for auth completion from mobile
       channel.on('auth_complete', (payload: unknown) => {
         logger.info('QR auth complete — storing tokens');
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const data = payload as { tokens: Record<string, string>; user: Record<string, unknown> };
         handleAuthComplete(data);
       });
@@ -177,7 +177,7 @@ export function QrLogin() {
       useAuthStore.setState({
         token: tokens.access_token ?? null,
         refreshToken: tokens.refresh_token ?? null,
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         user: user as unknown as ReturnType<typeof useAuthStore.getState>['user'],
         isAuthenticated: true,
       });

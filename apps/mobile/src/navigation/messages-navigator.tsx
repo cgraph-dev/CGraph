@@ -59,7 +59,7 @@ export default function MessagesNavigator() {
       {/* Phase 34 Screens */}
       <Stack.Screen
         name="SecretChat"
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         component={SecretChatScreen as any}
         options={{ title: 'Secret Chat', headerShown: false }}
       />

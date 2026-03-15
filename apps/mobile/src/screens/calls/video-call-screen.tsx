@@ -60,7 +60,7 @@ export default function VideoCallScreen() {
             source={
               vc.recipientAvatar
                 ? { uri: vc.recipientAvatar }
-                : // eslint-disable-next-line @typescript-eslint/no-require-imports
+                :  
                   require('@/assets/default-avatar.png')
             }
             size={100}

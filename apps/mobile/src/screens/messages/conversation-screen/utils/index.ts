@@ -157,7 +157,7 @@ export function processMessagesWithReactions(
           }
           // If u is an object, check various ID fields
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const uObj = u as { id?: string; user_id?: string };
           return (
             String(uObj.id) === String(currentUserId) ||
@@ -423,19 +423,19 @@ export function getSenderInfo(message: Message): {
 } {
   const displayName =
     message.sender?.display_name ||
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     (message.sender as Record<string, unknown>)?.displayName ||
     message.sender?.username ||
     'User';
 
   const avatarUrl =
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     message.sender?.avatar_url || (message.sender as Record<string, unknown>)?.avatarUrl;
 
   return {
     displayName: String(displayName),
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     avatarUrl: avatarUrl as string | undefined,
   };
 }

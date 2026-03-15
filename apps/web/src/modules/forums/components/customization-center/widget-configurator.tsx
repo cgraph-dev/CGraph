@@ -70,7 +70,7 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
 
   useEffect(() => {
     setDraft({ ...options });
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const order = (options.widget_order as string[]) ?? WIDGETS.map((w) => w.key);
     setWidgetOrder(order);
   }, [options]);
@@ -126,7 +126,7 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
           const widget = WIDGETS.find((w) => w.key === key);
           if (!widget) return null;
           const Icon = widget.icon;
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const enabled = draft[widget.optionKey] as boolean;
 
           return (
@@ -165,14 +165,14 @@ export function WidgetConfigurator({ options, onSave, saving }: WidgetConfigurat
         <h4 className="mb-2 text-sm font-semibold text-white/80">Widget Visibility</h4>
         <div className="flex gap-4">
           {['guests', 'members', 'mods'].map((role) => {
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             const visibility = (draft.widget_visibility as Record<string, boolean>) ?? {};
             const enabled = visibility[role] !== false;
             return (
               <div key={role} className="flex items-center gap-2">
                 <button
                   onClick={() => {
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     const current = (draft.widget_visibility as Record<string, boolean>) ?? {};
                     setDraft((prev) => ({
                       ...prev,

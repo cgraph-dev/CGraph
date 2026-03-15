@@ -130,7 +130,7 @@ export function useEffectsCustomization() {
       const speedValue = animation?.speed || 'normal';
       updateEffects('animationSpeed', speedValue);
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       setAnimationSpeed(speedValue as 'slow' | 'normal' | 'fast');
       setPreviewingLockedItem(isUnlocked ? null : id);
     }

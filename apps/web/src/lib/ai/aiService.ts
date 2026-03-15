@@ -133,7 +133,7 @@ export async function generateSmartReplies(
         confidence: r.confidence,
         tone: 'casual' as const,
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         category: r.category as SmartReply['category'], // safe downcast – API response field
       }));
     }

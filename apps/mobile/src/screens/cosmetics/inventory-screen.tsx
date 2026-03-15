@@ -27,9 +27,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeStore } from '@/stores';
 
-import type { CosmeticType, UserCosmeticInventory } from '@cgraph/shared-types';
-import type { RarityTier } from '@cgraph/shared-types';
-import { RARITY_TIERS, RARITY_HEX_COLORS } from '@cgraph/shared-types';
+import { RARITY_TIERS, RARITY_HEX_COLORS, type CosmeticType, type UserCosmeticInventory, type RarityTier } from '@cgraph/shared-types';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -97,7 +95,7 @@ export default function InventoryScreen() {
   const handleSelectItem = useCallback(
     (entry: UserCosmeticInventory) => {
       // Navigate to equip screen with the item
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- navigation typing workaround
+       
       const nav = navigation as unknown as {
         navigate: (screen: string, params: Record<string, unknown>) => void;
       };

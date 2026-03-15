@@ -80,7 +80,7 @@ export const HOLOGRAPHIC_THEMES = {
 export function getTheme(colorTheme?: string): HolographicTheme {
   if (!colorTheme || colorTheme === 'custom') return HOLOGRAPHIC_THEMES.cyan;
   return (
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     (HOLOGRAPHIC_THEMES as Record<string, HolographicTheme>)[colorTheme] ?? HOLOGRAPHIC_THEMES.cyan // type assertion: dynamic theme lookup by key
   );
 }

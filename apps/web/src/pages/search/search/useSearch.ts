@@ -105,7 +105,7 @@ export function useSearch(): SearchState {
   useEffect(() => {
     const q = searchParams.get('q');
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const cat = searchParams.get('category') as SearchCategory; // safe downcast – API response field
     if (q) {
       setInputValue(q);

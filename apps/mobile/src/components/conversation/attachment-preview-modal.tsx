@@ -155,7 +155,7 @@ export const AttachmentPreviewModal = memo(function AttachmentPreviewModal({
             <View style={styles.previewFile}>
               <View style={[styles.fileIcon, { backgroundColor: colors.primary }]}>
                 <Ionicons
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   name={getFileIcon(attachment.mimeType) as any}
                   size={48}
                   color="#fff"

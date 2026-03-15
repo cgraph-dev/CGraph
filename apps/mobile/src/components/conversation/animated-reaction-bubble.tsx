@@ -253,7 +253,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
         <Animated.View
           style={[
             styles.reactionEmoji,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             emojiAnimatedStyle as Record<string, unknown>,
           ]}
         >

@@ -4,7 +4,7 @@
  */
 import React, { memo, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import Animated, { FadeInRight, _useAnimatedStyle, _withSpring } from 'react-native-reanimated';
+import Animated, { FadeInRight, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import Avatar from '../ui/avatar';
 import { space } from '../../theme/tokens';

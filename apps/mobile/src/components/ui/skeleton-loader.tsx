@@ -84,9 +84,9 @@ export function SkeletonLoader({
   return (
     <Animated.View
       style={[
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           width: resolvedWidth as number | string,
           height,
           borderRadius: resolvedRadius,

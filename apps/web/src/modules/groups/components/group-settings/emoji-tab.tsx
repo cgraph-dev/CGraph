@@ -21,7 +21,7 @@ const ANIMATION_FORMATS = new Set(['gif', 'apng', 'webp', 'lottie']);
 function toAnimationFormat(value: string): GroupEmoji['animationFormat'] {
   if (ANIMATION_FORMATS.has(value)) {
     // validated via set membership above
-    return value as 'gif' | 'apng' | 'webp' | 'lottie'; // eslint-disable-line @typescript-eslint/consistent-type-assertions
+    return value as 'gif' | 'apng' | 'webp' | 'lottie';  
   }
   return null;
 }

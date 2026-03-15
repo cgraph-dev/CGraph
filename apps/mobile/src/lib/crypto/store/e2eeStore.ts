@@ -29,7 +29,7 @@ import e2ee, {
   clearE2EEData,
   generateSafetyNumber,
   fingerprint,
-  _loadKEMPreKey,
+  loadKEMPreKey,
   storeKEMPreKey,
 } from '../e2ee';
 import {
@@ -285,7 +285,7 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       const session = getSessionForRecipient(recipientId)!;
       const ratchetMsg = await pqEncrypt(session.sessionId, plaintext);
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return {
         ciphertext: Buffer.from(JSON.stringify(ratchetMsg)).toString('base64'),
         ephemeralPublicKey: '',
@@ -322,7 +322,7 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
     // Encrypt via Triple Ratchet
     const ratchetMsg = await pqEncrypt(session.sessionId, plaintext);
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return {
       ciphertext: Buffer.from(JSON.stringify(ratchetMsg)).toString('base64'),
       ephemeralPublicKey: '',
@@ -344,13 +344,13 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
     await requireBiometricForKeyAccess();
 
     // Route based on protocol version
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const protocolVersion = (encryptedMessage as EncryptedMessage & { protocol_version?: string })
       .protocol_version;
 
     if (protocolVersion === 'pqxdh_v1') {
       // PQXDH + Triple Ratchet path
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const sessionId = (encryptedMessage as EncryptedMessage & { session_id?: string }).session_id;
       const session = sessionId
         ? undefined // will look up by sessionId in pqDecrypt
@@ -366,7 +366,7 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
         }
         const protocolStore = new InMemoryProtocolStore(identityKey, 1);
         const ciphertextJson = Buffer.from(encryptedMessage.ciphertext, 'base64').toString('utf-8');
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const ratchetMsg = JSON.parse(
           ciphertextJson
         ) as import('@cgraph/crypto').TripleRatchetMessage;
@@ -380,7 +380,7 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       }
 
       const ciphertextJson = Buffer.from(encryptedMessage.ciphertext, 'base64').toString('utf-8');
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const ratchetMsg = JSON.parse(
         ciphertextJson
       ) as import('@cgraph/crypto').TripleRatchetMessage;

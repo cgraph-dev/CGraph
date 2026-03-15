@@ -67,13 +67,13 @@ export type {
 // ============================================================================
 
 const Platform = {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   PlatformAdapter: require('./platform-adapter').default,
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   IOSFeatures: require('./ios/ios-features').default,
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   AndroidFeatures: require('./android/android-features').default,
 };
 

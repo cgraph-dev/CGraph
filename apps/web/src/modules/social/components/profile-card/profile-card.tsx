@@ -50,7 +50,7 @@ export const ProfileCard = memo(function ProfileCard({
 
     const { colors, glassmorphism, borderRadius } = theme;
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- CSS custom properties not in CSSProperties type
+     
     return {
       '--glow-color': colors.accent,
       '--accent-color': colors.accent,

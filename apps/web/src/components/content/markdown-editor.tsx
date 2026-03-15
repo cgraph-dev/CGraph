@@ -47,7 +47,7 @@ const toolbarButtons: ToolbarButton[] = [
   {
     // type assertion: StrikethroughIcon component type compatible with toolbar interface
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     icon: StrikethroughIcon as React.ComponentType<{ className?: string }>,
     label: 'Strikethrough',
     prefix: '~~',

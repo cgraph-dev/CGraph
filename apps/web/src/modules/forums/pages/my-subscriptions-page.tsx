@@ -195,7 +195,7 @@ export function MySubscriptionsPage() {
                   <select
                     value={sub.notification_level}
                     onChange={(e) =>
-                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                       
                       handleUpdateLevel(sub.id, e.target.value as 'all' | 'mentions' | 'none')
                     }
                     className="rounded-lg border border-white/10 bg-white/[0.06] px-2 py-1 text-xs text-gray-300"

@@ -53,7 +53,7 @@ export function usePushNotifications(): UsePushNotificationsResult {
 
       if (!type || !id) return;
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const nav = navigation as NavigationProp<ParamListBase>;
 
       switch (type) {

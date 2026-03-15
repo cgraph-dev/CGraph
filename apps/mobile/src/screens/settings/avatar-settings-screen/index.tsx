@@ -56,7 +56,7 @@ type Props = {
  *
  */
 export default function AvatarSettingsScreen({ navigation }: Props) {
-  const { _colors } = useThemeStore();
+  const { colors } = useThemeStore();
   const { user } = useAuthStore();
   const [style, setStyle] = useState<AvatarStyle>(defaultStyle);
 
@@ -275,7 +275,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           <OptionGrid
             options={borderStyles}
             selected={style.borderStyle}
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             onSelect={(value) => updateStyle('borderStyle', value as AvatarStyle['borderStyle'])}
             columns={5}
           />
@@ -331,7 +331,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
             options={animationSpeeds}
             selected={style.animationSpeed}
             onSelect={(value) =>
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               updateStyle('animationSpeed', value as AvatarStyle['animationSpeed'])
             }
           />
@@ -342,7 +342,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           <OptionGrid
             options={shapes}
             selected={style.shape}
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             onSelect={(value) => updateStyle('shape', value as AvatarStyle['shape'])}
             columns={3}
           />
@@ -352,11 +352,11 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
         <SettingsSection title="Status Indicator" icon="radio-button-on" iconColor="#22c55e">
           <Text style={styles.optionSubtitle}>Indicator Style</Text>
           <OptionGrid
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             options={['none', 'dot', 'ring'] as AvatarStyle['statusIndicator'][]}
             selected={style.statusIndicator}
             onSelect={(value) =>
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               updateStyle('statusIndicator', value as AvatarStyle['statusIndicator'])
             }
             columns={3}
@@ -387,7 +387,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           <Text style={styles.optionSubtitle}>Badge Position</Text>
           <OptionGrid
             options={
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               [
                 'top-right',
                 'bottom-right',
@@ -397,7 +397,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
             }
             selected={style.badgePosition}
             onSelect={(value) =>
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               updateStyle('badgePosition', value as AvatarStyle['badgePosition'])
             }
           />

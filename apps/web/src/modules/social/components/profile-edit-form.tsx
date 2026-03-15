@@ -116,7 +116,7 @@ export function ProfileEditForm({ user, onSaved, onCancel }: ProfileEditFormProp
 
     const reader = new FileReader();
     reader.onload = () => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       setCropImageSrc(reader.result as string);
     };
     reader.readAsDataURL(file);

@@ -265,7 +265,7 @@ export const EmojiPackManager = memo(function EmojiPackManager({
       setImporting(true);
       try {
         const text = await file.text();
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const bundle = JSON.parse(text) as EmojiPackBundle;
         await importPack(forumId, bundle);
       } catch (_err) {

@@ -187,7 +187,7 @@ export default function MentionInput({
         placeholderTextColor={colors.textTertiary}
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         {...(inputProps as object)}
       />
 

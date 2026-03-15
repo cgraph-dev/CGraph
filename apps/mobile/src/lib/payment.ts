@@ -363,7 +363,7 @@ class PaymentService {
 
       // Show user-friendly error
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const axiosError = error as { response?: { data?: { message?: string; error?: string } } };
       Alert.alert(
         'Purchase Failed',
@@ -491,7 +491,7 @@ class PaymentService {
     } catch (error: unknown) {
       console.error('[PaymentService] Coin purchase failed:', error);
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const axiosError = error as { response?: { data?: { message?: string } } };
       Alert.alert(
         'Purchase Failed',
@@ -520,7 +520,7 @@ class PaymentService {
         nextClaimAt: response.data.next_claim_at || null,
       };
     } catch (error: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const axiosError = error as { response?: { data?: { next_claim_at?: string } } };
       return {
         success: false,

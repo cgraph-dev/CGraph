@@ -111,8 +111,7 @@ defmodule CGraph.Accounts.WalletAuth.Credentials do
 
     :crypto.strong_rand_bytes(length)
     |> :binary.bin_to_list()
-    |> Enum.map(fn byte -> String.at(chars, rem(byte, chars_len)) end)
-    |> Enum.join()
+    |> Enum.map_join(fn byte -> String.at(chars, rem(byte, chars_len)) end)
   end
 
   defp crypto_alias_exists?(alias_str) do

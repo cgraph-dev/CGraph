@@ -141,7 +141,7 @@ function AnimatedTitleText({
   const animProps = getAnimationVariants();
 
   return (
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     <motion.h4 className={baseClass} {...(animProps as object)}>
       {name}
     </motion.h4>

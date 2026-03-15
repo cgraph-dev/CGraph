@@ -39,7 +39,7 @@ const STORAGE_KEY = 'cgraph:collapsed-categories';
 function getCollapsedSet(): Set<string> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
   } catch {
     return new Set();

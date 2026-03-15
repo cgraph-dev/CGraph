@@ -31,7 +31,7 @@ export function ColorPicker({
   showRecentColors = true,
   recentColorsCount = 8,
   showInput = true,
-  _inputMode = 'hex',
+  inputMode = 'hex',
   showPreview = true,
   size = 'md',
   style,

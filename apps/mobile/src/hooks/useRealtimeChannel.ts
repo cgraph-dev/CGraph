@@ -142,7 +142,7 @@ export function useRealtimeChannel(
         // The actual push is handled through specific methods on socketManager
         logger.log('Push to channel:', topic, event, payload);
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         resolve(undefined as T);
       });
     },
@@ -332,7 +332,7 @@ export function useForumChannel(forumSlug: string) {
     ],
     onEvent: (event) => {
       if (event.event === 'stats_update') {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         setStats(event.payload as typeof stats);
       }
     },
@@ -367,13 +367,13 @@ export function useThreadChannel(threadId: string) {
     ],
     onEvent: (event) => {
       if (event.event === 'vote_update') {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const payload = event.payload as { upvotes: number; downvotes: number };
         setVotes(payload);
       }
     },
     onJoin: (response) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const resp = response as {
         viewers?: string[];
         votes?: { upvotes: number; downvotes: number };

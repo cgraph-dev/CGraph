@@ -22,7 +22,7 @@ export type { DeviceTier, DeviceCapabilities, PerformanceRecommendations } from 
 // ============================================================================
 
 const Performance = {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   DeviceProfiler: require('./device-profiler').default,
 };
 

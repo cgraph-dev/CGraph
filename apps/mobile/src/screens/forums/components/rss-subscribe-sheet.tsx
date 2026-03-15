@@ -105,7 +105,7 @@ export function RssSubscribeSheet({
           <View style={styles.formatRow}>
             <Text style={styles.formatLabel}>Format:</Text>
             <View style={styles.formatButtons}>
-              {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+              { }
               {(['rss', 'atom'] as FeedFormat[]).map((f) => (
                 <TouchableOpacity
                   key={f}

@@ -100,6 +100,27 @@ defmodule CGraph.Messaging.ChatPoll do
   @doc "Cast a vote on a poll."
   @spec vote(String.t(), String.t(), String.t()) :: {:ok, map()} | {:error, atom()}
   def vote(poll_id, user_id, option_id) do
+    with {:ok, poll} <- fetch_open_poll(poll_id),
+         :ok <- validate_option(poll, option_id) do
+      result = cast_vote(poll, user_id, option_id)
+
+      case result do
+        {:ok, _} ->
+          results = get_poll_results(poll_id)
+          CGraphWeb.Endpoint.broadcast(
+            "conversation:#{poll.conversation_id}",
+            "poll_vote_updated",
+            %{poll_id: poll_id, results: results}
+          )
+          {:ok, results}
+
+        {:error, _} = err ->
+          err
+      end
+    end
+  end
+
+  defp fetch_open_poll(poll_id) do
     case Repo.get(__MODULE__, poll_id) do
       nil ->
         {:error, :not_found}
@@ -111,43 +132,30 @@ defmodule CGraph.Messaging.ChatPoll do
         if poll.closes_at && DateTime.compare(DateTime.utc_now(), poll.closes_at) == :gt do
           {:error, :poll_closed}
         else
-          valid_option_ids = Enum.map(poll.options, & &1["id"])
-
-          unless option_id in valid_option_ids do
-            {:error, :invalid_option}
-          else
-            result = if poll.multiple_choice do
-              # Multiple choice: add vote (no duplicate for same option)
-              %ChatPollVote{}
-              |> ChatPollVote.changeset(%{poll_id: poll_id, user_id: user_id, option_id: option_id})
-              |> Repo.insert(on_conflict: :nothing)
-            else
-              # Single choice: replace existing vote
-              Repo.transaction(fn ->
-                from(v in ChatPollVote, where: v.poll_id == ^poll_id and v.user_id == ^user_id)
-                |> Repo.delete_all()
-
-                %ChatPollVote{}
-                |> ChatPollVote.changeset(%{poll_id: poll_id, user_id: user_id, option_id: option_id})
-                |> Repo.insert!()
-              end)
-            end
-
-            case result do
-              {:ok, _} ->
-                results = get_poll_results(poll_id)
-                CGraphWeb.Endpoint.broadcast(
-                  "conversation:#{poll.conversation_id}",
-                  "poll_vote_updated",
-                  %{poll_id: poll_id, results: results}
-                )
-                {:ok, results}
-
-              {:error, _} = err ->
-                err
-            end
-          end
+          {:ok, poll}
         end
+    end
+  end
+
+  defp validate_option(poll, option_id) do
+    valid_option_ids = Enum.map(poll.options, & &1["id"])
+    if option_id in valid_option_ids, do: :ok, else: {:error, :invalid_option}
+  end
+
+  defp cast_vote(poll, user_id, option_id) do
+    if poll.multiple_choice do
+      %ChatPollVote{}
+      |> ChatPollVote.changeset(%{poll_id: poll.id, user_id: user_id, option_id: option_id})
+      |> Repo.insert(on_conflict: :nothing)
+    else
+      Repo.transaction(fn ->
+        from(v in ChatPollVote, where: v.poll_id == ^poll.id and v.user_id == ^user_id)
+        |> Repo.delete_all()
+
+        %ChatPollVote{}
+        |> ChatPollVote.changeset(%{poll_id: poll.id, user_id: user_id, option_id: option_id})
+        |> Repo.insert!()
+      end)
     end
   end
 

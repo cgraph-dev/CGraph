@@ -49,7 +49,7 @@ export interface FriendRequest {
 }
 
 function normalizeFriend(raw: Record<string, unknown>): Friend {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const user = (raw.user || raw.friend || {}) as Record<string, unknown>;
   return {
     id: String(raw.id || ''),
@@ -60,21 +60,21 @@ function normalizeFriend(raw: Record<string, unknown>): Friend {
 
     username: String(user.username || raw.username || ''),
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     displayName: (user.display_name || user.displayName || raw.display_name || null) as
       | string
       | null,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     avatarUrl: (user.avatar_url || user.avatarUrl || raw.avatar_url || null) as string | null,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     status: (user.status || raw.status || 'offline') as Friend['status'],
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     customStatus: (user.custom_status || user.customStatus || null) as string | null,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     lastSeenAt: (user.last_seen_at || user.lastSeenAt || null) as string | null,
 
     createdAt: String(raw.created_at || raw.createdAt || raw.inserted_at || ''),
@@ -82,10 +82,10 @@ function normalizeFriend(raw: Record<string, unknown>): Friend {
 }
 
 function normalizeRequest(raw: Record<string, unknown>): FriendRequest {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const sender = (raw.sender || {}) as Record<string, unknown>;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const receiver = (raw.receiver || {}) as Record<string, unknown>;
   return {
     id: String(raw.id || ''),
@@ -94,17 +94,17 @@ function normalizeRequest(raw: Record<string, unknown>): FriendRequest {
 
     receiverId: String(raw.receiver_id || raw.receiverId || receiver.id || ''),
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     status: (raw.status || 'pending') as FriendRequest['status'],
     sender: {
       id: String(sender.id || ''),
 
       username: String(sender.username || ''),
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       displayName: (sender.display_name || sender.displayName || null) as string | null,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       avatarUrl: (sender.avatar_url || sender.avatarUrl || null) as string | null,
     },
     receiver: {
@@ -112,10 +112,10 @@ function normalizeRequest(raw: Record<string, unknown>): FriendRequest {
 
       username: String(receiver.username || ''),
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       displayName: (receiver.display_name || receiver.displayName || null) as string | null,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       avatarUrl: (receiver.avatar_url || receiver.avatarUrl || null) as string | null,
     },
 
@@ -218,7 +218,7 @@ export const useFriendStore = create<FriendState>((set, get) => ({
       get().fetchSentRequests();
     } catch (error: unknown) {
       const message =
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
         'Failed to send friend request';
       set({ error: message });
@@ -285,7 +285,7 @@ export const useFriendStore = create<FriendState>((set, get) => ({
     set((state) => ({
       friends: state.friends.map((f) =>
         f.friendId === userId || f.userId === userId
-          ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          ?  
             { ...f, status: status as Friend['status'] }
           : f
       ),

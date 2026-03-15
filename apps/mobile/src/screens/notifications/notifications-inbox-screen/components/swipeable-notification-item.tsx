@@ -18,8 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import GlassCard from '../../../../components/ui/glass-card';
 import AnimatedAvatar from '../../../../components/ui/animated-avatar';
 import { safeFormatDistanceToNow } from '../../../../lib/dateUtils';
-import { typeGradients, typeIcons } from '../types';
-import type { Notification } from '../types';
+import { typeGradients, typeIcons, type Notification } from '../types';
 import { useSwipeableNotification } from '../hooks';
 
 export interface SwipeableNotificationItemProps {

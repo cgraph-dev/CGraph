@@ -183,7 +183,7 @@ export function InlineBBCodeRenderer({
 
     for (const { pattern, replace } of inlineTags) {
       if (typeof replace === 'function') {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         text = text.replace(pattern, replace as (substring: string, ...args: string[]) => string);
       } else {
         text = text.replace(pattern, replace);

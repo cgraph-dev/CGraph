@@ -18,8 +18,7 @@
  * @module lib/database/messageBridge
  * @since v0.9.32
  */
-import { Q } from '@nozbe/watermelondb';
-import type { Model } from '@nozbe/watermelondb';
+import { Q, type Model } from '@nozbe/watermelondb';
 import { database, messagesCollection } from './index';
 import type WMDBMessage from './models/message';
 import type { Message, MessageSender } from '../../stores/chatStore';
@@ -73,7 +72,7 @@ export function watermelonToMessage(record: WMDBMessage): Message {
     conversationId: record.conversationId,
     senderId: record.senderId,
     content: record.content || '',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     messageType: (record.messageType || 'text') as Message['messageType'],
     replyToId: record.replyToId || null,
     replyTo: null, // WatermelonDB doesn't store nested reply objects
@@ -103,7 +102,7 @@ export async function getLocalMessages(conversationId: string): Promise<Message[
       .query(Q.where('conversation_id', conversationId), Q.sortBy('created_at', Q.desc), Q.take(50))
       .fetch();
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return records.map((r) => watermelonToMessage(r as unknown as WMDBMessage));
   } catch (error) {
     console.warn('[messageBridge] getLocalMessages failed:', error);
@@ -168,12 +167,12 @@ export async function saveMessageLocally(message: Message): Promise<void> {
 
       if (existing) {
         await existing.update(() => {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           applyMessageToRaw(existing!._raw as unknown as Record<string, unknown>, message, false);
         });
       } else {
         await messagesCollection.create((record) => {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           applyMessageToRaw(record._raw as unknown as Record<string, unknown>, message, true);
         });
       }
@@ -191,7 +190,7 @@ export async function markMessageDeletedLocally(messageId: string): Promise<void
     await database.write(async () => {
       const record = await messagesCollection.find(messageId);
       await record.update(() => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const raw = record._raw as unknown as Record<string, unknown>;
         raw.is_deleted = true;
         raw.content = '';
@@ -211,7 +210,7 @@ export async function markMessageEditedLocally(messageId: string, content: strin
     await database.write(async () => {
       const record = await messagesCollection.find(messageId);
       await record.update(() => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const raw = record._raw as unknown as Record<string, unknown>;
         raw.content = content;
         raw.is_edited = true;
@@ -247,7 +246,7 @@ export async function saveMessagesLocally(messages: Message[]): Promise<void> {
           batchOps.push(
             existingRef.prepareUpdate(() => {
               applyMessageToRaw(
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 existingRef._raw as unknown as Record<string, unknown>,
                 message,
                 false
@@ -258,7 +257,7 @@ export async function saveMessagesLocally(messages: Message[]): Promise<void> {
           batchOps.push(
             messagesCollection.prepareCreate((record) => {
               applyMessageToRaw(
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 record._raw as unknown as Record<string, unknown>,
                 message,
                 true

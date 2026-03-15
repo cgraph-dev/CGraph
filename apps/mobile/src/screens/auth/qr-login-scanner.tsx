@@ -223,7 +223,7 @@ export default function QrLoginScannerScreen({ navigation }: QrLoginScannerProps
       }, 1500);
     } catch (err: unknown) {
       const message =
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
         'Failed to approve login. Please try again.';
       setErrorMessage(message);

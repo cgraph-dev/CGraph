@@ -93,7 +93,7 @@ export function ThreadList({
               style={[styles.sortPill, sortBy === opt.value && styles.sortPillActive]}
             >
               <MaterialCommunityIcons
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 name={opt.icon as keyof typeof MaterialCommunityIcons.glyphMap}
                 size={14}
                 color={sortBy === opt.value ? '#FFFFFF' : 'rgba(255,255,255,0.4)'}

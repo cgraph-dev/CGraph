@@ -102,7 +102,7 @@ defmodule CGraph.Groups.Automod.Enforcement do
 
     lowered = String.downcase(content)
 
-    if Enum.any?(words, fn word ->
+    has_match = Enum.any?(words, fn word ->
       # Support simple wildcard matching with *
       if String.contains?(word, "*") do
         regex_pattern = word
@@ -117,11 +117,9 @@ defmodule CGraph.Groups.Automod.Enforcement do
         # Word boundary check — match whole words
         String.contains?(lowered, word)
       end
-    end) do
-      :blocked
-    else
-      :ok
-    end
+    end)
+
+    if has_match, do: :blocked, else: :ok
   end
 
   @doc false

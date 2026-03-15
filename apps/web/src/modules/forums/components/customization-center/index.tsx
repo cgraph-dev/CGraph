@@ -266,7 +266,7 @@ export function CustomizationCenter({ forumId }: CustomizationCenterProps) {
                 backgroundColor: displayOptions?.appearance?.background_color ?? '#1a1a1a',
                 color: displayOptions?.appearance?.text_color ?? '#ffffff',
                 fontFamily:
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   (displayOptions?.appearance?.font_family as string) ??
                   'Inter, system-ui, sans-serif',
               }}
@@ -323,7 +323,7 @@ interface CategoryEditorProps {
 }
 
 function CategoryEditor({ category, options, forumId, onSave, saving }: CategoryEditorProps) {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const categoryOptions = (options[category] ?? {}) as unknown as Record<string, unknown>;
 
   switch (category) {

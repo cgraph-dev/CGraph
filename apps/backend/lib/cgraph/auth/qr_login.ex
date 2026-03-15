@@ -82,7 +82,7 @@ defmodule CGraph.Auth.QrLogin do
         {:error, :not_found}
 
       {:ok, data} when is_binary(data) ->
-        {:ok, Jason.decode!(data, keys: :atoms)}
+        {:ok, Jason.decode!(data, keys: :atoms!)}
 
       {:error, reason} ->
         Logger.error("qr_login_session_get_failed",

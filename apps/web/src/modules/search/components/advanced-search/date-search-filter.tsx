@@ -41,7 +41,7 @@ export function DateSearchFilter({ filters, updateFilter }: DateSearchFilterProp
           value={filters.dateRange}
           onChange={
             (e) =>
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               updateFilter('dateRange', e.target.value as AdvancedSearchFilters['dateRange']) // safe downcast – select event value
           }
           className={SELECT_CLS}
@@ -82,7 +82,7 @@ export function DateSearchFilter({ filters, updateFilter }: DateSearchFilterProp
           value={filters.searchIn}
           onChange={
             (e) =>
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               updateFilter('searchIn', e.target.value as AdvancedSearchFilters['searchIn']) // safe downcast – select event value
           }
           className={SELECT_CLS}

@@ -51,7 +51,7 @@ export function createEventActions(set: SetState, get: GetState) {
 
         // type assertion: ensureArray returns unknown[], narrowing to Record for mapping
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const events = (ensureArray(response.data, 'events') as Record<string, unknown>[]).map(
           mapEventFromApi
         );
@@ -172,109 +172,109 @@ export function mapEventFromApi(data: Record<string, unknown>): CalendarEvent {
   const author: Record<string, unknown> = isRecord(data.author) ? data.author : {};
   const category: Record<string, unknown> = isRecord(data.category) ? data.category : {};
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const eventType = (data.event_type as EventType) || 'single'; // safe downcast
 
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: data.id as string, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     title: (data.title as string) || 'Untitled Event', // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     description: (data.description as string) || '', // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     startDate: (data.start_date as string) || new Date().toISOString(), // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     endDate: (data.end_date as string) || null, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     allDay: (data.all_day as boolean) || false, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     timezone: (data.timezone as string) || 'UTC', // type assertion: API response field
     type: eventType,
     eventType: eventType,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isRecurring: (data.is_recurring as boolean) || false, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     recurrencePattern: data.recurrence_pattern as RecurrencePattern | undefined, // safe downcast
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     recurrenceEndDate: (data.recurrence_end_date as string) || null, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     recurrenceCount: data.recurrence_count as number | undefined, // type assertion: API response field
     recurrence: data.recurrence_pattern
       ? {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           pattern: data.recurrence_pattern as RecurrencePattern, // safe downcast
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           interval: (data.recurrence_interval as number) || 1, // type assertion: API response field
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           endDate: (data.recurrence_end_date as string) || null, // type assertion: API response field
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           count: data.recurrence_count as number | undefined, // type assertion: API response field
         }
       : undefined,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     location: data.location as string | undefined, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     locationUrl: data.location_url as string | undefined, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     categoryId: (data.category_id as string) || null, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     categoryName: (category.name as string) || undefined, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     categoryColor: (category.color as string) || undefined, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     authorId: (data.author_id as string) || (author.id as string) || '', // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     authorUsername: (author.username as string) || 'Unknown', // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     authorAvatarUrl: (author.avatar_url as string) || null, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     visibility: (data.visibility as EventVisibility) || 'public', // safe downcast
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     forumId: (data.forum_id as string) || null, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     rsvpEnabled: (data.rsvp_enabled as boolean) || false, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     rsvpDeadline: (data.rsvp_deadline as string) || null, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     maxAttendees: (data.max_attendees as number) || null, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     attendeeCount: (data.attendee_count as number) || 0, // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     myRsvp: data.my_rsvp as RSVPStatus | undefined, // safe downcast
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     createdAt: (data.created_at as string) || new Date().toISOString(), // type assertion: API response field
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     updatedAt: (data.updated_at as string) || new Date().toISOString(), // type assertion: API response field
   };
 }

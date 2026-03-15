@@ -139,7 +139,8 @@ export async function encryptGroupMessage(
     ciphertext: arrayBufferToBase64(ciphertext),
     senderKeyId: senderKey.senderKeyId,
     chainIndex: senderKey.chainIndex,
-    iv: arrayBufferToBase64(iv.buffer),
+     
+    iv: arrayBufferToBase64(iv.buffer as ArrayBuffer),
   };
 }
 

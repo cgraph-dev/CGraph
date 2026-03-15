@@ -191,7 +191,7 @@ export default function GlassCardV2({
           pointerEvents="none"
         >
           <LinearGradient
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             colors={finalBorderColors as [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}

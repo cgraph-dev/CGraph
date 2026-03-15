@@ -44,7 +44,7 @@ export function AnimatedView({
   springConfig = 'default',
   style,
   loop,
-  _onAnimationComplete,
+  onAnimationComplete,
 }: AnimatedViewProps) {
   const EnteringAnimation = ENTERING_PRESETS[entering];
   const ExitingAnimation = EXITING_PRESETS[exiting];
@@ -85,12 +85,12 @@ export function AnimatedView({
         progress,
         [0, 1],
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         [current.scale as number, next.scale as number],
         Extrapolation.CLAMP
       );
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       (result.transform as unknown[]).push({ scale });
     }
 
@@ -99,12 +99,12 @@ export function AnimatedView({
         progress,
         [0, 1],
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         [current.translateX as number, next.translateX as number],
         Extrapolation.CLAMP
       );
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       (result.transform as unknown[]).push({ translateX });
     }
 
@@ -113,12 +113,12 @@ export function AnimatedView({
         progress,
         [0, 1],
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         [current.translateY as number, next.translateY as number],
         Extrapolation.CLAMP
       );
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       (result.transform as unknown[]).push({ translateY });
     }
 
@@ -127,7 +127,7 @@ export function AnimatedView({
         progress,
         [0, 1],
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         [current.opacity as number, next.opacity as number],
         Extrapolation.CLAMP
       );

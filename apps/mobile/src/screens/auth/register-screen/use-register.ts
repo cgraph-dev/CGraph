@@ -57,7 +57,7 @@ export function useRegister() {
     try {
       await register(email, username.trim() || null, password);
     } catch (error: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const err = error as {
         response?: {
           data?: {

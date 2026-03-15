@@ -14,7 +14,7 @@ import deepLinks from './src/lib/deepLinks';
 import { ErrorBoundary } from './src/components/error';
 import { E2EEProvider } from './src/lib/crypto/e2-ee-context';
 import RootNavigator from './src/navigation/root-navigator';
-import BiometricGate from './src/shell/_layout';
+import BiometricGate from './src/shell/layout';
 import { queryClient } from './src/lib/queryClient';
 import { usePushNotifications } from './src/hooks/usePushNotifications';
 import { initErrorTracking } from './src/lib/error-tracking';

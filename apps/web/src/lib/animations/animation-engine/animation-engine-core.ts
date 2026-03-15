@@ -291,7 +291,7 @@ export class AnimationEngine {
     return {
       activeAnimations: this.activeAnimations.size,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       fps: gsap.ticker.fps as unknown as number, // type assertion: library type compatibility
     };
   }

@@ -17,7 +17,7 @@ import {
   StyleSheet,
   Animated,
   TouchableOpacity,
-  _FlatList,
+  FlatList,
   RefreshControl,
   SectionList,
 } from 'react-native';
@@ -281,7 +281,7 @@ export default function CallHistoryScreen() {
               source={
                 item.recipientAvatar
                   ? { uri: item.recipientAvatar }
-                  : // eslint-disable-next-line @typescript-eslint/no-require-imports
+                  :  
                     require('@/assets/default-avatar.png')
               }
               size={52}

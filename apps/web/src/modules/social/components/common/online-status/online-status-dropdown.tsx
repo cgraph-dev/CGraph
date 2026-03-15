@@ -33,7 +33,7 @@ export function OnlineStatusDropdown({
   // dropdownRef (ref) and setIsOpen (state setter) from component scope.
   React.useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         // type assertion: EventTarget to Node for contains check
         setIsOpen(false);

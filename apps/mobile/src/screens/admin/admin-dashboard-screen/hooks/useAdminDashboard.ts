@@ -4,8 +4,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import api from '../../../../lib/api';
-import { FALLBACK_AUDIT, FALLBACK_RECENT_USERS, FALLBACK_REPORTS, FALLBACK_STATS } from '../types';
-import type { AuditLog, DashboardStats, RecentUser, Report } from '../types';
+import { FALLBACK_AUDIT, FALLBACK_RECENT_USERS, FALLBACK_REPORTS, FALLBACK_STATS, type AuditLog, type DashboardStats, type RecentUser, type Report } from '../types';
 
 export interface UseAdminDashboardReturn {
   stats: DashboardStats;
@@ -86,17 +85,17 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
             ? reportsData.map((r: Record<string, unknown>) => ({
                 id: String(r.id),
 
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 type: (r.type || r.report_type || 'post') as 'post' | 'user' | 'thread',
                 reason: String(r.reason || ''),
                 reportedBy: String(
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   r.reported_by || (r.reporter as { username?: string })?.username || 'Anonymous'
                 ),
                 targetId: String(r.target_id || r.content_id || ''),
                 targetName: String(r.target_name || r.content_preview || 'Unknown'),
 
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 status: (r.status || 'pending') as 'pending' | 'resolved' | 'dismissed',
                 createdAt: String(r.created_at || r.inserted_at),
               }))
@@ -113,7 +112,7 @@ export function useAdminDashboard(): UseAdminDashboardReturn {
                 id: String(l.id),
                 action: String(l.action || ''),
 
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 actor: String(l.actor || (l.user as { username?: string })?.username || 'System'),
                 target: String(l.target || l.resource || ''),
                 details: String(l.details || l.metadata || ''),

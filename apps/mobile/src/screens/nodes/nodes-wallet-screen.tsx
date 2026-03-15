@@ -129,7 +129,7 @@ export default function NodesWalletScreen(): React.ReactElement {
       return (
         <View style={[styles.txRow, { borderBottomColor: colors.border }]}>
           <View style={[styles.txIcon, { backgroundColor: meta.color + '18' }]}>
-            {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions */}
+            { }
             <Ionicons name={meta.name as never} size={20} color={meta.color} />
           </View>
           <View style={styles.txInfo}>

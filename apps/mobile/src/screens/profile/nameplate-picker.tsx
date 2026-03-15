@@ -10,7 +10,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useThemeStore } from '@/stores';
-import { NAMEPLATE_STYLES } from '../../modules/profile/components/ProfileCard/Nameplate';
+import { NAMEPLATE_STYLES } from '../../modules/profile/components/profile-card/nameplate';
 
 interface NameplatePickerProps {
   /** Currently selected nameplate ID */

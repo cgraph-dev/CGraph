@@ -28,13 +28,11 @@ import {
   CryptoErrorCode,
   generateECKeyPair,
   kemKeygen,
-} from '@cgraph/crypto';
-import type {
-  PQXDHResult,
-  PQXDHPreKeyBundle,
-  ECKeyPair,
-  TripleRatchetMessage,
-  TripleRatchetDecryptedMessage,
+  type PQXDHResult,
+  type PQXDHPreKeyBundle,
+  type ECKeyPair,
+  type TripleRatchetMessage,
+  type TripleRatchetDecryptedMessage,
 } from '@cgraph/crypto';
 
 // Re-export for external consumers that may need these primitives
@@ -87,7 +85,7 @@ export function isNativeCryptoAvailable(): boolean {
   try {
     // Dynamic require for optional native module detection
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-require-imports
+     
     _quickCrypto = require('react-native-quick-crypto') as QuickCrypto;
     _nativeAvailable = _quickCrypto !== null;
     logger.info(`Native crypto: ${_nativeAvailable ? 'available' : 'unavailable'}`);

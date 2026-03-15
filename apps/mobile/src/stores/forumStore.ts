@@ -124,25 +124,25 @@ interface ForumStoreState {
 // ---------------------------------------------------------------------------
 
 const initialState = {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   forums: [] as Forum[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   currentForum: null as Forum | null,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   boards: [] as Board[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   threads: [] as Thread[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   currentThread: null as Thread | null,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   posts: [] as Thread[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   comments: [] as Comment[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   searchResults: [] as SearchResult[],
   searchQuery: '',
   loading: false,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   error: null as string | null,
 };
 

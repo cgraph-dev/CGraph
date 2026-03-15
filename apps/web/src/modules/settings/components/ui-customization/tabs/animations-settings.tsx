@@ -23,7 +23,7 @@ export function AnimationsSettings({ preferences, updatePreference }: SettingsTa
           value={preferences.animationSpeed}
           onChange={
             (value) =>
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               updatePreference('animationSpeed', value as UIPreferences['animationSpeed']) // safe downcast – select event value
           }
           options={[
@@ -43,7 +43,7 @@ export function AnimationsSettings({ preferences, updatePreference }: SettingsTa
           value={preferences.animationIntensity}
           onChange={
             (value) =>
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               updatePreference('animationIntensity', value as UIPreferences['animationIntensity']) // safe downcast – select event value
           }
           options={[

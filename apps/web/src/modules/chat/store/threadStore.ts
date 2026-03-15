@@ -70,7 +70,7 @@ export const useThreadStore = create<ThreadState>()(
             { params: { limit: 50 } }
           );
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const replies = (res.data?.data || []).map(normalizeMessage) as Message[]; // safe downcast
 
           set({
@@ -107,7 +107,7 @@ export const useThreadStore = create<ThreadState>()(
             { params: { limit: 50, cursor: endCursor } }
           );
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const newReplies = (res.data?.data || []).map(normalizeMessage) as Message[]; // safe downcast
 
           const MAX_THREAD_MESSAGES = 500;
@@ -138,7 +138,7 @@ export const useThreadStore = create<ThreadState>()(
             reply_to_id: activeThread.id,
           });
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const message = normalizeMessage(res.data?.data) as unknown as Message; // safe downcast
           if (message?.id) {
             const MAX_THREAD_MESSAGES = 500;

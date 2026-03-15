@@ -91,7 +91,7 @@ function getPlatformLabel(platform: string): string {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 /** Device Management Screen component. */
-export default function DeviceManagementScreen({ _navigation }: Props) {
+export default function DeviceManagementScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -338,7 +338,7 @@ interface KeyChangeBannerProps {
  */
 export function KeyChangeBanner({
   contactName,
-  _contactId,
+  contactId,
   onVerify,
   onDismiss,
 }: KeyChangeBannerProps) {

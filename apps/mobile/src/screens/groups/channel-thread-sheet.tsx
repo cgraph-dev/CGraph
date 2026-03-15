@@ -37,7 +37,7 @@ interface ChannelThreadSheetProps {
 export default function ChannelThreadSheet({
   visible,
   parentMessage,
-  _groupId,
+  groupId,
   channelId,
   onClose,
 }: ChannelThreadSheetProps) {

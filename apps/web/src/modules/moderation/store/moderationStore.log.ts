@@ -48,38 +48,38 @@ export function createLogActions(set: Set) {
 
         const response = await api.get('/api/v1/admin/moderation/log', { params });
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const entries = (ensureArray(response.data, 'entries') as Record<string, unknown>[]).map(
           // safe downcast – API response field
           (e) => ({
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             id: e.id as string, // safe downcast – API response field
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             action: e.action as string, // safe downcast – API response field
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             targetType: e.target_type as ModerationLogEntry['targetType'], // safe downcast – API response field
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             targetId: e.target_id as string, // safe downcast – API response field
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             targetTitle: e.target_title as string | undefined, // safe downcast – API response field
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             moderatorId: e.moderator_id as string, // safe downcast – API response field
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             moderatorUsername: e.moderator_username as string, // safe downcast – API response field
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             reason: e.reason as string | undefined, // safe downcast – API response field
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             details: e.details as Record<string, unknown> | undefined, // safe downcast – API response field
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             createdAt: (e.created_at as string) || (e.inserted_at as string), // safe downcast – API response field
           })
         );

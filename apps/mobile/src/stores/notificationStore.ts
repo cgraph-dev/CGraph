@@ -32,26 +32,26 @@ export interface Notification {
 }
 
 function normalizeNotification(raw: Record<string, unknown>): Notification {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const actor = raw.actor as Record<string, unknown> | undefined;
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     type: (raw.type || 'general') as string,
 
     title: String(raw.title || ''),
 
     body: String(raw.body || raw.message || ''),
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     data: (raw.data || raw.metadata || {}) as Record<string, unknown>,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     read: (raw.read ?? raw.is_read ?? false) as boolean,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     readAt: (raw.read_at || raw.readAt || null) as string | null,
 
     createdAt: String(raw.created_at || raw.createdAt || raw.inserted_at || ''),
@@ -61,7 +61,7 @@ function normalizeNotification(raw: Record<string, unknown>): Notification {
 
           username: String(actor.username || ''),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           avatarUrl: (actor.avatar_url || actor.avatarUrl || null) as string | null,
         }
       : undefined,

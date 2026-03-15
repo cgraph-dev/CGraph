@@ -79,7 +79,7 @@ export function DndToggle() {
   // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener('mousedown', handler);

@@ -88,7 +88,7 @@ export function AccountSettings() {
       toast.success('Username changed successfully');
     } catch (error: unknown) {
       const errorMessage =
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: narrowing unknown error from catch
+         
         (error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
           ?.message || 'Failed to change username';
       toast.error(errorMessage);

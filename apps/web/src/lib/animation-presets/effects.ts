@@ -219,7 +219,7 @@ export const getRarityGlow = (rarity: string): string => {
     mythic: '#ec4899',
   };
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return (rarityColors[rarity as keyof typeof rarityColors] ?? rarityColors.common) as string; // type assertion: color utility returns string
 };
 
@@ -233,6 +233,6 @@ export const getTierGlow = (tier: string): string => {
     enterprise: '#ec4899',
   };
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return (tierColors[tier as keyof typeof tierColors] ?? tierColors.free) as string; // type assertion: color utility returns string
 };

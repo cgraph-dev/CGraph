@@ -32,7 +32,7 @@ export function UserDropdown() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); // type assertion: EventTarget to Node for contains check
     };
     document.addEventListener('mousedown', handler);

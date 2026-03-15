@@ -94,7 +94,7 @@ export default function ForumUserGroupsScreen({ route }: Props) {
   const fetchGroups = useCallback(async () => {
     try {
       const res = await api.get(`/api/v1/forums/${forumId}/user-groups`);
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = (res.data?.user_groups || []) as UserGroup[];
       setGroups(data.sort((a: UserGroup, b: UserGroup) => a.position - b.position));
     } catch {
@@ -154,7 +154,7 @@ export default function ForumUserGroupsScreen({ route }: Props) {
     async (group: UserGroup, direction: 'up' | 'down') => {
       const idx = groups.findIndex((g) => g.id === group.id);
       if ((direction === 'up' && idx === 0) || (direction === 'down' && idx === groups.length - 1))
-        return;
+        {return;}
       const newGroups = [...groups];
       const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
       [newGroups[idx], newGroups[swapIdx]] = [newGroups[swapIdx], newGroups[idx]];

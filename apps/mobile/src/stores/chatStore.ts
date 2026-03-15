@@ -112,45 +112,45 @@ export interface Conversation {
 const MAX_MESSAGES = 500;
 
 function normalizeMessage(raw: Record<string, unknown>): Message {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const sender = (raw.sender || {}) as Record<string, unknown>;
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     conversationId: (raw.conversation_id || raw.conversationId) as string,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     senderId: (raw.sender_id || raw.senderId || sender.id) as string,
 
     content: String(raw.content || ''),
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     messageType: (raw.message_type || raw.messageType || 'text') as Message['messageType'],
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     replyToId: (raw.reply_to_id || raw.replyToId || null) as string | null,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     replyTo: raw.reply_to ? normalizeMessage(raw.reply_to as Record<string, unknown>) : null,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isPinned: (raw.is_pinned ?? raw.isPinned ?? false) as boolean,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isEdited: (raw.is_edited ?? raw.isEdited ?? false) as boolean,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isEncrypted: (raw.is_encrypted ?? raw.isEncrypted ?? false) as boolean,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     encryptedContent: (raw.encrypted_content || raw.encryptedContent || null) as string | null,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     deletedAt: (raw.deleted_at || raw.deletedAt || null) as string | null,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     metadata: (raw.metadata || {}) as Record<string, unknown>,
     reactions: normalizeReactions(raw.reactions),
     edits: normalizeEdits(raw.edits),
@@ -159,10 +159,10 @@ function normalizeMessage(raw: Record<string, unknown>): Message {
 
       username: String(sender.username || ''),
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       displayName: (sender.display_name || sender.displayName || null) as string | null,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       avatarUrl: (sender.avatar_url || sender.avatarUrl || null) as string | null,
     },
 
@@ -170,19 +170,19 @@ function normalizeMessage(raw: Record<string, unknown>): Message {
 
     updatedAt: String(raw.updated_at || raw.updatedAt || ''),
     // Delivery tracking
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     status: (raw.status || undefined) as Message['status'],
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     deliveredAt: (raw.delivered_at || raw.deliveredAt || undefined) as string | undefined,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     readAt: (raw.read_at || raw.readAt || undefined) as string | undefined,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isOptimistic: (raw.is_optimistic ?? raw.isOptimistic ?? undefined) as boolean | undefined,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     clientMessageId: (raw.client_message_id || raw.clientMessageId || undefined) as
       | string
       | undefined,
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     decryptionFailed: (raw.decryption_failed ?? raw.decryptionFailed ?? undefined) as
       | boolean
       | undefined,
@@ -192,19 +192,19 @@ function normalizeMessage(raw: Record<string, unknown>): Message {
 function normalizeReactions(raw: unknown): Reaction[] {
   if (!Array.isArray(raw)) return [];
   return raw.map((r: Record<string, unknown>) => ({
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: (r.id || `${r.emoji}-${r.user_id || (r.user as Record<string, unknown>)?.id}`) as string,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     emoji: r.emoji as string,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     userId: (r.user_id || r.userId || (r.user as Record<string, unknown>)?.id || '') as string,
     user: {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       id: ((r.user as Record<string, unknown>)?.id || r.user_id || '') as string,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       username: ((r.user as Record<string, unknown>)?.username || '') as string,
     },
   }));
@@ -213,17 +213,18 @@ function normalizeReactions(raw: unknown): Reaction[] {
 function normalizeEdits(raw: unknown): EditHistoryEntry[] | undefined {
   if (!Array.isArray(raw) || raw.length === 0) return undefined;
   return raw.map((edit: Record<string, unknown>) =>
-    String({
-      id: edit.id || '',
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    ({
+       
+      id: (edit.id ?? '') as string,
+       
       messageId: (edit.messageId ?? edit.message_id ?? '') as string,
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       previousContent: (edit.previousContent ?? edit.previous_content ?? '') as string,
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       editNumber: (edit.editNumber ?? edit.edit_number ?? 0) as number,
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       editedById: (edit.editedById ?? edit.edited_by_id ?? '') as string,
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       createdAt: (edit.createdAt ?? edit.created_at ?? edit.inserted_at ?? '') as string,
     })
   );
@@ -232,7 +233,7 @@ function normalizeEdits(raw: unknown): EditHistoryEntry[] | undefined {
 function normalizeConversation(raw: Record<string, unknown>): Conversation {
   const participants = Array.isArray(raw.participants)
     ? raw.participants.map((p: Record<string, unknown>) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const user = (p.user || {}) as Record<string, unknown>;
         return {
           id: String(p.id || ''),
@@ -243,17 +244,17 @@ function normalizeConversation(raw: Record<string, unknown>): Conversation {
 
             username: String(user.username || ''),
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             displayName: (user.display_name || user.displayName || null) as string | null,
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             avatarUrl: (user.avatar_url || user.avatarUrl || null) as string | null,
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             status: (user.status || 'offline') as string,
           },
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           nickname: (p.nickname || null) as string | null,
 
           joinedAt: String(p.joined_at || p.joinedAt || ''),
@@ -263,29 +264,29 @@ function normalizeConversation(raw: Record<string, unknown>): Conversation {
 
   const lastMsg = raw.last_message || raw.lastMessage;
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     id: raw.id as string,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     type: (raw.type || 'direct') as 'direct' | 'group',
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     name: (raw.name || null) as string | null,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     avatarUrl: (raw.avatar_url || raw.avatarUrl || null) as string | null,
     participants,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     lastMessage: lastMsg ? normalizeMessage(lastMsg as Record<string, unknown>) : null,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     unreadCount: (raw.unread_count ?? raw.unreadCount ?? 0) as number,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isPinned: (raw.is_pinned ?? raw.isPinned ?? false) as boolean,
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     isMuted: (raw.is_muted ?? raw.isMuted ?? false) as boolean,
 
     createdAt: String(raw.created_at || raw.createdAt || ''),
@@ -433,21 +434,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
             try {
               const encryptedPayload = {
                 ciphertext: msg.encryptedContent || msg.content,
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 ephemeralPublicKey: (msg.metadata?.ephemeral_public_key as string) || '',
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 senderIdentityKey: (msg.metadata?.sender_identity_key as string) || '',
                 recipientIdentityKeyId: '',
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 nonce: (msg.metadata?.nonce as string) || '',
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 protocol_version: (msg.metadata?.protocol_version as string) || 'pqxdh_v1',
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 session_id: (msg.metadata?.session_id as string) || '',
               };
               const plaintext = await fetchE2eeState.decryptMessage(
                 msg.senderId,
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 encryptedPayload as Parameters<typeof fetchE2eeState.decryptMessage>[1]
               );
               msg.content = plaintext;
@@ -515,9 +516,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
             ephemeral_public_key: encrypted.ephemeralPublicKey || '',
             nonce: encrypted.nonce || '',
             protocol_version:
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               (encrypted as unknown as Record<string, unknown>).protocol_version || 'pqxdh_v1',
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             session_id: (encrypted as unknown as Record<string, unknown>).session_id || '',
           };
           e2eeLogger.log(`Encrypted message for recipient ${recipientId}`);
@@ -593,7 +594,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, payload);
       const rawMessage = response.data?.message || response.data?.data || response.data;
       if (rawMessage) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const message = normalizeMessage(rawMessage as Record<string, unknown>);
         // Replace optimistic message with server-confirmed version
         const serverMessage = { ...message, status: 'sent' as const, isOptimistic: false };
@@ -629,7 +630,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       );
       const rawMessage = response.data?.message || response.data?.data || response.data;
       if (rawMessage) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const message = normalizeMessage(rawMessage as Record<string, unknown>);
         get().updateMessage(message);
 
@@ -704,7 +705,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     });
     const raw = response.data?.conversation || response.data?.data || response.data;
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const conversation = normalizeConversation(raw as Record<string, unknown>);
     set((state) => ({
       conversations: [conversation, ...state.conversations],
@@ -879,13 +880,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     // Listen for real-time events
     const unsubMessage = socketManager.onChannelMessage(topic, (event, payload) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = payload as Record<string, unknown>;
 
       switch (event) {
         case 'new_message': {
           const msg = normalizeMessage(
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             data.message ? (data.message as Record<string, unknown>) : data
           );
 
@@ -898,21 +899,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 try {
                   const encryptedPayload = {
                     ciphertext: msg.encryptedContent || msg.content,
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     ephemeralPublicKey: (msg.metadata?.ephemeral_public_key as string) || '',
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     senderIdentityKey: (msg.metadata?.sender_identity_key as string) || '',
                     recipientIdentityKeyId: '',
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     nonce: (msg.metadata?.nonce as string) || '',
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     protocol_version: (msg.metadata?.protocol_version as string) || 'pqxdh_v1',
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     session_id: (msg.metadata?.session_id as string) || '',
                   };
                   const plaintext = await e2eeState.decryptMessage(
                     msg.senderId,
-                    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                     
                     encryptedPayload as Parameters<typeof e2eeState.decryptMessage>[1]
                   );
                   msg.content = plaintext;
@@ -948,28 +949,28 @@ export const useChatStore = create<ChatState>((set, get) => ({
           break;
         }
         case 'msg_delivered': {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const msgId = (data.message_id || data.id) as string;
           if (msgId) {
             useChatStore.getState().updateMessageStatus(
               conversationId,
               msgId,
               'delivered',
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               { deliveredAt: (data.delivered_at as string) || new Date().toISOString() }
             );
           }
           break;
         }
         case 'message_read': {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const msgId = (data.message_id || data.id) as string;
           if (msgId) {
             useChatStore.getState().updateMessageStatus(
               conversationId,
               msgId,
               'read',
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               { readAt: (data.read_at as string) || new Date().toISOString() }
             );
           }
@@ -977,7 +978,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }
         case 'message_updated': {
           const msg = normalizeMessage(
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             data.message ? (data.message as Record<string, unknown>) : data
           );
           useChatStore.getState().updateMessage(msg);
@@ -987,7 +988,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           break;
         }
         case 'message_deleted': {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const msgId = (data.message_id || data.id) as string;
           if (msgId) {
             // Soft-delete: mark as deleted instead of removing
@@ -1015,22 +1016,22 @@ export const useChatStore = create<ChatState>((set, get) => ({
           break;
         }
         case 'typing': {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const userId = (data.user_id || data.userId) as string;
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const isTyping = (data.typing ?? data.is_typing ?? false) as boolean;
           if (userId) useChatStore.getState().setTypingUser(conversationId, userId, isTyping);
           break;
         }
         case 'reaction_added': {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const msgId = (data.message_id || data.messageId) as string;
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const emoji = data.emoji as string;
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const userId = (data.user_id || data.userId) as string;
 
           const username = String(data.username || '');
@@ -1040,13 +1041,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
           break;
         }
         case 'reaction_removed': {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const msgId = (data.message_id || data.messageId) as string;
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const emoji = data.emoji as string;
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const userId = (data.user_id || data.userId) as string;
           if (msgId && emoji && userId) {
             useChatStore.getState().removeReactionFromMessage(msgId, emoji, userId);

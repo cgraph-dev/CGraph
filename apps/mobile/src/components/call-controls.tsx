@@ -105,7 +105,7 @@ function ControlBtn({
   icon,
   activeIcon,
   label,
-  _active,
+  active,
   toggled,
   onPress,
 }: {

@@ -79,9 +79,9 @@ export default function EmojiPackBrowser() {
         api.get('/api/v1/emoji-packs/installed').catch(() => ({ data: { data: [] } })),
         api.get('/api/v1/emoji-packs/marketplace').catch(() => ({ data: { data: [] } })),
       ]);
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- API response shape
+       
       const installedData = installed.data as Record<string, unknown>;
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- API response shape
+       
       const marketplaceData = marketplace.data as Record<string, unknown>;
       setInstalledPacks(Array.isArray(installedData.data) ? installedData.data : []);
       setMarketplacePacks(Array.isArray(marketplaceData.data) ? marketplaceData.data : []);

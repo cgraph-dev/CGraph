@@ -44,9 +44,9 @@ const initialState = {
   isLoadingPayouts: false,
   isLoadingAnalytics: false,
   error: null,
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   premiumThreads: [] as any[],
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tiers: [] as any[],
   isLoadingPremium: false,
 };

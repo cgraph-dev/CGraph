@@ -101,7 +101,7 @@ export function UsernameChangeScreen({
           `/api/users/check-username?username=${encodeURIComponent(debouncedUsername)}`
         );
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const data = (await response.json()) as { available: boolean; reason?: string };
         setIsAvailable(data.available);
         setAvailabilityMessage(
@@ -130,7 +130,7 @@ export function UsernameChangeScreen({
     try {
       const response = await fetch('/api/users/me/username-history');
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const data = (await response.json()) as { history?: UsernameHistory[] };
       setHistory(data.history || []);
     } catch {
@@ -156,7 +156,7 @@ export function UsernameChangeScreen({
       });
 
       if (!response.ok) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const data = (await response.json()) as { message?: string };
         throw new Error(data.message || 'Failed to change username');
       }

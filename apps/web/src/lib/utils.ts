@@ -23,7 +23,7 @@ export function safeParseDate(value: unknown): Date | null {
   try {
     // type assertion: value is unknown, narrow to Date constructor-compatible types
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const date = new Date(value as string | number | Date);
     return isNaN(date.getTime()) ? null : date;
   } catch {
@@ -73,7 +73,7 @@ export function formatBytes(bytes: number, decimals: number = 2): string {
 export function getAvatarBorderId(obj: unknown): string | null {
   if (!obj || typeof obj !== 'object') return null;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const record = obj as Record<string, unknown>; // safe downcast – runtime verified
   const borderId = record.avatarBorderId ?? record.avatar_border_id;
   return typeof borderId === 'string' ? borderId : null;

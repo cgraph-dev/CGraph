@@ -297,7 +297,7 @@ export const MessageBubble = memo(function MessageBubble({
               {isOwn && (
                 <MessageStatusIndicator
                   status={
-                    message.deliveryStatus ?? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: metadata readBy field
+                    message.deliveryStatus ??  
                     ((message.metadata?.readBy as ReadByEntry[] | undefined)?.length // type assertion: metadata readBy field type
                       ? /* safe downcast – metadata field */
                         'read'
@@ -346,7 +346,7 @@ export const MessageBubble = memo(function MessageBubble({
         {isOwn && message.metadata?.readBy && Array.isArray(message.metadata.readBy) && (
           <ReadReceipts
             readBy={
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- safe: guarded by Array.isArray
+               
               message.metadata
                 .readBy as ReadByEntry[] /* safe downcast – guarded by Array.isArray */
             }

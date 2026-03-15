@@ -101,8 +101,7 @@ defmodule CGraph.Audit.EntryBuilder do
   def format_ip(ip) when is_tuple(ip) and tuple_size(ip) == 8 do
     ip
     |> Tuple.to_list()
-    |> Enum.map(&Integer.to_string(&1, 16))
-    |> Enum.join(":")
+    |> Enum.map_join(":", &Integer.to_string(&1, 16))
   end
 
   def format_ip(ip), do: to_string(ip)

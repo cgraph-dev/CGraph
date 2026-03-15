@@ -98,13 +98,13 @@ export default function MemberListScreen() {
       const groups = response.data.groups || [];
       setUserGroups(
         groups.map((g: Record<string, unknown>) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           id: g.id as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           name: (g.name as string) || 'Unknown',
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           color: (g.color as string) || null,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           memberCount: (g.member_count as number) || 0,
         }))
       );

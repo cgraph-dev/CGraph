@@ -21,7 +21,7 @@ import {
   ActivityIndicator,
   Animated,
   Keyboard,
-  _Alert,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -134,7 +134,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
         await api.post('/api/v1/auth/reset-password/validate', { token });
         setState('form');
       } catch (error: unknown) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const apiError = error as { response?: { status?: number } };
         if (apiError.response?.status === 410) {
           setState('expired');
@@ -193,7 +193,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setState('success');
     } catch (error: unknown) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const apiError = error as { response?: { data?: { message?: string } } };
       setErrorMessage(
         apiError.response?.data?.message || 'Failed to reset password. Please try again.'
@@ -209,13 +209,13 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
     navigation.reset({
       index: 0,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       routes: [{ name: 'Login' as never }],
     });
   }, [navigation]);
 
   const handleRequestNewLink = useCallback(() => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     navigation.navigate('ForgotPassword' as never);
   }, [navigation]);
 

@@ -132,8 +132,7 @@ defmodule CGraph.CDN.CDNManager do
     canonical_querystring =
       query_params
       |> Enum.sort_by(&elem(&1, 0))
-      |> Enum.map(fn {k, v} -> "#{URI.encode(k)}=#{URI.encode(v)}" end)
-      |> Enum.join("&")
+      |> Enum.map_join("&", fn {k, v} -> "#{URI.encode(k)}=#{URI.encode(v)}" end)
 
     canonical_request =
       Enum.join(
@@ -307,11 +306,10 @@ defmodule CGraph.CDN.CDNManager do
 
     paths =
       urls
-      |> Enum.map(fn url ->
+      |> Enum.map_join(" ", fn url ->
         uri = URI.parse(url)
         uri.path || "/"
       end)
-      |> Enum.join(" ")
 
     case System.cmd("aws", [
            "cloudfront",

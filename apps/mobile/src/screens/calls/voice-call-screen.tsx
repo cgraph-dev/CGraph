@@ -196,7 +196,7 @@ export default function VoiceCallScreen() {
         const socket = socketManager.getSocket();
         if (socket && !isMuted) {
           const manager = getWebRTCManager(socket);
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const stats = (manager as unknown as Record<string, unknown>).getAudioLevels;
           if (typeof stats === 'function') {
             const levels = stats();
@@ -377,7 +377,7 @@ export default function VoiceCallScreen() {
                   source={
                     recipientAvatar
                       ? { uri: recipientAvatar }
-                      : // eslint-disable-next-line @typescript-eslint/no-require-imports
+                      :  
                         require('@/assets/default-avatar.png')
                   }
                   size={140}

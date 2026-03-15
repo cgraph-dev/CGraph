@@ -275,78 +275,72 @@ defmodule CGraph.CDN.ImageOptimizer do
     tmp_dir = Path.join(System.tmp_dir!(), "cgraph_cdn_#{basename}_#{System.unique_integer([:positive])}")
     File.mkdir_p!(tmp_dir)
 
-    result = %{original: nil, webp: nil, progressive: nil, srcset: []}
-
     try do
-      # Upload original (optimized)
-      result =
-        case upload_variant(source_path, prefix, basename, Path.extname(source_path)) do
-          {:ok, url} -> %{result | original: url}
-          _ -> result
-        end
-
-      # WebP variant
-      result =
-        if generate_webp? do
-          webp_out = Path.join(tmp_dir, "#{basename}.webp")
-
-          case to_webp(source_path, output: webp_out) do
-            {:ok, webp_path} ->
-              case upload_variant(webp_path, prefix, basename, ".webp") do
-                {:ok, url} -> %{result | webp: url}
-                _ -> result
-              end
-
-            _ ->
-              result
-          end
-        else
-          result
-        end
-
-      # Progressive JPEG
-      result =
-        if generate_progressive? do
-          pjpeg_out = Path.join(tmp_dir, "#{basename}_progressive.jpg")
-
-          case progressive_jpeg(source_path, output: pjpeg_out) do
-            {:ok, pjpeg_path} ->
-              case upload_variant(pjpeg_path, prefix, "#{basename}_progressive", ".jpg") do
-                {:ok, url} -> %{result | progressive: url}
-                _ -> result
-              end
-
-            _ ->
-              result
-          end
-        else
-          result
-        end
-
-      # Srcset variants
-      result =
-        if generate_srcset? do
-          case generate_srcset(source_path, output_dir: tmp_dir, format: :webp) do
-            {:ok, variants} ->
-              srcset_urls =
-                Enum.map(variants, fn %{width: w, path: p} ->
-                  case upload_variant(p, prefix, "#{basename}_#{w}w", ".webp") do
-                    {:ok, url} -> %{width: w, url: url}
-                    _ -> nil
-                  end
-                end)
-                |> Enum.reject(&is_nil/1)
-
-              %{result | srcset: srcset_urls}
-          end
-        else
-          result
-        end
+      result = %{original: nil, webp: nil, progressive: nil, srcset: []}
+      result = upload_original(result, source_path, prefix, basename)
+      result = maybe_generate_webp(result, generate_webp?, source_path, tmp_dir, prefix, basename)
+      result = maybe_generate_progressive(result, generate_progressive?, source_path, tmp_dir, prefix, basename)
+      result = maybe_generate_srcset(result, generate_srcset?, source_path, tmp_dir, prefix, basename)
 
       {:ok, result}
     after
-      # Clean up temp directory
       File.rm_rf(tmp_dir)
+    end
+  end
+
+  defp upload_original(result, source_path, prefix, basename) do
+    case upload_variant(source_path, prefix, basename, Path.extname(source_path)) do
+      {:ok, url} -> %{result | original: url}
+      _ -> result
+    end
+  end
+
+  defp maybe_generate_webp(result, false, _source_path, _tmp_dir, _prefix, _basename), do: result
+  defp maybe_generate_webp(result, true, source_path, tmp_dir, prefix, basename) do
+    webp_out = Path.join(tmp_dir, "#{basename}.webp")
+
+    case to_webp(source_path, output: webp_out) do
+      {:ok, webp_path} ->
+        case upload_variant(webp_path, prefix, basename, ".webp") do
+          {:ok, url} -> %{result | webp: url}
+          _ -> result
+        end
+
+      _ ->
+        result
+    end
+  end
+
+  defp maybe_generate_progressive(result, false, _source_path, _tmp_dir, _prefix, _basename), do: result
+  defp maybe_generate_progressive(result, true, source_path, tmp_dir, prefix, basename) do
+    pjpeg_out = Path.join(tmp_dir, "#{basename}_progressive.jpg")
+
+    case progressive_jpeg(source_path, output: pjpeg_out) do
+      {:ok, pjpeg_path} ->
+        case upload_variant(pjpeg_path, prefix, "#{basename}_progressive", ".jpg") do
+          {:ok, url} -> %{result | progressive: url}
+          _ -> result
+        end
+
+      _ ->
+        result
+    end
+  end
+
+  defp maybe_generate_srcset(result, false, _source_path, _tmp_dir, _prefix, _basename), do: result
+  defp maybe_generate_srcset(result, true, source_path, tmp_dir, prefix, basename) do
+    case generate_srcset(source_path, output_dir: tmp_dir, format: :webp) do
+      {:ok, variants} ->
+        srcset_urls =
+          Enum.map(variants, fn %{width: w, path: p} ->
+            case upload_variant(p, prefix, "#{basename}_#{w}w", ".webp") do
+              {:ok, url} -> %{width: w, url: url}
+              _ -> nil
+            end
+          end)
+          |> Enum.reject(&is_nil/1)
+
+        %{result | srcset: srcset_urls}
     end
   end
 

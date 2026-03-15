@@ -126,16 +126,16 @@ defmodule CGraph.Workers.WebhookDeliveryWorker do
 
       {:ok, %Finch.Response{status: status, body: body}} ->
         emit_telemetry(:failure, endpoint, delivery, %{status: status, latency: latency})
-        handle_failure(endpoint, delivery, attempts, "HTTP #{status}", status, body, latency)
+        handle_failure(endpoint, delivery, attempts, %{error: "HTTP #{status}", status: status, body: body, latency: latency})
 
       {:error, reason} ->
         error_msg = if is_binary(reason), do: reason, else: inspect(reason)
         emit_telemetry(:failure, endpoint, delivery, %{status: nil, latency: latency})
-        handle_failure(endpoint, delivery, attempts, error_msg, nil, nil, latency)
+        handle_failure(endpoint, delivery, attempts, %{error: error_msg, status: nil, body: nil, latency: latency})
     end
   end
 
-  defp handle_failure(endpoint, delivery, attempts, error, status, body, latency) do
+  defp handle_failure(endpoint, delivery, attempts, %{error: error, status: status, body: body, latency: latency}) do
     changes = %{
       attempts: attempts,
       last_attempt_at: DateTime.utc_now(),

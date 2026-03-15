@@ -75,7 +75,7 @@ export function PayoutPage(): React.ReactElement {
     fetchPayouts,
     requestPayout,
   } = useCreatorDashboard();
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const payouts = (rawPayouts ?? []) as unknown as PayoutDisplay[];
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -91,7 +91,7 @@ export function PayoutPage(): React.ReactElement {
     const result = await requestPayout();
     if (result) {
       setSuccess(
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         `Payout of ${formatCents((result as any).amountCents || (result as any).amount_cents || 0)} initiated!`
       );
     } else {

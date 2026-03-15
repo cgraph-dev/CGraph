@@ -27,7 +27,7 @@ import LightboxModal from './lightbox-modal';
 
 const RichMediaEmbed = memo(function RichMediaEmbed({
   content,
-  _isOwnMessage = false,
+  isOwnMessage = false,
   onLoad,
   maxEmbeds = 3,
 }: RichMediaEmbedProps): React.ReactElement | null {
@@ -115,7 +115,7 @@ const RichMediaEmbed = memo(function RichMediaEmbed({
         })
       );
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const validEmbeds = metadata.filter(
         (m): m is NonNullable<typeof m> => m !== null
       ) as LinkMetadata[];

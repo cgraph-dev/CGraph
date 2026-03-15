@@ -51,7 +51,7 @@ export function WallPostItem({ item, index, colors, onLike, navigation }: Props)
               source={
                 item.userAvatar
                   ? { uri: item.userAvatar }
-                  : // eslint-disable-next-line @typescript-eslint/no-require-imports
+                  :  
                     require('@/assets/default-avatar.png')
               }
               size={44}

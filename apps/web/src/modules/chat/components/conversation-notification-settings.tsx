@@ -85,10 +85,10 @@ export function ConversationNotificationSettings({
         );
         const pref =
           res.data?.data?.preference ??
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           (res.data as unknown as { preference: NotificationPreference })?.preference;
         if (pref) {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           setCurrentMode((pref.mode as NotificationMode) || 'all');
           setMutedUntil(pref.mutedUntil ?? null);
         }

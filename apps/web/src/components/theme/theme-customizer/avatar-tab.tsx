@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+ 
 /**
  * Avatar Tab Component
  *
@@ -7,7 +7,7 @@
 
 import { motion } from 'motion/react';
 
-// eslint-disable-next-line no-restricted-imports
+ 
 import { THEME_COLORS, type ThemeColorPreset } from '@/stores/theme';
 import { PremiumThemeGate, TierBadge } from '../premium-theme-gate';
 

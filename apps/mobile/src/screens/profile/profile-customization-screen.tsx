@@ -1,4 +1,3 @@
-/* eslint-disable check-file/filename-naming-convention */
 /**
  * ProfileCustomizationScreen — single screen that wires ALL 6 customization categories
  * plus text fields & image pickers into a staged-save workflow with live preview.
@@ -58,17 +57,17 @@ import {
 
 // ─── Components ──────────────────────────────────────────────────────────────
 
-import { ProfileCard, type Badge } from '../../modules/profile/components/ProfileCard';
+import { ProfileCard, type Badge } from '../../modules/profile/components/profile-card';
 import { BottomSheet } from '@/components';
 
 // Pickers (open as bottom sheets)
-import { NameStylePicker } from '../../modules/profile/pickers/NameStylePicker';
+import { NameStylePicker } from '../../modules/profile/pickers/name-style-picker';
 import { NameplatePicker } from '../../modules/profile/pickers/nameplate-picker';
-import { ProfileEffectPicker } from '../../modules/profile/pickers/ProfileEffectPicker';
-import { ProfileThemePicker } from '../../modules/profile/pickers/ProfileThemePicker';
+import { ProfileEffectPicker } from '../../modules/profile/pickers/profile-effect-picker';
+import { ProfileThemePicker } from '../../modules/profile/pickers/profile-theme-picker';
 
 // Existing border picker modal (already full-screen modal)
-import { BorderPickerModal } from './BorderPickerModal';
+import { BorderPickerModal } from './border-picker-modal';
 
 // ─── State types ─────────────────────────────────────────────────────────────
 
@@ -176,7 +175,7 @@ async function pickImage(fieldName: string, aspect: [number, number] = [1, 1]) {
   const { uri } = result.assets[0];
   const filename = uri.split('/').pop() ?? `${fieldName}.jpg`;
   const formData = new FormData();
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- React Native FormData requires this cast
+   
   formData.append(fieldName, { uri, name: filename, type: 'image/jpeg' } as unknown as Blob);
   return { uri, formData };
 }
@@ -353,7 +352,7 @@ async function pickImage(fieldName: string, aspect: [number, number] = [1, 1]) {
 
   // ── Live preview ─────────────────────────────────────────────────────────
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- user.badges shape matches Badge[]
+   
   const previewBadges: Badge[] = user?.badges ? (user.badges as Badge[]) : [];
 
   const profilePreview = (
@@ -643,11 +642,11 @@ async function pickImage(fieldName: string, aspect: [number, number] = [1, 1]) {
       {/* Navigate to Badge & Title screens */}
       <View style={styles.extraNav}>
         {renderActionButton('shield-checkmark-outline', 'Manage Badges', () => {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- typed navigation
+           
           (navigation as { navigate: (screen: string) => void }).navigate('BadgeSelection');
         })}
         {renderActionButton('trophy-outline', 'Manage Titles', () => {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- typed navigation
+           
           (navigation as { navigate: (screen: string) => void }).navigate('TitleSelection');
         })}
       </View>

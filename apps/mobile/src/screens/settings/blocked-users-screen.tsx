@@ -63,7 +63,7 @@ interface BlockedUser {
  * Blocked Users Screen component.
  *
  */
-export default function BlockedUsersScreen({ _navigation }: Props) {
+export default function BlockedUsersScreen({ navigation }: Props) {
   const { colors } = useThemeStore();
 
   const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);

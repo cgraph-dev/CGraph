@@ -232,6 +232,7 @@ defmodule CGraphWeb.API.Admin.FeatureFlagController do
     try do
       String.to_existing_atom(normalized)
     rescue
+      # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
       ArgumentError -> String.to_atom(normalized)
     end
   end

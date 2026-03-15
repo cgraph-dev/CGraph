@@ -1,4 +1,3 @@
-/* eslint-disable check-file/filename-naming-convention, @typescript-eslint/consistent-type-assertions */
 /**
  * ProfileEffectPicker — modal for selecting profile background effects.
  *

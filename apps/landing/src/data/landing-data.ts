@@ -55,46 +55,16 @@ export const features: readonly FeatureData[] = [
       'Forum threads with sub-200ms delivery, 50+ customization options — chat and long-form discussions in one place.',
   },
   {
-    icon: '⛓️',
-    title: 'Web3 / Wallet Login',
-    description:
-      'SIWE (EIP-4361) standard auth with WalletConnect v2. MetaMask, Coinbase, Rainbow — 100+ wallets supported.',
-  },
-  {
-    icon: '✨',
-    title: 'Cosmetics & Achievements',
-    description:
-      '325 collectible cosmetics across 7 rarity tiers — badges, titles, nameplates, profile themes, name styles, and frames. Unlock through 70 achievements.',
-  },
-  {
-    icon: '📂',
-    title: 'Encrypted File Sharing',
-    description:
-      'Share files within E2EE conversations. Attachments encrypted with AES-256-GCM at rest and in transit.',
-  },
-  {
     icon: '📞',
     title: 'Voice & Video Calls',
     description:
       'Group calls with screen sharing, E2EE indicators, and voice channels — powered by WebRTC with Phoenix Channels signaling.',
   },
   {
-    icon: '💰',
-    title: 'Creator Economy',
+    icon: '✨',
+    title: 'Cosmetics & Achievements',
     description:
-      'Paid DMs, premium threads, content boosts, and Nodes virtual currency. Creators earn through tipping, content unlocks, and revenue sharing.',
-  },
-  {
-    icon: '⭐',
-    title: 'Subscription Tiers',
-    description:
-      'Free, Premium ($9.99/mo), and Enterprise tiers with tiered storage, forums, cosmetics, and enterprise features like SSO/SAML.',
-  },
-  {
-    icon: '⏰',
-    title: 'Scheduled Messages & Rich Media',
-    description:
-      'Schedule messages, send GIFs via Tenor, record voice messages, and embed rich media previews.',
+      '325 collectible cosmetics across 7 rarity tiers — badges, titles, nameplates, profile themes, name styles, and frames. Unlock through 70 achievements.',
   },
   {
     icon: '🤖',
@@ -107,12 +77,6 @@ export const features: readonly FeatureData[] = [
     title: 'Mobile-First',
     description:
       'Native iOS and Android apps built with React Native + Expo. Full parity with the web experience.',
-  },
-  {
-    icon: '🔍',
-    title: 'Real-Time Search',
-    description:
-      'Meilisearch for instant full-text search across messages, users, forums, and threads.',
   },
 ] as const;
 

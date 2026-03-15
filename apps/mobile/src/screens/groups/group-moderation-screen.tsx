@@ -96,25 +96,25 @@ export default function GroupModerationScreen({ route }: Props) {
           : [];
       setBans(
         data.map((b: Record<string, unknown>) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           id: (b.id ?? b.user_id ?? '') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           userId: (b.user_id ?? b.userId ?? '') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           username: (b.username ??
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (b.user as Record<string, unknown>)?.username ??
             'unknown') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           reason: (b.reason ?? null) as string | null,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           bannedAt: (b.banned_at ?? b.bannedAt ?? b.inserted_at ?? '') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           expiresAt: (b.expires_at ?? b.expiresAt ?? null) as string | null,
         }))
       );
@@ -136,30 +136,30 @@ export default function GroupModerationScreen({ route }: Props) {
           : [];
       setAuditLog(
         data.map((e: Record<string, unknown>) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           id: (e.id ?? '') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           action: (e.action ?? e.action_type ?? '') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           actorUsername: (e.actor_username ??
             e.actorUsername ??
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (e.actor as Record<string, unknown>)?.username ??
             'unknown') as string,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           targetUsername: (e.target_username ??
             e.targetUsername ??
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (e.target as Record<string, unknown>)?.username ??
             null) as string | null,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           details: (e.details ?? e.reason ?? null) as string | null,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           createdAt: (e.created_at ?? e.createdAt ?? e.inserted_at ?? '') as string,
         }))
       );
@@ -181,22 +181,22 @@ export default function GroupModerationScreen({ route }: Props) {
           : [];
       setReports(
         data.map((r: Record<string, unknown>) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           id: (r.id ?? '') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           category: (r.category ?? '') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           status: (r.status ?? 'pending') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           targetType: (r.target_type ?? r.targetType ?? '') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           reporterUsername: (r.reporter_username ??
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (r.reporter as Record<string, unknown>)?.username ??
             'unknown') as string,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           description: (r.description ?? null) as string | null,
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           createdAt: (r.created_at ?? r.createdAt ?? r.inserted_at ?? '') as string,
         }))
       );
@@ -268,7 +268,7 @@ export default function GroupModerationScreen({ route }: Props) {
         <View style={[styles.avatar, { backgroundColor: colors.textTertiary + '20' }]}>
           <Ionicons
             name={
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               (actionIcons[item.action] ||
                 'document-text-outline') as keyof typeof Ionicons.glyphMap
             }

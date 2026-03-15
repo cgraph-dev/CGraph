@@ -18,7 +18,7 @@ export const ForumThemeProvider = memo(function ForumThemeProvider({
     const { colors, borderRadius, borderWidth, shadows, fontFamily, headerFontFamily, fontSize } =
       theme;
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return {
       '--forum-primary': colors.primary,
       '--forum-secondary': colors.secondary,

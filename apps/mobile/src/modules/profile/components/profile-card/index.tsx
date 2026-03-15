@@ -22,8 +22,8 @@ import {
 } from '@cgraph/animation-constants/src/registries/profileThemes';
 // TODO(phase-26): Rewire — gamification components deleted
 import { ProfileBanner } from './profile-banner';
-import { Nameplate, type Badge } from './Nameplate';
-import { ProfileEffect } from './ProfileEffect';
+import { Nameplate, type Badge } from './nameplate';
+import { ProfileEffect } from './profile-effect';
 import { ProfileWidgets, type ProfileWidget } from './profile-widgets';
 
 /** User profile data expected by ProfileCard */
@@ -190,11 +190,11 @@ export default ProfileCard;
 
 // Re-export sub-components for direct access
 export { ProfileBanner } from './profile-banner';
-export { Nameplate, NAMEPLATE_STYLES } from './Nameplate';
-export { ProfileEffect } from './ProfileEffect';
+export { Nameplate, NAMEPLATE_STYLES } from './nameplate';
+export { ProfileEffect } from './profile-effect';
 export { ProfileWidgets } from './profile-widgets';
 export type { ProfileWidget } from './profile-widgets';
-export type { Badge } from './Nameplate';
+export type { Badge } from './nameplate';
 
 const styles = StyleSheet.create({
   card: {

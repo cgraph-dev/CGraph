@@ -35,7 +35,7 @@ export default function CreatorDashboardScreen(): React.ReactElement {
   const { colors } = useThemeStore();
   const {
     creatorStatus,
-    _isCreator,
+    isCreator,
     balance,
     analyticsOverview: overview,
     premiumThreads,

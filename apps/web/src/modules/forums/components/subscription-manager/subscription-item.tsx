@@ -89,7 +89,7 @@ export function SubscriptionItem({
           value={subscription.notificationMode}
           onValueChange={
             (value: string) =>
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               onUpdate(subscription.id, { notificationMode: value as NotificationMode }) // safe downcast – select event value
           }
         >

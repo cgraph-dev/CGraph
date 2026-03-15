@@ -41,8 +41,7 @@ import {
   AnimatedPeriodSelector,
   EmptyState,
 } from './forum-leaderboard-screen/components';
-import { RankProgressBar } from './components/rank-progress-bar';
-import type { RankInfo } from './components/rank-progress-bar';
+import { RankProgressBar, type RankInfo } from './components/rank-progress-bar';
 
 // =============================================================================
 // TYPES
@@ -256,7 +255,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
         <AnimatedTabBar
           activeTab={activeTab}
           onTabChange={handleTabChange}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           colors={colors as unknown as Record<string, string>}
         />
       )}
@@ -271,12 +270,12 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
             type={activeTab}
             onPress={() =>
               activeTab === 'forums'
-                ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                ?  
                   handleForumPress(item as LeaderboardForum)
-                : // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                :  
                   handleContributorPress(item as TopContributor)
             }
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             colors={colors as unknown as Record<string, string>}
           />
         )}
@@ -303,9 +302,9 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
                 type={activeTab}
                 onItemPress={(item) =>
                   activeTab === 'forums'
-                    ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                    ?  
                       handleForumPress(item as LeaderboardForum)
-                    : // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                    :  
                       handleContributorPress(item as TopContributor)
                 }
               />

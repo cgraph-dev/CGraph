@@ -963,7 +963,6 @@ export class PostQuantumDoubleRatchet extends DoubleRatchetEngine {
    * Reserved for future Kyber-768 integration when NIST PQC is standardized in WebCrypto.
    * Kept as a placeholder to maintain protocol-compatible class shape.
    */
-  // @ts-expect-error Reserved for future ML-KEM-768 integration
   private _kyberState: {
     publicKey: Uint8Array | null;
     secretKey: Uint8Array | null;
@@ -985,6 +984,7 @@ export class PostQuantumDoubleRatchet extends DoubleRatchetEngine {
   ): Promise<void> {
     // For now, use enhanced key derivation as PQ placeholder
     // When Kyber-768 is available in WebCrypto, this will be updated
+    void this._kyberState; // Reserved — will hold Kyber-768 key material
 
     const enhancedSecret = await this.enhanceSecretWithPQPlaceholder(classicalSecret);
     await this.initializeAlice(enhancedSecret, peerPublicKey);

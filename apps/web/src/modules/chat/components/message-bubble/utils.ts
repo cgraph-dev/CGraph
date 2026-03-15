@@ -52,7 +52,7 @@ export function mapVisualizerTheme(
     return 'amber';
   }
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return theme as 'matrix-green' | 'cyber-blue' | 'neon-pink' | 'amber';
 }
 

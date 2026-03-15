@@ -60,17 +60,17 @@ export function usePinAndDelete({
       channel
         .push(event, { message_id: message.id })
         .receive('ok', (response?: unknown) => {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const res = response as Record<string, unknown> | undefined;
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           onMessagePinned(
             message.id,
             !isPinned,
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             !isPinned ? (res?.pinned_at as string) || new Date().toISOString() : undefined,
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             !isPinned ? (res?.pinned_by_id as string) || userId : undefined
           );
         })
@@ -78,9 +78,9 @@ export function usePinAndDelete({
           const reason =
             typeof err === 'string'
               ? err
-              : // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              :  
                 (err as Record<string, unknown>)?.reason ||
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 (err as Record<string, unknown>)?.error ||
                 '';
           logger.warn('Pin error:', reason);

@@ -20,7 +20,7 @@ export function useSearchSuggestions() {
     const stored = localStorage.getItem('cgraph_recent_searches');
     if (stored) {
       try {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         setRecentSearches(JSON.parse(stored) as string[]); // type assertion: stored value is JSON array of search strings
       } catch {
         // Invalid JSON, ignore

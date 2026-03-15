@@ -28,7 +28,7 @@ export function initDB(): Promise<IDBDatabase> {
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = (event) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const db = (event.target as IDBOpenDBRequest).result; // safe downcast – DOM element
 
       // Create object stores
@@ -138,7 +138,7 @@ export async function encryptData(
     data
   );
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   return { ciphertext, iv: iv.buffer as ArrayBuffer }; // safe downcast – structural boundary
 }
 

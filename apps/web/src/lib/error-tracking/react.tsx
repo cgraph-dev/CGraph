@@ -20,7 +20,7 @@ export function withErrorTracking<P extends object>(
     try {
       return <WrappedComponent {...props} />;
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       captureError(error as Error, {
         // safe downcast – structural boundary
         component: componentName,

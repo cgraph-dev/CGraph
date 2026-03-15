@@ -25,7 +25,7 @@ export function HolographicNotification({
 
   // type assertion: theme map lookup result matches HolographicConfig colorTheme union
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const colorTheme = (NOTIFICATION_THEMES[type] ?? 'cyan') as HolographicConfig['colorTheme'];
 
   useEffect(() => {

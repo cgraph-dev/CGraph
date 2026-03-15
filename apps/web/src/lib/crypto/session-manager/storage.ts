@@ -41,7 +41,7 @@ export async function openDatabase(): Promise<IDBDatabase> {
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = (event) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const db = (event.target as IDBOpenDBRequest).result; // safe downcast – DOM element
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         const store = db.createObjectStore(STORE_NAME, { keyPath: 'recipientId' });

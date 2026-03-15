@@ -93,7 +93,7 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
         err instanceof Error
           ? err.message
           : typeof err === 'object' && err !== null && 'response' in err
-            ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            ?  
               ((err as { response?: { data?: { message?: string } } }).response?.data?.message ??
               'Failed to load safety number')
             : 'Failed to load safety number';
@@ -115,7 +115,7 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
         err instanceof Error
           ? err.message
           : typeof err === 'object' && err !== null && 'response' in err
-            ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            ?  
               ((err as { response?: { data?: { message?: string } } }).response?.data?.message ??
               'Failed to mark as verified')
             : 'Failed to mark as verified';
@@ -135,7 +135,7 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
         err instanceof Error
           ? err.message
           : typeof err === 'object' && err !== null && 'response' in err
-            ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            ?  
               ((err as { response?: { data?: { message?: string } } }).response?.data?.message ??
               'Failed to remove verification')
             : 'Failed to remove verification';

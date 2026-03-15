@@ -27,7 +27,7 @@ function toArrayBuffer(arr: Uint8Array): ArrayBuffer {
 export function generateMessageId(): string {
   const timestamp = Date.now().toString(36);
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const random = arrayBufferToHex(crypto.getRandomValues(new Uint8Array(8)).buffer as ArrayBuffer); // safe downcast – structural boundary
   return `${timestamp}-${random}`;
 }

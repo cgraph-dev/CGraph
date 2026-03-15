@@ -120,7 +120,7 @@ export function voteOnThread(
     channel
       .push('vote', { value })
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       .receive('ok', (resp: unknown) => resolve(resp as ThreadVotePayload)) // safe downcast – API response field
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -144,7 +144,7 @@ export function voteOnComment(
     channel
       .push('vote_comment', { comment_id: commentId, value })
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       .receive('ok', (resp: unknown) => resolve(resp as CommentVotePayload)) // safe downcast – API response field
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -168,7 +168,7 @@ export function sendComment(
     channel
       .push('new_comment', { content, parent_id: parentId })
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       .receive('ok', (resp: unknown) => resolve(resp as { comment_id: string }))
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -206,7 +206,7 @@ export function voteOnPoll(
     channel
       .push('vote_poll', { option_id: optionId })
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       .receive('ok', (resp: unknown) => resolve(resp as { poll: ThreadPollData }))
       .receive('error', (resp: unknown) => reject(resp));
   });
@@ -228,7 +228,7 @@ export function getThreadViewers(
     channel
       .push('get_viewers', {})
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       .receive('ok', (resp: unknown) => resolve(resp as { viewers: ThreadViewerPayload[] }))
       .receive('error', (resp: unknown) => reject(resp));
   });

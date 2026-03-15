@@ -101,7 +101,7 @@ export const ReactionPickerModal = memo(function ReactionPickerModal({
   // Early return after hooks
   if (!visible || !message) return null;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const categoryKeys = Object.keys(EMOJI_CATEGORIES) as EmojiCategory[];
   const emojis = EMOJI_CATEGORIES[selectedCategory];
 

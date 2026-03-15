@@ -35,8 +35,7 @@ import * as Haptics from 'expo-haptics';
 import { useAuthStore, useThemeStore } from '@/stores';
 import { MatrixAuthBackground } from '../../../components/matrix';
 import api from '../../../lib/api';
-import { FEATURES, SCREEN_WIDTH, STEPS } from './types';
-import type { NotificationSettings, OnboardingProps } from './types';
+import { FEATURES, SCREEN_WIDTH, STEPS, type NotificationSettings, type OnboardingProps } from './types';
 import { styles } from './styles';
 
 /**
@@ -157,7 +156,7 @@ export default function OnboardingScreen({ navigation }: OnboardingProps) {
         if (avatarUri && avatarUri !== user?.avatar_url) {
           const formData = new FormData();
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           formData.append('avatar', {
             uri: avatarUri,
             type: 'image/jpeg',

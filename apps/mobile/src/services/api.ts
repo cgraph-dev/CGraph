@@ -73,7 +73,7 @@ export const authApi = {
    */
   async walletChallenge(data: { wallet_address: string }) {
     const response = await api.post('/api/v1/auth/wallet/challenge', data);
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     return response.data as { message: string; nonce: string };
   },
 

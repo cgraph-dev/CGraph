@@ -73,80 +73,95 @@ defmodule CGraph.Forums.Threads do
   @spec create_thread(struct(), struct(), map()) :: {:ok, Thread.t()} | {:error, term()}
   def create_thread(_forum, user, attrs) do
     Repo.transaction(fn ->
-      # Get or determine the board_id
       board_id = attrs["board_id"] || attrs[:board_id]
       content = attrs["content"] || attrs[:content] || ""
       title = attrs["title"] || attrs[:title] || ""
 
-      # Automod pre-check (look up forum_id from board)
-      board = if board_id, do: Repo.get(CGraph.Forums.Board, board_id)
-      forum_id = if board, do: board.forum_id
+      check_automod!(board_id, title, content)
 
-      if forum_id do
-        case ForumAutomod.check_content(forum_id, "#{title} #{content}") do
-          {:block, reason} -> Repo.rollback({:automod_blocked, reason})
-          _ -> :ok
-        end
-      end
+      thread =
+        insert_thread!(user, attrs, board_id)
+        |> create_first_post!(user, attrs)
+        |> finalize_thread!(user)
 
-      # Create thread
-      thread_result =
-        %Thread{}
-        |> Thread.changeset(%{
-          board_id: board_id,
-          author_id: user.id,
-          title: attrs["title"] || attrs[:title],
-          content: attrs["content"] || attrs[:content],
-          icon_id: attrs["post_icon_id"] || attrs[:post_icon_id] || attrs["icon_id"] || attrs[:icon_id]
-        })
-        |> Repo.insert()
-
-      case thread_result do
-        {:ok, thread} ->
-          # Create first post
-          post_attrs = %{
-            thread_id: thread.id,
-            author_id: user.id,
-            content: attrs["content"] || attrs[:content],
-            is_first_post: true
-          }
-
-          case create_post(thread, user, post_attrs) do
-            {:ok, _post} ->
-              # Create poll if poll data present
-              maybe_create_poll(thread, attrs)
-              loaded = Repo.preload(thread, [:author, :posts])
-
-              # Broadcast to board channel
-              if loaded.board_id do
-                CGraphWeb.Endpoint.broadcast("board:#{loaded.board_id}", "new_thread", %{
-                  thread: %{
-                    id: loaded.id,
-                    title: loaded.title,
-                    slug: loaded.slug,
-                    author_id: loaded.author_id,
-                    inserted_at: loaded.inserted_at,
-                    is_pinned: loaded.is_pinned || false,
-                    is_locked: loaded.is_locked || false
-                  }
-                })
-              end
-
-              # Dispatch plugin hook (fire-and-forget)
-              if loaded.board_id do
-                board = CGraph.Repo.get(CGraph.Forums.Board, loaded.board_id)
-                if board, do: PluginRuntime.dispatch(board.forum_id, :thread_created, %{thread_id: loaded.id, author_id: user.id, title: loaded.title})
-              end
-
-              loaded
-            {:error, reason} ->
-              Repo.rollback(reason)
-          end
-
-        {:error, changeset} ->
-          Repo.rollback(changeset)
-      end
+      thread
     end)
+  end
+
+  defp check_automod!(board_id, title, content) do
+    board = if board_id, do: Repo.get(CGraph.Forums.Board, board_id)
+    forum_id = if board, do: board.forum_id
+
+    if forum_id do
+      case ForumAutomod.check_content(forum_id, "#{title} #{content}") do
+        {:block, reason} -> Repo.rollback({:automod_blocked, reason})
+        _ -> :ok
+      end
+    end
+  end
+
+  defp insert_thread!(user, attrs, board_id) do
+    %Thread{}
+    |> Thread.changeset(%{
+      board_id: board_id,
+      author_id: user.id,
+      title: attrs["title"] || attrs[:title],
+      content: attrs["content"] || attrs[:content],
+      icon_id: attrs["post_icon_id"] || attrs[:post_icon_id] || attrs["icon_id"] || attrs[:icon_id]
+    })
+    |> Repo.insert()
+    |> case do
+      {:ok, thread} -> thread
+      {:error, changeset} -> Repo.rollback(changeset)
+    end
+  end
+
+  defp create_first_post!(thread, user, attrs) do
+    post_attrs = %{
+      thread_id: thread.id,
+      author_id: user.id,
+      content: attrs["content"] || attrs[:content],
+      is_first_post: true
+    }
+
+    case create_post(thread, user, post_attrs) do
+      {:ok, _post} ->
+        maybe_create_poll(thread, attrs)
+        thread
+
+      {:error, reason} ->
+        Repo.rollback(reason)
+    end
+  end
+
+  defp finalize_thread!(thread, user) do
+    loaded = Repo.preload(thread, [:author, :posts])
+
+    if loaded.board_id do
+      broadcast_new_thread(loaded)
+      dispatch_plugin_hook(loaded, user)
+    end
+
+    loaded
+  end
+
+  defp broadcast_new_thread(thread) do
+    CGraphWeb.Endpoint.broadcast("board:#{thread.board_id}", "new_thread", %{
+      thread: %{
+        id: thread.id,
+        title: thread.title,
+        slug: thread.slug,
+        author_id: thread.author_id,
+        inserted_at: thread.inserted_at,
+        is_pinned: thread.is_pinned || false,
+        is_locked: thread.is_locked || false
+      }
+    })
+  end
+
+  defp dispatch_plugin_hook(thread, user) do
+    board = CGraph.Repo.get(CGraph.Forums.Board, thread.board_id)
+    if board, do: PluginRuntime.dispatch(board.forum_id, :thread_created, %{thread_id: thread.id, author_id: user.id, title: thread.title})
   end
 
   @doc """

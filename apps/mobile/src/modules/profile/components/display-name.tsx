@@ -1,4 +1,3 @@
-/* eslint-disable check-file/filename-naming-convention, @typescript-eslint/consistent-type-assertions */
 /**
  * DisplayName — stylized username text with font, effect, and color.
  *

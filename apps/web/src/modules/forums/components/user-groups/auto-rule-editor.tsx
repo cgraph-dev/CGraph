@@ -378,7 +378,7 @@ function RuleForm({ groups, rule, onSave, onClose }: RuleFormProps) {
               <label className="mb-1 block text-sm font-medium text-gray-300">Rule Type</label>
               <select
                 value={ruleType}
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                 
                 onChange={(e) => setRuleType(e.target.value as CreateAutoRuleData['ruleType'])}
                 className="w-full rounded-lg border border-white/[0.08] bg-[rgb(30,32,40)] px-3 py-2 text-white"
               >

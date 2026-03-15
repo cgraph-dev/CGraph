@@ -141,7 +141,7 @@ export default function Avatar({
 
   // Resolve equipped border animation type
   const rawType = equippedBorder?.animationType ?? equippedBorder?.animation_type ?? 'none';
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- dynamic border type from API
+   
   const borderAnimationType = rawType as string;
   const hasBorder = equippedBorder != null && borderAnimationType !== 'none';
 

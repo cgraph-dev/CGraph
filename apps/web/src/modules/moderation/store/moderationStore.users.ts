@@ -266,7 +266,7 @@ export function createUserActions(set: Set) {
             points: Number(t.points),
             expiryDays: Number(t.expiry_days),
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             action: t.action as WarningType['action'], // safe downcast – discriminated union from API
             actionThreshold:
               typeof t.action_threshold === 'number' ? t.action_threshold : undefined,

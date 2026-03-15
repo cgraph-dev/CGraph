@@ -61,7 +61,7 @@ export function createMessageOpsActions(set: Set, get: Get) {
       );
       const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
       if (rawMessage) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const message = normalizeMessage(rawMessage) as unknown as Message; // type assertion: normalizer output type bridge
         get().updateMessage(message);
       }
@@ -105,7 +105,7 @@ export function createMessageOpsActions(set: Set, get: Get) {
         await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
       } catch (error: unknown) {
         // Don't rollback on 422 — likely means reaction already exists on server
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const status = (error as { response?: { status?: number } })?.response?.status;
         if (status === 422 || status === 409) {
           // Optimistic state is correct, server already has this reaction
@@ -134,7 +134,7 @@ export function createMessageOpsActions(set: Set, get: Get) {
         await api.delete(`/api/v1/messages/${messageId}/reactions/${emoji}`);
       } catch (error: unknown) {
         // Don't rollback on 404/422 — reaction may already be removed on server
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const status = (error as { response?: { status?: number } })?.response?.status;
         if (status === 404 || status === 422) {
           return;
@@ -253,7 +253,7 @@ export function createMessageOpsActions(set: Set, get: Get) {
           const idx = msgs.findIndex((m) => m.id === messageId);
           if (idx !== -1) {
             const updated = [...msgs];
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             updated[idx] = {
               ...updated[idx],
               deletedAt: new Date().toISOString(),

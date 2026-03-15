@@ -96,7 +96,7 @@ export function getBlurCapabilities(): BlurCapabilities {
   const screenSize = width * height;
 
   if (Platform.OS === 'ios') {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const iosVersion = parseInt(Platform.Version as string, 10);
 
     cachedCapabilities = {
@@ -109,7 +109,7 @@ export function getBlurCapabilities(): BlurCapabilities {
       useFallback: iosVersion < 13,
     };
   } else if (Platform.OS === 'android') {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const androidVersion = Platform.Version as number;
 
     // Android 12+ (API 31+) supports RenderEffect blur

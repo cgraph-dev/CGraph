@@ -178,7 +178,7 @@ export function BadgeManager({ forumId, onSave, saving }: BadgeManagerProps) {
               <select
                 value={editing.criteria}
                 onChange={(e) =>
-                  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                   
                   setEditing({ ...editing, criteria: e.target.value as BadgeConfig['criteria'] })
                 }
                 className="w-full rounded border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-white"

@@ -23,22 +23,22 @@ export function createFetchBlockedUsers(set: Set) {
       const blockedUsers = ensureArray(response.data, 'blocked')
         .filter(isRecord)
         .map((u) => ({
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           id: u.id as string, // type assertion: API response field narrowed from unknown
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           username: u.username as string, // type assertion: API response field narrowed from unknown
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           displayName: (u.display_name as string) || null, // type assertion: API response field narrowed from unknown
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           avatarUrl: (u.avatar_url as string) || null, // type assertion: API response field narrowed from unknown
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           blockedAt: u.blocked_at as string, // type assertion: API response field narrowed from unknown
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           reason: (u.reason as string) || undefined, // type assertion: API response field narrowed from unknown
         }));
       set({ blockedUsers, isLoadingBlocked: false });
@@ -164,11 +164,11 @@ export function createFetchProfileFields(set: Set) {
           id: asString(f.id),
           name: asString(f.name),
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           type: (f.type as ProfileField['type']) || 'text', // type assertion: narrowing unknown to union type after API boundary
           value: null,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           options: f.options as string[] | undefined, // safe downcast – structural boundary
           required: asBool(f.required),
           editable: asBool(f.editable, true),

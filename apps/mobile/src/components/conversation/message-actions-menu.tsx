@@ -262,7 +262,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
           ]}
         >
           <View style={[styles.actionIconWrap, { backgroundColor: `${item.color}18` }]}>
-            {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             <Ionicons name={item.icon as any} size={20} color={item.color} />
           </View>
           <Text style={[styles.actionLabel, { color: item.danger ? item.color : colors.text }]}>

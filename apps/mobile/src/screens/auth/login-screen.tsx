@@ -142,7 +142,7 @@ export default function LoginScreen({ navigation }: Props) {
       // - {error: {message: "..."}} for complex errors
       // - {error: "...", message: "...", details: {...}} for validation
       // - Network errors have no response
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const err = error as {
         response?: {
           data?: {
@@ -215,7 +215,7 @@ export default function LoginScreen({ navigation }: Props) {
               ]}
             >
               <Image
-                // eslint-disable-next-line @typescript-eslint/no-require-imports
+                 
                 source={require('../../../assets/icon.png')}
                 style={styles.logoImage}
                 resizeMode="contain"

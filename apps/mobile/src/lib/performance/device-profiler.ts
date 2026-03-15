@@ -154,7 +154,7 @@ class DeviceProfiler {
     this.capabilities = {
       tier,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       platform: Platform.OS as 'ios' | 'android' | 'web' | 'unknown',
       platformVersion,
       deviceModel,

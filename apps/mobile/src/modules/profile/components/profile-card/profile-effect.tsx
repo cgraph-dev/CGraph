@@ -1,4 +1,3 @@
-/* eslint-disable check-file/filename-naming-convention, @typescript-eslint/consistent-type-assertions */
 /**
  * ProfileEffect — full-card Lottie overlay for profile entrance effects.
  *

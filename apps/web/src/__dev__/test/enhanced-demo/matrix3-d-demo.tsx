@@ -28,7 +28,7 @@ export function Matrix3DDemo() {
       <div className="mb-6 flex flex-wrap gap-4">
         <select
           value={theme}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           onChange={(e) => setTheme(e.target.value as typeof theme)}
           className="rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-white"
         >
@@ -40,7 +40,7 @@ export function Matrix3DDemo() {
 
         <select
           value={intensity}
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           onChange={(e) => setIntensity(e.target.value as typeof intensity)}
           className="rounded-lg border border-white/20 bg-black/50 px-4 py-2 text-white"
         >

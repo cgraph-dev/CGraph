@@ -18,8 +18,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useThemeStore } from '@/stores';
 
-import type { UserCosmeticInventory } from '@cgraph/shared-types';
-import { RARITY_HEX_COLORS, RARITY_LABELS } from '@cgraph/shared-types';
+import { RARITY_HEX_COLORS, RARITY_LABELS, type UserCosmeticInventory } from '@cgraph/shared-types';
 import { CosmeticRenderer } from '@/components/cosmetics/cosmetic-renderer';
 
 // ---------------------------------------------------------------------------
@@ -39,7 +38,7 @@ export default function EquipScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const params: RouteParams | undefined = route.params
-    ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    ?  
       (route.params as unknown as RouteParams)
     : undefined;
 

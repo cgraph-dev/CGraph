@@ -162,7 +162,7 @@ export function DynamicModal({
         return SCREEN_HEIGHT * percentage;
       }
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       return point.height as number;
     });
   }, [snapPoints]);

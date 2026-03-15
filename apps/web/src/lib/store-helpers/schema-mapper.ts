@@ -47,7 +47,7 @@ export function fromApiParams<T extends Record<string, unknown>>(
   for (const [snakeKey, value] of Object.entries(apiData)) {
     const camelKey = reverseSchema[snakeKey] || snakeToCamel(snakeKey);
     if (camelKey in defaults) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       (result as Record<string, unknown>)[camelKey] = value; // safe downcast – T extends Record<string, unknown>
     }
   }
@@ -60,10 +60,10 @@ export function fromApiParams<T extends Record<string, unknown>>(
  */
 export function createSchemaMapper<T = Record<string, unknown>>(schema: FieldSchema) {
   return {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     toApi: (updates: Partial<T>) => toApiParams(updates as Record<string, unknown>, schema), // safe downcast – Partial<T> to Record
     fromApi: (apiData: Record<string, unknown>, defaults: T) =>
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       fromApiParams(apiData, schema, defaults as Record<string, unknown>) as T, // safe downcast – generic boundary
     schema,
   };
@@ -113,7 +113,7 @@ export function createDebouncedSave<T extends BaseStoreState>(
       clearTimeout(existingTimer);
     }
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     set({ isSaving: true, error: null } as Partial<T>); // safe downcast – Zustand set requires Partial<T>
 
     const timer = setTimeout(async () => {
@@ -121,12 +121,12 @@ export function createDebouncedSave<T extends BaseStoreState>(
       try {
         await saveFn(state, set);
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         set({ isSaving: false } as Partial<T>); // safe downcast – Zustand set requires Partial<T>
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Save failed';
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         set({ isSaving: false, error: errorMessage } as Partial<T>); // safe downcast – Zustand set requires Partial<T>
       }
     }, delay);

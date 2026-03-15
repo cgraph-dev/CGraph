@@ -25,11 +25,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
-import { useThemeStore } from '@/stores';
-import { useForumStore } from '@/stores';
+import { useThemeStore, useForumStore } from '@/stores';
 import { ForumsStackParamList } from '../../types';
-import TagChips from '../../components/forums/tag-chips';
-import type { Tag } from '../../components/forums/tag-chips';
+import TagChips, { type Tag } from '../../components/forums/tag-chips';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -101,7 +99,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
       try {
         const res = await fetch('/api/v1/forums/tags');
         if (res.ok) {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const json = (await res.json()) as {
             data?: Array<{ id: string; name: string; color?: string }>;
           };
@@ -326,7 +324,7 @@ export default function ForumSearchScreen({ navigation }: Props) {
 
       {/* Results */}
       <FlatList
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         data={searchResults as SearchResultItem[]}
         renderItem={renderItem}
         keyExtractor={(item) => `${item.type}-${item.id}`}

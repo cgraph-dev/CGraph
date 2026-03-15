@@ -110,7 +110,7 @@ export const DEFAULT_PROFILE_DATA = {
   displayName: '',
   bio: '',
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   avatarUrl: null as string | null, // type assertion: initial null value needs union type annotation
   notifyMessages: true,
   notifyMentions: true,

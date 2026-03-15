@@ -54,15 +54,15 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
         const results = response.data?.users || response.data?.data || [];
         setUsers(
           results.map((u: Record<string, unknown>) => ({
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             id: u.id as string,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             username: (u.username as string) || '',
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             displayName: (u.display_name as string) || (u.username as string) || '',
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             avatarUrl: (u.avatar_url as string) || null,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             status: (u.status as 'online' | 'offline') || 'offline',
           }))
         );

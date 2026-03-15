@@ -179,7 +179,7 @@ export const useAuthStore = create<AuthStore>((set, _get) => ({
     if (data?.status === '2fa_required' && data?.two_factor_token) {
       return {
         twoFactorRequired: true as const,
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         twoFactorToken: data.two_factor_token as string,
       };
     }

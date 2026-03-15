@@ -38,7 +38,7 @@ export function withDelay(variants: Variants, delay: number): Variants {
       newVariants[key] = {
         ...variant,
         transition: {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           ...(variant.transition as Transition), // safe downcast – structural boundary
           delay,
         },

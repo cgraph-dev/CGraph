@@ -25,7 +25,7 @@ import type { AnimatedHeaderProps } from '../types';
  * Animated Header component.
  *
  */
-export function AnimatedHeader({ _colors, onCreatePress }: AnimatedHeaderProps) {
+export function AnimatedHeader({ colors, onCreatePress }: AnimatedHeaderProps) {
   const pulseAnim = useSharedValue(1);
   const rotateAnim = useSharedValue(0);
 

@@ -136,7 +136,7 @@ export function CallModals({
         conversationId={conversationId}
         otherParticipantId={otherParticipant?.user?.id || ''}
         otherParticipantName={conversationName}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         otherParticipantAvatar={(otherParticipant?.user?.avatarUrl as string) ?? undefined} // safe downcast – structural boundary
         incomingRoomId={incomingRoomId ?? undefined}
       />
@@ -146,7 +146,7 @@ export function CallModals({
         conversationId={conversationId}
         otherParticipantId={otherParticipant?.user?.id || ''}
         otherParticipantName={conversationName}
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         otherParticipantAvatar={(otherParticipant?.user?.avatarUrl as string) ?? undefined} // safe downcast – structural boundary
         incomingRoomId={incomingRoomId ?? undefined}
       />
@@ -181,7 +181,7 @@ export function InfoPanel({
   mutualFriends,
   onClose,
 }: InfoPanelProps) {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+   
   const user = (otherParticipant as Record<string, unknown>)?.user as  // safe downcast – structural boundary
     | Record<string, unknown>
     | undefined;
@@ -190,42 +190,42 @@ export function InfoPanel({
     <AnimatePresence>
       {showInfoPanel && otherParticipant && conversationId && (
         <ChatInfoPanel
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           userId={(user?.id as string) || ''} // safe downcast – structural boundary
           conversationId={conversationId}
           user={{
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             id: (user?.id as string) || '', // safe downcast – structural boundary
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             username: (user?.username as string) || 'Unknown', // safe downcast – structural boundary
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             displayName: (user?.displayName as string) || (user?.username as string), // safe downcast – structural boundary
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             avatarUrl: (user?.avatarUrl as string) ?? undefined, // safe downcast – structural boundary
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             level: (user?.level as number) ?? 1, // safe downcast – structural boundary
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             xp: (user?.xp as number) ?? 0, // safe downcast – structural boundary
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             pulse: (user?.pulse as number) ?? 0, // safe downcast – structural boundary
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             streak: (user?.streak as number) ?? 0, // safe downcast – structural boundary
             onlineStatus: isOtherUserOnline ? 'online' : 'offline',
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             lastSeenAt: (user?.lastSeenAt as string) ?? undefined, // safe downcast – structural boundary
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             bio: (user?.bio as string) ?? undefined, // safe downcast – structural boundary
 
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             badges: ((user?.badges as unknown[]) ?? []) as unknown as Array<{
               // safe downcast – structural boundary
               id: string;
@@ -236,7 +236,7 @@ export function InfoPanel({
           }}
           mutualFriends={mutualFriends}
           sharedForums={
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             (user?.sharedForums ?? []) as Array<{
               // safe downcast – structural boundary
               id: string;

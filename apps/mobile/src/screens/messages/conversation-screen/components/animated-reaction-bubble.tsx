@@ -16,7 +16,7 @@ import Animated, {
   withSpring,
   withSequence,
   withTiming,
-  _withDelay,
+  withDelay,
   FadeIn,
   FadeOut,
   Easing,
@@ -128,7 +128,7 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
             },
           ]}
         >
-          {/* eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any */}
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <Animated.View style={[styles.reactionEmoji, emojiStyle as any]}>
             <LottieRenderer
               emoji={reaction.emoji}

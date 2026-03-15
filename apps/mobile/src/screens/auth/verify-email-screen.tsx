@@ -101,7 +101,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
           await refreshUser?.();
         }
       } catch (error: unknown) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const apiError = error as { response?: { status?: number } };
         if (apiError.response?.status === 410) {
           setState('expired');
@@ -138,7 +138,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
     navigation.reset({
       index: 0,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       routes: [{ name: 'Main' as never }],
     });
   }, [navigation]);
@@ -147,7 +147,7 @@ export default function VerifyEmailScreen({ navigation, route }: Props) {
     navigation.reset({
       index: 0,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       routes: [{ name: 'Login' as never }],
     });
   }, [navigation]);

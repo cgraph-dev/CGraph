@@ -149,7 +149,7 @@ export function createFeatureActions(set: Set, _get: Get) {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         return response.data.attachment as PostAttachment; // safe downcast – API response field
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'uploadAttachment');
@@ -191,7 +191,7 @@ export function createFeatureActions(set: Set, _get: Get) {
           public: data.public,
         });
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         return response.data.poll as Poll; // safe downcast – API response field
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'createPoll');
@@ -319,7 +319,7 @@ export function createFeatureActions(set: Set, _get: Get) {
     ) => {
       try {
         const response = await api.post(`/api/v1/forums/${forumId}/categories`, data);
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const category = response.data?.category as ForumCategory | undefined;
         if (category) {
           set((state) => ({
@@ -385,7 +385,7 @@ export function createFeatureActions(set: Set, _get: Get) {
         });
         set((state) => {
           if (state.currentForum?.id !== forumId) return {};
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           const ordered = categoryIds
             .map((id) => (state.currentForum!.categories || []).find((c) => c.id === id))
             .filter(Boolean) as ForumCategory[];

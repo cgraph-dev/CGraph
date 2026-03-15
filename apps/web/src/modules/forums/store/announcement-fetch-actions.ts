@@ -35,7 +35,7 @@ export function createFetchActions(set: Set) {
 
         const data = response.data;
 
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         const announcements = (ensureArray(data, 'announcements') as Record<string, unknown>[]).map(
           // safe downcast – API response field
           mapAnnouncementFromApi
@@ -44,13 +44,13 @@ export function createFetchActions(set: Set) {
         set({
           announcements,
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           page: (data.page as number) || 1, // safe downcast – API pagination field
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           totalPages: (data.total_pages as number) || 1, // safe downcast – API pagination field
 
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           totalCount: (data.total_count as number) || announcements.length, // safe downcast – API pagination field
           isLoading: false,
         });
@@ -64,7 +64,7 @@ export function createFetchActions(set: Set) {
       try {
         const response = await api.get('/api/v1/announcements/global');
         const announcements =
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           (ensureArray(response.data, 'announcements') as Record<string, unknown>[]) // safe downcast – API response field
             .map(mapAnnouncementFromApi);
 
@@ -88,7 +88,7 @@ export function createFetchActions(set: Set) {
       try {
         const response = await api.get(`/api/v1/forums/${forumId}/announcements`);
         const announcements =
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+           
           (ensureArray(response.data, 'announcements') as Record<string, unknown>[]) // safe downcast – API response field
             .map(mapAnnouncementFromApi);
 

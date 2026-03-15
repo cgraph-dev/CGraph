@@ -58,26 +58,26 @@ export default function BanListScreen({ route }: Props) {
             : [];
         setBans(
           data.map((b: Record<string, unknown>) => ({
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             id: (b.id ?? b.user_id ?? '') as string,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             userId: (b.user_id ?? b.userId ?? '') as string,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             username: (b.username ??
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+               
               (b.user as Record<string, unknown>)?.username ??
               'unknown') as string,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             avatarUrl: (b.avatar_url ?? (b.user as Record<string, unknown>)?.avatar_url ?? null) as
               | string
               | null,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             reason: (b.reason ?? null) as string | null,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             bannedBy: (b.banned_by_username ?? b.bannedBy ?? null) as string | null,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             bannedAt: (b.banned_at ?? b.bannedAt ?? b.inserted_at ?? '') as string,
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+             
             expiresAt: (b.expires_at ?? b.expiresAt ?? null) as string | null,
           }))
         );

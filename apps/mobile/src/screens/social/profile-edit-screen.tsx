@@ -43,7 +43,7 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
   const [displayName, setDisplayName] = useState(user?.display_name ?? user?.displayName ?? '');
   const [bio, setBio] = useState(user?.bio ?? '');
   const [signature, setSignature] = useState(
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     ((user as Record<string, unknown>)?.signature as string) ?? ''
   );
   const [avatarUri, setAvatarUri] = useState<string | null>(
@@ -100,7 +100,7 @@ export default function ProfileEditScreen({ navigation }: { navigation: any }) {
       if (pendingAvatarUri.current) {
         setUploadingAvatar(true);
         const formData = new FormData();
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         formData.append('file', {
           uri: pendingAvatarUri.current,
           type: 'image/jpeg',

@@ -61,7 +61,7 @@ export function setupForumHandlers(
   presence.onSync(() => {
     const members: ForumPresenceMember[] = [];
     presence.list((userId: string, pres: unknown) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const { metas } = pres as { metas: ForumPresenceMeta[] }; // safe downcast – Phoenix Presence shape
       const meta = metas?.[0];
       if (meta) {
@@ -82,49 +82,49 @@ export function setupForumHandlers(
 
   // Forum event handlers
   channel.on('new_thread', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { thread: ForumThreadPayload }; // safe downcast – Phoenix channel event
     getCallbacks().get(forumId)?.onNewThread?.(data.thread);
   });
 
   channel.on('thread_pinned', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { thread_id: string; is_pinned: boolean }; // safe downcast – Phoenix channel event
     getCallbacks().get(forumId)?.onThreadPinned?.(data);
   });
 
   channel.on('thread_locked', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { thread_id: string; is_locked: boolean }; // safe downcast – Phoenix channel event
     getCallbacks().get(forumId)?.onThreadLocked?.(data);
   });
 
   channel.on('thread_deleted', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { thread_id: string }; // safe downcast – Phoenix channel event
     getCallbacks().get(forumId)?.onThreadDeleted?.(data);
   });
 
   channel.on('member_joined', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { user: ForumUserPayload }; // safe downcast – Phoenix channel event
     getCallbacks().get(forumId)?.onMemberJoined?.(data.user);
   });
 
   channel.on('member_left', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { user_id: string }; // safe downcast – Phoenix channel event
     getCallbacks().get(forumId)?.onMemberLeft?.(data);
   });
 
   channel.on('stats_update', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as ForumStatsPayload; // safe downcast – Phoenix channel event
     getCallbacks().get(forumId)?.onStatsUpdate?.(data);
   });
 
   channel.on('forum_stats', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as ForumStatsPayload; // safe downcast – Phoenix channel event
     getCallbacks().get(forumId)?.onStatsUpdate?.(data);
   });
@@ -156,7 +156,7 @@ export function setupThreadHandlers(
   presence.onSync(() => {
     const viewers: ThreadViewerPayload[] = [];
     presence.list((userId: string, pres: unknown) => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       const { metas } = pres as { metas: ThreadPresenceMeta[] }; // safe downcast – Phoenix Presence shape
       const meta = metas?.[0];
       if (meta) {
@@ -176,49 +176,49 @@ export function setupThreadHandlers(
 
   // Thread event handlers
   channel.on('new_comment', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { comment: ThreadCommentPayload }; // safe downcast – Phoenix channel event
     getCallbacks().get(threadId)?.onNewComment?.(data.comment);
   });
 
   channel.on('comment_edited', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { comment: ThreadCommentPayload }; // safe downcast – Phoenix channel event
     getCallbacks().get(threadId)?.onCommentEdited?.(data.comment);
   });
 
   channel.on('comment_deleted', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { comment_id: string }; // safe downcast – Phoenix channel event
     getCallbacks().get(threadId)?.onCommentDeleted?.(data);
   });
 
   channel.on('vote_changed', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as ThreadVotePayload; // safe downcast – Phoenix channel event
     getCallbacks().get(threadId)?.onVoteChanged?.(data);
   });
 
   channel.on('comment_vote_changed', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as CommentVotePayload; // safe downcast – Phoenix channel event
     getCallbacks().get(threadId)?.onCommentVoteChanged?.(data);
   });
 
   channel.on('typing', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as ThreadTypingPayload; // safe downcast – Phoenix channel event
     getCallbacks().get(threadId)?.onTyping?.(data);
   });
 
   channel.on('poll_updated', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as ThreadPollPayload; // safe downcast – Phoenix channel event
     getCallbacks().get(threadId)?.onPollUpdated?.(data);
   });
 
   channel.on('post_edited', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as {
       post: {
         id: string;
@@ -233,13 +233,13 @@ export function setupThreadHandlers(
   });
 
   channel.on('thread_status_changed', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as { thread_id: string; is_locked: boolean; is_pinned: boolean }; // safe downcast – Phoenix channel event
     getCallbacks().get(threadId)?.onThreadStatusChanged?.(data);
   });
 
   channel.on('thread_stats', (payload) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+     
     const data = payload as ThreadVotePayload; // safe downcast – Phoenix channel event
     getCallbacks().get(threadId)?.onVoteChanged?.(data);
   });

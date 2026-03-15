@@ -35,7 +35,7 @@ type Props = {
  *
  */
 export default function RegisterScreen({ navigation }: Props) {
-  const { _colors } = useThemeStore();
+  const { colors } = useThemeStore();
   const reg = useRegister();
 
   const fadeAnims = useRef(Array.from({ length: 8 }, () => new Animated.Value(0))).current;
@@ -111,7 +111,7 @@ export default function RegisterScreen({ navigation }: Props) {
                 ]}
               >
                 <Image
-                  // eslint-disable-next-line @typescript-eslint/no-require-imports
+                   
                   source={require('../../../assets/icon.png')}
                   style={styles.logoImage}
                   resizeMode="contain"
@@ -193,7 +193,7 @@ export default function RegisterScreen({ navigation }: Props) {
                       onSuccess={() => {}}
                       onError={(error) => {
                         if (!error.message.includes('cancelled'))
-                          console.error('OAuth error:', error);
+                          {console.error('OAuth error:', error);}
                       }}
                     />
                   </Animated.View>

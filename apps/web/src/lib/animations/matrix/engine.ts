@@ -60,11 +60,11 @@ export class MatrixEngine {
       animationController: new AnimationController(),
       characters: generateCharacterSet(cfg),
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       atlas: null as CharacterAtlas | null, // safe downcast – structural boundary
       atlasNeedsRebuild: true,
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       depthLayers: [] as DepthLayer[], // safe downcast – structural boundary
       columnsByLayer: new Map<number, MatrixColumn[]>(),
       characterPool: new ObjectPool<MatrixCharacter>(
@@ -95,7 +95,7 @@ export class MatrixEngine {
         500
       ),
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       listenerState: {
         visibilityHandler: null,
         resizeObserver: null,

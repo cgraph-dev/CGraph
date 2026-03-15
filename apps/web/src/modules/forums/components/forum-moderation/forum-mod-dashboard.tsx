@@ -76,7 +76,7 @@ function ModQueueTab({ forumId }: { forumId: string }) {
       setIsLoading(true);
       try {
         const data = await fetchForumModQueue(forumId);
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+         
         if (!cancelled) setItems(data as unknown as ModQueueItem[]);
       } catch (error) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'loadQueue');
@@ -92,7 +92,7 @@ function ModQueueTab({ forumId }: { forumId: string }) {
 
   const handleAction = async (postId: string, action: string) => {
     try {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       await takeForumModAction(forumId, postId, action as 'approve' | 'remove' | 'hide');
       setItems((prev) => prev.filter((i) => i.id !== postId));
     } catch (error) {
