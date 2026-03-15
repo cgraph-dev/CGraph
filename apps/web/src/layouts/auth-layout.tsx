@@ -193,7 +193,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           transition={{ ...tweens.dramatic, delay: 0.3 }}
         >
           <TiltCard
-            className="auth-card-border relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#111827]/90 via-[#0a0f1a]/80 to-[#030712]/90 p-6 shadow-none backdrop-blur-xl transition-all duration-500 hover:border-white/[0.12]"
+            className="auth-card-border auth-card-glow auth-card-shimmer relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#111827]/90 via-[#0a0f1a]/85 to-[#0d1117]/90 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl transition-all duration-500 hover:border-white/[0.15] hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_60px_rgba(139,92,246,0.06),inset_0_1px_0_rgba(255,255,255,0.06)]"
             maxTilt={5}
           >
             {children}

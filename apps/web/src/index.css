@@ -318,9 +318,11 @@
   }
 
   .matrix-input:focus {
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3), 
-                0 0 20px rgba(16, 185, 129, 0.15),
-                inset 0 0 10px rgba(16, 185, 129, 0.05);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25),
+                0 0 15px rgba(16, 185, 129, 0.12),
+                0 0 30px rgba(139, 92, 246, 0.08),
+                inset 0 0 10px rgba(16, 185, 129, 0.04);
+    border-color: rgba(16, 185, 129, 0.4);
   }
 
   .matrix-button {
@@ -966,25 +968,83 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(16, 185, 129, 0.25) 25%,
-    rgba(139, 92, 246, 0.25) 50%,
-    rgba(16, 185, 129, 0.25) 75%,
+    rgba(16, 185, 129, 0.4) 20%,
+    rgba(139, 92, 246, 0.45) 40%,
+    rgba(16, 185, 129, 0.4) 60%,
+    rgba(139, 92, 246, 0.3) 80%,
     transparent
   );
   background-size: 200% 100%;
-  animation: auth-border-flow 6s linear infinite;
+  animation: auth-border-flow 5s linear infinite;
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  opacity: 0.35;
+  opacity: 0.5;
   z-index: 1;
   transition: opacity 0.5s ease;
 }
 
 .auth-card-border:hover::before {
-  opacity: 0.5;
+  opacity: 0.8;
+}
+
+/* Auth card inner ambient glow — emerald and purple corner accents */
+.auth-card-glow {
+  position: relative;
+}
+
+.auth-card-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse 60% 40% at 0% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 0%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.5s ease;
+}
+
+.auth-card-glow:hover::after {
+  background:
+    radial-gradient(ellipse 60% 40% at 0% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 100% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 0%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+}
+
+/* Auth card traveling shimmer highlight */
+@keyframes auth-card-shimmer {
+  0% { transform: translateX(-150%) rotate(15deg); }
+  100% { transform: translateX(250%) rotate(15deg); }
+}
+
+.auth-card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card-shimmer::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(16, 185, 129, 0.03) 30%,
+    rgba(139, 92, 246, 0.05) 50%,
+    rgba(16, 185, 129, 0.03) 70%,
+    transparent 100%
+  );
+  animation: auth-card-shimmer 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 

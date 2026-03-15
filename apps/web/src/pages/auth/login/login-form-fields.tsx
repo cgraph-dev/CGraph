@@ -53,7 +53,7 @@ export function LoginFormFields({
           onChange={(e) => setEmail(e.target.value)}
           required
           autoComplete="username"
-          className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+          className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-emerald-500/25 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
           placeholder={t('login.email_placeholder')}
         />
       </motion.div>
@@ -73,7 +73,7 @@ export function LoginFormFields({
             onChange={(e) => setPassword(e.target.value)}
             required
             autoComplete="current-password"
-            className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 pr-12 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-white/[0.08] bg-white/[0.06] px-4 py-3 pr-12 text-foreground placeholder-foreground-muted transition-all duration-300 hover:border-emerald-500/25 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="••••••••"
           />
           <PasswordToggleButton
